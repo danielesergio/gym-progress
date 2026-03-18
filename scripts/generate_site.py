@@ -16,6 +16,7 @@ Uso:
 import argparse
 import json
 import os
+import re
 import sys
 import glob as globmod
 from html import escape
@@ -460,6 +461,92 @@ def build_volume(workout_data: dict) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Tabbed content (generic: diet, feedback, plan)
+# ---------------------------------------------------------------------------
+
+def build_tabbed_content(html_fragment: str, page_id: str) -> str:
+    """Split an HTML fragment by <h3> headings into a tabbed layout.
+
+    The first <h2> (if any) becomes the page title shown above the tabs.
+    Any content before the first <h3> is shown above the tabs as intro.
+    Each <h3> section becomes a tab.
+    """
+    remaining = html_fragment.strip()
+
+    # Extract page title (<h2>)
+    title_html = ""
+    h2_match = re.search(r"<h2[^>]*>(.*?)</h2>", remaining, re.DOTALL)
+    if h2_match:
+        title_html = f'<h2 class="page-title">{h2_match.group(1)}</h2>\n'
+        remaining = remaining[: h2_match.start()] + remaining[h2_match.end() :]
+
+    # Split on <h3> boundaries
+    parts = re.split(r"(?=<h3[^>]*>)", remaining.strip())
+    parts = [p.strip() for p in parts if p.strip()]
+
+    # Separate intro (no <h3>) from tabbed sections
+    intro_html = ""
+    sections: list[tuple[str, str]] = []  # (label, content)
+    for part in parts:
+        h3_match = re.match(r"<h3[^>]*>(.*?)</h3>", part, re.DOTALL)
+        if h3_match:
+            # Strip HTML tags and common entities for the tab label
+            label = re.sub(r"<[^>]+>", "", h3_match.group(1)).strip()
+            label = (
+                label.replace("&mdash;", "\u2014")
+                .replace("&egrave;", "\u00e8")
+                .replace("&agrave;", "\u00e0")
+                .replace("&ograve;", "\u00f2")
+                .replace("&ugrave;", "\u00f9")
+                .replace("&rsquo;", "\u2019")
+                .replace("&le;", "\u2264")
+            )
+            sections.append((label, part))
+        else:
+            intro_html += part
+
+    # Not enough sections for tabs -> return as-is
+    if len(sections) <= 1:
+        return f'{title_html}<div class="md-content">{html_fragment}</div>'
+
+    html = title_html
+    if intro_html:
+        html += f'<div class="md-content">{intro_html}</div>\n'
+
+    # Tab bar
+    html += f'<div class="sub-nav" id="{page_id}-nav">\n'
+    for i, (label, _) in enumerate(sections):
+        active = " active" if i == 0 else ""
+        html += (
+            f'  <a href="#" class="sub-nav-item{active}" '
+            f"onclick=\"showTab('{page_id}', '{page_id}-{i}', this); return false;\">"
+            f"{label}</a>\n"
+        )
+    html += "</div>\n"
+
+    # Panels
+    for i, (_, content) in enumerate(sections):
+        active = " active" if i == 0 else ""
+        html += f'<div id="{page_id}-{i}" class="{page_id}-panel tab-panel{active}">\n'
+        html += f'<div class="md-content">{content}</div>\n'
+        html += "</div>\n"
+
+    # JS (generic, safe to include multiple times since function name is the same)
+    html += """
+<script>
+function showTab(pageId, tabId, link) {
+    document.querySelectorAll('.' + pageId + '-panel').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('#' + pageId + '-nav .sub-nav-item').forEach(function(a) { a.classList.remove('active'); });
+    var el = document.getElementById(tabId);
+    if (el) el.classList.add('active');
+    if (link) link.classList.add('active');
+}
+</script>
+"""
+    return html
+
+
+# ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
 
@@ -490,9 +577,9 @@ def main():
         "dashboard": build_dashboard(measurements),
         "workout": build_workout(workout_data) if workout_data else "<p>Nessun dato workout trovato.</p>",
         "volume": build_volume(workout_data) if workout_data else "<p>Nessun dato workout trovato.</p>",
-        "diet": read_file(diet_html_path) if diet_html_path else "<p>Nessuna dieta trovata.</p>",
-        "plan": read_file(plan_html_path) if os.path.exists(plan_html_path) else "<p>Nessun piano trovato.</p>",
-        "feedback": read_file(feedback_html_path) if feedback_html_path else "<p>Nessun feedback trovato.</p>",
+        "diet": build_tabbed_content(read_file(diet_html_path), "diet") if diet_html_path else "<p>Nessuna dieta trovata.</p>",
+        "plan": build_tabbed_content(read_file(plan_html_path), "plan") if os.path.exists(plan_html_path) else "<p>Nessun piano trovato.</p>",
+        "feedback": build_tabbed_content(read_file(feedback_html_path), "feedback") if feedback_html_path else "<p>Nessun feedback trovato.</p>",
     }
 
     # Genera file HTML

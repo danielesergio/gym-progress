@@ -210,12 +210,23 @@ Array JSON con tutte le misurazioni storiche. **Aggiungi** una entry per ogni it
 - **Efficacia Workout (1-10)**: valutazione oggettiva basata su progressione dei massimali, aderenza, feedback e trend composizione corporea. `null` per la prima iterazione.
 
 #### `data/output/plan.html`
-Frammento HTML con:
-- Piano a lungo termine sempre aggiornato
-- Visione d'insieme ad alto livello
-- Obiettivi per i prossimi 3-6-12 mesi
-- Macrocicli pianificati (es. fase di forza, ipertrofia, cut, peak)
-- Note sulle metodologie da testare o consolidare
+Frammento HTML organizzato in **esattamente 4 sezioni `<h3>`** (che diventano tab nel sito). Usa `<h4>` per le sotto-sezioni interne ai tab. Struttura obbligatoria:
+
+1. **`<h3>Panoramica</h3>`** — contiene:
+   - `<h4>Obiettivi Finali</h4>`: tabella parametro/attuale/obiettivo/delta
+   - `<h4>Situazione Attuale</h4>`: stato corrente dell'atleta, infortuni, fase in corso
+
+2. **`<h3>Macrocicli e Target</h3>`** — contiene:
+   - `<h4>Macrocicli Pianificati</h4>`: tabella periodo/fase/durata/obiettivo/note per i prossimi 12 mesi
+   - `<h4>Target Intermedi</h4>`: tabella massimali attuale/6 mesi/12 mesi/obiettivo finale
+
+3. **`<h3>Strategia</h3>`** — contiene:
+   - `<h4>Metodologie da Utilizzare</h4>`: lista metodologie per ogni fase (recupero, forza, ipertrofia, test)
+   - `<h4>Composizione Corporea — Roadmap</h4>`: tappe peso/BF/LBM per ogni fase
+
+4. **`<h3>Rischi e Attenzioni</h3>`** — lista di rischi, attenzioni e avvertenze
+
+Regole generali:
 - **Se l'atleta e' infortunato**: includi la fase di recupero nel piano e aggiusta le timeline
 - Aggiorna in base ai risultati reali: se i progressi sono diversi da quelli attesi, rivedi il piano
 - **Verifica congruenza**: la somma delle settimane dei mesocicli deve corrispondere al timeframe dichiarato

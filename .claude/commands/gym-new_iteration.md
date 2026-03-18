@@ -217,7 +217,7 @@ Frammento HTML organizzato in **esattamente 4 sezioni `<h3>`** (che diventano ta
    - `<h4>Situazione Attuale</h4>`: stato corrente dell'atleta, infortuni, fase in corso
 
 2. **`<h3>Macrocicli e Target</h3>`** — contiene:
-   - `<h4>Macrocicli Pianificati</h4>`: tabella periodo/fase/durata/obiettivo/note per i prossimi 12 mesi
+   - `<h4>Macrocicli Pianificati</h4>`: tabella con colonne periodo/fase/durata/obiettivo/note per i prossimi 12 mesi. La colonna "Durata" contiene il numero di settimane (es. "4 sett"). **Ogni fase DEVE avere una durata fissa in settimane (non range)**. Aggiungi una riga finale di totale che somma le settimane — **la somma DEVE essere esattamente 52 settimane**. Verifica i conti prima di generare il file.
    - `<h4>Target Intermedi</h4>`: tabella massimali attuale/6 mesi/12 mesi/obiettivo finale
 
 3. **`<h3>Strategia</h3>`** — contiene:
@@ -229,7 +229,7 @@ Frammento HTML organizzato in **esattamente 4 sezioni `<h3>`** (che diventano ta
 Regole generali:
 - **Se l'atleta e' infortunato**: includi la fase di recupero nel piano e aggiusta le timeline
 - Aggiorna in base ai risultati reali: se i progressi sono diversi da quelli attesi, rivedi il piano
-- **Verifica congruenza**: la somma delle settimane dei mesocicli deve corrispondere al timeframe dichiarato
+- **Verifica congruenza**: la somma delle settimane dei macrocicli DEVE fare esattamente 52. Usa durate fisse (non range come "4-6 settimane"). Calcola la somma e verificala prima di scrivere il file.
 
 ### 5. Archiviazione e organizzazione file
 

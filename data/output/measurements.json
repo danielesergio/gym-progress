@@ -1,0 +1,26 @@
+[
+  {
+    "data": "2026-03-18",
+    "eta": 38,
+    "peso_kg": 87.2,
+    "vita_cm": 89,
+    "fianchi_cm": 100,
+    "petto_cm": 100,
+    "collo_cm": 39,
+    "braccio_dx_cm": 33.5,
+    "coscia_dx_cm": 57,
+    "body_fat_pct": 17.1,
+    "massa_grassa_kg": 14.9,
+    "massa_magra_kg": 72.3,
+    "ffmi": 20.5,
+    "ffmi_adj": 20.0,
+    "bmr_kcal": 1852,
+    "tdee_kcal": 2685,
+    "squat_1rm": 145,
+    "panca_1rm": 115,
+    "stacco_1rm": 200,
+    "massimali_tipo": "S",
+    "efficacia_workout": null,
+    "note": "Prima iterazione. Atleta fermo da 3 settimane per sindrome TOS (piccolo pettorale). Massimali riportati dal profilo atleta, non testati in questa sessione. BF% calcolato con formula US Navy. TDEE calcolato con fattore attivita 1.45 (ridotto per inattivita). Cut in corso con deficit -350 kcal."
+  }
+]

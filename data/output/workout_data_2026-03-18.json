@@ -1,0 +1,427 @@
+{
+  "titolo": "Scheda di Allenamento",
+  "data": "2026-03-18",
+  "mesociclo": {
+    "nome": "Ripresa Post-TOS",
+    "durata": "2 settimane",
+    "metodologia": "Linear progression a RPE controllato (RPE 6 → 7)",
+    "frequenza": "3 giorni/settimana (Lun-Mer-Ven)",
+    "obiettivo": "Riattivazione muscolare e mantenimento forza gambe, zero stress sul piccolo pettorale",
+    "logica": [
+      "L'atleta e' fermo da 3 settimane per sindrome TOS (piccolo pettorale). Questo mesociclo e' un programma di ripresa conservativo.",
+      "ESCLUSI tutti gli esercizi che coinvolgono il piccolo pettorale: panca piana, dips, trazioni, military press, push-up, croci, overhead press.",
+      "Focus su lower body per mantenere la forza su squat e stacco (obiettivi primari dell'atleta).",
+      "Face pull inseriti come esercizio terapeutico: rinforzano i rettrattori scapolari e aiutano a decomprimere lo stretto toracico.",
+      "RPE contenuto (6 settimana 1, 6-7 settimana 2) per non stressare il sistema senza adeguato rodaggio.",
+      "Test day ridotto: solo Squat e Stacco. Panca saltata per infortunio."
+    ]
+  },
+  "riscaldamento": [
+    "5 min bike/ellittica a bassa intensita'",
+    "Foam roller zona dorsale — 2 min (mobilita' toracica, terapeutico per TOS)",
+    "Stretching piccolo pettorale — 30 sec/lato (braccio a 90 gradi contro una porta, delicato)",
+    "Rotazioni esterne spalla con elastico — 2x15/lato",
+    "Attivazione glutei: glute bridge — 2x15",
+    "Serie di avvicinamento specifiche per il primo esercizio (50%, 70% del carico di lavoro)"
+  ],
+  "defaticamento": [
+    "Stretching statico gambe — 30 sec per gruppo muscolare",
+    "Stretching piccolo pettorale — 30 sec/lato",
+    "Foam roller quadricipiti e femorali — 2 min",
+    "Respirazione diaframmatica — 2 min (aiuta la decompressione toracica)"
+  ],
+  "note": [
+    "INFORTUNIO ATTIVO: Sindrome TOS da infiammazione/contrattura piccolo pettorale. Esclusi: panca, dips, trazioni, military press, push-up, croci, farmer's walk pesante.",
+    "Se durante qualsiasi esercizio senti formicolio, intorpidimento o dolore irradiato al braccio — FERMATI immediatamente.",
+    "RPE 6 = potresti fare altre 4 ripetizioni. Non cercare il cedimento.",
+    "Dopo 3 settimane di stop, attendi un calo del 5-10% sui massimali. E' normale.",
+    "I face pull sono sia allenamento che riabilitazione: eseguili con controllo, enfatizzando la retrazione scapolare a fine concentrica.",
+    "Mantieni una postura corretta durante tutti gli esercizi: spalle retratte, petto aperto."
+  ],
+  "settimane": [
+    {
+      "id": "S1",
+      "nome": "Settimana 1",
+      "descrizione": "Riattivazione — RPE 6, carichi conservativi",
+      "giorni": [
+        {
+          "id": "A",
+          "nome": "Lunedi: Lower Body — Squat Focus",
+          "esercizi": [
+            {
+              "nome": "Squat con bilanciere",
+              "serie": 4,
+              "reps": "4x8",
+              "peso": "RPE 6 (~85-90 kg)",
+              "recupero": "2 min 30 sec",
+              "gruppo": "Quadricipiti, glutei",
+              "principale": true
+            },
+            {
+              "nome": "Leg press",
+              "serie": 3,
+              "reps": "3x12",
+              "peso": "RPE 6",
+              "recupero": "2 min",
+              "gruppo": "Quadricipiti, glutei",
+              "principale": false
+            },
+            {
+              "nome": "Leg curl sdraiato",
+              "serie": 3,
+              "reps": "3x12",
+              "peso": "RPE 6-7",
+              "recupero": "90 sec",
+              "gruppo": "Femorali",
+              "principale": false
+            },
+            {
+              "nome": "Face pull al cavo",
+              "serie": 3,
+              "reps": "3x15",
+              "peso": "Leggero — focus retrazione scapolare",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori, cuffia dei rotatori",
+              "principale": false
+            },
+            {
+              "nome": "Alzate laterali con manubri",
+              "serie": 3,
+              "reps": "3x12",
+              "peso": "RPE 6",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi mediali",
+              "principale": false
+            },
+            {
+              "nome": "Plank",
+              "serie": 3,
+              "reps": "3x45 sec",
+              "peso": "Corpo libero",
+              "recupero": "60 sec",
+              "gruppo": "Core",
+              "principale": false
+            }
+          ]
+        },
+        {
+          "id": "B",
+          "nome": "Mercoledi: Lower Body — Stacco Focus",
+          "esercizi": [
+            {
+              "nome": "Stacco da terra convenzionale",
+              "serie": 4,
+              "reps": "4x6",
+              "peso": "RPE 6 (~140-150 kg)",
+              "recupero": "3 min",
+              "gruppo": "Femorali, glutei, erettori spinali",
+              "principale": true
+            },
+            {
+              "nome": "Bulgarian split squat",
+              "serie": 3,
+              "reps": "3x10/gamba",
+              "peso": "RPE 6 (manubri)",
+              "recupero": "90 sec",
+              "gruppo": "Quadricipiti, glutei",
+              "principale": false
+            },
+            {
+              "nome": "Stacco rumeno",
+              "serie": 3,
+              "reps": "3x10",
+              "peso": "RPE 6 (~80-90 kg)",
+              "recupero": "2 min",
+              "gruppo": "Femorali, glutei",
+              "principale": false
+            },
+            {
+              "nome": "Leg curl sdraiato",
+              "serie": 3,
+              "reps": "3x12",
+              "peso": "RPE 6-7",
+              "recupero": "90 sec",
+              "gruppo": "Femorali",
+              "principale": false
+            },
+            {
+              "nome": "Curl con bilanciere",
+              "serie": 3,
+              "reps": "3x10",
+              "peso": "RPE 6",
+              "recupero": "60 sec",
+              "gruppo": "Bicipiti",
+              "principale": false
+            },
+            {
+              "nome": "Ab wheel rollout",
+              "serie": 3,
+              "reps": "3x10",
+              "peso": "Corpo libero",
+              "recupero": "60 sec",
+              "gruppo": "Core",
+              "principale": false
+            }
+          ]
+        },
+        {
+          "id": "C",
+          "nome": "Venerdi: Full Body Leggero + Core + Rehab",
+          "esercizi": [
+            {
+              "nome": "Squat con bilanciere",
+              "serie": 3,
+              "reps": "3x5",
+              "peso": "RPE 5 (~80 kg, tecnica)",
+              "recupero": "2 min",
+              "gruppo": "Quadricipiti, glutei",
+              "principale": true
+            },
+            {
+              "nome": "Leg extension",
+              "serie": 3,
+              "reps": "3x12",
+              "peso": "RPE 6",
+              "recupero": "60 sec",
+              "gruppo": "Quadricipiti",
+              "principale": false
+            },
+            {
+              "nome": "Face pull al cavo",
+              "serie": 4,
+              "reps": "4x15",
+              "peso": "Leggero — focus retrazione scapolare",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori, cuffia dei rotatori",
+              "principale": false
+            },
+            {
+              "nome": "Alzate laterali con manubri",
+              "serie": 3,
+              "reps": "3x15",
+              "peso": "RPE 6",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi mediali",
+              "principale": false
+            },
+            {
+              "nome": "Curl a martello con manubri",
+              "serie": 3,
+              "reps": "3x12",
+              "peso": "RPE 6",
+              "recupero": "60 sec",
+              "gruppo": "Bicipiti, brachiale",
+              "principale": false
+            },
+            {
+              "nome": "Crunch ai cavi",
+              "serie": 3,
+              "reps": "3x15",
+              "peso": "RPE 6",
+              "recupero": "60 sec",
+              "gruppo": "Core",
+              "principale": false
+            }
+          ]
+        }
+      ],
+      "progressione": {
+        "nota": "Settimana 1 a RPE 6 su tutti gli esercizi. Focus sulla qualita' del movimento e il ritorno ai pattern motori.",
+        "tabella": [
+          {"esercizio": "Squat con bilanciere (A)", "S1": "~85-90 kg x8 RPE 6"},
+          {"esercizio": "Stacco da terra (B)", "S1": "~140-150 kg x6 RPE 6"},
+          {"esercizio": "Squat con bilanciere (C)", "S1": "~80 kg x5 RPE 5"}
+        ]
+      }
+    },
+    {
+      "id": "S2",
+      "nome": "Settimana 2",
+      "descrizione": "Progressione leggera — RPE 6-7, ultimo giorno TEST DAY",
+      "giorni": [
+        {
+          "id": "A",
+          "nome": "Lunedi: Lower Body — Squat Focus",
+          "esercizi": [
+            {
+              "nome": "Squat con bilanciere",
+              "serie": 4,
+              "reps": "4x8",
+              "peso": "RPE 7 (~90-95 kg)",
+              "recupero": "2 min 30 sec",
+              "gruppo": "Quadricipiti, glutei",
+              "principale": true
+            },
+            {
+              "nome": "Leg press",
+              "serie": 3,
+              "reps": "3x12",
+              "peso": "RPE 7",
+              "recupero": "2 min",
+              "gruppo": "Quadricipiti, glutei",
+              "principale": false
+            },
+            {
+              "nome": "Leg curl sdraiato",
+              "serie": 3,
+              "reps": "3x12",
+              "peso": "RPE 7",
+              "recupero": "90 sec",
+              "gruppo": "Femorali",
+              "principale": false
+            },
+            {
+              "nome": "Face pull al cavo",
+              "serie": 3,
+              "reps": "3x15",
+              "peso": "Leggero — focus retrazione scapolare",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori, cuffia dei rotatori",
+              "principale": false
+            },
+            {
+              "nome": "Alzate laterali con manubri",
+              "serie": 3,
+              "reps": "3x12",
+              "peso": "RPE 7",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi mediali",
+              "principale": false
+            },
+            {
+              "nome": "Plank",
+              "serie": 3,
+              "reps": "3x60 sec",
+              "peso": "Corpo libero",
+              "recupero": "60 sec",
+              "gruppo": "Core",
+              "principale": false
+            }
+          ]
+        },
+        {
+          "id": "B",
+          "nome": "Mercoledi: Lower Body — Stacco Focus",
+          "esercizi": [
+            {
+              "nome": "Stacco da terra convenzionale",
+              "serie": 4,
+              "reps": "4x6",
+              "peso": "RPE 7 (~150-160 kg)",
+              "recupero": "3 min",
+              "gruppo": "Femorali, glutei, erettori spinali",
+              "principale": true
+            },
+            {
+              "nome": "Bulgarian split squat",
+              "serie": 3,
+              "reps": "3x10/gamba",
+              "peso": "RPE 7 (manubri)",
+              "recupero": "90 sec",
+              "gruppo": "Quadricipiti, glutei",
+              "principale": false
+            },
+            {
+              "nome": "Stacco rumeno",
+              "serie": 3,
+              "reps": "3x10",
+              "peso": "RPE 7 (~90-100 kg)",
+              "recupero": "2 min",
+              "gruppo": "Femorali, glutei",
+              "principale": false
+            },
+            {
+              "nome": "Leg curl sdraiato",
+              "serie": 3,
+              "reps": "3x12",
+              "peso": "RPE 7",
+              "recupero": "90 sec",
+              "gruppo": "Femorali",
+              "principale": false
+            },
+            {
+              "nome": "Curl con bilanciere",
+              "serie": 3,
+              "reps": "3x10",
+              "peso": "RPE 7",
+              "recupero": "60 sec",
+              "gruppo": "Bicipiti",
+              "principale": false
+            },
+            {
+              "nome": "Ab wheel rollout",
+              "serie": 3,
+              "reps": "3x12",
+              "peso": "Corpo libero",
+              "recupero": "60 sec",
+              "gruppo": "Core",
+              "principale": false
+            }
+          ]
+        },
+        {
+          "id": "test",
+          "nome": "Venerdi: TEST DAY",
+          "info_test": {
+            "tipo": "3RM indiretto — stima 1RM con formula Epley",
+            "ordine": "Squat > Stacco (Panca SALTATA per TOS)",
+            "formula": "1RM = peso x (1 + reps/30)",
+            "regole": [
+              "Riscaldamento completo prima di ogni lift (almeno 4 serie progressive)",
+              "Riposo 3-5 minuti tra i tentativi",
+              "Massimo 3 tentativi per lift",
+              "Se senti qualsiasi fastidio alla zona toracica/braccio, FERMATI",
+              "PANCA SALTATA: il test di panca e' sospeso fino a guarigione completa del TOS",
+              "Obiettivo conservativo: dopo 3 settimane di stop, un calo del 5-10% e' atteso e normale"
+            ]
+          },
+          "protocolli": [
+            {
+              "nome": "SQUAT",
+              "target": "Target 3RM: ~130 kg (conservativo post-stop)",
+              "serie": [
+                {"set": "Risc. 1", "peso": "Bilanciere vuoto", "reps": 10, "note": "Mobilita' e attivazione"},
+                {"set": "Risc. 2", "peso": "60 kg", "reps": 8, "note": ""},
+                {"set": "Risc. 3", "peso": "80 kg", "reps": 5, "note": ""},
+                {"set": "Risc. 4", "peso": "100 kg", "reps": 3, "note": ""},
+                {"set": "Risc. 5", "peso": "115 kg", "reps": 2, "note": ""},
+                {"set": "Tentativo 1", "peso": "125 kg", "reps": 3, "note": "Conservativo", "tentativo": true},
+                {"set": "Tentativo 2", "peso": "130 kg", "reps": 3, "note": "Se tentativo 1 pulito", "tentativo": true},
+                {"set": "Tentativo 3", "peso": "135 kg", "reps": 3, "note": "Solo se tutto liscio", "tentativo": true}
+              ]
+            },
+            {
+              "nome": "STACCO",
+              "target": "Target 3RM: ~175-180 kg (conservativo post-stop)",
+              "serie": [
+                {"set": "Risc. 1", "peso": "60 kg", "reps": 8, "note": ""},
+                {"set": "Risc. 2", "peso": "100 kg", "reps": 5, "note": ""},
+                {"set": "Risc. 3", "peso": "130 kg", "reps": 3, "note": ""},
+                {"set": "Risc. 4", "peso": "155 kg", "reps": 2, "note": ""},
+                {"set": "Tentativo 1", "peso": "170 kg", "reps": 3, "note": "Conservativo", "tentativo": true},
+                {"set": "Tentativo 2", "peso": "180 kg", "reps": 3, "note": "Se tentativo 1 pulito", "tentativo": true},
+                {"set": "Tentativo 3", "peso": "185 kg", "reps": 3, "note": "Solo se tutto liscio", "tentativo": true}
+              ]
+            },
+            {
+              "nome": "PANCA PIANA",
+              "target": "SALTATA — Infortunio TOS attivo",
+              "serie": [
+                {"set": "N/A", "peso": "N/A", "reps": 0, "note": "Test sospeso fino a guarigione completa del TOS. Il piccolo pettorale deve essere completamente asintomatico prima di testare la panca."}
+              ]
+            }
+          ]
+        }
+      ],
+      "progressione": {
+        "nota": "Settimana 2: RPE sale a 7 su tutti gli esercizi. Venerdi e' dedicato al test massimali (solo Squat e Stacco).",
+        "tabella": [
+          {"esercizio": "Squat con bilanciere (A)", "S2": "~90-95 kg x8 RPE 7"},
+          {"esercizio": "Stacco da terra (B)", "S2": "~150-160 kg x6 RPE 7"},
+          {"esercizio": "Squat 3RM test (Ven)", "S2": "Target ~130 kg x3"},
+          {"esercizio": "Stacco 3RM test (Ven)", "S2": "Target ~175-180 kg x3"}
+        ]
+      }
+    }
+  ]
+}

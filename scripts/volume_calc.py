@@ -130,6 +130,11 @@ EXERCISE_MUSCLES = {
         "secondario": [],
         "terziario": [],
     },
+    "leg extension": {
+        "principale": ["quadricipiti"],
+        "secondario": [],
+        "terziario": [],
+    },
 }
 
 

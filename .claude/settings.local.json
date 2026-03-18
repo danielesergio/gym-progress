@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(ls:*)",
+      "Bash(python:*)",
+      "Bash(where python:*)",
+      "Bash(python3:*)",
+      "Bash(node:*)",
+      "Bash(where node:*)",
+      "Bash(cmd //c \"where node\")",
+      "Bash(cmd //c \"python scripts/body_calc.py --peso 87.2 --altezza 188 --eta 38 --vita 89 --collo 39 --fianchi 100 --sesso M --attivita 1.55 --surplus 330\")",
+      "Bash(start:*)"
+    ]
+  }
+}

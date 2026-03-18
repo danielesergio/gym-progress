@@ -37,6 +37,6 @@ Inserisci il peso e le ripetizioni fatte (es. 100 kg x 5). La conversione a 1RM 
 ## Altro
 - **Infortuni o dolori**: Sindrome TOS dovuta probabilmente a infiammazione / contrattura del piccolo pettorale.
 - **Commenti liberi**:
-  - sono fermo da 3 settimane per infortunio, adesso sono in via di guarigione. fammi un programma di 2 settimane per riprendere ad allenarmi senza forzare minimamente il piccolo pettorale (dolore trazioni, panca piana). Considera che l'indice è spesso intorpidito anche senza fare nulla.
+  - sono fermo da 3 settimane per infortunio, adesso sono in via di guarigione. fammi un programma di 2 settimane per riprendere ad allenarmi senza forzare minimamente il piccolo pettorale (dolore trazioni, panca piana, military press e altri).Evita tutti gli esercizi che posso far peggiorare la mia situazione attuale.
   - al momentono sono in una fase di cut che vorrei protrarre per abbassare la mia body fat e poi riprendere con il bulk. Questa è solo una mia idea dimmi tu se è opportuno o è meglio interrompere il piano di bulk.
 

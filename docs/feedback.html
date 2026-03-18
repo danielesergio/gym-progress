@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feedback — GYM</title>
+<style>
+:root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #232734;
+    --border: #2d3142;
+    --text: #e4e6ed;
+    --text-muted: #8b8fa3;
+    --accent: #6c8cff;
+    --accent2: #4ecdc4;
+    --green: #4ecdc4;
+    --yellow: #ffd93d;
+    --red: #ff6b6b;
+    --orange: #ffa94d;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+
+/* Navigation */
+nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+nav .logo {
+    font-weight: 700;
+    font-size: 1.25rem;
+    color: var(--accent);
+    padding: 1rem 0;
+    white-space: nowrap;
+    text-decoration: none;
+}
+
+nav .nav-links {
+    display: flex;
+    gap: 0;
+    overflow-x: auto;
+}
+
+nav a.nav-item {
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 1rem 1.25rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+nav a.nav-item:hover { color: var(--text); }
+nav a.nav-item.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+}
+
+/* Layout */
+.content { padding: 2rem; max-width: 1100px; margin: 0 auto; }
+
+/* Cards */
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.5rem;
+}
+
+.card .label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+}
+
+.card .value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text);
+}
+
+.card .value .unit {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+.card .sub {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 0.25rem;
+}
+
+.card.accent { border-color: var(--accent); }
+.card.green { border-color: var(--green); }
+
+/* Tables */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    font-size: 0.9rem;
+}
+
+th {
+    background: var(--surface2);
+    color: var(--text-muted);
+    text-align: left;
+    padding: 0.75rem 1rem;
+    font-weight: 600;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    border-bottom: 1px solid var(--border);
+}
+
+td {
+    padding: 0.6rem 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+tr:hover { background: var(--surface); }
+.total-row { font-weight: 700; background: var(--surface2); }
+
+/* Sub-navigation (workout tabs) */
+.sub-nav {
+    display: flex;
+    gap: 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow-x: auto;
+    margin-bottom: 1.5rem;
+}
+.sub-nav-item {
+    color: var(--text-muted);
+    text-decoration: none;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s;
+}
+.sub-nav-item:hover { color: var(--text); background: var(--surface2); }
+.sub-nav-item.active {
+    color: var(--accent);
+    background: var(--surface2);
+    border-bottom-color: var(--accent);
+}
+
+/* Week & Day panels */
+.week-panel { display: none; }
+.week-panel.active { display: block; }
+.day-panel { display: none; }
+.day-panel.active { display: block; }
+.tab-panel { display: none; }
+.tab-panel.active { display: block; }
+
+/* Days sub-nav (second level) */
+.sub-nav-days {
+    margin-top: -0.5rem;
+    margin-bottom: 1.5rem;
+    background: var(--surface2);
+    border-color: var(--border);
+}
+.sub-nav-days .sub-nav-item.active {
+    background: var(--surface);
+}
+
+/* Warmup / Cooldown blocks */
+.warmup-cooldown {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 1rem 1.25rem;
+    margin: 1rem 0;
+}
+.warmup-cooldown h4 {
+    font-size: 0.85rem;
+    color: var(--accent2);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    margin-bottom: 0.5rem;
+}
+.warmup-cooldown ol {
+    margin: 0 0 0 1.25rem;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+}
+.warmup-cooldown li { margin: 0.2rem 0; }
+
+/* Day prev/next nav */
+.day-nav {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border);
+}
+.day-nav a {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    transition: background 0.2s;
+}
+.day-nav a:hover { background: var(--surface2); }
+
+/* Volume bars */
+.bar-chart { margin: 1.5rem 0; }
+.bar-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+}
+.bar-label {
+    width: 160px;
+    font-size: 0.85rem;
+    text-align: right;
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+.bar-track {
+    flex: 1;
+    height: 24px;
+    background: var(--surface2);
+    border-radius: 4px;
+    overflow: hidden;
+}
+.bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent), var(--accent2));
+    border-radius: 4px;
+    transition: width 0.5s ease;
+}
+.bar-value {
+    width: 45px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
+}
+
+/* Tags */
+.tag {
+    display: inline-block;
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+.tag-primary { background: rgba(108,140,255,0.2); color: var(--accent); }
+.tag-secondary { background: rgba(78,205,196,0.2); color: var(--green); }
+.tag-tertiary { background: rgba(255,217,61,0.15); color: var(--yellow); }
+
+/* Details/Accordion */
+details.muscle-detail {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+}
+details.muscle-detail summary {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.95rem;
+}
+details.muscle-detail summary:hover { color: var(--accent); }
+details.muscle-detail .detail-table { margin: 0; }
+details.muscle-detail .detail-table td,
+details.muscle-detail .detail-table th { padding: 0.5rem 0.75rem; font-size: 0.85rem; }
+
+/* Markdown content styling */
+.md-content h1 { font-size: 1.6rem; margin: 1.5rem 0 0.75rem; color: var(--accent); }
+.md-content h2 { font-size: 1.3rem; margin: 1.5rem 0 0.75rem; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+.md-content h3 { font-size: 1.1rem; margin: 1.25rem 0 0.5rem; color: var(--text); }
+.md-content h4 { font-size: 1rem; margin: 1rem 0 0.5rem; color: var(--accent2); }
+.md-content p { margin: 0.5rem 0; color: var(--text-muted); }
+.md-content ul { margin: 0.5rem 0 0.5rem 1.5rem; }
+.md-content li { margin: 0.25rem 0; color: var(--text-muted); }
+.md-content li .sub-item { margin-left: 1rem; }
+.md-content strong { color: var(--text); }
+.md-content code { background: var(--surface2); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.85em; color: var(--accent2); }
+.md-content hr { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+.md-content blockquote {
+    border-left: 3px solid var(--accent);
+    padding: 0.5rem 1rem;
+    margin: 0.75rem 0;
+    background: var(--surface);
+    border-radius: 0 8px 8px 0;
+}
+.md-content blockquote p { color: var(--text-muted); font-style: italic; }
+.md-content table { background: var(--surface); border-radius: 8px; overflow: hidden; }
+
+.subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+h2.page-title { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text); }
+
+/* Responsive */
+@media (max-width: 768px) {
+    nav { padding: 0 1rem; flex-direction: column; gap: 0; }
+    nav .logo { padding: 0.75rem 0 0; }
+    nav .nav-links { width: 100%; }
+    nav a.nav-item { padding: 0.75rem 0.75rem; font-size: 0.8rem; }
+    .content { padding: 1rem; }
+    .cards { grid-template-columns: repeat(2, 1fr); }
+    .card .value { font-size: 1.5rem; }
+    .bar-label { width: 100px; font-size: 0.75rem; }
+    table { font-size: 0.8rem; }
+    td, th { padding: 0.4rem 0.5rem; }
+}
+</style>
+</head>
+<body>
+
+<nav>
+    <a href="dashboard.html" class="logo">GYM</a>
+    <div class="nav-links">
+        <a href="dashboard.html" class="nav-item">Dashboard</a>
+        <a href="workout.html" class="nav-item">Scheda</a>
+        <a href="volume.html" class="nav-item">Volume</a>
+        <a href="diet.html" class="nav-item">Dieta</a>
+        <a href="plan.html" class="nav-item">Piano</a>
+        <a href="feedback.html" class="nav-item active">Feedback</a>
+    </div>
+</nav>
+
+<div class="content">
+    <h2 class="page-title">Feedback Coach &mdash; 18 Marzo 2026</h2>
+<div class="sub-nav" id="feedback-nav">
+  <a href="#" class="sub-nav-item active" onclick="showTab('feedback', 'feedback-0', this); return false;">Situazione Attuale</a>
+  <a href="#" class="sub-nav-item" onclick="showTab('feedback', 'feedback-1', this); return false;">Valutazione Infortunio — Sindrome TOS</a>
+  <a href="#" class="sub-nav-item" onclick="showTab('feedback', 'feedback-2', this); return false;">Cut durante il Recupero — La Scelta Giusta</a>
+  <a href="#" class="sub-nav-item" onclick="showTab('feedback', 'feedback-3', this); return false;">Composizione Corporea</a>
+  <a href="#" class="sub-nav-item" onclick="showTab('feedback', 'feedback-4', this); return false;">Piano di Ripresa — Le Prossime 2 Settimane</a>
+  <a href="#" class="sub-nav-item" onclick="showTab('feedback', 'feedback-5', this); return false;">Aspettative Realistiche</a>
+  <a href="#" class="sub-nav-item" onclick="showTab('feedback', 'feedback-6', this); return false;">Raccomandazioni Extra</a>
+</div>
+<div id="feedback-0" class="feedback-panel tab-panel active">
+<div class="md-content"><h3>Situazione Attuale</h3>
+<p>Daniele, innanzitutto il fatto che tu abbia aspettato 3 settimane prima di riprendere &egrave; una scelta saggia. La <strong>sindrome dello stretto toracico (TOS)</strong> causata da infiammazione/contrattura del piccolo pettorale &egrave; una condizione che richiede rispetto &mdash; forzare i tempi potrebbe trasformare un problema risolvibile in una condizione cronica.</p></div>
+</div>
+<div id="feedback-1" class="feedback-panel tab-panel">
+<div class="md-content"><h3>Valutazione Infortunio &mdash; Sindrome TOS</h3>
+<p>Il piccolo pettorale, quando infiammato o contratto, comprime il fascio neurovascolare che passa sotto di esso (arteria, vena e plesso brachiale). Questo spiega il dolore durante trazioni, panca e military press &mdash; tutti movimenti che richiedono contrazione o stiramento del piccolo pettorale sotto carico.</p>
+
+<p><strong>Esercizi che DEVI evitare in questa fase:</strong></p>
+<ul>
+  <li><strong>Panca piana / inclinata / declinata</strong> &mdash; contrazione diretta del pettorale che comprime ulteriormente il piccolo pettorale</li>
+  <li><strong>Dips alle parallele</strong> &mdash; massimo stiramento del piccolo pettorale nella fase eccentrica</li>
+  <li><strong>Trazioni alla sbarra</strong> (tutte le prese) &mdash; la depressione scapolare sotto carico stressa il piccolo pettorale</li>
+  <li><strong>Military press / overhead press</strong> &mdash; la flessione della spalla oltre 90&deg; pu&ograve; comprimere lo stretto toracico</li>
+  <li><strong>Push-up</strong> &mdash; stessa meccanica della panca</li>
+  <li><strong>Croci / flyes</strong> &mdash; stiramento diretto</li>
+  <li><strong>Farmer&rsquo;s walk pesante</strong> &mdash; il carico elevato sui trapezi pu&ograve; aggravare la compressione</li>
+</ul>
+
+<p><strong>Esercizi SICURI che ho incluso nella scheda:</strong></p>
+<ul>
+  <li>Tutto il lavoro per le gambe (squat, stacco, leg press, leg curl, leg extension, bulgarian split squat)</li>
+  <li>Face pull al cavo (leggero, terapeutico &mdash; rinforza i rettrattori scapolari e aiuta a decomprimere)</li>
+  <li>Alzate laterali (non coinvolgono il piccolo pettorale)</li>
+  <li>Curl per i bicipiti (nessun coinvolgimento)</li>
+  <li>Core (plank, ab wheel, crunch ai cavi)</li>
+</ul></div>
+</div>
+<div id="feedback-2" class="feedback-panel tab-panel">
+<div class="md-content"><h3>Cut durante il Recupero &mdash; La Scelta Giusta</h3>
+<p>La tua idea di continuare il cut &egrave; <strong>corretta e la appoggio pienamente</strong>. Ecco perch&eacute;:</p>
+<ul>
+  <li>Con il 17.1% di body fat, non sei nella condizione ideale per un bulk efficiente. Un bulk sopra il 15% tende ad accumulare pi&ugrave; grasso che muscolo.</li>
+  <li>Durante il recupero dall&rsquo;infortunio, non puoi allenarti a piena intensit&agrave; &mdash; il surplus calorico non verrebbe sfruttato per la crescita muscolare ma andrebbe in gran parte a deposito adiposo.</li>
+  <li>Obiettivo realistico: scendere al <strong>14-15%</strong> nelle prossime 6-8 settimane, poi valutare se continuare verso il 13% o iniziare un lean bulk controllato.</li>
+  <li>Ho impostato un deficit moderato di <strong>350 kcal</strong> (circa 2335 kcal/giorno) per preservare la massa magra durante la fase di recupero.</li>
+</ul></div>
+</div>
+<div id="feedback-3" class="feedback-panel tab-panel">
+<div class="md-content"><h3>Composizione Corporea</h3>
+<table>
+  <tr><th>Parametro</th><th>Valore</th></tr>
+  <tr><td>Peso</td><td>87.2 kg</td></tr>
+  <tr><td>Body Fat %</td><td>17.1% (US Navy)</td></tr>
+  <tr><td>Massa grassa</td><td>14.9 kg</td></tr>
+  <tr><td>Massa magra</td><td>72.3 kg</td></tr>
+  <tr><td>FFMI</td><td>20.5 (adjusted: 20.0)</td></tr>
+  <tr><td>BMR</td><td>1852 kcal</td></tr>
+  <tr><td>TDEE (att. 1.45)</td><td>2685 kcal</td></tr>
+</table>
+<p>Il FFMI di 20.5 indica un buon livello di massa muscolare per un natural. C&rsquo;&egrave; ancora ampio margine di crescita verso il target di 95 kg con BF &le;13%.</p></div>
+</div>
+<div id="feedback-4" class="feedback-panel tab-panel">
+<div class="md-content"><h3>Piano di Ripresa &mdash; Le Prossime 2 Settimane</h3>
+<p>Ho strutturato un mesociclo di <strong>2 settimane a 3 giorni/settimana</strong> con queste priorit&agrave;:</p>
+<ol>
+  <li><strong>Zero rischio per il TOS</strong> &mdash; nessun esercizio che coinvolga il piccolo pettorale</li>
+  <li><strong>Mantenimento della forza nelle gambe</strong> &mdash; squat e stacco a RPE contenuto (6-7)</li>
+  <li><strong>Lavoro terapeutico</strong> &mdash; face pull e mobilit&agrave; scapolare per aiutare la guarigione</li>
+  <li><strong>Test day ridotto</strong> &mdash; solo Squat e Stacco nell&rsquo;ultimo giorno, la Panca viene saltata</li>
+</ol>
+<p>RPE 6 significa: potresti fare altre 4 ripetizioni. Non cercare il cedimento. L&rsquo;obiettivo &egrave; muovere il corpo, riattivare i pattern motori e non perdere troppa forza nelle gambe.</p></div>
+</div>
+<div id="feedback-5" class="feedback-panel tab-panel">
+<div class="md-content"><h3>Aspettative Realistiche</h3>
+<ul>
+  <li>Dopo 3 settimane di stop, aspettati un calo del 5-10% sui massimali. &Egrave; normale e si recupera in 2-4 settimane.</li>
+  <li>Il test day a fine mesociclo servir&agrave; per stabilire i nuovi massimali di partenza post-infortunio.</li>
+  <li>Se durante qualsiasi esercizio senti formicolio, intorpidimento o dolore irradiato al braccio &mdash; <strong>fermati immediatamente</strong> e segnalalo.</li>
+  <li>Se il TOS migliora, nella prossima iterazione reintrodurremo gradualmente rematore e trazioni presa neutra.</li>
+</ul></div>
+</div>
+<div id="feedback-6" class="feedback-panel tab-panel">
+<div class="md-content"><h3>Raccomandazioni Extra</h3>
+<ul>
+  <li><strong>Stretching del piccolo pettorale</strong>: 2-3 volte al giorno, 30 secondi per lato, con braccio a 90&deg; contro una porta. Delicato, senza dolore.</li>
+  <li><strong>Mobilit&agrave; toracica</strong>: foam roller sulla zona dorsale, 2 minuti prima di ogni allenamento.</li>
+  <li><strong>Postura</strong>: attenzione alla postura durante il lavoro &mdash; spalle retratte, evita la protrazione prolungata.</li>
+  <li><strong>Sonno</strong>: mantieni le 8 ore. Il recupero tissutale avviene principalmente durante il sonno profondo.</li>
+</ul></div>
+</div>
+
+<script>
+function showTab(pageId, tabId, link) {
+    document.querySelectorAll('.' + pageId + '-panel').forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('#' + pageId + '-nav .sub-nav-item').forEach(function(a) { a.classList.remove('active'); });
+    var el = document.getElementById(tabId);
+    if (el) el.classList.add('active');
+    if (link) link.classList.add('active');
+}
+</script>
+
+</div>
+
+</body>
+</html>

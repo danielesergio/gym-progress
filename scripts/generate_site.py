@@ -1,42 +1,27 @@
 #!/usr/bin/env python3
 """
-Genera un sito HTML statico multi-pagina.
+Genera il sito HTML statico (shell con JS rendering).
 
-Legge frammenti HTML e dati JSON da data/output/, li assembla con il
-template base da scripts/templates/base.html, e genera pagine separate
-in data/output/site/.
+Le pagine HTML caricano i dati da docs/data/*.json via fetch() e li
+renderizzano client-side. I dati vengono aggiornati separatamente da
+generate_data.py, che deve essere eseguito ad ogni iterazione.
 
-La pagina workout viene generata interamente da workout_data.json.
+Questo script deve essere eseguito solo quando:
+  - Il sito non esiste ancora (prima generazione)
+  - La struttura HTML/CSS/JS cambia (raro)
 
 Uso:
     python scripts/generate_site.py
-    python scripts/generate_site.py --outdir data/output/site
+    python scripts/generate_site.py --outdir docs
+    python scripts/generate_site.py --force   # rigenera anche se gia' esiste
 """
 
 import argparse
-import json
 import os
-import re
+import subprocess
 import sys
-import glob as globmod
-from html import escape
 
-sys.path.insert(0, os.path.dirname(__file__))
-from volume_calc import EXERCISE_MUSCLES
-
-
-# ---------------------------------------------------------------------------
-# I/O
-# ---------------------------------------------------------------------------
-
-def read_file(path: str) -> str:
-    with open(path, "r", encoding="utf-8") as f:
-        return f.read()
-
-
-def read_json(path: str):
-    with open(path, "r", encoding="utf-8") as f:
-        return json.load(f)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 def write_file(path: str, content: str):
@@ -45,22 +30,148 @@ def write_file(path: str, content: str):
         f.write(content)
 
 
-def latest_file(directory: str, prefix: str, ext: str = ".html") -> str | None:
-    """Trova il file piu' recente con il prefisso dato, cercando sia nella
-    root di output che nelle sottocartelle history/YYYY/."""
-    pattern_root = os.path.join(directory, f"{prefix}_*{ext}")
-    pattern_history = os.path.join(directory, "history", "**", f"{prefix}_*{ext}")
-    files = sorted(globmod.glob(pattern_root) + globmod.glob(pattern_history, recursive=True))
-    return files[-1] if files else None
+# ---------------------------------------------------------------------------
+# CSS (shared)
+# ---------------------------------------------------------------------------
 
-
-def esc(text) -> str:
-    """Escape HTML but keep it readable."""
-    return escape(str(text)) if text else "&mdash;"
+CSS = """
+:root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #232734;
+    --border: #2d3142;
+    --text: #e4e6ed;
+    --text-muted: #8b8fa3;
+    --accent: #6c8cff;
+    --accent2: #4ecdc4;
+    --green: #4ecdc4;
+    --yellow: #ffd93d;
+    --red: #ff6b6b;
+    --orange: #ffa94d;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+nav .logo {
+    font-weight: 700; font-size: 1.25rem; color: var(--accent);
+    padding: 1rem 0; white-space: nowrap; text-decoration: none;
+}
+nav .nav-links { display: flex; gap: 0; overflow-x: auto; }
+nav a.nav-item {
+    color: var(--text-muted); text-decoration: none;
+    padding: 1rem 1.25rem; font-size: 0.9rem; font-weight: 500;
+    border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap;
+}
+nav a.nav-item:hover { color: var(--text); }
+nav a.nav-item.active { color: var(--accent); border-bottom-color: var(--accent); }
+.content { padding: 2rem; max-width: 1400px; margin: 0 auto; width: 100%; }
+.cards {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem; margin-bottom: 2rem;
+}
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+.card .label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
+.card .value { font-size: 2rem; font-weight: 700; color: var(--text); }
+.card .value .unit { font-size: 0.9rem; color: var(--text-muted); font-weight: 400; }
+.card .sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+.card.accent { border-color: var(--accent); }
+.card.green { border-color: var(--green); }
+.table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; min-width: 480px; }
+th { background: var(--surface2); color: var(--text-muted); text-align: left; padding: 0.75rem 1rem; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1px solid var(--border); }
+td { padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); }
+tr:hover { background: var(--surface); }
+tr.total-row { font-weight: 700; background: var(--surface2); }
+.sub-nav { display: flex; gap: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin-bottom: 1.5rem; }
+.sub-nav-item { color: var(--text-muted); text-decoration: none; padding: 0.75rem 1.25rem; font-size: 0.85rem; font-weight: 500; white-space: nowrap; border-bottom: 2px solid transparent; transition: all 0.2s; cursor: pointer; }
+.sub-nav-item:hover { color: var(--text); background: var(--surface2); }
+.sub-nav-item.active { color: var(--accent); background: var(--surface2); border-bottom-color: var(--accent); }
+.panel { display: none; }
+.panel.active { display: block; }
+.sub-nav-days { margin-top: -0.5rem; margin-bottom: 1.5rem; background: var(--surface2); border-color: var(--border); }
+.sub-nav-days .sub-nav-item.active { background: var(--surface); }
+.warmup-cooldown { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; margin: 1rem 0; }
+.warmup-cooldown h4 { font-size: 0.85rem; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 0.5rem; }
+.warmup-cooldown ol { margin: 0 0 0 1.25rem; color: var(--text-muted); font-size: 0.9rem; }
+.warmup-cooldown li { margin: 0.2rem 0; }
+.day-nav { display: flex; justify-content: space-between; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+.day-nav a { color: var(--accent); text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 0.5rem 1rem; border-radius: 6px; transition: background 0.2s; cursor: pointer; }
+.day-nav a:hover { background: var(--surface2); }
+.bar-chart { margin: 1.5rem 0; }
+.bar-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+.bar-label { width: 160px; font-size: 0.85rem; text-align: right; color: var(--text-muted); flex-shrink: 0; }
+.bar-track { flex: 1; height: 24px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 4px; transition: width 0.5s ease; }
+.bar-value { width: 45px; font-size: 0.85rem; font-weight: 600; color: var(--text); }
+.tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+.tag-primary { background: rgba(108,140,255,0.2); color: var(--accent); }
+.tag-secondary { background: rgba(78,205,196,0.2); color: var(--green); }
+.tag-tertiary { background: rgba(255,217,61,0.15); color: var(--yellow); }
+details.muscle-detail { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0.5rem; }
+details.muscle-detail summary { padding: 0.75rem 1rem; cursor: pointer; font-weight: 600; font-size: 0.95rem; }
+details.muscle-detail summary:hover { color: var(--accent); }
+details.muscle-detail .detail-table { margin: 0; }
+details.muscle-detail .detail-table td, details.muscle-detail .detail-table th { padding: 0.5rem 0.75rem; font-size: 0.85rem; }
+.md-content h1 { font-size: 1.6rem; margin: 1.5rem 0 0.75rem; color: var(--accent); }
+.md-content h2 { font-size: 1.3rem; margin: 1.5rem 0 0.75rem; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+.md-content h3 { font-size: 1.1rem; margin: 1.25rem 0 0.5rem; color: var(--text); }
+.md-content h4 { font-size: 1rem; margin: 1rem 0 0.5rem; color: var(--accent2); }
+.md-content p { margin: 0.5rem 0; color: var(--text-muted); }
+.md-content ul { margin: 0.5rem 0 0.5rem 1.5rem; }
+.md-content li { margin: 0.25rem 0; color: var(--text-muted); }
+.md-content strong { color: var(--text); }
+.md-content code { background: var(--surface2); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.85em; color: var(--accent2); }
+.md-content hr { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+.md-content .table-wrap { margin: 1rem 0; }
+.md-content table { background: var(--surface); border-radius: 8px; overflow: hidden; }
+.subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+h2.page-title { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text); }
+.loading { color: var(--text-muted); padding: 2rem 0; }
+@media (min-width: 1400px) { .content { max-width: 1600px; } .cards { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 768px) {
+    nav { padding: 0 1rem; flex-direction: column; gap: 0; }
+    nav .logo { padding: 0.75rem 0 0; }
+    nav .nav-links { width: 100%; }
+    nav a.nav-item { padding: 0.75rem 0.75rem; font-size: 0.8rem; }
+    .content { padding: 1rem; }
+    .cards { grid-template-columns: repeat(2, 1fr); }
+    .card .value { font-size: 1.5rem; }
+    .bar-label { width: 110px; font-size: 0.78rem; }
+    table { font-size: 0.8rem; }
+    td, th { padding: 0.4rem 0.5rem; }
+}
+@media (max-width: 480px) {
+    nav { padding: 0 0.5rem; }
+    nav a.nav-item { padding: 0.6rem 0.5rem; font-size: 0.75rem; }
+    .content { padding: 0.75rem; }
+    .cards { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .card { padding: 1rem; }
+    .card .value { font-size: 1.25rem; }
+    h2.page-title { font-size: 1.2rem; margin-bottom: 1rem; }
+    .bar-label { width: 80px; font-size: 0.7rem; }
+    .sub-nav-item { padding: 0.6rem 0.75rem; font-size: 0.78rem; }
+}
+"""
 
 
 # ---------------------------------------------------------------------------
-# Template
+# Base HTML wrapper
 # ---------------------------------------------------------------------------
 
 PAGES = [
@@ -81,639 +192,638 @@ def build_nav(active_id: str) -> str:
     return "\n        ".join(items)
 
 
-def render_page(template: str, title: str, active_id: str, content: str) -> str:
-    html = template.replace("{{title}}", title)
-    html = html.replace("{{nav}}", build_nav(active_id))
-    html = html.replace("{{content}}", content)
-    return html
+def page_html(title: str, active_id: str, body_script: str) -> str:
+    nav = build_nav(active_id)
+    return f"""<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{title} — GYM</title>
+<style>{CSS}</style>
+</head>
+<body>
+<nav>
+    <a href="dashboard.html" class="logo">GYM</a>
+    <div class="nav-links">
+        {nav}
+    </div>
+</nav>
+<div class="content" id="main-content">
+    <p class="loading">Caricamento...</p>
+</div>
+{body_script}
+</body>
+</html>"""
 
 
 # ---------------------------------------------------------------------------
-# Dashboard
+# Shared JS utilities (injected in every page)
 # ---------------------------------------------------------------------------
 
-def _card(label: str, value: str, unit: str, sub: str, extra_cls: str = "") -> str:
-    cls = f" {extra_cls}" if extra_cls else ""
-    unit_html = f' <span class="unit">{unit}</span>' if unit else ""
-    return (
-        f'<div class="card{cls}">'
-        f'<div class="label">{label}</div>'
-        f'<div class="value">{value}{unit_html}</div>'
-        f'<div class="sub">{sub}</div>'
-        f'</div>\n'
-    )
-
-
-def build_dashboard(measurements: list[dict]) -> str:
-    last = measurements[-1] if measurements else {}
-    peso = last.get("peso_kg", "-")
-    bf = last.get("body_fat_pct", "-")
-    bf_str = f"{bf}%" if bf != "-" else "-"
-    squat = last.get("squat_1rm", "-")
-    panca = last.get("panca_1rm", "-")
-    stacco = last.get("stacco_1rm", "-")
-    ffmi_adj = last.get("ffmi_adj", "-")
-    tdee = last.get("tdee_kcal", 2871)
-
-    try:
-        total = int(squat) + int(panca) + int(stacco)
-    except (ValueError, TypeError):
-        total = 0
-
-    html = '<h2 class="page-title">Dashboard</h2>\n'
-    html += '<div class="cards">\n'
-    html += _card("Peso", str(peso), "kg", "Target: 95 kg", "accent")
-    html += _card("Body Fat", bf_str, "", "Target: &le;13%")
-    html += _card("Totale PL", str(total), "kg", "Target: 600 kg", "green")
-    html += _card("FFMI adj", str(ffmi_adj), "", "Limite naturale ~25")
-    html += '</div>\n<div class="cards">\n'
-    html += _card("Squat", str(squat), "kg", "Target: 200 kg")
-    html += _card("Panca", str(panca), "kg", "Target: 150 kg")
-    html += _card("Stacco", str(stacco), "kg", "Target: 250 kg")
-    html += _card("Calorie target", str(tdee + 300), "kcal", f"TDEE {tdee} + surplus 300")
-    html += '</div>\n'
-
-    if measurements:
-        # --- Grafico massimali ---
-        html += '<h3 style="margin:1.5rem 0 .75rem">Andamento Massimali</h3>\n'
-        html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem;">\n'
-        html += '  <canvas id="chart-massimali" height="110"></canvas>\n'
-        html += '</div>\n'
-
-        # Prepara dati per Chart.js
-        labels = []
-        squat_data = []
-        panca_data = []
-        stacco_data = []
-        totale_data = []
-        for m in measurements:
-            data = m.get("data", "")
-            eta = m.get("eta", "")
-            peso_m = m.get("peso_kg", "")
-            if eta and peso_m:
-                label = [data, f"{eta}a / {peso_m}kg"]
-            else:
-                label = [data]
-            labels.append(label)
-            sq = m.get("squat_1rm") or 0
-            pa = m.get("panca_1rm") or 0
-            st = m.get("stacco_1rm") or 0
-            squat_data.append(sq)
-            panca_data.append(pa)
-            stacco_data.append(st)
-            totale_data.append(sq + pa + st)
-
-        max_single = max(max(squat_data), max(panca_data), max(stacco_data))
-        max_totale = max(totale_data)
-        y_max = max_single + 100
-        y1_max = max_totale + 100
-
-        labels_js = json.dumps(labels)
-        squat_js = json.dumps(squat_data)
-        panca_js = json.dumps(panca_data)
-        stacco_js = json.dumps(stacco_data)
-        totale_js = json.dumps(totale_data)
-
-        html += '<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>\n'
-        html += f"""<script>
-document.addEventListener('DOMContentLoaded', function() {{
-    var ctx = document.getElementById('chart-massimali').getContext('2d');
-    new Chart(ctx, {{
-        type: 'bar',
-        data: {{
-            labels: {labels_js},
-            datasets: [
-                {{
-                    label: 'Squat',
-                    data: {squat_js},
-                    backgroundColor: 'rgba(108,140,255,0.7)',
-                    borderColor: 'rgba(108,140,255,1)',
-                    borderWidth: 1,
-                    borderRadius: 4,
-                    order: 2
-                }},
-                {{
-                    label: 'Panca',
-                    data: {panca_js},
-                    backgroundColor: 'rgba(78,205,196,0.7)',
-                    borderColor: 'rgba(78,205,196,1)',
-                    borderWidth: 1,
-                    borderRadius: 4,
-                    order: 2
-                }},
-                {{
-                    label: 'Stacco',
-                    data: {stacco_js},
-                    backgroundColor: 'rgba(255,169,77,0.7)',
-                    borderColor: 'rgba(255,169,77,1)',
-                    borderWidth: 1,
-                    borderRadius: 4,
-                    order: 2
-                }},
-                {{
-                    label: 'Totale',
-                    data: {totale_js},
-                    type: 'line',
-                    borderColor: 'rgba(255,217,61,0.8)',
-                    backgroundColor: 'rgba(255,217,61,0.1)',
-                    borderWidth: 2,
-                    pointRadius: 4,
-                    pointBackgroundColor: 'rgba(255,217,61,1)',
-                    fill: false,
-                    yAxisID: 'y1',
-                    order: 1
-                }}
-            ]
-        }},
-        options: {{
-            responsive: true,
-            interaction: {{ mode: 'index', intersect: false }},
-            plugins: {{
-                legend: {{
-                    labels: {{ color: '#8b8fa3', font: {{ size: 12 }} }}
-                }},
-                tooltip: {{
-                    callbacks: {{
-                        label: function(ctx) {{ return ctx.dataset.label + ': ' + ctx.parsed.y + ' kg'; }}
-                    }}
-                }}
-            }},
-            datasets: {{
-                bar: {{
-                    barPercentage: 0.6,
-                    categoryPercentage: 0.5
-                }}
-            }},
-            scales: {{
-                x: {{
-                    ticks: {{
-                        color: '#8b8fa3',
-                        font: {{ size: 11 }},
-                        maxRotation: 0
-                    }},
-                    grid: {{ color: 'rgba(45,49,66,0.5)' }}
-                }},
-                y: {{
-                    position: 'left',
-                    title: {{ display: true, text: 'Massimale (kg)', color: '#8b8fa3' }},
-                    ticks: {{ color: '#8b8fa3' }},
-                    grid: {{ color: 'rgba(45,49,66,0.5)' }},
-                    beginAtZero: true,
-                    max: {y_max}
-                }},
-                y1: {{
-                    position: 'right',
-                    title: {{ display: true, text: 'Totale (kg)', color: '#8b8fa3' }},
-                    ticks: {{ color: 'rgba(255,217,61,0.8)' }},
-                    grid: {{ drawOnChartArea: false }},
-                    beginAtZero: true,
-                    max: {y1_max}
-                }}
-            }}
-        }}
-    }});
-}});
-</script>
-"""
-
-        # --- Tabella storico ---
-        cols = [
-            ("Data", "data"), ("Peso", "peso_kg"), ("BF%", "body_fat_pct"),
-            ("Massa magra", "massa_magra_kg"), ("FFMI adj", "ffmi_adj"),
-            ("Squat", "squat_1rm"), ("Panca", "panca_1rm"), ("Stacco", "stacco_1rm"),
-            ("Note", "note"),
-        ]
-        html += '<h3 style="margin:1.5rem 0 .75rem">Storico misurazioni</h3>\n'
-        html += '<div class="table-wrap">\n<table><thead><tr>'
-        for label, _ in cols:
-            html += f'<th>{label}</th>'
-        html += '</tr></thead><tbody>\n'
-        for row in measurements:
-            html += '<tr>'
-            for _, key in cols:
-                val = row.get(key, "")
-                if key == "body_fat_pct" and val:
-                    val = f"{val}%"
-                html += f'<td>{val}</td>'
-            html += '</tr>\n'
-        html += '</tbody></table>\n</div>\n'
-
-    return html
-
-
-# ---------------------------------------------------------------------------
-# Workout (generata interamente da workout_data.json)
-# ---------------------------------------------------------------------------
-
-def _warmup_html(items: list[str]) -> str:
-    html = '<div class="warmup-cooldown">\n'
-    html += '<h4>Riscaldamento generale (~10 min)</h4>\n<ol>\n'
-    for item in items:
-        html += f'  <li>{esc(item)}</li>\n'
-    html += '</ol>\n</div>\n'
-    return html
-
-
-def _cooldown_html(items: list[str]) -> str:
-    html = '<div class="warmup-cooldown">\n'
-    html += '<h4>Defaticamento (~5-10 min)</h4>\n<ol>\n'
-    for item in items:
-        html += f'  <li>{esc(item)}</li>\n'
-    html += '</ol>\n</div>\n'
-    return html
-
-
-def _exercise_table(esercizi: list[dict]) -> str:
-    html = '<div class="table-wrap">\n<table>\n<thead><tr>'
-    html += '<th>#</th><th>Esercizio</th><th>Serie x Reps</th>'
-    html += '<th>Peso / Intensita</th><th>Recupero</th><th>Gruppo</th>'
-    html += '</tr></thead>\n<tbody>\n'
-    for i, ex in enumerate(esercizi, 1):
-        nome = ex["nome"]
-        if ex.get("principale"):
-            nome = f'<strong>{esc(nome)}</strong>'
-        else:
-            nome = esc(nome)
-        html += f'<tr><td>{i}</td><td>{nome}</td>'
-        html += f'<td>{esc(ex.get("reps", ""))}</td>'
-        html += f'<td>{esc(ex.get("peso", ""))}</td>'
-        html += f'<td>{esc(ex.get("recupero", ""))}</td>'
-        html += f'<td>{esc(ex.get("gruppo", ""))}</td></tr>\n'
-    html += '</tbody>\n</table>\n</div>\n'
-    return html
-
-
-def _test_day_html(giorno: dict, warmup: str, cooldown: str) -> str:
-    """Genera l'HTML per un giorno di test."""
-    html = warmup
-    info = giorno.get("info_test", {})
-    html += f'<h3>{esc(giorno["nome"])}</h3>\n'
-    if info:
-        html += f'<p><strong>Tipo di test</strong>: {esc(info.get("tipo", ""))}</p>\n'
-        html += f'<p><strong>Ordine</strong>: {esc(info.get("ordine", ""))}</p>\n'
-        html += f'<p><strong>Formula</strong>: <code>{esc(info.get("formula", ""))}</code></p>\n'
-        regole = info.get("regole", [])
-        if regole:
-            html += '<h4>Regole generali</h4>\n<ul>\n'
-            for r in regole:
-                html += f'  <li>{esc(r)}</li>\n'
-            html += '</ul>\n'
-    for proto in giorno.get("protocolli", []):
-        html += f'<h4>Protocollo {esc(proto["nome"])} ({esc(proto.get("target", ""))})</h4>\n'
-        html += '<div class="table-wrap">\n<table>\n<thead><tr><th>Set</th><th>Peso</th><th>Reps</th><th>Note</th></tr></thead>\n<tbody>\n'
-        for s in proto.get("serie", []):
-            if s.get("tentativo"):
-                html += f'<tr><td><strong>{esc(s["set"])}</strong></td><td><strong>{esc(s["peso"])}</strong></td>'
-                html += f'<td><strong>{s["reps"]}</strong></td><td>{esc(s.get("note", ""))}</td></tr>\n'
-            else:
-                html += f'<tr><td>{esc(s["set"])}</td><td>{esc(s["peso"])}</td>'
-                html += f'<td>{s["reps"]}</td><td>{esc(s.get("note", ""))}</td></tr>\n'
-        html += '</tbody>\n</table>\n</div>\n'
-    html += cooldown
-    return html
-
-
-def build_workout(data: dict) -> str:
-    """Genera l'intera pagina workout dal JSON, con tab settimane e sub-tab giorni."""
-    settimane = data.get("settimane", [])
-    warmup = _warmup_html(data.get("riscaldamento", []))
-    cooldown = _cooldown_html(data.get("defaticamento", []))
-    meso = data.get("mesociclo", {})
-
-    html = f'<h2 class="page-title">Scheda di Allenamento &mdash; {esc(data.get("data", ""))}</h2>\n'
-
-    # --- Tab settimane (livello 1) ---
-    html += '<div class="sub-nav" id="week-nav">\n'
-    html += '  <a href="#" class="sub-nav-item active" onclick="showWeek(\'info\', this); return false;">Info</a>\n'
-    for sett in settimane:
-        sid = sett["id"]
-        label = sett["nome"]
-        html += f'  <a href="#" class="sub-nav-item" onclick="showWeek(\'{sid}\', this); return false;">{esc(label)}</a>\n'
-    html += '</div>\n'
-
-    # === Panel INFO ===
-    html += '<div id="week-info" class="week-panel active">\n'
-    html += f'<h2>{esc(meso.get("nome", ""))}</h2>\n<ul>\n'
-    html += f'  <li><strong>Durata</strong>: {esc(meso.get("durata", ""))}</li>\n'
-    html += f'  <li><strong>Metodologia</strong>: {esc(meso.get("metodologia", ""))}</li>\n'
-    html += f'  <li><strong>Frequenza</strong>: {esc(meso.get("frequenza", ""))}</li>\n'
-    html += f'  <li><strong>Obiettivo</strong>: {esc(meso.get("obiettivo", ""))}</li>\n'
-    html += '</ul>\n'
-    logica = meso.get("logica", [])
-    if logica:
-        html += '<h3>Logica del programma</h3>\n<ul>\n'
-        for l in logica:
-            html += f'  <li>{esc(l)}</li>\n'
-        html += '</ul>\n'
-    notes = data.get("note", [])
-    if notes:
-        html += '<h3>Note importanti</h3>\n<ul>\n'
-        for n in notes:
-            html += f'  <li>{esc(n)}</li>\n'
-        html += '</ul>\n'
-    html += '</div>\n'
-
-    # === Panels per ogni settimana ===
-    for sett in settimane:
-        sid = sett["id"]
-        giorni = sett.get("giorni", [])
-        progressione = sett.get("progressione")
-
-        html += f'<div id="week-{sid}" class="week-panel">\n'
-        html += f'<h2>{esc(sett["nome"])}: {esc(sett.get("descrizione", ""))}</h2>\n'
-
-        # Sub-tab giorni (livello 2) — solo se piu' di un giorno
-        if len(giorni) > 1:
-            html += f'<div class="sub-nav sub-nav-days" id="day-nav-{sid}">\n'
-            for i, g in enumerate(giorni):
-                active = " active" if i == 0 else ""
-                html += f'  <a href="#" class="sub-nav-item{active}" '
-                html += f'onclick="showDay(\'{sid}\', \'{g["id"]}\', this); return false;">Giorno {esc(g["id"])}</a>\n'
-            html += '</div>\n'
-
-        # Panels per ogni giorno
-        for i, giorno in enumerate(giorni):
-            gid = giorno["id"]
-            active = " active" if i == 0 else ""
-            html += f'<div id="day-{sid}-{gid}" class="day-panel{active}">\n'
-
-            # Giorno di test?
-            if giorno.get("protocolli"):
-                html += _test_day_html(giorno, warmup, cooldown)
-            else:
-                # Giorno normale: riscaldamento + esercizi + defaticamento
-                html += warmup
-                html += f'<h3>{esc(giorno["nome"])}</h3>\n'
-                html += _exercise_table(giorno.get("esercizi", []))
-                html += cooldown
-
-            # Navigazione prev/next
-            if len(giorni) > 1:
-                html += '<div class="day-nav">\n'
-                if i > 0:
-                    prev = giorni[i - 1]
-                    html += f'  <a href="#" onclick="showDay(\'{sid}\', \'{prev["id"]}\', '
-                    html += f'document.querySelector(\'#day-nav-{sid} [onclick*={prev["id"]}]\')); return false;">'
-                    html += f'&larr; Giorno {esc(prev["id"])}</a>\n'
-                else:
-                    html += '  <span></span>\n'
-                if i < len(giorni) - 1:
-                    nxt = giorni[i + 1]
-                    html += f'  <a href="#" onclick="showDay(\'{sid}\', \'{nxt["id"]}\', '
-                    html += f'document.querySelector(\'#day-nav-{sid} [onclick*={nxt["id"]}]\')); return false;">'
-                    html += f'Giorno {esc(nxt["id"])} &rarr;</a>\n'
-                else:
-                    html += '  <span></span>\n'
-                html += '</div>\n'
-
-            html += '</div>\n'  # day-panel
-
-        # Tabella progressione (se presente)
-        if progressione:
-            tab = progressione.get("tabella", [])
-            if tab:
-                html += '<hr>\n<h3>Progressione settimanale (top set)</h3>\n'
-                # Colonne dinamiche dalla prima riga
-                cols = [k for k in tab[0].keys() if k != "esercizio"]
-                html += '<div class="table-wrap">\n<table>\n<thead><tr><th>Esercizio</th>'
-                for c in cols:
-                    html += f'<th>{esc(c)}</th>'
-                html += '</tr></thead>\n<tbody>\n'
-                for row in tab:
-                    html += f'<tr><td>{esc(row["esercizio"])}</td>'
-                    for c in cols:
-                        html += f'<td>{esc(row.get(c, ""))}</td>'
-                    html += '</tr>\n'
-                html += '</tbody>\n</table>\n</div>\n'
-                nota = progressione.get("nota", "")
-                if nota:
-                    html += f'<blockquote><p>{esc(nota)}</p></blockquote>\n'
-
-        html += '</div>\n'  # week-panel
-
-    # JavaScript per la navigazione
-    html += """
+SHARED_JS = """
 <script>
-function showWeek(id, link) {
-    document.querySelectorAll('.week-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('#week-nav .sub-nav-item').forEach(a => a.classList.remove('active'));
-    var el = document.getElementById('week-' + id);
-    if (el) el.classList.add('active');
-    if (link) link.classList.add('active');
+function esc(s) {
+    if (s == null) return '&mdash;';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
-
-function showDay(weekId, dayId, link) {
-    var parent = document.getElementById('week-' + weekId);
-    if (!parent) return;
-    parent.querySelectorAll('.day-panel').forEach(p => p.classList.remove('active'));
-    var navContainer = document.getElementById('day-nav-' + weekId);
-    if (navContainer) navContainer.querySelectorAll('.sub-nav-item').forEach(a => a.classList.remove('active'));
-    var dayEl = document.getElementById('day-' + weekId + '-' + dayId);
-    if (dayEl) dayEl.classList.add('active');
-    if (link) link.classList.add('active');
+function card(label, value, unit, sub, extraCls) {
+    var cls = 'card' + (extraCls ? ' ' + extraCls : '');
+    var unitHtml = unit ? ' <span class="unit">' + esc(unit) + '</span>' : '';
+    return '<div class="' + cls + '">'
+        + '<div class="label">' + esc(label) + '</div>'
+        + '<div class="value">' + esc(value) + unitHtml + '</div>'
+        + '<div class="sub">' + sub + '</div>'
+        + '</div>';
 }
-</script>
-"""
-    return html
-
-
-# ---------------------------------------------------------------------------
-# Volume
-# ---------------------------------------------------------------------------
-
-def match_exercise(name: str) -> dict | None:
-    name_lower = name.lower().strip()
-    if name_lower in EXERCISE_MUSCLES:
-        return EXERCISE_MUSCLES[name_lower]
-    for key, muscles in EXERCISE_MUSCLES.items():
-        if key in name_lower or name_lower in key:
-            return muscles
-    return None
-
-
-def build_volume(workout_data: dict) -> str:
-    volume: dict[str, dict] = {}
-    unmatched = []
-
-    # Usa solo la prima settimana (struttura principale) per il conteggio volume
-    settimane = workout_data.get("settimane", [])
-    main_week = settimane[0] if settimane else {}
-
-    for giorno in main_week.get("giorni", []):
-        day_label = f"Giorno {giorno['id']}"
-        for ex in giorno.get("esercizi", []):
-            muscles = match_exercise(ex["nome"])
-            if muscles is None:
-                unmatched.append(ex["nome"])
-                continue
-            sets = ex["serie"]
-            for role, weight in [("principale", 1.0), ("secondario", 0.5), ("terziario", 0.3)]:
-                for muscle in muscles.get(role, []):
-                    if muscle not in volume:
-                        volume[muscle] = {"serie_pesate": 0, "dettaglio": []}
-                    volume[muscle]["serie_pesate"] += round(sets * weight, 1)
-                    volume[muscle]["dettaglio"].append({
-                        "esercizio": ex["nome"],
-                        "giorno": day_label,
-                        "serie": sets,
-                        "ruolo": role,
-                        "peso": weight,
-                        "contributo": round(sets * weight, 1),
-                    })
-
-    for m in volume:
-        volume[m]["serie_pesate"] = round(volume[m]["serie_pesate"], 1)
-
-    sorted_muscles = sorted(volume.items(), key=lambda x: x[1]["serie_pesate"], reverse=True)
-    max_val = sorted_muscles[0][1]["serie_pesate"] if sorted_muscles else 1
-
-    html = '<h2 class="page-title">Volume per Distretto Muscolare</h2>\n'
-    html += '<h3>Serie pesate per distretto muscolare</h3>\n'
-    html += '<p class="subtitle">Principale = 1.0 | Secondario = 0.5 | Terziario = 0.3</p>\n'
-    html += '<div class="bar-chart">\n'
-    for muscle, data in sorted_muscles:
-        pct = (data["serie_pesate"] / max_val) * 100
-        html += (
-            f'<div class="bar-row">'
-            f'<span class="bar-label">{muscle}</span>'
-            f'<div class="bar-track"><div class="bar-fill" style="width:{pct:.0f}%"></div></div>'
-            f'<span class="bar-value">{data["serie_pesate"]}</span>'
-            f'</div>\n'
-        )
-    html += '</div>\n'
-
-    html += '<h3>Dettaglio per distretto</h3>\n'
-    for muscle, data in sorted_muscles:
-        html += '<details class="muscle-detail">\n'
-        html += f'<summary>{muscle.capitalize()} &mdash; {data["serie_pesate"]} serie pesate</summary>\n'
-        html += '<div class="table-wrap">\n<table class="detail-table"><thead><tr><th>Ruolo</th><th>Esercizio</th><th>Giorno</th><th>Serie</th><th>Peso</th><th>Contributo</th></tr></thead><tbody>\n'
-        for d in data["dettaglio"]:
-            tag = {"principale": "P", "secondario": "S", "terziario": "T"}[d["ruolo"]]
-            tag_cls = {"P": "tag-primary", "S": "tag-secondary", "T": "tag-tertiary"}[tag]
-            html += (
-                f'<tr><td><span class="tag {tag_cls}">{tag}</span></td>'
-                f'<td>{d["esercizio"]}</td><td>{d["giorno"]}</td>'
-                f'<td>{d["serie"]}</td><td>{d["peso"]}</td><td>{d["contributo"]}</td></tr>\n'
-            )
-        html += '</tbody></table>\n</div>\n</details>\n'
-
-    if unmatched:
-        html += '<p class="subtitle" style="margin-top:1rem">Esercizi non mappati: ' + ', '.join(set(unmatched)) + '</p>\n'
-
-    return html
-
-
-# ---------------------------------------------------------------------------
-# Tabbed content (generic: diet, feedback, plan)
-# ---------------------------------------------------------------------------
-
-def _wrap_fragment_tables(html: str) -> str:
-    """Wrap <table>...</table> in fragment HTML with scrollable containers."""
-    return re.sub(
-        r"(<table\b.*?</table>)",
-        r'<div class="table-wrap">\1</div>',
-        html,
-        flags=re.DOTALL,
-    )
-
-
-def build_tabbed_content(html_fragment: str, page_id: str, max_tabs: int = 0) -> str:
-    """Split an HTML fragment by <h3> headings into a tabbed layout.
-
-    The first <h2> (if any) becomes the page title shown above the tabs.
-    Any content before the first <h3> is shown above the tabs as intro.
-    Each <h3> section becomes a tab.
-
-    If max_tabs > 0 and there are more sections than max_tabs, excess
-    sections are merged into the last tab.
-    """
-    remaining = _wrap_fragment_tables(html_fragment.strip())
-
-    # Extract page title (<h2>)
-    title_html = ""
-    h2_match = re.search(r"<h2[^>]*>(.*?)</h2>", remaining, re.DOTALL)
-    if h2_match:
-        title_html = f'<h2 class="page-title">{h2_match.group(1)}</h2>\n'
-        remaining = remaining[: h2_match.start()] + remaining[h2_match.end() :]
-
-    # Split on <h3> boundaries
-    parts = re.split(r"(?=<h3[^>]*>)", remaining.strip())
-    parts = [p.strip() for p in parts if p.strip()]
-
-    # Separate intro (no <h3>) from tabbed sections
-    intro_html = ""
-    sections: list[tuple[str, str]] = []  # (label, content)
-    for part in parts:
-        h3_match = re.match(r"<h3[^>]*>(.*?)</h3>", part, re.DOTALL)
-        if h3_match:
-            # Strip HTML tags and common entities for the tab label
-            label = re.sub(r"<[^>]+>", "", h3_match.group(1)).strip()
-            label = (
-                label.replace("&mdash;", "\u2014")
-                .replace("&egrave;", "\u00e8")
-                .replace("&agrave;", "\u00e0")
-                .replace("&ograve;", "\u00f2")
-                .replace("&ugrave;", "\u00f9")
-                .replace("&rsquo;", "\u2019")
-                .replace("&le;", "\u2264")
-            )
-            sections.append((label, part))
-        else:
-            intro_html += part
-
-    # Not enough sections for tabs -> return as-is
-    if len(sections) <= 1:
-        return f'{title_html}<div class="md-content">{_wrap_fragment_tables(html_fragment)}</div>'
-
-    # Merge excess sections into the last tab if max_tabs is set
-    if max_tabs > 0 and len(sections) > max_tabs:
-        merged: list[tuple[str, str]] = list(sections[: max_tabs - 1])
-        # Combine remaining sections: use first remaining label, concatenate all content
-        last_label = sections[max_tabs - 1][0]
-        last_content = ""
-        for _, content in sections[max_tabs - 1 :]:
-            # Downgrade <h3> to <h4> inside merged content so they show as sub-headings
-            content = re.sub(r"<h3([^>]*)>", r"<h4\1>", content)
-            content = content.replace("</h3>", "</h4>")
-            last_content += content + "\n"
-        merged.append((last_label, last_content))
-        sections = merged
-
-    html = title_html
-    if intro_html:
-        html += f'<div class="md-content">{intro_html}</div>\n'
-
-    # Tab bar
-    html += f'<div class="sub-nav" id="{page_id}-nav">\n'
-    for i, (label, _) in enumerate(sections):
-        active = " active" if i == 0 else ""
-        html += (
-            f'  <a href="#" class="sub-nav-item{active}" '
-            f"onclick=\"showTab('{page_id}', '{page_id}-{i}', this); return false;\">"
-            f"{label}</a>\n"
-        )
-    html += "</div>\n"
-
-    # Panels
-    for i, (_, content) in enumerate(sections):
-        active = " active" if i == 0 else ""
-        html += f'<div id="{page_id}-{i}" class="{page_id}-panel tab-panel{active}">\n'
-        html += f'<div class="md-content">{content}</div>\n'
-        html += "</div>\n"
-
-    # JS (generic, safe to include multiple times since function name is the same)
-    html += """
-<script>
-function showTab(pageId, tabId, link) {
-    document.querySelectorAll('.' + pageId + '-panel').forEach(function(p) { p.classList.remove('active'); });
-    document.querySelectorAll('#' + pageId + '-nav .sub-nav-item').forEach(function(a) { a.classList.remove('active'); });
+function showTab(navId, panelClass, tabId) {
+    document.querySelectorAll('.' + panelClass).forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('#' + navId + ' .sub-nav-item').forEach(function(a) { a.classList.remove('active'); });
     var el = document.getElementById(tabId);
     if (el) el.classList.add('active');
+}
+function activateNavItem(navId, idx) {
+    var items = document.querySelectorAll('#' + navId + ' .sub-nav-item');
+    if (items[idx]) items[idx].classList.add('active');
+}
+</script>
+"""
+
+
+# ---------------------------------------------------------------------------
+# Dashboard page
+# ---------------------------------------------------------------------------
+
+DASHBOARD_JS = SHARED_JS + """
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>
+Promise.all([
+    fetch('data/measurements.json').then(function(r){ return r.json(); }),
+    fetch('data/plan.json').then(function(r){ return r.json(); })
+]).then(function(results){ renderDashboard(results[0], results[1]); })
+    .catch(function(){ document.getElementById('main-content').innerHTML = '<p>Dati non disponibili.</p>'; });
+
+function renderDashboard(measurements, planData) {
+    var root = document.getElementById('main-content');
+    if (!measurements || !measurements.length) {
+        root.innerHTML = '<p>Nessun dato disponibile.</p>'; return;
+    }
+    var last = measurements[measurements.length - 1];
+    var peso = last.peso_kg || '-';
+    var bf = last.body_fat_pct ? last.body_fat_pct + '%' : '-';
+    var sq = last.squat_1rm || 0;
+    var pa = last.panca_1rm || 0;
+    var st = last.stacco_1rm || 0;
+    var total = (sq && pa && st) ? sq + pa + st : 0;
+    var ffmi = last.ffmi_adj || '-';
+    var tdee = last.tdee_kcal || 2871;
+
+    var targets = {};
+    if (planData && planData.target && planData.target.length > 0) {
+        var target12 = planData.target[planData.target.length - 1];
+        targets = {
+            peso: 95,
+            bf: 13,
+            squat: target12.squat || 200,
+            panca: target12.panca || 150,
+            stacco: target12.stacco || 250,
+            totale: (target12.squat || 200) + (target12.panca || 150) + (target12.stacco || 250)
+        };
+    } else {
+        targets = { peso: 95, bf: 13, squat: 200, panca: 150, stacco: 250, totale: 600 };
+    }
+
+    function progressBar(current, target) {
+        var pct = Math.min(100, Math.max(0, (current / target * 100).toFixed(0)));
+        return '<div style="background:var(--surface2);border-radius:4px;height:4px;margin-top:6px"><div style="background:var(--accent);height:100%;border-radius:4px;width:' + pct + '%"></div></div><div style="font-size:0.75rem;color:var(--text-muted);margin-top:3px">' + pct + '% del target</div>';
+    }
+
+    var html = '<h2 class="page-title">Dashboard</h2>';
+    html += '<div class="cards">';
+    html += card('Peso', peso, 'kg', 'Target: ' + targets.peso + ' kg' + progressBar(last.peso_kg || 0, targets.peso), 'accent');
+    html += card('Body Fat', bf, '', 'Target: &le;' + targets.bf + '%' + (last.body_fat_pct ? progressBar(targets.bf - (last.body_fat_pct || targets.bf), targets.bf) : ''));
+    html += card('Totale PL', total || '-', 'kg', 'Target: ' + targets.totale + ' kg' + progressBar(total || 0, targets.totale), 'green');
+    html += card('FFMI adj', ffmi, '', 'Limite naturale ~25');
+    html += '</div><div class="cards">';
+    html += card('Squat', sq || '-', 'kg', 'Target: ' + targets.squat + ' kg' + progressBar(sq || 0, targets.squat));
+    html += card('Panca', pa || '-', 'kg', 'Target: ' + targets.panca + ' kg' + progressBar(pa || 0, targets.panca));
+    html += card('Stacco', st || '-', 'kg', 'Target: ' + targets.stacco + ' kg' + progressBar(st || 0, targets.stacco));
+    html += card('Calorie target', tdee + 300, 'kcal', 'TDEE ' + tdee + ' + surplus 300');
+    html += '</div>';
+
+    // Chart
+    html += '<h3 style="margin:1.5rem 0 .75rem">Andamento Massimali</h3>';
+    html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem;">';
+    html += '<canvas id="chart-massimali" height="110"></canvas></div>';
+
+    // History table with delta info
+    html += '<h3 style="margin:1.5rem 0 .75rem">Storico misurazioni</h3>';
+    html += '<div class="table-wrap"><table><thead><tr>';
+    ['Data','Peso','Δ Peso','BF%','Δ BF','Trend','Massa magra','FFMI adj','Squat','Panca','Stacco','Note'].forEach(function(h){
+        html += '<th>' + h + '</th>';
+    });
+    html += '</tr></thead><tbody>';
+    measurements.forEach(function(m) {
+        var trendIcon = m.bf_trend === 'migliorante' ? '📈' : m.bf_trend === 'peggiorante' ? '📉' : '➡️';
+        html += '<tr>'
+            + '<td>' + esc(m.data) + '</td>'
+            + '<td>' + esc(m.peso_kg) + '</td>'
+            + '<td>' + (m.delta_peso_kg ? (m.delta_peso_kg > 0 ? '+' : '') + m.delta_peso_kg : '&mdash;') + '</td>'
+            + '<td>' + (m.body_fat_pct ? m.body_fat_pct + '%' : '&mdash;') + '</td>'
+            + '<td>' + (m.delta_bf_pct !== undefined && m.delta_bf_pct !== 0 ? (m.delta_bf_pct > 0 ? '+' : '') + m.delta_bf_pct + '%' : '&mdash;') + '</td>'
+            + '<td>' + trendIcon + '</td>'
+            + '<td>' + esc(m.massa_magra_kg) + '</td>'
+            + '<td>' + esc(m.ffmi_adj) + '</td>'
+            + '<td>' + esc(m.squat_1rm) + '</td>'
+            + '<td>' + esc(m.panca_1rm) + '</td>'
+            + '<td>' + esc(m.stacco_1rm) + '</td>'
+            + '<td>' + esc(m.note) + '</td>'
+            + '</tr>';
+    });
+    html += '</tbody></table></div>';
+    root.innerHTML = html;
+
+    // Init chart
+    var labels = measurements.map(function(m) {
+        var l = [m.data || ''];
+        if (m.eta && m.peso_kg) l.push(m.eta + 'a / ' + m.peso_kg + 'kg');
+        return l;
+    });
+    var sqData = measurements.map(function(m){ return m.squat_1rm || 0; });
+    var paData = measurements.map(function(m){ return m.panca_1rm || 0; });
+    var stData = measurements.map(function(m){ return m.stacco_1rm || 0; });
+    var totData = measurements.map(function(m){ return (m.squat_1rm||0)+(m.panca_1rm||0)+(m.stacco_1rm||0); });
+    var yMax = Math.max.apply(null, sqData.concat(paData, stData)) + 100;
+    var y1Max = Math.max.apply(null, totData) + 100;
+
+    new Chart(document.getElementById('chart-massimali').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                { label: 'Squat', data: sqData, backgroundColor: 'rgba(108,140,255,0.7)', borderColor: 'rgba(108,140,255,1)', borderWidth: 1, borderRadius: 4, order: 2 },
+                { label: 'Panca', data: paData, backgroundColor: 'rgba(78,205,196,0.7)', borderColor: 'rgba(78,205,196,1)', borderWidth: 1, borderRadius: 4, order: 2 },
+                { label: 'Stacco', data: stData, backgroundColor: 'rgba(255,169,77,0.7)', borderColor: 'rgba(255,169,77,1)', borderWidth: 1, borderRadius: 4, order: 2 },
+                { label: 'Totale', data: totData, type: 'line', borderColor: 'rgba(255,217,61,0.8)', backgroundColor: 'rgba(255,217,61,0.1)', borderWidth: 2, pointRadius: 4, fill: false, yAxisID: 'y1', order: 1 }
+            ]
+        },
+        options: {
+            responsive: true,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { labels: { color: '#8b8fa3', font: { size: 12 } } },
+                tooltip: { callbacks: { label: function(c){ return c.dataset.label + ': ' + c.parsed.y + ' kg'; } } }
+            },
+            datasets: { bar: { barPercentage: 0.6, categoryPercentage: 0.5 } },
+            scales: {
+                x: { ticks: { color: '#8b8fa3', font: { size: 11 }, maxRotation: 0 }, grid: { color: 'rgba(45,49,66,0.5)' } },
+                y: { position: 'left', title: { display: true, text: 'Massimale (kg)', color: '#8b8fa3' }, ticks: { color: '#8b8fa3' }, grid: { color: 'rgba(45,49,66,0.5)' }, beginAtZero: true, max: yMax },
+                y1: { position: 'right', title: { display: true, text: 'Totale (kg)', color: '#8b8fa3' }, ticks: { color: 'rgba(255,217,61,0.8)' }, grid: { drawOnChartArea: false }, beginAtZero: true, max: y1Max }
+            }
+        }
+    });
+}
+</script>
+"""
+
+
+# ---------------------------------------------------------------------------
+# Workout page
+# ---------------------------------------------------------------------------
+
+WORKOUT_JS = SHARED_JS + """
+<script>
+fetch('data/workout.json').then(function(r){ return r.json(); }).then(renderWorkout)
+    .catch(function(){ document.getElementById('main-content').innerHTML = '<p>Dati non disponibili.</p>'; });
+
+function renderWorkout(data) {
+    var root = document.getElementById('main-content');
+    var settimane = data.settimane || [];
+    var meta = data.meta || {};
+    var warmupItems = data.riscaldamento || [];
+    var cooldownItems = data.defaticamento || [];
+
+    function warmupHtml(items) {
+        if (!items || !items.length) return '';
+        return '<div class="warmup-cooldown"><h4>Riscaldamento generale (~10 min)</h4><ol>'
+            + items.map(function(i){ return '<li>' + esc(i) + '</li>'; }).join('')
+            + '</ol></div>';
+    }
+    function cooldownHtml(items) {
+        if (!items || !items.length) return '';
+        return '<div class="warmup-cooldown"><h4>Defaticamento (~5-10 min)</h4><ol>'
+            + items.map(function(i){ return '<li>' + esc(i) + '</li>'; }).join('')
+            + '</ol></div>';
+    }
+    function exerciseTable(esercizi) {
+        var h = '<div class="table-wrap"><table><thead><tr><th>#</th><th>Esercizio</th><th>Serie x Reps</th><th>Peso / Intensita</th><th>Recupero</th><th>Gruppo</th></tr></thead><tbody>';
+        esercizi.forEach(function(ex, i) {
+            var nome = ex.principale ? '<strong>' + esc(ex.nome) + '</strong>' : esc(ex.nome);
+            h += '<tr><td>' + (i+1) + '</td><td>' + nome + '</td>'
+                + '<td>' + esc(ex.reps) + '</td><td>' + esc(ex.peso) + '</td>'
+                + '<td>' + esc(ex.recupero) + '</td><td>' + esc(ex.gruppo) + '</td></tr>';
+        });
+        return h + '</tbody></table></div>';
+    }
+    function testDayHtml(giorno, wu, cd) {
+        var h = wu;
+        var isRPEVerifica = giorno.tipo && giorno.tipo.toLowerCase().indexOf('verifica') !== -1;
+        if (isRPEVerifica) {
+            h += '<div style="background:rgba(255,217,61,0.15); border:2px solid var(--yellow); border-radius:8px; padding:0.75rem 1rem; margin-bottom:1rem;"><strong style="color:var(--yellow)">SESSIONE VERIFICA RPE</strong><p style="margin:0.5rem 0 0;color:var(--text-muted);font-size:0.9rem">Usare i carichi della Settimana 1. Non incrementare i pesi in questa sessione.</p></div>';
+        }
+        h += '<h3>' + esc(giorno.giorno) + ': ' + esc(giorno.tipo) + '</h3>';
+        if (giorno.note_sessione) h += '<p><em>' + esc(giorno.note_sessione) + '</em></p>';
+        (giorno.protocolli || []).forEach(function(proto) {
+            h += '<h4>Protocollo ' + esc(proto.nome) + ' (' + esc(proto.target) + ')</h4>';
+            h += '<div class="table-wrap"><table><thead><tr><th>Set</th><th>Peso</th><th>Reps</th><th>Note</th></tr></thead><tbody>';
+            (proto.serie || []).forEach(function(s) {
+                if (s.tentativo) {
+                    h += '<tr><td><strong>' + esc(s.set) + '</strong></td><td><strong>' + esc(s.peso) + '</strong></td>'
+                        + '<td><strong>' + esc(s.reps) + '</strong></td><td>' + esc(s.note) + '</td></tr>';
+                } else {
+                    h += '<tr><td>' + esc(s.set) + '</td><td>' + esc(s.peso) + '</td>'
+                        + '<td>' + esc(s.reps) + '</td><td>' + esc(s.note) + '</td></tr>';
+                }
+            });
+            h += '</tbody></table></div>';
+        });
+        return h + cd;
+    }
+
+    var html = '<h2 class="page-title">Scheda di Allenamento &mdash; ' + esc(meta.periodo) + '</h2>';
+
+    // Week tabs
+    html += '<div class="sub-nav" id="week-nav">';
+    html += '<a class="sub-nav-item active" onclick="switchWeek(\'info\', this)">Info</a>';
+    settimane.forEach(function(s) {
+        html += '<a class="sub-nav-item" onclick="switchWeek(\'sett' + s.numero + '\', this)">Settimana ' + s.numero + '</a>';
+    });
+    html += '</div>';
+
+    // Info panel
+    html += '<div id="panel-info" class="panel active">';
+    html += '<h2>' + esc(meta.tipo_fase) + '</h2><ul>';
+    html += '<li><strong>Periodo</strong>: ' + esc(meta.periodo) + '</li>';
+    html += '<li><strong>Durata</strong>: ' + esc(meta.durata_settimane) + ' settimane</li>';
+    html += '<li><strong>Frequenza</strong>: ' + esc(meta.frequenza_settimanale) + ' sessioni/settimana</li>';
+    html += '<li><strong>Obiettivo</strong>: ' + esc(meta.obiettivo) + '</li>';
+    html += '</ul>';
+    if (data.note_generali && data.note_generali.length) {
+        html += '<h3>Note generali</h3><ul>';
+        data.note_generali.forEach(function(n){ html += '<li>' + esc(n) + '</li>'; });
+        html += '</ul>';
+    }
+    html += '</div>';
+
+    // Week panels
+    settimane.forEach(function(sett) {
+        var sid = 'sett' + sett.numero;
+        var giorni = sett.giorni || [];
+        html += '<div id="panel-' + sid + '" class="panel">';
+        html += '<h2>Settimana ' + sett.numero + '</h2>';
+        html += '<p><strong>Intensita target</strong>: ' + esc(sett.intensita_target) + '</p>';
+        if (sett.note_settimana) html += '<p>' + esc(sett.note_settimana) + '</p>';
+
+        if (giorni.length > 1) {
+            html += '<div class="sub-nav sub-nav-days" id="day-nav-' + sid + '">';
+            giorni.forEach(function(g, i) {
+                var ac = i === 0 ? ' active' : '';
+                html += '<a class="sub-nav-item' + ac + '" onclick="switchDay(\'' + sid + '\', ' + i + ', this)">' + esc(g.giorno) + '</a>';
+            });
+            html += '</div>';
+        }
+
+        giorni.forEach(function(giorno, i) {
+            var ac = i === 0 ? ' active' : '';
+            html += '<div id="day-' + sid + '-' + i + '" class="panel' + ac + '">';
+            var wu = giorno.riscaldamento ? warmupHtml(giorno.riscaldamento) : warmupHtml(warmupItems);
+            var cd = giorno.defaticamento ? cooldownHtml(giorno.defaticamento) : cooldownHtml(cooldownItems);
+            if (giorno.protocolli && giorno.protocolli.length) {
+                html += testDayHtml(giorno, wu, cd);
+            } else {
+                html += wu;
+                var isRPEVerifica = giorno.tipo && giorno.tipo.toLowerCase().indexOf('verifica') !== -1;
+                if (isRPEVerifica) {
+                    html += '<div style="background:rgba(255,217,61,0.15); border:2px solid var(--yellow); border-radius:8px; padding:0.75rem 1rem; margin-bottom:1rem;"><strong style="color:var(--yellow)">SESSIONE VERIFICA RPE</strong><p style="margin:0.5rem 0 0;color:var(--text-muted);font-size:0.9rem">Usare i carichi della Settimana 1. Non incrementare i pesi in questa sessione.</p></div>';
+                }
+                html += '<h3>' + esc(giorno.giorno) + ': ' + esc(giorno.tipo) + '</h3>';
+                if (giorno.note_sessione) html += '<p><em>' + esc(giorno.note_sessione) + '</em></p>';
+                html += exerciseTable(giorno.esercizi || []);
+                html += cd;
+            }
+            if (giorni.length > 1) {
+                html += '<div class="day-nav">';
+                if (i > 0) html += '<a onclick="switchDay(\'' + sid + '\', ' + (i-1) + ', null)">&larr; ' + esc(giorni[i-1].giorno) + '</a>';
+                else html += '<span></span>';
+                if (i < giorni.length - 1) html += '<a onclick="switchDay(\'' + sid + '\', ' + (i+1) + ', null)">' + esc(giorni[i+1].giorno) + ' &rarr;</a>';
+                else html += '<span></span>';
+                html += '</div>';
+            }
+            html += '</div>';
+        });
+        html += '</div>';
+    });
+
+    root.innerHTML = html;
+}
+
+function switchWeek(id, link) {
+    document.querySelectorAll('[id^="panel-"]').forEach(function(p){ p.classList.remove('active'); });
+    document.querySelectorAll('#week-nav .sub-nav-item').forEach(function(a){ a.classList.remove('active'); });
+    var el = document.getElementById('panel-' + id);
+    if (el) el.classList.add('active');
+    if (link) link.classList.add('active');
+}
+function switchDay(sid, idx, link) {
+    var prefix = 'day-' + sid + '-';
+    document.querySelectorAll('[id^="' + prefix + '"]').forEach(function(p){ p.classList.remove('active'); });
+    var nav = document.getElementById('day-nav-' + sid);
+    if (nav) nav.querySelectorAll('.sub-nav-item').forEach(function(a){ a.classList.remove('active'); });
+    var el = document.getElementById(prefix + idx);
+    if (el) el.classList.add('active');
+    if (link) { link.classList.add('active'); return; }
+    if (nav) { var items = nav.querySelectorAll('.sub-nav-item'); if (items[idx]) items[idx].classList.add('active'); }
+}
+</script>
+"""
+
+
+# ---------------------------------------------------------------------------
+# Volume page
+# ---------------------------------------------------------------------------
+
+VOLUME_JS = SHARED_JS + """
+<script>
+fetch('data/volume.json').then(function(r){ return r.json(); }).then(renderVolume)
+    .catch(function(){ document.getElementById('main-content').innerHTML = '<p>Dati non disponibili.</p>'; });
+
+function renderVolume(volumeData) {
+    var root = document.getElementById('main-content');
+    // Handle both old (array) and new (object with volumi/meta) structures
+    var volumi = volumeData.volumi || volumeData;
+    var meta = volumeData.meta || {};
+    var items = (Array.isArray(volumi) ? volumi : []).filter(function(d){ return !d._unmatched; });
+    var unmatched = (volumi.find ? volumi.find(function(d){ return d._unmatched; }) : null) || {};
+    unmatched = unmatched._unmatched || [];
+    var maxVal = items.length ? items[0].serie_pesate : 1;
+
+    var html = '<h2 class="page-title">Volume per Distretto Muscolare</h2>';
+
+    // Meta summary if available
+    if (meta.total_serie_pesate !== undefined) {
+        html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1.5rem;margin-bottom:1.5rem;">';
+        html += '<h3 style="margin-bottom:1rem">Riepilogo equilibrio</h3>';
+        html += '<div class="cards">';
+        html += '<div class="card"><div class="label">Total Serie</div><div class="value">' + meta.total_serie_pesate + '</div></div>';
+        html += '<div class="card"><div class="label">Push Serie</div><div class="value">' + meta.push_serie + '</div></div>';
+        html += '<div class="card"><div class="label">Pull Serie</div><div class="value">' + meta.pull_serie + '</div></div>';
+        html += '<div class="card"><div class="label">Ratio P/P</div><div class="value">' + meta.pull_push_ratio + '</div></div>';
+        html += '</div>';
+        html += '<p class="subtitle">Equilibrio: <strong>' + meta.balance_rating + '</strong></p>';
+        html += '</div>';
+    }
+
+    html += '<h3>Serie pesate per distretto muscolare</h3>';
+    html += '<p class="subtitle">Principale = 1.0 | Secondario = 0.5 | Terziario = 0.3</p>';
+    html += '<div class="bar-chart">';
+    items.forEach(function(m) {
+        var pct = (m.serie_pesate / maxVal * 100).toFixed(0);
+        html += '<div class="bar-row">'
+            + '<span class="bar-label">' + esc(m.muscolo) + '</span>'
+            + '<div class="bar-track"><div class="bar-fill" style="width:' + pct + '%"></div></div>'
+            + '<span class="bar-value">' + m.serie_pesate + '</span>'
+            + '</div>';
+    });
+    html += '</div>';
+    html += '<h3>Dettaglio per distretto</h3>';
+    items.forEach(function(m) {
+        html += '<details class="muscle-detail"><summary>' + esc(m.muscolo) + ' &mdash; ' + m.serie_pesate + ' serie pesate</summary>';
+        html += '<div class="table-wrap"><table class="detail-table"><thead><tr><th>Ruolo</th><th>Esercizio</th><th>Giorno</th><th>Serie</th><th>Peso</th><th>Contributo</th></tr></thead><tbody>';
+        (m.dettaglio || []).forEach(function(d) {
+            var tagMap = { principale: 'P', secondario: 'S', terziario: 'T' };
+            var clsMap = { P: 'tag-primary', S: 'tag-secondary', T: 'tag-tertiary' };
+            var tag = tagMap[d.ruolo] || d.ruolo;
+            html += '<tr><td><span class="tag ' + clsMap[tag] + '">' + tag + '</span></td>'
+                + '<td>' + esc(d.esercizio) + '</td><td>' + esc(d.giorno) + '</td>'
+                + '<td>' + esc(d.serie) + '</td><td>' + esc(d.peso) + '</td><td>' + esc(d.contributo) + '</td></tr>';
+        });
+        html += '</tbody></table></div></details>';
+    });
+    if (unmatched.length) {
+        html += '<p class="subtitle" style="margin-top:1rem">Esercizi non mappati: ' + unmatched.join(', ') + '</p>';
+    }
+    root.innerHTML = html;
+}
+</script>
+"""
+
+
+# ---------------------------------------------------------------------------
+# Diet page
+# ---------------------------------------------------------------------------
+
+DIET_JS = SHARED_JS + """
+<script>
+fetch('data/diet.json').then(function(r){ return r.json(); }).then(renderDiet)
+    .catch(function(){ document.getElementById('main-content').innerHTML = '<p>Dati non disponibili.</p>'; });
+
+function renderDiet(data) {
+    var root = document.getElementById('main-content');
+    // Legacy HTML fallback
+    if (data.html) {
+        root.innerHTML = '<div class="md-content">' + data.html + '</div>';
+        return;
+    }
+    var meta = data.meta || {};
+    var giorni = data.giorni || [];
+    var integratori = data.integratori || [];
+
+    var html = '<h2 class="page-title">Dieta Settimanale</h2>';
+    html += '<div class="cards">';
+    if (meta.kcal_allenamento) html += card('Kcal Allenamento', meta.kcal_allenamento, 'kcal', 'P:' + meta.proteine_g + 'g C:' + (meta.carboidrati_g_allenamento || meta.carboidrati_g || 0) + 'g G:' + meta.grassi_g + 'g');
+    if (meta.kcal_riposo) html += card('Kcal Riposo', meta.kcal_riposo, 'kcal', 'P:' + meta.proteine_g + 'g C:' + (meta.carboidrati_g_riposo || meta.carboidrati_g || 0) + 'g G:' + meta.grassi_g + 'g');
+    if (meta.fase) html += card('Fase', meta.fase, '', (meta.note_strategia || '').substring(0, 60));
+    html += '</div>';
+    if (meta.note_strategia) html += '<p><em>' + esc(meta.note_strategia) + '</em></p>';
+
+    // Tabs for giorni
+    var tabIds = giorni.map(function(_, i){ return 'diet-' + i; });
+    html += '<div class="sub-nav" id="diet-nav">';
+    giorni.forEach(function(g, i) {
+        html += '<a class="sub-nav-item' + (i===0?' active':'') + '" onclick="dietTab(' + i + ', this)">' + esc(g.nome) + '</a>';
+    });
+    if (integratori.length) html += '<a class="sub-nav-item" onclick="dietTab(' + giorni.length + ', this)">Integratori</a>';
+    html += '</div>';
+
+    giorni.forEach(function(giorno, i) {
+        html += '<div id="diet-panel-' + i + '" class="panel' + (i===0?' active':'') + '">';
+        html += '<p><strong>Tipo</strong>: ' + esc(giorno.tipo) + ' &mdash; <strong>Calorie</strong>: ' + esc(giorno.kcal) + ' kcal';
+        var macros = giorno.macros || {};
+        if (macros.proteine) html += ' &mdash; P: ' + macros.proteine + 'g C: ' + macros.carboidrati + 'g G: ' + macros.grassi + 'g';
+        html += '</p>';
+        (giorno.pasti || []).forEach(function(pasto) {
+            var orario = pasto.orario ? ' (' + pasto.orario + ')' : '';
+            html += '<h4>' + esc(pasto.nome) + orario + '</h4>';
+            if (pasto.alimenti && pasto.alimenti.length) {
+                html += '<div class="table-wrap"><table><thead><tr><th>Alimento</th><th>Grammi</th><th>Kcal</th><th>P (g)</th><th>C (g)</th><th>G (g)</th></tr></thead><tbody>';
+                pasto.alimenti.forEach(function(a) {
+                    html += '<tr><td>' + esc(a.nome) + '</td><td>' + esc(a.grammi) + '</td><td>' + esc(a.kcal) + '</td><td>' + esc(a.proteine) + '</td><td>' + esc(a.carbo) + '</td><td>' + esc(a.grassi) + '</td></tr>';
+                });
+                var tot = pasto.totale || {};
+                if (tot.kcal) html += '<tr class="total-row"><td><strong>Totale</strong></td><td></td><td><strong>' + tot.kcal + '</strong></td><td><strong>' + tot.proteine + '</strong></td><td><strong>' + tot.carbo + '</strong></td><td><strong>' + tot.grassi + '</strong></td></tr>';
+                html += '</tbody></table></div>';
+            }
+        });
+        html += '</div>';
+    });
+
+    if (integratori.length) {
+        html += '<div id="diet-panel-' + giorni.length + '" class="panel">';
+        html += '<div class="table-wrap"><table><thead><tr><th>Integratore</th><th>Dose</th><th>Timing</th><th>Note</th></tr></thead><tbody>';
+        integratori.forEach(function(ig) {
+            html += '<tr><td>' + esc(ig.nome) + '</td><td>' + esc(ig.dose) + '</td><td>' + esc(ig.timing) + '</td><td>' + esc(ig.note) + '</td></tr>';
+        });
+        html += '</tbody></table></div></div>';
+    }
+
+    root.innerHTML = html;
+}
+
+function dietTab(idx, link) {
+    document.querySelectorAll('[id^="diet-panel-"]').forEach(function(p){ p.classList.remove('active'); });
+    document.querySelectorAll('#diet-nav .sub-nav-item').forEach(function(a){ a.classList.remove('active'); });
+    var el = document.getElementById('diet-panel-' + idx);
+    if (el) el.classList.add('active');
     if (link) link.classList.add('active');
 }
 </script>
 """
-    return html
+
+
+# ---------------------------------------------------------------------------
+# Plan page
+# ---------------------------------------------------------------------------
+
+PLAN_JS = SHARED_JS + """
+<script>
+fetch('data/plan.json').then(function(r){ return r.json(); }).then(renderPlan)
+    .catch(function(){ document.getElementById('main-content').innerHTML = '<p>Dati non disponibili.</p>'; });
+
+function renderPlan(data) {
+    var root = document.getElementById('main-content');
+    if (data.html) {
+        root.innerHTML = '<div class="md-content">' + data.html + '</div>';
+        return;
+    }
+    var meta = data.meta || {};
+    var situazione = data.situazione || {};
+    var massimali = data.massimali_attuali || {};
+    var targets = data.target || [];
+    var fasi = data.fasi || [];
+    var strategia = data.strategia_nutrizionale || {};
+    var rischi = data.rischi || [];
+
+    var tabs = [
+        { id: 'panoramica', label: 'Panoramica' },
+        { id: 'target', label: 'Target Massimali' },
+        { id: 'fasi', label: 'Fasi' },
+        { id: 'strategia', label: 'Strategia' },
+        { id: 'rischi', label: 'Rischi' }
+    ];
+
+    var html = '<h2 class="page-title">Piano a Lungo Termine</h2>';
+    html += '<div class="sub-nav" id="plan-nav">';
+    tabs.forEach(function(t, i) {
+        html += '<a class="sub-nav-item' + (i===0?' active':'') + '" onclick="planTab(\'' + t.id + '\', this)">' + t.label + '</a>';
+    });
+    html += '</div>';
+
+    // Panoramica
+    html += '<div id="plan-panoramica" class="panel active">';
+    if (meta.atleta) html += '<p><strong>Atleta</strong>: ' + esc(meta.atleta) + ' &mdash; <strong>Aggiornato</strong>: ' + esc(meta.data_aggiornamento) + '</p>';
+    if (situazione.infortunio) html += '<p><strong>Infortunio</strong>: ' + esc(situazione.infortunio) + '</p>';
+    if (situazione.note) html += '<p>' + esc(situazione.note) + '</p>';
+    if (massimali.squat || massimali.panca || massimali.stacco) {
+        html += '<div class="cards">';
+        html += card('Squat', massimali.squat || '-', 'kg', 'Massimale attuale');
+        html += card('Panca', massimali.panca || '-', 'kg', 'Massimale attuale');
+        html += card('Stacco', massimali.stacco || '-', 'kg', 'Massimale attuale');
+        html += '</div>';
+    }
+    html += '</div>';
+
+    // Target
+    html += '<div id="plan-target" class="panel">';
+    if (targets.length) {
+        html += '<div class="table-wrap"><table><thead><tr><th>Orizzonte</th><th>Data</th><th>Squat</th><th>Panca</th><th>Stacco</th><th>Note</th></tr></thead><tbody>';
+        targets.forEach(function(t) {
+            html += '<tr><td>' + esc(t.orizzonte) + '</td><td>' + esc(t.data) + '</td><td>' + esc(t.squat) + '</td><td>' + esc(t.panca) + '</td><td>' + esc(t.stacco) + '</td><td>' + esc(t.note) + '</td></tr>';
+        });
+        html += '</tbody></table></div>';
+    } else { html += '<p>Nessun target definito.</p>'; }
+    html += '</div>';
+
+    // Fasi
+    html += '<div id="plan-fasi" class="panel">';
+    fasi.forEach(function(fase) {
+        html += '<h4>Fase ' + esc(fase.numero) + ': ' + esc(fase.nome) + '</h4><ul>';
+        if (fase.durata_settimane) html += '<li><strong>Durata</strong>: ' + fase.durata_settimane + ' settimane</li>';
+        if (fase.obiettivo) html += '<li><strong>Obiettivo</strong>: ' + esc(fase.obiettivo) + '</li>';
+        if (fase.metodologia) html += '<li><strong>Metodologia</strong>: ' + esc(fase.metodologia) + '</li>';
+        if (fase.note) html += '<li><strong>Note</strong>: ' + esc(fase.note) + '</li>';
+        html += '</ul>';
+    });
+    html += '</div>';
+
+    // Strategia
+    html += '<div id="plan-strategia" class="panel"><ul>';
+    Object.entries(strategia).forEach(function(e) {
+        html += '<li><strong>' + esc(e[0].replace(/_/g,' ')) + '</strong>: ' + esc(e[1]) + '</li>';
+    });
+    html += '</ul></div>';
+
+    // Rischi
+    html += '<div id="plan-rischi" class="panel">';
+    if (rischi.length) {
+        html += '<div class="table-wrap"><table><thead><tr><th>Area</th><th>Livello</th><th>Azione</th></tr></thead><tbody>';
+        rischi.forEach(function(r) {
+            var clsMap = { alto: 'tag-primary', medio: 'tag-secondary', basso: 'tag-tertiary' };
+            html += '<tr><td>' + esc(r.area) + '</td><td><span class="tag ' + (clsMap[r.livello]||'') + '">' + esc(r.livello) + '</span></td><td>' + esc(r.azione) + '</td></tr>';
+        });
+        html += '</tbody></table></div>';
+    } else { html += '<p>Nessun rischio identificato.</p>'; }
+    html += '</div>';
+
+    root.innerHTML = html;
+}
+
+function planTab(id, link) {
+    document.querySelectorAll('[id^="plan-"]').forEach(function(p){ if(p.classList.contains('panel')) p.classList.remove('active'); });
+    document.querySelectorAll('#plan-nav .sub-nav-item').forEach(function(a){ a.classList.remove('active'); });
+    var el = document.getElementById('plan-' + id);
+    if (el) el.classList.add('active');
+    if (link) link.classList.add('active');
+}
+</script>
+"""
+
+
+# ---------------------------------------------------------------------------
+# Feedback page
+# ---------------------------------------------------------------------------
+
+FEEDBACK_JS = SHARED_JS + """
+<script>
+fetch('data/feedback.json').then(function(r){ return r.json(); }).then(renderFeedback)
+    .catch(function(){ document.getElementById('main-content').innerHTML = '<p>Dati non disponibili.</p>'; });
+
+function renderFeedback(data) {
+    var root = document.getElementById('main-content');
+    var html = data.html || '<p>Nessun feedback disponibile.</p>';
+    root.innerHTML = '<div class="md-content">' + html + '</div>';
+}
+</script>
+"""
 
 
 # ---------------------------------------------------------------------------
@@ -721,51 +831,55 @@ function showTab(pageId, tabId, link) {
 # ---------------------------------------------------------------------------
 
 def main():
-    parser = argparse.ArgumentParser(description="Genera sito HTML statico multi-pagina")
-    parser.add_argument("--outdir", default="data/output/site", help="Directory di output")
+    parser = argparse.ArgumentParser(description="Genera HTML shell per il sito GYM")
+    parser.add_argument("--outdir", default="docs", help="Directory di output (default: docs)")
+    parser.add_argument("--force", action="store_true", help="Rigenera anche se i file esistono gia'")
     args = parser.parse_args()
 
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    data_out = os.path.join(base_dir, "data", "output")
-    outdir = os.path.join(base_dir, args.outdir)
-    template = read_file(os.path.join(base_dir, "scripts", "templates", "base.html"))
+    outdir = os.path.join(BASE_DIR, args.outdir)
 
-    # Dati strutturati
-    measurements_path = os.path.join(data_out, "measurements.json")
-    measurements = read_json(measurements_path) if os.path.exists(measurements_path) else []
+    # Check se il sito esiste gia'
+    dashboard_path = os.path.join(outdir, "dashboard.html")
+    if os.path.exists(dashboard_path) and not args.force:
+        print(f"Sito gia' presente in {args.outdir}/. Usa --force per rigenerare.")
+        print("Per aggiornare i dati esegui: python scripts/generate_data.py")
+        sys.exit(0)
 
-    workout_data_path = latest_file(data_out, "workout_data", ext=".json")
-    workout_data = read_json(workout_data_path) if workout_data_path else None
+    pages = [
+        ("dashboard", "Dashboard", DASHBOARD_JS),
+        ("workout",   "Scheda",    WORKOUT_JS),
+        ("volume",    "Volume",    VOLUME_JS),
+        ("diet",      "Dieta",     DIET_JS),
+        ("plan",      "Piano",     PLAN_JS),
+        ("feedback",  "Feedback",  FEEDBACK_JS),
+    ]
 
-    # Contenuti HTML statici
-    diet_html_path = latest_file(data_out, "diet")
-    feedback_html_path = latest_file(data_out, "feedback")
-    plan_html_path = os.path.join(data_out, "plan.html")
-
-    # Assembla le pagine
-    page_content = {
-        "dashboard": build_dashboard(measurements),
-        "workout": build_workout(workout_data) if workout_data else "<p>Nessun dato workout trovato.</p>",
-        "volume": build_volume(workout_data) if workout_data else "<p>Nessun dato workout trovato.</p>",
-        "diet": build_tabbed_content(read_file(diet_html_path), "diet") if diet_html_path else "<p>Nessuna dieta trovata.</p>",
-        "plan": build_tabbed_content(read_file(plan_html_path), "plan") if os.path.exists(plan_html_path) else "<p>Nessun piano trovato.</p>",
-        "feedback": build_tabbed_content(read_file(feedback_html_path), "feedback", max_tabs=4) if feedback_html_path else "<p>Nessun feedback trovato.</p>",
-    }
-
-    # Genera file HTML
-    for page in PAGES:
-        html = render_page(template, page["label"], page["id"], page_content[page["id"]])
-        out_path = os.path.join(outdir, f'{page["id"]}.html')
+    for page_id, title, script in pages:
+        html = page_html(title, page_id, script)
+        out_path = os.path.join(outdir, f"{page_id}.html")
         write_file(out_path, html)
-        print(f"  {page['id']}.html")
+        print(f"  {page_id}.html")
 
-    # index.html -> redirect
+    # index redirect
     write_file(
         os.path.join(outdir, "index.html"),
         '<meta http-equiv="refresh" content="0;url=dashboard.html">'
     )
+    print("  index.html")
 
-    print(f"\nSito generato in: {outdir}")
+    # Genera anche i dati
+    print("\nGenerazione dati...")
+    generate_data = os.path.join(BASE_DIR, "scripts", "generate_data.py")
+    data_dir = os.path.join(args.outdir, "data")
+    result = subprocess.run(
+        [sys.executable, generate_data, "--outdir", data_dir],
+        cwd=BASE_DIR
+    )
+    if result.returncode != 0:
+        print("Errore nella generazione dei dati.")
+        sys.exit(result.returncode)
+
+    print(f"\nSito generato in: {args.outdir}/")
 
 
 if __name__ == "__main__":

@@ -1,3 +1,14 @@
 {
-  "model": "claude-opus-4-6"
+  "model": "claude-sonnet-4-6",
+  "permissions": {
+    "deny": [
+      "Bash(git:*)"
+    ],
+    "allow": [
+      "Write(data/output/**)",
+      "Edit(data/output/**)",
+      "Write(scripts/volume_calc.py)",
+      "Edit(scripts/volume_calc.py)"
+    ]
+  }
 }

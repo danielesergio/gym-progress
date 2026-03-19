@@ -135,6 +135,56 @@ EXERCISE_MUSCLES = {
         "secondario": [],
         "terziario": [],
     },
+    "cable row presa neutra (cavo basso)": {
+        "principale": ["dorsali", "trapezi"],
+        "secondario": ["bicipiti", "deltoidi posteriori"],
+        "terziario": ["erettori spinali"],
+    },
+    "chest-supported dumbbell row presa neutra": {
+        "principale": ["dorsali", "trapezi"],
+        "secondario": ["bicipiti", "deltoidi posteriori"],
+        "terziario": [],
+    },
+    "hip thrust con bilanciere": {
+        "principale": ["glutei"],
+        "secondario": ["femorali"],
+        "terziario": ["core"],
+    },
+    "lat pulldown presa neutra": {
+        "principale": ["dorsali"],
+        "secondario": ["bicipiti"],
+        "terziario": ["deltoidi posteriori"],
+    },
+    "dead bug": {
+        "principale": ["core"],
+        "secondario": [],
+        "terziario": [],
+    },
+    "pallof press al cavo": {
+        "principale": ["core"],
+        "secondario": [],
+        "terziario": [],
+    },
+    "leg raise al parallele (o a terra)": {
+        "principale": ["core"],
+        "secondario": [],
+        "terziario": [],
+    },
+    "external rotation al cavo basso (presa neutra)": {
+        "principale": ["cuffia dei rotatori"],
+        "secondario": ["deltoidi posteriori"],
+        "terziario": [],
+    },
+    "band pull-apart": {
+        "principale": ["deltoidi posteriori", "romboidi"],
+        "secondario": ["trapezi"],
+        "terziario": [],
+    },
+    "wall angel": {
+        "principale": ["cuffia dei rotatori", "trapezi"],
+        "secondario": ["deltoidi posteriori"],
+        "terziario": [],
+    },
 }
 
 

@@ -281,9 +281,10 @@ function renderDashboard(measurements, planData) {
     var targets = {};
     if (planData && planData.target && planData.target.length > 0) {
         var target12 = planData.target[planData.target.length - 1];
+        var corpTarget = planData.target_corporeo || { peso_kg: 95, bf_pct_max: 13 };
         targets = {
-            peso: 95,
-            bf: 13,
+            peso: corpTarget.peso_kg || 95,
+            bf: corpTarget.bf_pct_max || 13,
             squat: target12.squat || 200,
             panca: target12.panca || 150,
             stacco: target12.stacco || 250,
@@ -298,10 +299,21 @@ function renderDashboard(measurements, planData) {
         return '<div style="background:var(--surface2);border-radius:4px;height:4px;margin-top:6px"><div style="background:var(--accent);height:100%;border-radius:4px;width:' + pct + '%"></div></div><div style="font-size:0.75rem;color:var(--text-muted);margin-top:3px">' + pct + '% del target</div>';
     }
 
+    function progressBarBF(currentBF, targetBF, measurements) {
+        // Per BF% la logica e' inversa: partiamo da alto e scendersi verso il target.
+        // Caso generale: troviamo il BF massimo storico, da cui parti.
+        if (!currentBF || !measurements || measurements.length === 0) return '';
+        var maxBF = Math.max.apply(null, measurements.map(function(m) { return m.body_fat_pct || 0; }));
+        if (maxBF < targetBF) maxBF = targetBF + 5; // fallback se tutte le misurazioni sono gia' sotto target
+        // Calcolo: (max - current) / (max - target) * 100
+        var pct = maxBF <= targetBF ? 100 : Math.min(100, Math.max(0, ((maxBF - currentBF) / (maxBF - targetBF) * 100).toFixed(0)));
+        return '<div style="background:var(--surface2);border-radius:4px;height:4px;margin-top:6px"><div style="background:var(--accent);height:100%;border-radius:4px;width:' + pct + '%"></div></div><div style="font-size:0.75rem;color:var(--text-muted);margin-top:3px">' + pct + '% del target</div>';
+    }
+
     var html = '<h2 class="page-title">Dashboard</h2>';
     html += '<div class="cards">';
     html += card('Peso', peso, 'kg', 'Target: ' + targets.peso + ' kg' + progressBar(last.peso_kg || 0, targets.peso), 'accent');
-    html += card('Body Fat', bf, '', 'Target: &le;' + targets.bf + '%' + (last.body_fat_pct ? progressBar(targets.bf - (last.body_fat_pct || targets.bf), targets.bf) : ''));
+    html += card('Body Fat', bf, '', 'Target: &le;' + targets.bf + '%' + (last.body_fat_pct ? progressBarBF(last.body_fat_pct, targets.bf, measurements) : ''));
     html += card('Totale PL', total || '-', 'kg', 'Target: ' + targets.totale + ' kg' + progressBar(total || 0, targets.totale), 'green');
     html += card('FFMI adj', ffmi, '', 'Limite naturale ~25');
     html += '</div><div class="cards">';

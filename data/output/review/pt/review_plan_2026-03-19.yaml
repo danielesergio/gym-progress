@@ -1,0 +1,68 @@
+meta:
+  data: "2026-03-19"
+  tipo: "plan"
+  valutazione: 8
+  esito: "APPROVATA"
+
+problemi_critici: []
+
+suggerimenti:
+  - id: "S1"
+    descrizione: "Errore di calcolo sulla massa magra aggiuntiva necessaria per l'obiettivo a lungo termine"
+    motivazione: >
+      Nella sezione strategia_nutrizionale (note_strategia) si afferma che servono '22 kg di massa magra
+      aggiuntiva' per raggiungere 95 kg a BF 13%. Il calcolo corretto e': 95 kg * 0.87 = 82.65 kg MM target,
+      attuale 72.3 kg, delta = 10.35 kg di MM, non 22 kg. L'errore potrebbe generare aspettative distorte
+      sull'entita' del percorso di bulk futuro.
+    proposta: >
+      Correggere il valore a '~10 kg di massa magra aggiuntiva (da 72.3 a ~82.7 kg MM)' e aggiornare
+      la stima temporale di conseguenza (2-3 anni con progressione costante, considerando che l'atleta
+      ha un FFMI attuale di 20.0 e dovrebbe raggiungere ~22.8, ambizioso ma raggiungibile naturalmente).
+
+  - id: "S2"
+    descrizione: "Push-up stretti in fase 1 potenzialmente rischiosi per il piccolo pettorale"
+    motivazione: >
+      I push-up, anche nella variante 'stretti', coinvolgono la protrazione scapolare sotto carico,
+      movimento che attiva direttamente il piccolo pettorale. Anche con la clausola 'solo se indolori
+      dopo settimana 4-5', l'inserimento di questo esercizio nella fase di recupero TOS e' discutibile.
+      Il piccolo pettorale e' un protrattore della scapola e stabilizzatore durante i push-up.
+    proposta: >
+      Rimuovere i push-up dalla fase 1 e spostarli alla fase 2 come primo esercizio di reintegro
+      per il pattern di spinta orizzontale, solo dopo valutazione fisioterapica positiva in settimana 8.
+      In fase 1 mantenere solo esercizi che non coinvolgono protrazione scapolare: face pull,
+      Y-W-T raises, curl, tricipiti ai cavi, rowing seduto (gomiti stretti, retrazione scapolare).
+
+  - id: "S3"
+    descrizione: "Fase 5 troppo lunga e poco strutturata"
+    motivazione: >
+      La fase 5 dura 20 settimane (quasi 5 mesi) ed e' dichiaratamente un 'buffer' per portare il
+      totale a 52 settimane. Tuttavia una fase cosi' lunga senza sotto-struttura concreta rischia di
+      diventare un periodo di allenamento senza direzione. L'atleta ha storicamente sofferto di
+      discontinuita' (periodi Australia 2024), quindi una fase vaga potrebbe ridurre l'aderenza.
+    proposta: >
+      Suddividere la fase 5 in almeno 2-3 sotto-fasi indicative: ad esempio 4 settimane di recupero
+      attivo post-test, 8 settimane di accumulo ipertrofico (eventuale mini-cut se BF risale), 8 settimane
+      di forza-base per preparare il secondo anno. Anche se la pianificazione dettagliata verra' fatta
+      al momento, avere una struttura indicativa aiuta a mantenere la motivazione e l'aderenza.
+
+  - id: "S4"
+    descrizione: "Trend negativo attuale su stacco e massa magra non esplicitamente discusso"
+    motivazione: >
+      Da ott'25 a mar'26 lo stacco e' calato da 200 a 198 kg (-2 kg in ~5.5 mesi) e la massa magra
+      da 73.5 a 72.3 kg (-1.2 kg). Questi trend negativi sono probabilmente legati al fermo per TOS
+      e alla fase di cut, ma non sono esplicitamente discussi nel piano. Riconoscerli aiuterebbe a
+      calibrare le aspettative per la fase 1-2 e a monitorare che il trend si inverta.
+    proposta: >
+      Aggiungere una nota nella sezione 'situazione' o nella fase 1 che riconosce il calo recente
+      di stacco e MM, attribuendolo al fermo per TOS e al deficit calorico, e stabilisce come
+      indicatore di successo della fase 1-2 il ritorno ai livelli di ott'25 (stacco 200 kg, MM 73.5 kg)
+      prima di puntare a nuovi record.
+
+punti_di_forza:
+  - "Target a 6 e 12 mesi calcolati correttamente sui rate storici corretti, conservativi e realistici"
+  - "Gestione dell'infortunio TOS eccellente: lista esercizi vietati completa, reintegro condizionato a valutazione medica, nessun compromesso sulla guarigione"
+  - "Strategia nutrizionale ben ragionata: deficit moderato durante guarigione, trigger chiari per transizione a mantenimento e bulk"
+  - "Rischi identificati in modo completo e con azioni concrete, inclusa la stagnazione storica della panca"
+  - "La somma delle settimane dei macrocicli e' esattamente 52"
+  - "Coerenza tra fasi: la progressione recupero -> forza base -> ipertrofia -> peaking segue una logica di periodizzazione classica ben applicata"
+  - "Il piano rispetta la richiesta dell'atleta di continuare il cut prima di passare al bulk"

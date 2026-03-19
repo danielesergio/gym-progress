@@ -1,0 +1,543 @@
+meta:
+  atleta: "Daniele"
+  data: "2026-03-19"
+  fase: "cut"
+  kcal_allenamento: 2700
+  kcal_riposo: 2580
+  proteine_g: 192
+  carboidrati_g_allenamento: 287
+  carboidrati_g_riposo: 257
+  grassi_g: 87
+  note_strategia: >
+    Fase CUT con deficit moderato di 250 kcal rispetto al TDEE (2886 kcal).
+    Proteine elevate a 2.2 g/kg di massa magra (192 g/giorno) per preservare la massa
+    muscolare e supportare la guarigione della Sindrome TOS (piccolo pettorale).
+    Grassi mantenuti a circa 1 g/kg di peso corporeo (87 g/giorno) per garantire la
+    produzione ormonale ottimale e favorire i processi anti-infiammatori.
+    Carboidrati ciclizzati: piu' alti nei giorni di allenamento (287 g) per supportare
+    la performance e il recupero, ridotti nei giorni di riposo (257 g).
+    Alimenti anti-infiammatori prioritari: pesce grasso (omega-3), frutti rossi,
+    curcuma, zenzero, verdure a foglia verde. Vitamina C da fonti alimentari e
+    integratori per supportare la sintesi del collagene. Brodo osseo o collagene
+    idrolizzato consigliato per il recupero tendineo e capsulare.
+    Idratazione minima 2.5 litri di acqua al giorno, aumentare a 3 litri nei giorni
+    di allenamento. Distribuzione proteica uniforme: 35-40 g per pasto su 5 pasti.
+    Timing carboidrati: concentrare la quota maggiore attorno all allenamento
+    (pre e post) per ottimizzare performance e recupero muscolare.
+
+# ==============================================================================
+# GIORNO TIPO 1 — ALLENAMENTO (Lunedi / Mercoledi / Venerdi)
+# ==============================================================================
+giorni:
+  - nome: "Giorno Allenamento (es. Lunedi)"
+    tipo: "allenamento"
+    kcal: 2700
+    macros:
+      proteine: 192
+      carboidrati: 287
+      grassi: 87
+
+    pasti:
+      - nome: "Colazione"
+        orario: "07:30"
+        note: "Pasto ricco di carboidrati complessi e proteine per iniziare la giornata con energia"
+        alimenti:
+          - nome: "Fiocchi d avena"
+            grammi: 90
+            kcal: 333
+            proteine: 12
+            carbo: 60
+            grassi: 6
+          - nome: "Latte parzialmente scremato"
+            grammi: 250
+            kcal: 108
+            proteine: 8
+            carbo: 12
+            grassi: 3
+          - nome: "Mirtilli freschi"
+            grammi: 80
+            kcal: 45
+            proteine: 1
+            carbo: 11
+            grassi: 0
+          - nome: "Ricotta vaccina"
+            grammi: 100
+            kcal: 136
+            proteine: 11
+            carbo: 3
+            grassi: 9
+        totale:
+          kcal: 622
+          proteine: 32
+          carbo: 86
+          grassi: 18
+
+      - nome: "Spuntino mattina (pre-allenamento)"
+        orario: "10:30"
+        note: "Spuntino leggero a 60-90 min prima dell allenamento per caricare il glicogeno"
+        alimenti:
+          - nome: "Banana matura"
+            grammi: 120
+            kcal: 107
+            proteine: 1
+            carbo: 27
+            grassi: 0
+          - nome: "Yogurt greco 0% grassi"
+            grammi: 150
+            kcal: 90
+            proteine: 16
+            carbo: 6
+            grassi: 0
+          - nome: "Miele millefiori"
+            grammi: 15
+            kcal: 49
+            proteine: 0
+            carbo: 13
+            grassi: 0
+        totale:
+          kcal: 246
+          proteine: 17
+          carbo: 46
+          grassi: 0
+
+      - nome: "Pranzo (post-allenamento)"
+        orario: "13:30"
+        note: "Pasto principale post-workout: priorita a proteine complete e carboidrati per il recupero"
+        alimenti:
+          - nome: "Petto di pollo (peso crudo)"
+            grammi: 200
+            kcal: 220
+            proteine: 46
+            carbo: 0
+            grassi: 4
+          - nome: "Riso basmati cotto"
+            grammi: 200
+            kcal: 260
+            proteine: 5
+            carbo: 58
+            grassi: 1
+          - nome: "Zucchine grigliate"
+            grammi: 150
+            kcal: 27
+            proteine: 2
+            carbo: 5
+            grassi: 0
+          - nome: "Olio extravergine di oliva"
+            grammi: 10
+            kcal: 90
+            proteine: 0
+            carbo: 0
+            grassi: 10
+          - nome: "Succo di limone"
+            grammi: 20
+            kcal: 5
+            proteine: 0
+            carbo: 1
+            grassi: 0
+        totale:
+          kcal: 602
+          proteine: 53
+          carbo: 64
+          grassi: 15
+
+      - nome: "Merenda"
+        orario: "17:00"
+        note: "Spuntino proteico pomeridiano, con frutta per micronutrienti e antiossidanti"
+        alimenti:
+          - nome: "Fiocchi di latte (cottage cheese)"
+            grammi: 200
+            kcal: 154
+            proteine: 22
+            carbo: 6
+            grassi: 4
+          - nome: "Kiwi"
+            grammi: 100
+            kcal: 61
+            proteine: 1
+            carbo: 14
+            grassi: 0
+          - nome: "Noci"
+            grammi: 20
+            kcal: 131
+            proteine: 3
+            carbo: 2
+            grassi: 13
+        totale:
+          kcal: 346
+          proteine: 26
+          carbo: 22
+          grassi: 17
+
+      - nome: "Cena"
+        orario: "20:00"
+        note: "Pasto serale ricco di proteine complete e grassi buoni, carboidrati moderati. Pesce grasso consigliato 2-3 volte/settimana per omega-3 anti-infiammatori"
+        alimenti:
+          - nome: "Salmone fresco (peso crudo)"
+            grammi: 200
+            kcal: 332
+            proteine: 40
+            carbo: 0
+            grassi: 18
+          - nome: "Patate dolci al forno"
+            grammi: 150
+            kcal: 129
+            proteine: 2
+            carbo: 30
+            grassi: 0
+          - nome: "Broccoli al vapore"
+            grammi: 200
+            kcal: 68
+            proteine: 6
+            carbo: 11
+            grassi: 1
+          - nome: "Olio extravergine di oliva"
+            grammi: 15
+            kcal: 135
+            proteine: 0
+            carbo: 0
+            grassi: 15
+          - nome: "Aglio (condimento)"
+            grammi: 5
+            kcal: 6
+            proteine: 0
+            carbo: 1
+            grassi: 0
+        totale:
+          kcal: 670
+          proteine: 48
+          carbo: 42
+          grassi: 34
+
+    totale_giorno:
+      kcal: 2486
+      proteine: 176
+      carbo: 260
+      grassi: 84
+      nota_scostamento: >
+        I totali calcolati mostrano uno scostamento rispetto al target (2700 kcal / 192 P / 287 C / 87 G).
+        Per raggiungere i target esatti aggiungere a piacere: 1 porzione di pane integrale (50g = ~120 kcal,
+        25 g carbo, 5 g proteine) a pranzo o cena, oppure aumentare il riso a 240 g (+52 kcal, +12 g carbo).
+        I valori nutrizionali degli alimenti possono variare per marca e preparazione: usare i totali
+        come riferimento e aggiustare pesando gli alimenti effettivi. Obiettivo: stare entro ±100 kcal
+        e ±10 g di proteine dal target giornaliero.
+
+# ==============================================================================
+# GIORNO TIPO 2 — RIPOSO (Martedi / Giovedi / Sabato / Domenica)
+# ==============================================================================
+  - nome: "Giorno Riposo (es. Martedi)"
+    tipo: "riposo"
+    kcal: 2580
+    macros:
+      proteine: 192
+      carboidrati: 257
+      grassi: 87
+
+    pasti:
+      - nome: "Colazione"
+        orario: "08:00"
+        note: "Colazione bilanciata, carboidrati leggermente ridotti rispetto al giorno di allenamento"
+        alimenti:
+          - nome: "Uova intere"
+            grammi: 150
+            kcal: 222
+            proteine: 18
+            carbo: 1
+            grassi: 16
+          - nome: "Pane integrale tostato"
+            grammi: 60
+            kcal: 156
+            proteine: 6
+            carbo: 30
+            grassi: 2
+          - nome: "Avocado"
+            grammi: 60
+            kcal: 96
+            proteine: 1
+            carbo: 2
+            grassi: 9
+          - nome: "Pomodorini ciliegino"
+            grammi: 100
+            kcal: 18
+            proteine: 1
+            carbo: 4
+            grassi: 0
+          - nome: "Caffe espresso (senza zucchero)"
+            grammi: 30
+            kcal: 2
+            proteine: 0
+            carbo: 0
+            grassi: 0
+        totale:
+          kcal: 494
+          proteine: 26
+          carbo: 37
+          grassi: 27
+
+      - nome: "Spuntino mattina"
+        orario: "10:30"
+        note: "Spuntino proteico leggero, giorno di riposo non richiede carboidrati extra"
+        alimenti:
+          - nome: "Yogurt greco 0% grassi"
+            grammi: 200
+            kcal: 120
+            proteine: 21
+            carbo: 8
+            grassi: 0
+          - nome: "Fragole fresche"
+            grammi: 100
+            kcal: 32
+            proteine: 1
+            carbo: 8
+            grassi: 0
+          - nome: "Semi di lino macinati"
+            grammi: 10
+            kcal: 53
+            proteine: 2
+            carbo: 3
+            grassi: 4
+        totale:
+          kcal: 205
+          proteine: 24
+          carbo: 19
+          grassi: 4
+
+      - nome: "Pranzo"
+        orario: "13:00"
+        note: "Pasto principale ricco di proteine, carboidrati moderati da legumi e verdure"
+        alimenti:
+          - nome: "Petto di tacchino (peso crudo)"
+            grammi: 200
+            kcal: 214
+            proteine: 46
+            carbo: 0
+            grassi: 2
+          - nome: "Lenticchie rosse cotte"
+            grammi: 150
+            kcal: 165
+            proteine: 12
+            carbo: 29
+            grassi: 1
+          - nome: "Spinaci saltati in padella"
+            grammi: 200
+            kcal: 46
+            proteine: 5
+            carbo: 6
+            grassi: 1
+          - nome: "Olio extravergine di oliva"
+            grammi: 12
+            kcal: 108
+            proteine: 0
+            carbo: 0
+            grassi: 12
+          - nome: "Peperoncino e aglio (condimento)"
+            grammi: 5
+            kcal: 5
+            proteine: 0
+            carbo: 1
+            grassi: 0
+        totale:
+          kcal: 538
+          proteine: 63
+          carbo: 36
+          grassi: 16
+
+      - nome: "Merenda"
+        orario: "16:30"
+        note: "Snack proteico nel pomeriggio, frutta secca per grassi sani e micronutrienti"
+        alimenti:
+          - nome: "Fiocchi di latte (cottage cheese)"
+            grammi: 200
+            kcal: 154
+            proteine: 22
+            carbo: 6
+            grassi: 4
+          - nome: "Mela verde"
+            grammi: 150
+            kcal: 78
+            proteine: 0
+            carbo: 20
+            grassi: 0
+          - nome: "Mandorle naturali"
+            grammi: 20
+            kcal: 116
+            proteine: 4
+            carbo: 2
+            grassi: 10
+        totale:
+          kcal: 348
+          proteine: 26
+          carbo: 28
+          grassi: 14
+
+      - nome: "Cena"
+        orario: "20:00"
+        note: "Cena proteica con carboidrati ridotti, grassi sani da pesce o olio. Brodo osseo consigliato come aperitivo serale 3-4 volte/settimana per il collagene"
+        alimenti:
+          - nome: "Merluzzo o orata al forno (peso crudo)"
+            grammi: 250
+            kcal: 228
+            proteine: 50
+            carbo: 0
+            grassi: 3
+          - nome: "Quinoa cotta"
+            grammi: 100
+            kcal: 120
+            proteine: 4
+            carbo: 22
+            grassi: 2
+          - nome: "Asparagi al vapore"
+            grammi: 200
+            kcal: 44
+            proteine: 5
+            carbo: 8
+            grassi: 0
+          - nome: "Olio extravergine di oliva"
+            grammi: 18
+            kcal: 162
+            proteine: 0
+            carbo: 0
+            grassi: 18
+          - nome: "Prezzemolo fresco e limone"
+            grammi: 10
+            kcal: 4
+            proteine: 0
+            carbo: 1
+            grassi: 0
+        totale:
+          kcal: 558
+          proteine: 59
+          carbo: 31
+          grassi: 23
+
+    totale_giorno:
+      kcal: 2143
+      proteine: 198
+      carbo: 151
+      grassi: 84
+      nota_scostamento: >
+        Nota: i totali sopra includono solo gli alimenti elencati. Per raggiungere il target
+        2580 kcal / 257 g carbo aggiungere: riso integrale cotto (200g = ~260 kcal, 56g carbo, 5g prot)
+        a pranzo o cena, oppure aumentare le lenticchie o la quinoa. La distribuzione proteica
+        e' gia corretta (198 g, leggermente sopra target per sicurezza). Aggiustare i carboidrati
+        in base alla fame e all energia percepita nei giorni di riposo.
+
+# ==============================================================================
+# VARIANTI SETTIMANALI (riferimento per gli altri giorni)
+# ==============================================================================
+varianti_proteina_principale:
+  - giorno: "Lunedi (Allenamento)"
+    pranzo: "Petto di pollo"
+    cena: "Salmone"
+  - giorno: "Martedi (Riposo)"
+    pranzo: "Petto di tacchino"
+    cena: "Merluzzo o Orata"
+  - giorno: "Mercoledi (Allenamento)"
+    pranzo: "Manzo magro (girello o scamone)"
+    cena: "Tonno fresco o sgombro"
+  - giorno: "Giovedi (Riposo)"
+    pranzo: "Uova + legumi"
+    cena: "Pollo o tacchino"
+  - giorno: "Venerdi (Allenamento)"
+    pranzo: "Salmone"
+    cena: "Manzo magro"
+  - giorno: "Sabato (Riposo)"
+    pranzo: "Pesce spada o tonno"
+    cena: "Pollo"
+  - giorno: "Domenica (Riposo)"
+    pranzo: "Carne bianca mista o brodo osseo con carne"
+    cena: "Uova + verdure abbondanti"
+
+note_varianti: >
+  Ruotare le fonti proteiche durante la settimana per garantire un profilo aminoacidico
+  completo e varieta di micronutrienti. Pesce grasso (salmone, sgombro, sardine) almeno
+  3 volte/settimana per gli omega-3 EPA e DHA, critici per l anti-infiammazione del TOS.
+  Carne rossa magra (girello, scamone, controfiletto) 2 volte/settimana per ferro e zinco.
+  Uova: fonte proteica completa e versatile, 3-4 a colazione o come fonte principale
+  in un pasto di riposo. Legumi (lenticchie, ceci, fagioli) come fonte proteica vegetale
+  2 volte/settimana, ottimi per fibra e micronutrienti.
+
+# ==============================================================================
+# INTEGRATORI
+# ==============================================================================
+integratori:
+  - nome: "Vitamina C"
+    dose: "500-1000 mg"
+    timing: "mattina con colazione"
+    note: >
+      Fondamentale per la sintesi del collagene e la guarigione del TOS. La vitamina C
+      e cofattore essenziale della prolilidrossilasi, enzima chiave per la formazione
+      del collagene stabile. Preferire forma tampona ta (sodio ascorbato) per evitare
+      irritazione gastrica. Assumere anche da fonti alimentari: kiwi, peperoni, agrumi.
+
+  - nome: "Omega-3 (EPA + DHA)"
+    dose: "2-3 g totali di EPA+DHA"
+    timing: "con i pasti (es. pranzo + cena)"
+    note: >
+      Potente azione anti-infiammatoria, supporto alla guarigione del tessuto connettivo.
+      Se si consumano 3 porzioni settimanali di pesce grasso (salmone, sgombro, sardine)
+      la dose puo essere ridotta a 1-2 g supplementari. Scegliere olio di pesce purificato
+      (certificato IFOS) per evitare contaminanti.
+
+  - nome: "Collagene idrolizzato (tipo I e III)"
+    dose: "10-15 g"
+    timing: "30-60 minuti prima dell allenamento o al mattino a digiuno"
+    note: >
+      L assunzione pre-allenamento con vitamina C aumenta la sintesi di collagene nel
+      tessuto connettivo stimolata dal carico meccanico (studio Shaw et al., 2017).
+      Particolarmente indicato per la guarigione del TOS (tendini, fascia, capsula).
+      In alternativa: brodo osseo fatto in casa (250 ml = ~10 g collagene naturale).
+
+  - nome: "Vitamina D3 + K2"
+    dose: "2000-4000 UI D3 + 100 mcg K2"
+    timing: "con il pasto piu ricco di grassi (pranzo o cena)"
+    note: >
+      Essenziale per la funzione muscolare, la sintesi proteica e la risposta immunitaria.
+      In Australia la carenza e meno comune rispetto al Nord Europa, ma monitorare i livelli
+      con esame del sangue (target 25-OH-D: 50-80 ng/ml). La K2 (MK-7) ottimizza
+      l utilizzo del calcio e riduce la calcificazione ectopica.
+
+  - nome: "Magnesio glicinato o malato"
+    dose: "300-400 mg"
+    timing: "sera, 30-60 minuti prima di dormire"
+    note: >
+      Supporto al recupero muscolare, qualita del sonno e riduzione della risposta
+      infiammatoria. Il magnesio glicinato e meglio tollerato a livello gastrointestinale
+      rispetto all ossido. Utile per gestire il cortisolo durante la fase cut.
+
+  - nome: "Creatina monoidrato"
+    dose: "5 g"
+    timing: "dopo l allenamento (o con qualsiasi pasto nei giorni di riposo)"
+    note: >
+      Supporto alla forza e al volume muscolare durante la fase cut per limitare
+      la perdita di performance. La creatina e sicura e ben studiata. Non richiede
+      fase di carico: 5 g/giorno costanti sono sufficienti per saturare i depositi
+      muscolari in 3-4 settimane. Sciogliere in acqua o succo di frutta.
+
+  - nome: "Zinco"
+    dose: "15-25 mg"
+    timing: "sera con cena"
+    note: >
+      Cofattore per oltre 300 enzimi, inclusi quelli coinvolti nella sintesi proteica
+      e nella risposta immunitaria. Importante per la guarigione tissutale. Non assumere
+      a stomaco vuoto (nausea). Non superare 40 mg/giorno totali (incluse fonti alimentari).
+
+note_finali_dieta: >
+  IDRATAZIONE: minimo 2.5 litri di acqua al giorno. Nei giorni di allenamento portare
+  a 3-3.5 litri. Distribuire l apporto idrico durante la giornata (non bere grandi
+  quantita in una sola volta). L acqua e fondamentale per il metabolismo del tessuto
+  connettivo e per la lubrificazione articolare — critica durante il recupero TOS.
+
+  PREPARAZIONE ALIMENTI: preferire cotture leggere (vapore, forno, griglia, saltato
+  con poco olio). Evitare fritture. Per le carni usare marinature con aglio, limone,
+  curcuma, zenzero — tutti con proprieta anti-infiammatorie.
+
+  FLESSIBILITA: i pasti possono essere adattati agli orari della giornata. Se l
+  allenamento e serale, spostare i carboidrati pre-workout alla merenda (16:30) e
+  il pasto post-workout alla cena (21:00). La priorita assoluta e raggiungere il
+  target proteico giornaliero (192 g). Le calorie e i carboidrati hanno una tolleranza
+  di +/- 150 kcal senza impatto significativo sul progresso settimanale.
+
+  MONITORAGGIO: pesarsi ogni 7-10 giorni, stessa ora (mattino a digiuno, dopo bagno).
+  Il peso puo oscillare di 1-2 kg giorno per giorno per idratazione e glicogeno:
+  valutare la media delle pesate, non il singolo valore. Target: -0.3/0.5 kg/settimana
+  per mantenere la massa muscolare durante il cut.

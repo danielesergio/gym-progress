@@ -9,6 +9,7 @@ Leggi quindi:
 - `data/athlete.md` — dati anagrafici e profilo
 - `data/goals` — obiettivi a lungo termine
 - `data/preferences` — preferenze di allenamento
+- `data/previous_data.json` — **(se esiste)** dati storici pre-sistema da importare in measurements.json alla prima iterazione
 - `data/output/measurements.json` — tutte le misurazioni storiche
 - `data/output/plan.html` — piano a lungo termine corrente
 - `data/output/workout_data_*.json` — scheda dell'iterazione corrente (nella root di output)
@@ -58,6 +59,32 @@ Leggi quindi:
 - **Se ci sono infortuni**: valuta gravita', muscoli coinvolti, esercizi da evitare e timeline di recupero
 
 ### 3. Pianificazione annuale (aggiorna se necessario)
+
+#### CHECK OBBLIGATORIO: Calcolo rate di progressione storica
+**Prima di generare QUALSIASI target intermedio (6 mesi, 12 mesi) nel plan.html, DEVI:**
+
+1. Leggere `measurements.json` e calcolare il rate di progressione storica per ogni lift:
+   - Per ogni coppia di misurazioni consecutive con massimali, calcola: `(massimale_nuovo - massimale_vecchio) / (giorni_trascorsi / 365)` = kg/anno
+   - Calcola la **media** e il **range** (min-max) del rate annuale per ogni lift
+2. **Stampare a schermo** i rate calcolati prima di procedere, nel formato:
+   ```
+   RATE DI PROGRESSIONE STORICA:
+   - Squat: media X kg/anno (range: Y - Z kg/anno)
+   - Panca: media X kg/anno (range: Y - Z kg/anno)
+   - Stacco: media X kg/anno (range: Y - Z kg/anno)
+   ```
+3. I target a 6 e 12 mesi DEVONO essere calcolati come: `massimale_attuale + (rate_medio * mesi/12)`
+4. Applicare **fattori correttivi conservativi** (che riducono, mai aumentano):
+   - Infortunio in corso: -30% sul rate del lift coinvolto
+   - Stallo attivo (>6 mesi senza progressi): -50% sul rate di quel lift
+   - Fase di cut: -20% su tutti i rate (il deficit calorico rallenta i guadagni di forza)
+   - Eta' >35: -10% su tutti i rate
+5. **Mai proiettare una progressione superiore al rate storico** senza giustificazione esplicita scritta nel plan.html
+6. Includere la colonna "Storico/anno" nella tabella Target Intermedi del plan.html
+
+Se i target calcolati risultano incoerenti con la timeline degli obiettivi finali (es. servirebbero 6 anni ma il piano dice 3), aggiorna la timeline degli obiettivi finali, NON gonfiare i target intermedi.
+
+#### Poi procedi con la pianificazione:
 - Definisci o aggiorna i target annuali realistici (forza, composizione corporea, performance)
 - Suddividi in macrocicli/mesocicli
 - Considera la periodizzazione piu' adatta agli obiettivi prioritari
@@ -171,7 +198,23 @@ Regole per il workout:
 - Ogni nuovo esercizio inserito nel workout deve essere aggiunto anche al dizionario `EXERCISE_MUSCLES` in `scripts/volume_calc.py` con i muscoli principale/secondario/terziario
 
 #### `data/output/measurements.json`
-Array JSON con tutte le misurazioni storiche. **Aggiungi** una entry per ogni iterazione senza cancellare quelle precedenti:
+Array JSON con tutte le misurazioni storiche. **Aggiungi** una entry per ogni iterazione senza cancellare quelle precedenti.
+
+**Prima iterazione con `data/previous_data.json`**: se `measurements.json` non esiste ancora e il file `data/previous_data.json` esiste, leggilo e importa tutte le entry come base storica iniziale di `measurements.json`. Aggiungi poi la nuova entry dell'iterazione corrente in coda.
+
+Le entry in `previous_data.json` potrebbero contenere solo i dati grezzi (peso, misure, massimali) senza i campi calcolati. Per ogni entry importata, **calcola i campi mancanti** usando i dati dell'atleta (`data/athlete.md` per altezza e sesso):
+- `body_fat_pct` — formula US Navy (vedi sotto), richiede vita, collo, altezza (e fianchi per F)
+- `massa_grassa_kg` — `peso_kg * body_fat_pct / 100`
+- `massa_magra_kg` — `peso_kg - massa_grassa_kg`
+- `ffmi` — `massa_magra_kg / (altezza_m ^ 2)`
+- `ffmi_adj` — `ffmi + 6.1 * (1.8 - altezza_m)`
+- `bmr_kcal` — Mifflin-St Jeor: maschi `10 * peso + 6.25 * altezza - 5 * eta - 5`
+- `tdee_kcal` — `bmr_kcal * fattore_attivita` (usa 1.55 se non specificato)
+- `eta` — calcolata dalla data di nascita in `athlete.md` e dalla data della entry
+
+Se un campo calcolato e' gia' presente nell'entry, non sovrascriverlo. Se mancano i dati grezzi necessari per il calcolo (es. vita o collo assenti), lascia i campi calcolati a `null`.
+
+Struttura di ogni entry:
 
 ```json
 [

@@ -76,7 +76,7 @@ nav a.nav-item.active {
 }
 
 /* Layout */
-.content { padding: 2rem; max-width: 1100px; margin: 0 auto; }
+.content { padding: 2rem; max-width: 1400px; margin: 0 auto; width: 100%; }
 
 /* Cards */
 .cards {
@@ -122,12 +122,21 @@ nav a.nav-item.active {
 .card.accent { border-color: var(--accent); }
 .card.green { border-color: var(--green); }
 
+/* Table responsive wrapper */
+.table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 1rem 0;
+}
+
 /* Tables */
 table {
     width: 100%;
     border-collapse: collapse;
     margin: 1rem 0;
     font-size: 0.9rem;
+    min-width: 480px;
 }
 
 th {
@@ -322,12 +331,19 @@ details.muscle-detail .detail-table th { padding: 0.5rem 0.75rem; font-size: 0.8
     border-radius: 0 8px 8px 0;
 }
 .md-content blockquote p { color: var(--text-muted); font-style: italic; }
+.md-content .table-wrap { margin: 1rem 0; }
 .md-content table { background: var(--surface); border-radius: 8px; overflow: hidden; }
 
 .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
 h2.page-title { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text); }
 
-/* Responsive */
+/* Responsive — wide screens */
+@media (min-width: 1400px) {
+    .content { max-width: 1600px; }
+    .cards { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Responsive — tablets */
 @media (max-width: 768px) {
     nav { padding: 0 1rem; flex-direction: column; gap: 0; }
     nav .logo { padding: 0.75rem 0 0; }
@@ -336,9 +352,36 @@ h2.page-title { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text); }
     .content { padding: 1rem; }
     .cards { grid-template-columns: repeat(2, 1fr); }
     .card .value { font-size: 1.5rem; }
-    .bar-label { width: 100px; font-size: 0.75rem; }
+    .bar-label { width: 110px; font-size: 0.78rem; }
     table { font-size: 0.8rem; }
     td, th { padding: 0.4rem 0.5rem; }
+    .sub-nav { flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
+    .day-nav { gap: 0.5rem; }
+    .day-nav a { padding: 0.4rem 0.6rem; font-size: 0.8rem; }
+}
+
+/* Responsive — small phones */
+@media (max-width: 480px) {
+    nav { padding: 0 0.5rem; }
+    nav a.nav-item { padding: 0.6rem 0.5rem; font-size: 0.75rem; }
+    .content { padding: 0.75rem; }
+    .cards { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .card { padding: 1rem; }
+    .card .label { font-size: 0.7rem; }
+    .card .value { font-size: 1.25rem; }
+    .card .sub { font-size: 0.7rem; }
+    h2.page-title { font-size: 1.2rem; margin-bottom: 1rem; }
+    .bar-label { width: 80px; font-size: 0.7rem; }
+    .bar-track { height: 18px; }
+    .bar-value { width: 35px; font-size: 0.75rem; }
+    .sub-nav-item { padding: 0.6rem 0.75rem; font-size: 0.78rem; }
+    .warmup-cooldown { padding: 0.75rem; }
+    .warmup-cooldown ol { font-size: 0.8rem; }
+    details.muscle-detail summary { font-size: 0.85rem; padding: 0.6rem 0.75rem; }
+    .md-content h2 { font-size: 1.1rem; }
+    .md-content h3 { font-size: 1rem; }
+    .md-content h4 { font-size: 0.9rem; }
+    .md-content p, .md-content li { font-size: 0.85rem; }
 }
 </style>
 </head>

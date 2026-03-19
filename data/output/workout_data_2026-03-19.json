@@ -1,0 +1,419 @@
+{
+  "titolo": "Scheda di Allenamento",
+  "data": "2026-03-19",
+  "mesociclo": {
+    "nome": "Recupero TOS + Cut",
+    "durata": "2 settimane",
+    "metodologia": "RPE controllato (6-7), volume ridotto, zero esercizi a rischio TOS",
+    "frequenza": "3 giorni/settimana (Lun-Mer-Ven)",
+    "obiettivo": "Riattivazione muscolare dopo 3 settimane di stop, mantenimento forza gambe, preservazione massa magra durante cut",
+    "logica": [
+      "Nessun esercizio che coinvolga il piccolo pettorale (panca, trazioni, dips, military press, push-up, flyes, farmer's walk pesante)",
+      "Focus su lower body e posterior chain per mantenere forza su squat e stacco",
+      "Face pull terapeutici per rinforzare retrattori scapolari e favorire decompressione toracica",
+      "RPE conservativo (6-7) per le prime settimane di ripresa",
+      "Test day ridotto alla fine della S2: solo Squat e Stacco, Panca saltata per TOS"
+    ]
+  },
+  "riscaldamento": [
+    "Foam roller zona dorsale e toracica: 2 minuti",
+    "Stretching piccolo pettorale: 30 sec/lato, braccio a 90 gradi contro una porta",
+    "Band pull-apart: 2x15 (attivazione retrattori scapolari)",
+    "Camminata su tapis roulant o bike: 5 minuti",
+    "Mobilita' anche e caviglie: 2-3 minuti",
+    "Serie di riscaldamento specifiche per il primo esercizio (indicate nella scheda)"
+  ],
+  "defaticamento": [
+    "Stretching statico gambe: quadricipiti, femorali, glutei (30 sec/muscolo)",
+    "Stretching piccolo pettorale: 30 sec/lato",
+    "Foam roller dorsale: 1 minuto",
+    "Respirazione diaframmatica: 10 respiri profondi"
+  ],
+  "note": [
+    "ESCLUSI per TOS: Panca piana/inclinata/declinata, push-up, croci/flyes, dips, trazioni (tutte le prese), military press, overhead press, farmer's walk pesante",
+    "Se senti formicolio, intorpidimento o dolore irradiato al braccio durante qualsiasi esercizio: FERMATI IMMEDIATAMENTE",
+    "Stretching piccolo pettorale: 2-3 volte al giorno, anche nei giorni di riposo",
+    "RPE 6 = potresti fare 4 ripetizioni in piu'. RPE 7 = potresti fare 3 ripetizioni in piu'",
+    "Progressione: nella S2 puoi aumentare di 2.5 kg sugli esercizi principali SOLO se l'RPE della S1 era inferiore a 7"
+  ],
+  "settimane": [
+    {
+      "id": "S1",
+      "nome": "Settimana 1",
+      "descrizione": "Riattivazione — RPE 6, volume moderato",
+      "giorni": [
+        {
+          "id": "A",
+          "nome": "Lunedi: Lower Body — Squat Focus",
+          "esercizi": [
+            {
+              "nome": "Squat con bilanciere",
+              "serie": 4,
+              "reps": "4x5",
+              "peso": "120 kg (RPE 6)",
+              "recupero": "3 min",
+              "gruppo": "Quadricipiti, glutei",
+              "principale": true
+            },
+            {
+              "nome": "Leg press",
+              "serie": 3,
+              "reps": "3x10",
+              "peso": "RPE 7",
+              "recupero": "2 min",
+              "gruppo": "Quadricipiti, glutei",
+              "principale": false
+            },
+            {
+              "nome": "Leg curl sdraiato",
+              "serie": 3,
+              "reps": "3x10",
+              "peso": "RPE 7",
+              "recupero": "90 sec",
+              "gruppo": "Femorali",
+              "principale": false
+            },
+            {
+              "nome": "Face pull al cavo",
+              "serie": 3,
+              "reps": "3x15",
+              "peso": "RPE 6 (terapeutico)",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori, cuffia dei rotatori",
+              "principale": false
+            },
+            {
+              "nome": "Alzate laterali con manubri",
+              "serie": 3,
+              "reps": "3x12",
+              "peso": "RPE 7",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi mediali",
+              "principale": false
+            },
+            {
+              "nome": "Plank",
+              "serie": 3,
+              "reps": "3x45 sec",
+              "peso": "Corpo libero",
+              "recupero": "60 sec",
+              "gruppo": "Core",
+              "principale": false
+            }
+          ]
+        },
+        {
+          "id": "B",
+          "nome": "Mercoledi: Lower Body — Stacco Focus",
+          "esercizi": [
+            {
+              "nome": "Stacco da terra convenzionale",
+              "serie": 4,
+              "reps": "4x5",
+              "peso": "165 kg (RPE 6)",
+              "recupero": "3 min",
+              "gruppo": "Femorali, glutei, erettori spinali",
+              "principale": true
+            },
+            {
+              "nome": "Bulgarian split squat",
+              "serie": 3,
+              "reps": "3x8/gamba",
+              "peso": "RPE 7",
+              "recupero": "90 sec",
+              "gruppo": "Quadricipiti, glutei",
+              "principale": false
+            },
+            {
+              "nome": "Leg extension",
+              "serie": 3,
+              "reps": "3x12",
+              "peso": "RPE 7",
+              "recupero": "90 sec",
+              "gruppo": "Quadricipiti",
+              "principale": false
+            },
+            {
+              "nome": "Face pull al cavo",
+              "serie": 3,
+              "reps": "3x15",
+              "peso": "RPE 6 (terapeutico)",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori, cuffia dei rotatori",
+              "principale": false
+            },
+            {
+              "nome": "Curl con bilanciere",
+              "serie": 3,
+              "reps": "3x10",
+              "peso": "RPE 7",
+              "recupero": "60 sec",
+              "gruppo": "Bicipiti",
+              "principale": false
+            },
+            {
+              "nome": "Crunch ai cavi",
+              "serie": 3,
+              "reps": "3x12",
+              "peso": "RPE 7",
+              "recupero": "60 sec",
+              "gruppo": "Core",
+              "principale": false
+            }
+          ]
+        },
+        {
+          "id": "C",
+          "nome": "Venerdi: Lower Body — Volume + Accessori",
+          "esercizi": [
+            {
+              "nome": "Squat con bilanciere",
+              "serie": 3,
+              "reps": "3x8",
+              "peso": "100 kg (RPE 6)",
+              "recupero": "2 min",
+              "gruppo": "Quadricipiti, glutei",
+              "principale": true
+            },
+            {
+              "nome": "Stacco rumeno",
+              "serie": 3,
+              "reps": "3x8",
+              "peso": "RPE 7",
+              "recupero": "2 min",
+              "gruppo": "Femorali, glutei",
+              "principale": false
+            },
+            {
+              "nome": "Leg press",
+              "serie": 3,
+              "reps": "3x12",
+              "peso": "RPE 7",
+              "recupero": "2 min",
+              "gruppo": "Quadricipiti, glutei",
+              "principale": false
+            },
+            {
+              "nome": "Face pull al cavo",
+              "serie": 3,
+              "reps": "3x15",
+              "peso": "RPE 6 (terapeutico)",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori, cuffia dei rotatori",
+              "principale": false
+            },
+            {
+              "nome": "Curl a martello con manubri",
+              "serie": 3,
+              "reps": "3x10",
+              "peso": "RPE 7",
+              "recupero": "60 sec",
+              "gruppo": "Bicipiti, brachiale",
+              "principale": false
+            },
+            {
+              "nome": "Alzate laterali con manubri",
+              "serie": 3,
+              "reps": "3x12",
+              "peso": "RPE 7",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi mediali",
+              "principale": false
+            }
+          ]
+        }
+      ],
+      "progressione": {
+        "nota": "Settimana di riattivazione. RPE 6 sugli esercizi principali. Non aumentare i carichi.",
+        "tabella": [
+          {"esercizio": "Squat (5 rep)", "S1": "120 kg"},
+          {"esercizio": "Stacco (5 rep)", "S1": "165 kg"},
+          {"esercizio": "Squat volume (8 rep)", "S1": "100 kg"}
+        ]
+      }
+    },
+    {
+      "id": "S2",
+      "nome": "Settimana 2",
+      "descrizione": "Consolidamento — RPE 7 + Test Day ridotto",
+      "giorni": [
+        {
+          "id": "A",
+          "nome": "Lunedi: Lower Body — Squat Focus",
+          "esercizi": [
+            {
+              "nome": "Squat con bilanciere",
+              "serie": 4,
+              "reps": "4x5",
+              "peso": "125 kg (RPE 7)",
+              "recupero": "3 min",
+              "gruppo": "Quadricipiti, glutei",
+              "principale": true
+            },
+            {
+              "nome": "Leg press",
+              "serie": 3,
+              "reps": "3x10",
+              "peso": "RPE 7",
+              "recupero": "2 min",
+              "gruppo": "Quadricipiti, glutei",
+              "principale": false
+            },
+            {
+              "nome": "Leg curl sdraiato",
+              "serie": 3,
+              "reps": "3x10",
+              "peso": "RPE 7",
+              "recupero": "90 sec",
+              "gruppo": "Femorali",
+              "principale": false
+            },
+            {
+              "nome": "Face pull al cavo",
+              "serie": 3,
+              "reps": "3x15",
+              "peso": "RPE 6 (terapeutico)",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori, cuffia dei rotatori",
+              "principale": false
+            },
+            {
+              "nome": "Alzate laterali con manubri",
+              "serie": 3,
+              "reps": "3x12",
+              "peso": "RPE 7",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi mediali",
+              "principale": false
+            },
+            {
+              "nome": "Plank",
+              "serie": 3,
+              "reps": "3x45 sec",
+              "peso": "Corpo libero",
+              "recupero": "60 sec",
+              "gruppo": "Core",
+              "principale": false
+            }
+          ]
+        },
+        {
+          "id": "B",
+          "nome": "Mercoledi: Lower Body — Stacco Focus",
+          "esercizi": [
+            {
+              "nome": "Stacco da terra convenzionale",
+              "serie": 4,
+              "reps": "4x5",
+              "peso": "170 kg (RPE 7)",
+              "recupero": "3 min",
+              "gruppo": "Femorali, glutei, erettori spinali",
+              "principale": true
+            },
+            {
+              "nome": "Bulgarian split squat",
+              "serie": 3,
+              "reps": "3x8/gamba",
+              "peso": "RPE 7",
+              "recupero": "90 sec",
+              "gruppo": "Quadricipiti, glutei",
+              "principale": false
+            },
+            {
+              "nome": "Leg extension",
+              "serie": 3,
+              "reps": "3x12",
+              "peso": "RPE 7",
+              "recupero": "90 sec",
+              "gruppo": "Quadricipiti",
+              "principale": false
+            },
+            {
+              "nome": "Face pull al cavo",
+              "serie": 3,
+              "reps": "3x15",
+              "peso": "RPE 6 (terapeutico)",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori, cuffia dei rotatori",
+              "principale": false
+            },
+            {
+              "nome": "Curl con bilanciere",
+              "serie": 3,
+              "reps": "3x10",
+              "peso": "RPE 7",
+              "recupero": "60 sec",
+              "gruppo": "Bicipiti",
+              "principale": false
+            },
+            {
+              "nome": "Crunch ai cavi",
+              "serie": 3,
+              "reps": "3x12",
+              "peso": "RPE 7",
+              "recupero": "60 sec",
+              "gruppo": "Core",
+              "principale": false
+            }
+          ]
+        },
+        {
+          "id": "test",
+          "nome": "Venerdi: TEST DAY",
+          "info_test": {
+            "tipo": "3RM indiretto — stima 1RM con formula Epley",
+            "ordine": "Squat > Stacco (Panca SALTATA per TOS)",
+            "formula": "1RM = peso x (1 + reps/30)",
+            "regole": [
+              "Riscaldamento completo prima di ogni lift (vedi protocollo sotto)",
+              "Riposo 3-5 min tra le serie pesanti, 5-8 min tra un lift e l'altro",
+              "Se il Tentativo 1 risulta facile (RPE < 8), prova il Tentativo 2",
+              "Se il Tentativo 1 risulta molto duro (RPE 9-10), fermati li'",
+              "PANCA SALTATA: non testare la panca fino a completa guarigione TOS",
+              "Registra peso e ripetizioni effettive per il calcolo 1RM"
+            ]
+          },
+          "protocolli": [
+            {
+              "nome": "SQUAT",
+              "target": "Target 3RM: ~130 kg (1RM stimato: ~143 kg)",
+              "serie": [
+                {"set": "Risc. 1", "peso": "Bilanciere", "reps": 8, "note": ""},
+                {"set": "Risc. 2", "peso": "60 kg", "reps": 5, "note": ""},
+                {"set": "Risc. 3", "peso": "80 kg", "reps": 3, "note": ""},
+                {"set": "Risc. 4", "peso": "100 kg", "reps": 2, "note": ""},
+                {"set": "Risc. 5", "peso": "115 kg", "reps": 1, "note": ""},
+                {"set": "Tentativo 1", "peso": "125 kg", "reps": 3, "note": "Conservativo — target RPE 8", "tentativo": true},
+                {"set": "Tentativo 2", "peso": "130 kg", "reps": 3, "note": "Solo se T1 era RPE < 8", "tentativo": true}
+              ]
+            },
+            {
+              "nome": "PANCA",
+              "target": "SALTATA — Sindrome TOS in corso",
+              "serie": []
+            },
+            {
+              "nome": "STACCO",
+              "target": "Target 3RM: ~180 kg (1RM stimato: ~198 kg)",
+              "serie": [
+                {"set": "Risc. 1", "peso": "60 kg", "reps": 5, "note": ""},
+                {"set": "Risc. 2", "peso": "100 kg", "reps": 3, "note": ""},
+                {"set": "Risc. 3", "peso": "130 kg", "reps": 2, "note": ""},
+                {"set": "Risc. 4", "peso": "155 kg", "reps": 1, "note": ""},
+                {"set": "Tentativo 1", "peso": "175 kg", "reps": 3, "note": "Conservativo — target RPE 8", "tentativo": true},
+                {"set": "Tentativo 2", "peso": "180 kg", "reps": 3, "note": "Solo se T1 era RPE < 8", "tentativo": true}
+              ]
+            }
+          ]
+        }
+      ],
+      "progressione": {
+        "nota": "Progressione di +2.5-5 kg rispetto alla S1 sugli esercizi principali, solo se RPE della S1 era sotto 7. Il Test Day chiude il mesociclo.",
+        "tabella": [
+          {"esercizio": "Squat (5 rep)", "S1": "120 kg", "S2": "125 kg"},
+          {"esercizio": "Stacco (5 rep)", "S1": "165 kg", "S2": "170 kg"}
+        ]
+      }
+    }
+  ]
+}

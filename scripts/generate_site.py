@@ -134,6 +134,149 @@ def build_dashboard(measurements: list[dict]) -> str:
     html += '</div>\n'
 
     if measurements:
+        # --- Grafico massimali ---
+        html += '<h3 style="margin:1.5rem 0 .75rem">Andamento Massimali</h3>\n'
+        html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem;">\n'
+        html += '  <canvas id="chart-massimali" height="110"></canvas>\n'
+        html += '</div>\n'
+
+        # Prepara dati per Chart.js
+        labels = []
+        squat_data = []
+        panca_data = []
+        stacco_data = []
+        totale_data = []
+        for m in measurements:
+            data = m.get("data", "")
+            eta = m.get("eta", "")
+            peso_m = m.get("peso_kg", "")
+            if eta and peso_m:
+                label = [data, f"{eta}a / {peso_m}kg"]
+            else:
+                label = [data]
+            labels.append(label)
+            sq = m.get("squat_1rm") or 0
+            pa = m.get("panca_1rm") or 0
+            st = m.get("stacco_1rm") or 0
+            squat_data.append(sq)
+            panca_data.append(pa)
+            stacco_data.append(st)
+            totale_data.append(sq + pa + st)
+
+        max_single = max(max(squat_data), max(panca_data), max(stacco_data))
+        max_totale = max(totale_data)
+        y_max = max_single + 100
+        y1_max = max_totale + 100
+
+        labels_js = json.dumps(labels)
+        squat_js = json.dumps(squat_data)
+        panca_js = json.dumps(panca_data)
+        stacco_js = json.dumps(stacco_data)
+        totale_js = json.dumps(totale_data)
+
+        html += '<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>\n'
+        html += f"""<script>
+document.addEventListener('DOMContentLoaded', function() {{
+    var ctx = document.getElementById('chart-massimali').getContext('2d');
+    new Chart(ctx, {{
+        type: 'bar',
+        data: {{
+            labels: {labels_js},
+            datasets: [
+                {{
+                    label: 'Squat',
+                    data: {squat_js},
+                    backgroundColor: 'rgba(108,140,255,0.7)',
+                    borderColor: 'rgba(108,140,255,1)',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    order: 2
+                }},
+                {{
+                    label: 'Panca',
+                    data: {panca_js},
+                    backgroundColor: 'rgba(78,205,196,0.7)',
+                    borderColor: 'rgba(78,205,196,1)',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    order: 2
+                }},
+                {{
+                    label: 'Stacco',
+                    data: {stacco_js},
+                    backgroundColor: 'rgba(255,169,77,0.7)',
+                    borderColor: 'rgba(255,169,77,1)',
+                    borderWidth: 1,
+                    borderRadius: 4,
+                    order: 2
+                }},
+                {{
+                    label: 'Totale',
+                    data: {totale_js},
+                    type: 'line',
+                    borderColor: 'rgba(255,217,61,0.8)',
+                    backgroundColor: 'rgba(255,217,61,0.1)',
+                    borderWidth: 2,
+                    pointRadius: 4,
+                    pointBackgroundColor: 'rgba(255,217,61,1)',
+                    fill: false,
+                    yAxisID: 'y1',
+                    order: 1
+                }}
+            ]
+        }},
+        options: {{
+            responsive: true,
+            interaction: {{ mode: 'index', intersect: false }},
+            plugins: {{
+                legend: {{
+                    labels: {{ color: '#8b8fa3', font: {{ size: 12 }} }}
+                }},
+                tooltip: {{
+                    callbacks: {{
+                        label: function(ctx) {{ return ctx.dataset.label + ': ' + ctx.parsed.y + ' kg'; }}
+                    }}
+                }}
+            }},
+            datasets: {{
+                bar: {{
+                    barPercentage: 0.6,
+                    categoryPercentage: 0.5
+                }}
+            }},
+            scales: {{
+                x: {{
+                    ticks: {{
+                        color: '#8b8fa3',
+                        font: {{ size: 11 }},
+                        maxRotation: 0
+                    }},
+                    grid: {{ color: 'rgba(45,49,66,0.5)' }}
+                }},
+                y: {{
+                    position: 'left',
+                    title: {{ display: true, text: 'Massimale (kg)', color: '#8b8fa3' }},
+                    ticks: {{ color: '#8b8fa3' }},
+                    grid: {{ color: 'rgba(45,49,66,0.5)' }},
+                    beginAtZero: true,
+                    max: {y_max}
+                }},
+                y1: {{
+                    position: 'right',
+                    title: {{ display: true, text: 'Totale (kg)', color: '#8b8fa3' }},
+                    ticks: {{ color: 'rgba(255,217,61,0.8)' }},
+                    grid: {{ drawOnChartArea: false }},
+                    beginAtZero: true,
+                    max: {y1_max}
+                }}
+            }}
+        }}
+    }});
+}});
+</script>
+"""
+
+        # --- Tabella storico ---
         cols = [
             ("Data", "data"), ("Peso", "peso_kg"), ("BF%", "body_fat_pct"),
             ("Massa magra", "massa_magra_kg"), ("FFMI adj", "ffmi_adj"),
@@ -141,7 +284,7 @@ def build_dashboard(measurements: list[dict]) -> str:
             ("Note", "note"),
         ]
         html += '<h3 style="margin:1.5rem 0 .75rem">Storico misurazioni</h3>\n'
-        html += '<table><thead><tr>'
+        html += '<div class="table-wrap">\n<table><thead><tr>'
         for label, _ in cols:
             html += f'<th>{label}</th>'
         html += '</tr></thead><tbody>\n'
@@ -153,7 +296,7 @@ def build_dashboard(measurements: list[dict]) -> str:
                     val = f"{val}%"
                 html += f'<td>{val}</td>'
             html += '</tr>\n'
-        html += '</tbody></table>\n'
+        html += '</tbody></table>\n</div>\n'
 
     return html
 
@@ -181,7 +324,7 @@ def _cooldown_html(items: list[str]) -> str:
 
 
 def _exercise_table(esercizi: list[dict]) -> str:
-    html = '<table>\n<thead><tr>'
+    html = '<div class="table-wrap">\n<table>\n<thead><tr>'
     html += '<th>#</th><th>Esercizio</th><th>Serie x Reps</th>'
     html += '<th>Peso / Intensita</th><th>Recupero</th><th>Gruppo</th>'
     html += '</tr></thead>\n<tbody>\n'
@@ -196,7 +339,7 @@ def _exercise_table(esercizi: list[dict]) -> str:
         html += f'<td>{esc(ex.get("peso", ""))}</td>'
         html += f'<td>{esc(ex.get("recupero", ""))}</td>'
         html += f'<td>{esc(ex.get("gruppo", ""))}</td></tr>\n'
-    html += '</tbody>\n</table>\n'
+    html += '</tbody>\n</table>\n</div>\n'
     return html
 
 
@@ -217,7 +360,7 @@ def _test_day_html(giorno: dict, warmup: str, cooldown: str) -> str:
             html += '</ul>\n'
     for proto in giorno.get("protocolli", []):
         html += f'<h4>Protocollo {esc(proto["nome"])} ({esc(proto.get("target", ""))})</h4>\n'
-        html += '<table>\n<thead><tr><th>Set</th><th>Peso</th><th>Reps</th><th>Note</th></tr></thead>\n<tbody>\n'
+        html += '<div class="table-wrap">\n<table>\n<thead><tr><th>Set</th><th>Peso</th><th>Reps</th><th>Note</th></tr></thead>\n<tbody>\n'
         for s in proto.get("serie", []):
             if s.get("tentativo"):
                 html += f'<tr><td><strong>{esc(s["set"])}</strong></td><td><strong>{esc(s["peso"])}</strong></td>'
@@ -225,7 +368,7 @@ def _test_day_html(giorno: dict, warmup: str, cooldown: str) -> str:
             else:
                 html += f'<tr><td>{esc(s["set"])}</td><td>{esc(s["peso"])}</td>'
                 html += f'<td>{s["reps"]}</td><td>{esc(s.get("note", ""))}</td></tr>\n'
-        html += '</tbody>\n</table>\n'
+        html += '</tbody>\n</table>\n</div>\n'
     html += cooldown
     return html
 
@@ -332,7 +475,7 @@ def build_workout(data: dict) -> str:
                 html += '<hr>\n<h3>Progressione settimanale (top set)</h3>\n'
                 # Colonne dinamiche dalla prima riga
                 cols = [k for k in tab[0].keys() if k != "esercizio"]
-                html += '<table>\n<thead><tr><th>Esercizio</th>'
+                html += '<div class="table-wrap">\n<table>\n<thead><tr><th>Esercizio</th>'
                 for c in cols:
                     html += f'<th>{esc(c)}</th>'
                 html += '</tr></thead>\n<tbody>\n'
@@ -341,7 +484,7 @@ def build_workout(data: dict) -> str:
                     for c in cols:
                         html += f'<td>{esc(row.get(c, ""))}</td>'
                     html += '</tr>\n'
-                html += '</tbody>\n</table>\n'
+                html += '</tbody>\n</table>\n</div>\n'
                 nota = progressione.get("nota", "")
                 if nota:
                     html += f'<blockquote><p>{esc(nota)}</p></blockquote>\n'
@@ -443,7 +586,7 @@ def build_volume(workout_data: dict) -> str:
     for muscle, data in sorted_muscles:
         html += '<details class="muscle-detail">\n'
         html += f'<summary>{muscle.capitalize()} &mdash; {data["serie_pesate"]} serie pesate</summary>\n'
-        html += '<table class="detail-table"><thead><tr><th>Ruolo</th><th>Esercizio</th><th>Giorno</th><th>Serie</th><th>Peso</th><th>Contributo</th></tr></thead><tbody>\n'
+        html += '<div class="table-wrap">\n<table class="detail-table"><thead><tr><th>Ruolo</th><th>Esercizio</th><th>Giorno</th><th>Serie</th><th>Peso</th><th>Contributo</th></tr></thead><tbody>\n'
         for d in data["dettaglio"]:
             tag = {"principale": "P", "secondario": "S", "terziario": "T"}[d["ruolo"]]
             tag_cls = {"P": "tag-primary", "S": "tag-secondary", "T": "tag-tertiary"}[tag]
@@ -452,7 +595,7 @@ def build_volume(workout_data: dict) -> str:
                 f'<td>{d["esercizio"]}</td><td>{d["giorno"]}</td>'
                 f'<td>{d["serie"]}</td><td>{d["peso"]}</td><td>{d["contributo"]}</td></tr>\n'
             )
-        html += '</tbody></table>\n</details>\n'
+        html += '</tbody></table>\n</div>\n</details>\n'
 
     if unmatched:
         html += '<p class="subtitle" style="margin-top:1rem">Esercizi non mappati: ' + ', '.join(set(unmatched)) + '</p>\n'
@@ -464,14 +607,27 @@ def build_volume(workout_data: dict) -> str:
 # Tabbed content (generic: diet, feedback, plan)
 # ---------------------------------------------------------------------------
 
-def build_tabbed_content(html_fragment: str, page_id: str) -> str:
+def _wrap_fragment_tables(html: str) -> str:
+    """Wrap <table>...</table> in fragment HTML with scrollable containers."""
+    return re.sub(
+        r"(<table\b.*?</table>)",
+        r'<div class="table-wrap">\1</div>',
+        html,
+        flags=re.DOTALL,
+    )
+
+
+def build_tabbed_content(html_fragment: str, page_id: str, max_tabs: int = 0) -> str:
     """Split an HTML fragment by <h3> headings into a tabbed layout.
 
     The first <h2> (if any) becomes the page title shown above the tabs.
     Any content before the first <h3> is shown above the tabs as intro.
     Each <h3> section becomes a tab.
+
+    If max_tabs > 0 and there are more sections than max_tabs, excess
+    sections are merged into the last tab.
     """
-    remaining = html_fragment.strip()
+    remaining = _wrap_fragment_tables(html_fragment.strip())
 
     # Extract page title (<h2>)
     title_html = ""
@@ -507,7 +663,21 @@ def build_tabbed_content(html_fragment: str, page_id: str) -> str:
 
     # Not enough sections for tabs -> return as-is
     if len(sections) <= 1:
-        return f'{title_html}<div class="md-content">{html_fragment}</div>'
+        return f'{title_html}<div class="md-content">{_wrap_fragment_tables(html_fragment)}</div>'
+
+    # Merge excess sections into the last tab if max_tabs is set
+    if max_tabs > 0 and len(sections) > max_tabs:
+        merged: list[tuple[str, str]] = list(sections[: max_tabs - 1])
+        # Combine remaining sections: use first remaining label, concatenate all content
+        last_label = sections[max_tabs - 1][0]
+        last_content = ""
+        for _, content in sections[max_tabs - 1 :]:
+            # Downgrade <h3> to <h4> inside merged content so they show as sub-headings
+            content = re.sub(r"<h3([^>]*)>", r"<h4\1>", content)
+            content = content.replace("</h3>", "</h4>")
+            last_content += content + "\n"
+        merged.append((last_label, last_content))
+        sections = merged
 
     html = title_html
     if intro_html:
@@ -579,7 +749,7 @@ def main():
         "volume": build_volume(workout_data) if workout_data else "<p>Nessun dato workout trovato.</p>",
         "diet": build_tabbed_content(read_file(diet_html_path), "diet") if diet_html_path else "<p>Nessuna dieta trovata.</p>",
         "plan": build_tabbed_content(read_file(plan_html_path), "plan") if os.path.exists(plan_html_path) else "<p>Nessun piano trovato.</p>",
-        "feedback": build_tabbed_content(read_file(feedback_html_path), "feedback") if feedback_html_path else "<p>Nessun feedback trovato.</p>",
+        "feedback": build_tabbed_content(read_file(feedback_html_path), "feedback", max_tabs=4) if feedback_html_path else "<p>Nessun feedback trovato.</p>",
     }
 
     # Genera file HTML

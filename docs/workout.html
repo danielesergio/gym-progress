@@ -76,7 +76,7 @@ nav a.nav-item.active {
 }
 
 /* Layout */
-.content { padding: 2rem; max-width: 1100px; margin: 0 auto; }
+.content { padding: 2rem; max-width: 1400px; margin: 0 auto; width: 100%; }
 
 /* Cards */
 .cards {
@@ -122,12 +122,21 @@ nav a.nav-item.active {
 .card.accent { border-color: var(--accent); }
 .card.green { border-color: var(--green); }
 
+/* Table responsive wrapper */
+.table-wrap {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    margin: 1rem 0;
+}
+
 /* Tables */
 table {
     width: 100%;
     border-collapse: collapse;
     margin: 1rem 0;
     font-size: 0.9rem;
+    min-width: 480px;
 }
 
 th {
@@ -322,12 +331,19 @@ details.muscle-detail .detail-table th { padding: 0.5rem 0.75rem; font-size: 0.8
     border-radius: 0 8px 8px 0;
 }
 .md-content blockquote p { color: var(--text-muted); font-style: italic; }
+.md-content .table-wrap { margin: 1rem 0; }
 .md-content table { background: var(--surface); border-radius: 8px; overflow: hidden; }
 
 .subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
 h2.page-title { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text); }
 
-/* Responsive */
+/* Responsive — wide screens */
+@media (min-width: 1400px) {
+    .content { max-width: 1600px; }
+    .cards { grid-template-columns: repeat(4, 1fr); }
+}
+
+/* Responsive — tablets */
 @media (max-width: 768px) {
     nav { padding: 0 1rem; flex-direction: column; gap: 0; }
     nav .logo { padding: 0.75rem 0 0; }
@@ -336,9 +352,36 @@ h2.page-title { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text); }
     .content { padding: 1rem; }
     .cards { grid-template-columns: repeat(2, 1fr); }
     .card .value { font-size: 1.5rem; }
-    .bar-label { width: 100px; font-size: 0.75rem; }
+    .bar-label { width: 110px; font-size: 0.78rem; }
     table { font-size: 0.8rem; }
     td, th { padding: 0.4rem 0.5rem; }
+    .sub-nav { flex-wrap: nowrap; -webkit-overflow-scrolling: touch; }
+    .day-nav { gap: 0.5rem; }
+    .day-nav a { padding: 0.4rem 0.6rem; font-size: 0.8rem; }
+}
+
+/* Responsive — small phones */
+@media (max-width: 480px) {
+    nav { padding: 0 0.5rem; }
+    nav a.nav-item { padding: 0.6rem 0.5rem; font-size: 0.75rem; }
+    .content { padding: 0.75rem; }
+    .cards { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .card { padding: 1rem; }
+    .card .label { font-size: 0.7rem; }
+    .card .value { font-size: 1.25rem; }
+    .card .sub { font-size: 0.7rem; }
+    h2.page-title { font-size: 1.2rem; margin-bottom: 1rem; }
+    .bar-label { width: 80px; font-size: 0.7rem; }
+    .bar-track { height: 18px; }
+    .bar-value { width: 35px; font-size: 0.75rem; }
+    .sub-nav-item { padding: 0.6rem 0.75rem; font-size: 0.78rem; }
+    .warmup-cooldown { padding: 0.75rem; }
+    .warmup-cooldown ol { font-size: 0.8rem; }
+    details.muscle-detail summary { font-size: 0.85rem; padding: 0.6rem 0.75rem; }
+    .md-content h2 { font-size: 1.1rem; }
+    .md-content h3 { font-size: 1rem; }
+    .md-content h4 { font-size: 0.9rem; }
+    .md-content p, .md-content li { font-size: 0.85rem; }
 }
 </style>
 </head>
@@ -357,41 +400,39 @@ h2.page-title { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text); }
 </nav>
 
 <div class="content">
-    <h2 class="page-title">Scheda di Allenamento &mdash; 2026-03-18</h2>
+    <h2 class="page-title">Scheda di Allenamento &mdash; 2026-03-19</h2>
 <div class="sub-nav" id="week-nav">
   <a href="#" class="sub-nav-item active" onclick="showWeek('info', this); return false;">Info</a>
   <a href="#" class="sub-nav-item" onclick="showWeek('S1', this); return false;">Settimana 1</a>
   <a href="#" class="sub-nav-item" onclick="showWeek('S2', this); return false;">Settimana 2</a>
 </div>
 <div id="week-info" class="week-panel active">
-<h2>Ripresa Post-TOS</h2>
+<h2>Recupero TOS + Cut</h2>
 <ul>
   <li><strong>Durata</strong>: 2 settimane</li>
-  <li><strong>Metodologia</strong>: Linear progression a RPE controllato (RPE 6 → 7)</li>
+  <li><strong>Metodologia</strong>: RPE controllato (6-7), volume ridotto, zero esercizi a rischio TOS</li>
   <li><strong>Frequenza</strong>: 3 giorni/settimana (Lun-Mer-Ven)</li>
-  <li><strong>Obiettivo</strong>: Riattivazione muscolare e mantenimento forza gambe, zero stress sul piccolo pettorale</li>
+  <li><strong>Obiettivo</strong>: Riattivazione muscolare dopo 3 settimane di stop, mantenimento forza gambe, preservazione massa magra durante cut</li>
 </ul>
 <h3>Logica del programma</h3>
 <ul>
-  <li>L&#x27;atleta e&#x27; fermo da 3 settimane per sindrome TOS (piccolo pettorale). Questo mesociclo e&#x27; un programma di ripresa conservativo.</li>
-  <li>ESCLUSI tutti gli esercizi che coinvolgono il piccolo pettorale: panca piana, dips, trazioni, military press, push-up, croci, overhead press.</li>
-  <li>Focus su lower body per mantenere la forza su squat e stacco (obiettivi primari dell&#x27;atleta).</li>
-  <li>Face pull inseriti come esercizio terapeutico: rinforzano i rettrattori scapolari e aiutano a decomprimere lo stretto toracico.</li>
-  <li>RPE contenuto (6 settimana 1, 6-7 settimana 2) per non stressare il sistema senza adeguato rodaggio.</li>
-  <li>Test day ridotto: solo Squat e Stacco. Panca saltata per infortunio.</li>
+  <li>Nessun esercizio che coinvolga il piccolo pettorale (panca, trazioni, dips, military press, push-up, flyes, farmer&#x27;s walk pesante)</li>
+  <li>Focus su lower body e posterior chain per mantenere forza su squat e stacco</li>
+  <li>Face pull terapeutici per rinforzare retrattori scapolari e favorire decompressione toracica</li>
+  <li>RPE conservativo (6-7) per le prime settimane di ripresa</li>
+  <li>Test day ridotto alla fine della S2: solo Squat e Stacco, Panca saltata per TOS</li>
 </ul>
 <h3>Note importanti</h3>
 <ul>
-  <li>INFORTUNIO ATTIVO: Sindrome TOS da infiammazione/contrattura piccolo pettorale. Esclusi: panca, dips, trazioni, military press, push-up, croci, farmer&#x27;s walk pesante.</li>
-  <li>Se durante qualsiasi esercizio senti formicolio, intorpidimento o dolore irradiato al braccio — FERMATI immediatamente.</li>
-  <li>RPE 6 = potresti fare altre 4 ripetizioni. Non cercare il cedimento.</li>
-  <li>Dopo 3 settimane di stop, attendi un calo del 5-10% sui massimali. E&#x27; normale.</li>
-  <li>I face pull sono sia allenamento che riabilitazione: eseguili con controllo, enfatizzando la retrazione scapolare a fine concentrica.</li>
-  <li>Mantieni una postura corretta durante tutti gli esercizi: spalle retratte, petto aperto.</li>
+  <li>ESCLUSI per TOS: Panca piana/inclinata/declinata, push-up, croci/flyes, dips, trazioni (tutte le prese), military press, overhead press, farmer&#x27;s walk pesante</li>
+  <li>Se senti formicolio, intorpidimento o dolore irradiato al braccio durante qualsiasi esercizio: FERMATI IMMEDIATAMENTE</li>
+  <li>Stretching piccolo pettorale: 2-3 volte al giorno, anche nei giorni di riposo</li>
+  <li>RPE 6 = potresti fare 4 ripetizioni in piu&#x27;. RPE 7 = potresti fare 3 ripetizioni in piu&#x27;</li>
+  <li>Progressione: nella S2 puoi aumentare di 2.5 kg sugli esercizi principali SOLO se l&#x27;RPE della S1 era inferiore a 7</li>
 </ul>
 </div>
 <div id="week-S1" class="week-panel">
-<h2>Settimana 1: Riattivazione — RPE 6, carichi conservativi</h2>
+<h2>Settimana 1: Riattivazione — RPE 6, volume moderato</h2>
 <div class="sub-nav sub-nav-days" id="day-nav-S1">
   <a href="#" class="sub-nav-item active" onclick="showDay('S1', 'A', this); return false;">Giorno A</a>
   <a href="#" class="sub-nav-item" onclick="showDay('S1', 'B', this); return false;">Giorno B</a>
@@ -401,33 +442,35 @@ h2.page-title { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text); }
 <div class="warmup-cooldown">
 <h4>Riscaldamento generale (~10 min)</h4>
 <ol>
-  <li>5 min bike/ellittica a bassa intensita&#x27;</li>
-  <li>Foam roller zona dorsale — 2 min (mobilita&#x27; toracica, terapeutico per TOS)</li>
-  <li>Stretching piccolo pettorale — 30 sec/lato (braccio a 90 gradi contro una porta, delicato)</li>
-  <li>Rotazioni esterne spalla con elastico — 2x15/lato</li>
-  <li>Attivazione glutei: glute bridge — 2x15</li>
-  <li>Serie di avvicinamento specifiche per il primo esercizio (50%, 70% del carico di lavoro)</li>
+  <li>Foam roller zona dorsale e toracica: 2 minuti</li>
+  <li>Stretching piccolo pettorale: 30 sec/lato, braccio a 90 gradi contro una porta</li>
+  <li>Band pull-apart: 2x15 (attivazione retrattori scapolari)</li>
+  <li>Camminata su tapis roulant o bike: 5 minuti</li>
+  <li>Mobilita&#x27; anche e caviglie: 2-3 minuti</li>
+  <li>Serie di riscaldamento specifiche per il primo esercizio (indicate nella scheda)</li>
 </ol>
 </div>
 <h3>Lunedi: Lower Body — Squat Focus</h3>
+<div class="table-wrap">
 <table>
 <thead><tr><th>#</th><th>Esercizio</th><th>Serie x Reps</th><th>Peso / Intensita</th><th>Recupero</th><th>Gruppo</th></tr></thead>
 <tbody>
-<tr><td>1</td><td><strong>Squat con bilanciere</strong></td><td>4x8</td><td>RPE 6 (~85-90 kg)</td><td>2 min 30 sec</td><td>Quadricipiti, glutei</td></tr>
-<tr><td>2</td><td>Leg press</td><td>3x12</td><td>RPE 6</td><td>2 min</td><td>Quadricipiti, glutei</td></tr>
-<tr><td>3</td><td>Leg curl sdraiato</td><td>3x12</td><td>RPE 6-7</td><td>90 sec</td><td>Femorali</td></tr>
-<tr><td>4</td><td>Face pull al cavo</td><td>3x15</td><td>Leggero — focus retrazione scapolare</td><td>60 sec</td><td>Deltoidi posteriori, cuffia dei rotatori</td></tr>
-<tr><td>5</td><td>Alzate laterali con manubri</td><td>3x12</td><td>RPE 6</td><td>60 sec</td><td>Deltoidi mediali</td></tr>
+<tr><td>1</td><td><strong>Squat con bilanciere</strong></td><td>4x5</td><td>120 kg (RPE 6)</td><td>3 min</td><td>Quadricipiti, glutei</td></tr>
+<tr><td>2</td><td>Leg press</td><td>3x10</td><td>RPE 7</td><td>2 min</td><td>Quadricipiti, glutei</td></tr>
+<tr><td>3</td><td>Leg curl sdraiato</td><td>3x10</td><td>RPE 7</td><td>90 sec</td><td>Femorali</td></tr>
+<tr><td>4</td><td>Face pull al cavo</td><td>3x15</td><td>RPE 6 (terapeutico)</td><td>60 sec</td><td>Deltoidi posteriori, cuffia dei rotatori</td></tr>
+<tr><td>5</td><td>Alzate laterali con manubri</td><td>3x12</td><td>RPE 7</td><td>60 sec</td><td>Deltoidi mediali</td></tr>
 <tr><td>6</td><td>Plank</td><td>3x45 sec</td><td>Corpo libero</td><td>60 sec</td><td>Core</td></tr>
 </tbody>
 </table>
+</div>
 <div class="warmup-cooldown">
 <h4>Defaticamento (~5-10 min)</h4>
 <ol>
-  <li>Stretching statico gambe — 30 sec per gruppo muscolare</li>
-  <li>Stretching piccolo pettorale — 30 sec/lato</li>
-  <li>Foam roller quadricipiti e femorali — 2 min</li>
-  <li>Respirazione diaframmatica — 2 min (aiuta la decompressione toracica)</li>
+  <li>Stretching statico gambe: quadricipiti, femorali, glutei (30 sec/muscolo)</li>
+  <li>Stretching piccolo pettorale: 30 sec/lato</li>
+  <li>Foam roller dorsale: 1 minuto</li>
+  <li>Respirazione diaframmatica: 10 respiri profondi</li>
 </ol>
 </div>
 <div class="day-nav">
@@ -439,33 +482,35 @@ h2.page-title { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text); }
 <div class="warmup-cooldown">
 <h4>Riscaldamento generale (~10 min)</h4>
 <ol>
-  <li>5 min bike/ellittica a bassa intensita&#x27;</li>
-  <li>Foam roller zona dorsale — 2 min (mobilita&#x27; toracica, terapeutico per TOS)</li>
-  <li>Stretching piccolo pettorale — 30 sec/lato (braccio a 90 gradi contro una porta, delicato)</li>
-  <li>Rotazioni esterne spalla con elastico — 2x15/lato</li>
-  <li>Attivazione glutei: glute bridge — 2x15</li>
-  <li>Serie di avvicinamento specifiche per il primo esercizio (50%, 70% del carico di lavoro)</li>
+  <li>Foam roller zona dorsale e toracica: 2 minuti</li>
+  <li>Stretching piccolo pettorale: 30 sec/lato, braccio a 90 gradi contro una porta</li>
+  <li>Band pull-apart: 2x15 (attivazione retrattori scapolari)</li>
+  <li>Camminata su tapis roulant o bike: 5 minuti</li>
+  <li>Mobilita&#x27; anche e caviglie: 2-3 minuti</li>
+  <li>Serie di riscaldamento specifiche per il primo esercizio (indicate nella scheda)</li>
 </ol>
 </div>
 <h3>Mercoledi: Lower Body — Stacco Focus</h3>
+<div class="table-wrap">
 <table>
 <thead><tr><th>#</th><th>Esercizio</th><th>Serie x Reps</th><th>Peso / Intensita</th><th>Recupero</th><th>Gruppo</th></tr></thead>
 <tbody>
-<tr><td>1</td><td><strong>Stacco da terra convenzionale</strong></td><td>4x6</td><td>RPE 6 (~140-150 kg)</td><td>3 min</td><td>Femorali, glutei, erettori spinali</td></tr>
-<tr><td>2</td><td>Bulgarian split squat</td><td>3x10/gamba</td><td>RPE 6 (manubri)</td><td>90 sec</td><td>Quadricipiti, glutei</td></tr>
-<tr><td>3</td><td>Stacco rumeno</td><td>3x10</td><td>RPE 6 (~80-90 kg)</td><td>2 min</td><td>Femorali, glutei</td></tr>
-<tr><td>4</td><td>Leg curl sdraiato</td><td>3x12</td><td>RPE 6-7</td><td>90 sec</td><td>Femorali</td></tr>
-<tr><td>5</td><td>Curl con bilanciere</td><td>3x10</td><td>RPE 6</td><td>60 sec</td><td>Bicipiti</td></tr>
-<tr><td>6</td><td>Ab wheel rollout</td><td>3x10</td><td>Corpo libero</td><td>60 sec</td><td>Core</td></tr>
+<tr><td>1</td><td><strong>Stacco da terra convenzionale</strong></td><td>4x5</td><td>165 kg (RPE 6)</td><td>3 min</td><td>Femorali, glutei, erettori spinali</td></tr>
+<tr><td>2</td><td>Bulgarian split squat</td><td>3x8/gamba</td><td>RPE 7</td><td>90 sec</td><td>Quadricipiti, glutei</td></tr>
+<tr><td>3</td><td>Leg extension</td><td>3x12</td><td>RPE 7</td><td>90 sec</td><td>Quadricipiti</td></tr>
+<tr><td>4</td><td>Face pull al cavo</td><td>3x15</td><td>RPE 6 (terapeutico)</td><td>60 sec</td><td>Deltoidi posteriori, cuffia dei rotatori</td></tr>
+<tr><td>5</td><td>Curl con bilanciere</td><td>3x10</td><td>RPE 7</td><td>60 sec</td><td>Bicipiti</td></tr>
+<tr><td>6</td><td>Crunch ai cavi</td><td>3x12</td><td>RPE 7</td><td>60 sec</td><td>Core</td></tr>
 </tbody>
 </table>
+</div>
 <div class="warmup-cooldown">
 <h4>Defaticamento (~5-10 min)</h4>
 <ol>
-  <li>Stretching statico gambe — 30 sec per gruppo muscolare</li>
-  <li>Stretching piccolo pettorale — 30 sec/lato</li>
-  <li>Foam roller quadricipiti e femorali — 2 min</li>
-  <li>Respirazione diaframmatica — 2 min (aiuta la decompressione toracica)</li>
+  <li>Stretching statico gambe: quadricipiti, femorali, glutei (30 sec/muscolo)</li>
+  <li>Stretching piccolo pettorale: 30 sec/lato</li>
+  <li>Foam roller dorsale: 1 minuto</li>
+  <li>Respirazione diaframmatica: 10 respiri profondi</li>
 </ol>
 </div>
 <div class="day-nav">
@@ -477,33 +522,35 @@ h2.page-title { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text); }
 <div class="warmup-cooldown">
 <h4>Riscaldamento generale (~10 min)</h4>
 <ol>
-  <li>5 min bike/ellittica a bassa intensita&#x27;</li>
-  <li>Foam roller zona dorsale — 2 min (mobilita&#x27; toracica, terapeutico per TOS)</li>
-  <li>Stretching piccolo pettorale — 30 sec/lato (braccio a 90 gradi contro una porta, delicato)</li>
-  <li>Rotazioni esterne spalla con elastico — 2x15/lato</li>
-  <li>Attivazione glutei: glute bridge — 2x15</li>
-  <li>Serie di avvicinamento specifiche per il primo esercizio (50%, 70% del carico di lavoro)</li>
+  <li>Foam roller zona dorsale e toracica: 2 minuti</li>
+  <li>Stretching piccolo pettorale: 30 sec/lato, braccio a 90 gradi contro una porta</li>
+  <li>Band pull-apart: 2x15 (attivazione retrattori scapolari)</li>
+  <li>Camminata su tapis roulant o bike: 5 minuti</li>
+  <li>Mobilita&#x27; anche e caviglie: 2-3 minuti</li>
+  <li>Serie di riscaldamento specifiche per il primo esercizio (indicate nella scheda)</li>
 </ol>
 </div>
-<h3>Venerdi: Full Body Leggero + Core + Rehab</h3>
+<h3>Venerdi: Lower Body — Volume + Accessori</h3>
+<div class="table-wrap">
 <table>
 <thead><tr><th>#</th><th>Esercizio</th><th>Serie x Reps</th><th>Peso / Intensita</th><th>Recupero</th><th>Gruppo</th></tr></thead>
 <tbody>
-<tr><td>1</td><td><strong>Squat con bilanciere</strong></td><td>3x5</td><td>RPE 5 (~80 kg, tecnica)</td><td>2 min</td><td>Quadricipiti, glutei</td></tr>
-<tr><td>2</td><td>Leg extension</td><td>3x12</td><td>RPE 6</td><td>60 sec</td><td>Quadricipiti</td></tr>
-<tr><td>3</td><td>Face pull al cavo</td><td>4x15</td><td>Leggero — focus retrazione scapolare</td><td>60 sec</td><td>Deltoidi posteriori, cuffia dei rotatori</td></tr>
-<tr><td>4</td><td>Alzate laterali con manubri</td><td>3x15</td><td>RPE 6</td><td>60 sec</td><td>Deltoidi mediali</td></tr>
-<tr><td>5</td><td>Curl a martello con manubri</td><td>3x12</td><td>RPE 6</td><td>60 sec</td><td>Bicipiti, brachiale</td></tr>
-<tr><td>6</td><td>Crunch ai cavi</td><td>3x15</td><td>RPE 6</td><td>60 sec</td><td>Core</td></tr>
+<tr><td>1</td><td><strong>Squat con bilanciere</strong></td><td>3x8</td><td>100 kg (RPE 6)</td><td>2 min</td><td>Quadricipiti, glutei</td></tr>
+<tr><td>2</td><td>Stacco rumeno</td><td>3x8</td><td>RPE 7</td><td>2 min</td><td>Femorali, glutei</td></tr>
+<tr><td>3</td><td>Leg press</td><td>3x12</td><td>RPE 7</td><td>2 min</td><td>Quadricipiti, glutei</td></tr>
+<tr><td>4</td><td>Face pull al cavo</td><td>3x15</td><td>RPE 6 (terapeutico)</td><td>60 sec</td><td>Deltoidi posteriori, cuffia dei rotatori</td></tr>
+<tr><td>5</td><td>Curl a martello con manubri</td><td>3x10</td><td>RPE 7</td><td>60 sec</td><td>Bicipiti, brachiale</td></tr>
+<tr><td>6</td><td>Alzate laterali con manubri</td><td>3x12</td><td>RPE 7</td><td>60 sec</td><td>Deltoidi mediali</td></tr>
 </tbody>
 </table>
+</div>
 <div class="warmup-cooldown">
 <h4>Defaticamento (~5-10 min)</h4>
 <ol>
-  <li>Stretching statico gambe — 30 sec per gruppo muscolare</li>
-  <li>Stretching piccolo pettorale — 30 sec/lato</li>
-  <li>Foam roller quadricipiti e femorali — 2 min</li>
-  <li>Respirazione diaframmatica — 2 min (aiuta la decompressione toracica)</li>
+  <li>Stretching statico gambe: quadricipiti, femorali, glutei (30 sec/muscolo)</li>
+  <li>Stretching piccolo pettorale: 30 sec/lato</li>
+  <li>Foam roller dorsale: 1 minuto</li>
+  <li>Respirazione diaframmatica: 10 respiri profondi</li>
 </ol>
 </div>
 <div class="day-nav">
@@ -513,18 +560,20 @@ h2.page-title { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text); }
 </div>
 <hr>
 <h3>Progressione settimanale (top set)</h3>
+<div class="table-wrap">
 <table>
 <thead><tr><th>Esercizio</th><th>S1</th></tr></thead>
 <tbody>
-<tr><td>Squat con bilanciere (A)</td><td>~85-90 kg x8 RPE 6</td></tr>
-<tr><td>Stacco da terra (B)</td><td>~140-150 kg x6 RPE 6</td></tr>
-<tr><td>Squat con bilanciere (C)</td><td>~80 kg x5 RPE 5</td></tr>
+<tr><td>Squat (5 rep)</td><td>120 kg</td></tr>
+<tr><td>Stacco (5 rep)</td><td>165 kg</td></tr>
+<tr><td>Squat volume (8 rep)</td><td>100 kg</td></tr>
 </tbody>
 </table>
-<blockquote><p>Settimana 1 a RPE 6 su tutti gli esercizi. Focus sulla qualita&#x27; del movimento e il ritorno ai pattern motori.</p></blockquote>
+</div>
+<blockquote><p>Settimana di riattivazione. RPE 6 sugli esercizi principali. Non aumentare i carichi.</p></blockquote>
 </div>
 <div id="week-S2" class="week-panel">
-<h2>Settimana 2: Progressione leggera — RPE 6-7, ultimo giorno TEST DAY</h2>
+<h2>Settimana 2: Consolidamento — RPE 7 + Test Day ridotto</h2>
 <div class="sub-nav sub-nav-days" id="day-nav-S2">
   <a href="#" class="sub-nav-item active" onclick="showDay('S2', 'A', this); return false;">Giorno A</a>
   <a href="#" class="sub-nav-item" onclick="showDay('S2', 'B', this); return false;">Giorno B</a>
@@ -534,33 +583,35 @@ h2.page-title { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text); }
 <div class="warmup-cooldown">
 <h4>Riscaldamento generale (~10 min)</h4>
 <ol>
-  <li>5 min bike/ellittica a bassa intensita&#x27;</li>
-  <li>Foam roller zona dorsale — 2 min (mobilita&#x27; toracica, terapeutico per TOS)</li>
-  <li>Stretching piccolo pettorale — 30 sec/lato (braccio a 90 gradi contro una porta, delicato)</li>
-  <li>Rotazioni esterne spalla con elastico — 2x15/lato</li>
-  <li>Attivazione glutei: glute bridge — 2x15</li>
-  <li>Serie di avvicinamento specifiche per il primo esercizio (50%, 70% del carico di lavoro)</li>
+  <li>Foam roller zona dorsale e toracica: 2 minuti</li>
+  <li>Stretching piccolo pettorale: 30 sec/lato, braccio a 90 gradi contro una porta</li>
+  <li>Band pull-apart: 2x15 (attivazione retrattori scapolari)</li>
+  <li>Camminata su tapis roulant o bike: 5 minuti</li>
+  <li>Mobilita&#x27; anche e caviglie: 2-3 minuti</li>
+  <li>Serie di riscaldamento specifiche per il primo esercizio (indicate nella scheda)</li>
 </ol>
 </div>
 <h3>Lunedi: Lower Body — Squat Focus</h3>
+<div class="table-wrap">
 <table>
 <thead><tr><th>#</th><th>Esercizio</th><th>Serie x Reps</th><th>Peso / Intensita</th><th>Recupero</th><th>Gruppo</th></tr></thead>
 <tbody>
-<tr><td>1</td><td><strong>Squat con bilanciere</strong></td><td>4x8</td><td>RPE 7 (~90-95 kg)</td><td>2 min 30 sec</td><td>Quadricipiti, glutei</td></tr>
-<tr><td>2</td><td>Leg press</td><td>3x12</td><td>RPE 7</td><td>2 min</td><td>Quadricipiti, glutei</td></tr>
-<tr><td>3</td><td>Leg curl sdraiato</td><td>3x12</td><td>RPE 7</td><td>90 sec</td><td>Femorali</td></tr>
-<tr><td>4</td><td>Face pull al cavo</td><td>3x15</td><td>Leggero — focus retrazione scapolare</td><td>60 sec</td><td>Deltoidi posteriori, cuffia dei rotatori</td></tr>
+<tr><td>1</td><td><strong>Squat con bilanciere</strong></td><td>4x5</td><td>125 kg (RPE 7)</td><td>3 min</td><td>Quadricipiti, glutei</td></tr>
+<tr><td>2</td><td>Leg press</td><td>3x10</td><td>RPE 7</td><td>2 min</td><td>Quadricipiti, glutei</td></tr>
+<tr><td>3</td><td>Leg curl sdraiato</td><td>3x10</td><td>RPE 7</td><td>90 sec</td><td>Femorali</td></tr>
+<tr><td>4</td><td>Face pull al cavo</td><td>3x15</td><td>RPE 6 (terapeutico)</td><td>60 sec</td><td>Deltoidi posteriori, cuffia dei rotatori</td></tr>
 <tr><td>5</td><td>Alzate laterali con manubri</td><td>3x12</td><td>RPE 7</td><td>60 sec</td><td>Deltoidi mediali</td></tr>
-<tr><td>6</td><td>Plank</td><td>3x60 sec</td><td>Corpo libero</td><td>60 sec</td><td>Core</td></tr>
+<tr><td>6</td><td>Plank</td><td>3x45 sec</td><td>Corpo libero</td><td>60 sec</td><td>Core</td></tr>
 </tbody>
 </table>
+</div>
 <div class="warmup-cooldown">
 <h4>Defaticamento (~5-10 min)</h4>
 <ol>
-  <li>Stretching statico gambe — 30 sec per gruppo muscolare</li>
-  <li>Stretching piccolo pettorale — 30 sec/lato</li>
-  <li>Foam roller quadricipiti e femorali — 2 min</li>
-  <li>Respirazione diaframmatica — 2 min (aiuta la decompressione toracica)</li>
+  <li>Stretching statico gambe: quadricipiti, femorali, glutei (30 sec/muscolo)</li>
+  <li>Stretching piccolo pettorale: 30 sec/lato</li>
+  <li>Foam roller dorsale: 1 minuto</li>
+  <li>Respirazione diaframmatica: 10 respiri profondi</li>
 </ol>
 </div>
 <div class="day-nav">
@@ -572,33 +623,35 @@ h2.page-title { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text); }
 <div class="warmup-cooldown">
 <h4>Riscaldamento generale (~10 min)</h4>
 <ol>
-  <li>5 min bike/ellittica a bassa intensita&#x27;</li>
-  <li>Foam roller zona dorsale — 2 min (mobilita&#x27; toracica, terapeutico per TOS)</li>
-  <li>Stretching piccolo pettorale — 30 sec/lato (braccio a 90 gradi contro una porta, delicato)</li>
-  <li>Rotazioni esterne spalla con elastico — 2x15/lato</li>
-  <li>Attivazione glutei: glute bridge — 2x15</li>
-  <li>Serie di avvicinamento specifiche per il primo esercizio (50%, 70% del carico di lavoro)</li>
+  <li>Foam roller zona dorsale e toracica: 2 minuti</li>
+  <li>Stretching piccolo pettorale: 30 sec/lato, braccio a 90 gradi contro una porta</li>
+  <li>Band pull-apart: 2x15 (attivazione retrattori scapolari)</li>
+  <li>Camminata su tapis roulant o bike: 5 minuti</li>
+  <li>Mobilita&#x27; anche e caviglie: 2-3 minuti</li>
+  <li>Serie di riscaldamento specifiche per il primo esercizio (indicate nella scheda)</li>
 </ol>
 </div>
 <h3>Mercoledi: Lower Body — Stacco Focus</h3>
+<div class="table-wrap">
 <table>
 <thead><tr><th>#</th><th>Esercizio</th><th>Serie x Reps</th><th>Peso / Intensita</th><th>Recupero</th><th>Gruppo</th></tr></thead>
 <tbody>
-<tr><td>1</td><td><strong>Stacco da terra convenzionale</strong></td><td>4x6</td><td>RPE 7 (~150-160 kg)</td><td>3 min</td><td>Femorali, glutei, erettori spinali</td></tr>
-<tr><td>2</td><td>Bulgarian split squat</td><td>3x10/gamba</td><td>RPE 7 (manubri)</td><td>90 sec</td><td>Quadricipiti, glutei</td></tr>
-<tr><td>3</td><td>Stacco rumeno</td><td>3x10</td><td>RPE 7 (~90-100 kg)</td><td>2 min</td><td>Femorali, glutei</td></tr>
-<tr><td>4</td><td>Leg curl sdraiato</td><td>3x12</td><td>RPE 7</td><td>90 sec</td><td>Femorali</td></tr>
+<tr><td>1</td><td><strong>Stacco da terra convenzionale</strong></td><td>4x5</td><td>170 kg (RPE 7)</td><td>3 min</td><td>Femorali, glutei, erettori spinali</td></tr>
+<tr><td>2</td><td>Bulgarian split squat</td><td>3x8/gamba</td><td>RPE 7</td><td>90 sec</td><td>Quadricipiti, glutei</td></tr>
+<tr><td>3</td><td>Leg extension</td><td>3x12</td><td>RPE 7</td><td>90 sec</td><td>Quadricipiti</td></tr>
+<tr><td>4</td><td>Face pull al cavo</td><td>3x15</td><td>RPE 6 (terapeutico)</td><td>60 sec</td><td>Deltoidi posteriori, cuffia dei rotatori</td></tr>
 <tr><td>5</td><td>Curl con bilanciere</td><td>3x10</td><td>RPE 7</td><td>60 sec</td><td>Bicipiti</td></tr>
-<tr><td>6</td><td>Ab wheel rollout</td><td>3x12</td><td>Corpo libero</td><td>60 sec</td><td>Core</td></tr>
+<tr><td>6</td><td>Crunch ai cavi</td><td>3x12</td><td>RPE 7</td><td>60 sec</td><td>Core</td></tr>
 </tbody>
 </table>
+</div>
 <div class="warmup-cooldown">
 <h4>Defaticamento (~5-10 min)</h4>
 <ol>
-  <li>Stretching statico gambe — 30 sec per gruppo muscolare</li>
-  <li>Stretching piccolo pettorale — 30 sec/lato</li>
-  <li>Foam roller quadricipiti e femorali — 2 min</li>
-  <li>Respirazione diaframmatica — 2 min (aiuta la decompressione toracica)</li>
+  <li>Stretching statico gambe: quadricipiti, femorali, glutei (30 sec/muscolo)</li>
+  <li>Stretching piccolo pettorale: 30 sec/lato</li>
+  <li>Foam roller dorsale: 1 minuto</li>
+  <li>Respirazione diaframmatica: 10 respiri profondi</li>
 </ol>
 </div>
 <div class="day-nav">
@@ -610,12 +663,12 @@ h2.page-title { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text); }
 <div class="warmup-cooldown">
 <h4>Riscaldamento generale (~10 min)</h4>
 <ol>
-  <li>5 min bike/ellittica a bassa intensita&#x27;</li>
-  <li>Foam roller zona dorsale — 2 min (mobilita&#x27; toracica, terapeutico per TOS)</li>
-  <li>Stretching piccolo pettorale — 30 sec/lato (braccio a 90 gradi contro una porta, delicato)</li>
-  <li>Rotazioni esterne spalla con elastico — 2x15/lato</li>
-  <li>Attivazione glutei: glute bridge — 2x15</li>
-  <li>Serie di avvicinamento specifiche per il primo esercizio (50%, 70% del carico di lavoro)</li>
+  <li>Foam roller zona dorsale e toracica: 2 minuti</li>
+  <li>Stretching piccolo pettorale: 30 sec/lato, braccio a 90 gradi contro una porta</li>
+  <li>Band pull-apart: 2x15 (attivazione retrattori scapolari)</li>
+  <li>Camminata su tapis roulant o bike: 5 minuti</li>
+  <li>Mobilita&#x27; anche e caviglie: 2-3 minuti</li>
+  <li>Serie di riscaldamento specifiche per il primo esercizio (indicate nella scheda)</li>
 </ol>
 </div>
 <h3>Venerdi: TEST DAY</h3>
@@ -624,54 +677,57 @@ h2.page-title { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text); }
 <p><strong>Formula</strong>: <code>1RM = peso x (1 + reps/30)</code></p>
 <h4>Regole generali</h4>
 <ul>
-  <li>Riscaldamento completo prima di ogni lift (almeno 4 serie progressive)</li>
-  <li>Riposo 3-5 minuti tra i tentativi</li>
-  <li>Massimo 3 tentativi per lift</li>
-  <li>Se senti qualsiasi fastidio alla zona toracica/braccio, FERMATI</li>
-  <li>PANCA SALTATA: il test di panca e&#x27; sospeso fino a guarigione completa del TOS</li>
-  <li>Obiettivo conservativo: dopo 3 settimane di stop, un calo del 5-10% e&#x27; atteso e normale</li>
+  <li>Riscaldamento completo prima di ogni lift (vedi protocollo sotto)</li>
+  <li>Riposo 3-5 min tra le serie pesanti, 5-8 min tra un lift e l&#x27;altro</li>
+  <li>Se il Tentativo 1 risulta facile (RPE &lt; 8), prova il Tentativo 2</li>
+  <li>Se il Tentativo 1 risulta molto duro (RPE 9-10), fermati li&#x27;</li>
+  <li>PANCA SALTATA: non testare la panca fino a completa guarigione TOS</li>
+  <li>Registra peso e ripetizioni effettive per il calcolo 1RM</li>
 </ul>
-<h4>Protocollo SQUAT (Target 3RM: ~130 kg (conservativo post-stop))</h4>
+<h4>Protocollo SQUAT (Target 3RM: ~130 kg (1RM stimato: ~143 kg))</h4>
+<div class="table-wrap">
 <table>
 <thead><tr><th>Set</th><th>Peso</th><th>Reps</th><th>Note</th></tr></thead>
 <tbody>
-<tr><td>Risc. 1</td><td>Bilanciere vuoto</td><td>10</td><td>Mobilita&#x27; e attivazione</td></tr>
-<tr><td>Risc. 2</td><td>60 kg</td><td>8</td><td>&mdash;</td></tr>
-<tr><td>Risc. 3</td><td>80 kg</td><td>5</td><td>&mdash;</td></tr>
-<tr><td>Risc. 4</td><td>100 kg</td><td>3</td><td>&mdash;</td></tr>
-<tr><td>Risc. 5</td><td>115 kg</td><td>2</td><td>&mdash;</td></tr>
-<tr><td><strong>Tentativo 1</strong></td><td><strong>125 kg</strong></td><td><strong>3</strong></td><td>Conservativo</td></tr>
-<tr><td><strong>Tentativo 2</strong></td><td><strong>130 kg</strong></td><td><strong>3</strong></td><td>Se tentativo 1 pulito</td></tr>
-<tr><td><strong>Tentativo 3</strong></td><td><strong>135 kg</strong></td><td><strong>3</strong></td><td>Solo se tutto liscio</td></tr>
+<tr><td>Risc. 1</td><td>Bilanciere</td><td>8</td><td>&mdash;</td></tr>
+<tr><td>Risc. 2</td><td>60 kg</td><td>5</td><td>&mdash;</td></tr>
+<tr><td>Risc. 3</td><td>80 kg</td><td>3</td><td>&mdash;</td></tr>
+<tr><td>Risc. 4</td><td>100 kg</td><td>2</td><td>&mdash;</td></tr>
+<tr><td>Risc. 5</td><td>115 kg</td><td>1</td><td>&mdash;</td></tr>
+<tr><td><strong>Tentativo 1</strong></td><td><strong>125 kg</strong></td><td><strong>3</strong></td><td>Conservativo — target RPE 8</td></tr>
+<tr><td><strong>Tentativo 2</strong></td><td><strong>130 kg</strong></td><td><strong>3</strong></td><td>Solo se T1 era RPE &lt; 8</td></tr>
 </tbody>
 </table>
-<h4>Protocollo STACCO (Target 3RM: ~175-180 kg (conservativo post-stop))</h4>
+</div>
+<h4>Protocollo PANCA (SALTATA — Sindrome TOS in corso)</h4>
+<div class="table-wrap">
 <table>
 <thead><tr><th>Set</th><th>Peso</th><th>Reps</th><th>Note</th></tr></thead>
 <tbody>
-<tr><td>Risc. 1</td><td>60 kg</td><td>8</td><td>&mdash;</td></tr>
-<tr><td>Risc. 2</td><td>100 kg</td><td>5</td><td>&mdash;</td></tr>
-<tr><td>Risc. 3</td><td>130 kg</td><td>3</td><td>&mdash;</td></tr>
-<tr><td>Risc. 4</td><td>155 kg</td><td>2</td><td>&mdash;</td></tr>
-<tr><td><strong>Tentativo 1</strong></td><td><strong>170 kg</strong></td><td><strong>3</strong></td><td>Conservativo</td></tr>
-<tr><td><strong>Tentativo 2</strong></td><td><strong>180 kg</strong></td><td><strong>3</strong></td><td>Se tentativo 1 pulito</td></tr>
-<tr><td><strong>Tentativo 3</strong></td><td><strong>185 kg</strong></td><td><strong>3</strong></td><td>Solo se tutto liscio</td></tr>
 </tbody>
 </table>
-<h4>Protocollo PANCA PIANA (SALTATA — Infortunio TOS attivo)</h4>
+</div>
+<h4>Protocollo STACCO (Target 3RM: ~180 kg (1RM stimato: ~198 kg))</h4>
+<div class="table-wrap">
 <table>
 <thead><tr><th>Set</th><th>Peso</th><th>Reps</th><th>Note</th></tr></thead>
 <tbody>
-<tr><td>N/A</td><td>N/A</td><td>0</td><td>Test sospeso fino a guarigione completa del TOS. Il piccolo pettorale deve essere completamente asintomatico prima di testare la panca.</td></tr>
+<tr><td>Risc. 1</td><td>60 kg</td><td>5</td><td>&mdash;</td></tr>
+<tr><td>Risc. 2</td><td>100 kg</td><td>3</td><td>&mdash;</td></tr>
+<tr><td>Risc. 3</td><td>130 kg</td><td>2</td><td>&mdash;</td></tr>
+<tr><td>Risc. 4</td><td>155 kg</td><td>1</td><td>&mdash;</td></tr>
+<tr><td><strong>Tentativo 1</strong></td><td><strong>175 kg</strong></td><td><strong>3</strong></td><td>Conservativo — target RPE 8</td></tr>
+<tr><td><strong>Tentativo 2</strong></td><td><strong>180 kg</strong></td><td><strong>3</strong></td><td>Solo se T1 era RPE &lt; 8</td></tr>
 </tbody>
 </table>
+</div>
 <div class="warmup-cooldown">
 <h4>Defaticamento (~5-10 min)</h4>
 <ol>
-  <li>Stretching statico gambe — 30 sec per gruppo muscolare</li>
-  <li>Stretching piccolo pettorale — 30 sec/lato</li>
-  <li>Foam roller quadricipiti e femorali — 2 min</li>
-  <li>Respirazione diaframmatica — 2 min (aiuta la decompressione toracica)</li>
+  <li>Stretching statico gambe: quadricipiti, femorali, glutei (30 sec/muscolo)</li>
+  <li>Stretching piccolo pettorale: 30 sec/lato</li>
+  <li>Foam roller dorsale: 1 minuto</li>
+  <li>Respirazione diaframmatica: 10 respiri profondi</li>
 </ol>
 </div>
 <div class="day-nav">
@@ -681,16 +737,16 @@ h2.page-title { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text); }
 </div>
 <hr>
 <h3>Progressione settimanale (top set)</h3>
+<div class="table-wrap">
 <table>
-<thead><tr><th>Esercizio</th><th>S2</th></tr></thead>
+<thead><tr><th>Esercizio</th><th>S1</th><th>S2</th></tr></thead>
 <tbody>
-<tr><td>Squat con bilanciere (A)</td><td>~90-95 kg x8 RPE 7</td></tr>
-<tr><td>Stacco da terra (B)</td><td>~150-160 kg x6 RPE 7</td></tr>
-<tr><td>Squat 3RM test (Ven)</td><td>Target ~130 kg x3</td></tr>
-<tr><td>Stacco 3RM test (Ven)</td><td>Target ~175-180 kg x3</td></tr>
+<tr><td>Squat (5 rep)</td><td>120 kg</td><td>125 kg</td></tr>
+<tr><td>Stacco (5 rep)</td><td>165 kg</td><td>170 kg</td></tr>
 </tbody>
 </table>
-<blockquote><p>Settimana 2: RPE sale a 7 su tutti gli esercizi. Venerdi e&#x27; dedicato al test massimali (solo Squat e Stacco).</p></blockquote>
+</div>
+<blockquote><p>Progressione di +2.5-5 kg rispetto alla S1 sugli esercizi principali, solo se RPE della S1 era sotto 7. Il Test Day chiude il mesociclo.</p></blockquote>
 </div>
 
 <script>

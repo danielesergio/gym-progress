@@ -21,19 +21,19 @@
 
 ## Massimali / Test del mese
 Inserisci il peso e le ripetizioni fatte (es. 100 kg x 5). La conversione a 1RM viene calcolata automaticamente.
-- **Squat**: kg x rep
-- **Panca**: kg x rep
-- **Stacco**: kg x rep
+- **Squat**: 125 kg x 5 rep
+- **Panca**: 100 kg x 5 rep
+- **Stacco**: 170 kg x 5 rep
 
 ## Composizione Corporea
 - **Peso (kg) **: 87.2
 - **Misure** (opzionale):
-    - Vita ombelico (cm):  89
-    - Fianchi (cm): 100
-    - Petto (cm): 100
-    - Braccio dx (cm): 33.5
-    - Coscia dx (cm): 57
-    - collo: 39
+  - Vita ombelico (cm):  89
+  - Fianchi (cm): 100
+  - Petto (cm): 100
+  - Braccio dx (cm): 33.5
+  - Coscia dx (cm): 57
+  - collo: 39
 ## Altro
 - **Infortuni o dolori**: Sindrome TOS dovuta probabilmente a infiammazione / contrattura del piccolo pettorale.
 - **Commenti liberi**:

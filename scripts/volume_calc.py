@@ -185,6 +185,11 @@ EXERCISE_MUSCLES = {
         "secondario": ["deltoidi posteriori"],
         "terziario": [],
     },
+    "calf raise in piedi": {
+        "principale": ["polpacci"],
+        "secondario": [],
+        "terziario": [],
+    },
 }
 
 

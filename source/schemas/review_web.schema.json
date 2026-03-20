@@ -1,0 +1,48 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WebTesterReport",
+  "description": "Report del gym-web-tester sulla correttezza tecnica del sito statico.",
+  "type": "object",
+  "required": ["esito", "errori_critici", "warning"],
+  "additionalProperties": false,
+  "properties": {
+    "esito": {
+      "type": "string",
+      "enum": ["OK", "WARNING", "ERROR"],
+      "description": "OK = nessun errore, WARNING = problemi non bloccanti, ERROR = errori critici."
+    },
+    "errori_critici": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Numero di errori che impediscono il funzionamento del sito."
+    },
+    "warning": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Numero di warning non bloccanti."
+    },
+    "dettagli": {
+      "type": "array",
+      "description": "Lista dei problemi trovati.",
+      "items": {
+        "type": "object",
+        "required": ["gravita", "file", "problema"],
+        "additionalProperties": false,
+        "properties": {
+          "gravita": {
+            "type": "string",
+            "enum": ["ERROR", "WARNING"]
+          },
+          "file": {
+            "type": "string",
+            "description": "File coinvolto, es. 'docs/data/workout.json'."
+          },
+          "problema": {
+            "type": "string",
+            "description": "Descrizione sintetica del problema."
+          }
+        }
+      }
+    }
+  }
+}

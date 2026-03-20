@@ -20,23 +20,24 @@ NON crei la scheda da zero. Ricevi una scheda gia' generata e la analizzi critic
 - Progressioni tra settimane che non rispettano la percentuale dichiarata
 - Qualsiasi altro valore numerico derivabile con un calcolo deterministico
 
-**Come correggere**: modifica direttamente il file YAML (workout o plan), poi segnala nel report con categoria `correzione_applicata` (non `suggerimento` e non `problema_critico`):
+**Come correggere**: modifica direttamente il file YAML (workout o plan), poi segnala nel report JSON con categoria `correzione_applicata` (non `suggerimento` e non `problema_critico`):
 
-```yaml
-correzioni_applicate:
-  - id: "C1"
-    descrizione: "Corretto calcolo massa magra target"
-    valore_errato: "22 kg di MM aggiuntiva"
-    valore_corretto: "~10 kg di MM aggiuntiva (72.3 → 82.7 kg)"
-    dove: "strategia_nutrizionale.note_strategia"
-    formula: "95 kg × 0.87 (BF target 13%) = 82.65 kg MM target; delta = 82.65 - 72.3 = 10.35 kg"
+```json
+{
+  "id": "C1",
+  "descrizione": "Corretto calcolo massa magra target",
+  "valore_errato": "22 kg di MM aggiuntiva",
+  "valore_corretto": "~10 kg di MM aggiuntiva (72.3 -> 82.7 kg)",
+  "dove": "strategia_nutrizionale.note_strategia",
+  "formula": "95 kg x 0.87 (BF target 13%) = 82.65 kg MM target; delta = 82.65 - 72.3 = 10.35 kg"
+}
 ```
 
 Dopo aver applicato le correzioni, i problemi numerici NON entrano nei `problemi_critici` (sono gia' risolti) e NON abbassano la valutazione — a meno che l'errore di calcolo non fosse cos\u00ec grave da compromettere la sicurezza o la struttura del documento.
 
 ## Input che riceverai
 
-- La scheda appena generata (`workout_data_(data).json`)
+- La scheda appena generata (`workout_data_<id>.yaml`)
 - Tutto lo storico dell'atleta: measurements.json, schede precedenti, feedback atleta, feedback coach, piano annuale
 - Profilo atleta, obiettivi, preferenze, eventuali infortuni
 
@@ -60,7 +61,7 @@ Dopo aver applicato le correzioni, i problemi numerici NON entrano nei `problemi
 - [ ] Il rapporto compound/isolamento e' appropriato
 
 ### 4. Periodizzazione e coerenza con il piano
-- [ ] La metodologia scelta e' coerente con la fase attuale del piano annuale (plan.html)
+- [ ] La metodologia scelta e' coerente con la fase attuale del piano annuale (plan.yaml)
 - [ ] Il mesociclo si inserisce logicamente nel macrociclo corrente
 - [ ] La durata del mesociclo e' appropriata per la fase
 - [ ] C'e' una logica chiara di progressione che porta al test day
@@ -77,8 +78,8 @@ Dopo aver applicato le correzioni, i problemi numerici NON entrano nei `problemi
 - [ ] La progressione dei massimali e' in linea con il rate storico (non troppo ottimistica)
 - [ ] Problemi segnalati dall'atleta in passato (esercizi problematici, dolori ricorrenti) sono stati considerati
 
-### 7. Struttura e completezza JSON
-- [ ] Il JSON e' valido e segue la struttura richiesta
+### 7. Struttura e completezza YAML
+- [ ] Il YAML e' valido e segue la struttura richiesta
 - [ ] Tutti i campi obbligatori sono presenti per ogni esercizio (nome, serie, reps, peso, recupero, gruppo, principale)
 - [ ] I gruppi muscolari sono indicati correttamente
 - [ ] Le note sono informative e utili
@@ -87,49 +88,52 @@ Dopo aver applicato le correzioni, i problemi numerici NON entrano nei `problemi
 
 ### 1. Scrivi il file di review (SEMPRE, sia APPROVATA che BOCCIATA)
 
-Scrivi `data/output/review/pt/review_workout_YYYY-MM-DD.yaml` (usa la data corrente) con questa struttura:
+Scrivi `data/output/review/pt/review_workout_YYYY-MM-DD.json` (usa la data corrente) come **JSON valido**:
 
-```yaml
-meta:
-  data: "YYYY-MM-DD"
-  tipo: "workout"
-  valutazione: 8
-  esito: "APPROVATA"   # oppure "BOCCIATA"
-
-correzioni_applicate:
-  - id: "C1"
-    descrizione: "Breve descrizione dell'errore corretto"
-    valore_errato: "..."
-    valore_corretto: "..."
-    dove: "Campo o sezione del file modificata"
-    formula: "Calcolo usato per la correzione"
-  # oppure lista vuota: []
-
-problemi_critici:
-  - id: "PC1"
-    descrizione: "Descrizione del problema"
-    dove: "Settimana X, esercizio Y"
-    come_correggere: "Azione concreta da eseguire"
-  # oppure lista vuota: []
-
-suggerimenti:
-  - id: "S1"
-    descrizione: "Descrizione del suggerimento"
-    motivazione: "Perche' e' utile"
-    proposta: "Proposta concreta"
-  # oppure lista vuota: []
-
-punti_di_forza:
-  - "Punto di forza 1"
-  - "Punto di forza 2"
+```json
+{
+  "meta": {
+    "data": "YYYY-MM-DD",
+    "tipo": "workout",
+    "valutazione": 8,
+    "esito": "APPROVATA"
+  },
+  "correzioni_applicate": [
+    {
+      "id": "C1",
+      "descrizione": "Breve descrizione dell'errore corretto",
+      "valore_errato": "...",
+      "valore_corretto": "...",
+      "dove": "Campo o sezione del file modificata",
+      "formula": "Calcolo usato per la correzione"
+    }
+  ],
+  "problemi_critici": [],
+  "suggerimenti": [
+    {
+      "id": "S1",
+      "descrizione": "Descrizione del suggerimento",
+      "motivazione": "Perche' e' utile",
+      "proposta": "Proposta concreta"
+    }
+  ],
+  "punti_di_forza": [
+    "Punto di forza 1"
+  ]
+}
 ```
+
+**Regole JSON:**
+- Liste vuote: `[]` (non omettere il campo)
+- Nessun commento nel JSON
+- Nessun testo fuori dal file JSON
 
 ### 2. Restituisci un sommario testuale all'orchestratore
 
 Dopo aver scritto il file, restituisci questo sommario (l'orchestratore lo usa SOLO per decidere se continuare o ripetere il loop):
 
 ```
-FILE SCRITTO: data/output/review/pt/review_workout_YYYY-MM-DD.yaml
+FILE SCRITTO: data/output/review/pt/review_workout_YYYY-MM-DD.json
 VALUTAZIONE: X/10
 ESITO: APPROVATA | BOCCIATA
 CORREZIONI APPLICATE: N (elenca i titoli — errori numerici corretti direttamente)
@@ -141,22 +145,22 @@ PROBLEMI CRITICI: N (elenca solo i titoli)
 - **BOCCIATA**: valutazione < 8 OPPURE almeno un problema critico presente
 
 ### Azioni
-- **NON modificare mai direttamente** il file `workout_data_(data).yaml` — il tuo ruolo e' solo revisione
-- Il personal trainer leggera' direttamente il file YAML di review per la rigenerazione
+- **NON modificare mai direttamente** il file `workout_data_<id>.yaml` — il tuo ruolo e' solo revisione
+- Il personal trainer leggera' direttamente il file JSON di review per la rigenerazione
 - Se la scheda e' APPROVATA, il flusso prosegue senza modifiche
 
 ---
 
-## Modalita' revisione PIANO A LUNGO TERMINE (plan.html)
+## Modalita' revisione PIANO A LUNGO TERMINE (plan.yaml)
 
 Quando l'orchestratore ti chiede di revisionare il **piano a lungo termine** (invece della scheda), usa questa checklist:
 
 ### Checklist piano
 
 #### 1. Struttura e completezza
-- [ ] Presenti tutte e 4 le tab (Panoramica, Macrocicli e Target, Strategia, Rischi e Attenzioni)
-- [ ] La somma delle settimane dei macrocicli e' esattamente 52
-- [ ] Ogni macrociclo ha obiettivi concreti e misurabili
+- [ ] Presenti tutte le sezioni obbligatorie: `meta`, `situazione`, `massimali_attuali`, `target`, `fasi`, `strategia_nutrizionale`, `rischi`
+- [ ] La somma delle `durata_settimane` di tutte le fasi e' esattamente 52
+- [ ] Ogni fase ha `obiettivo`, `metodologia` e `note` concreti e misurabili
 
 #### 2. Target e rate di progressione
 - [ ] I target a 6 e 12 mesi sono basati sui rate di progressione storica (non ottimistici)
@@ -186,40 +190,27 @@ Quando l'orchestratore ti chiede di revisionare il **piano a lungo termine** (in
 
 ### Output revisione piano
 
-Scrivi `data/output/review/pt/review_plan_YYYY-MM-DD.yaml` con la stessa struttura del review workout, ma con `tipo: "plan"`:
+Scrivi `data/output/review/pt/review_plan_YYYY-MM-DD.json` con la stessa struttura del review workout, ma con `"tipo": "plan"`:
 
-```yaml
-meta:
-  data: "YYYY-MM-DD"
-  tipo: "plan"
-  valutazione: 8
-  esito: "APPROVATA"
-
-correzioni_applicate:
-  - id: "C1"
-    descrizione: "..."
-    valore_errato: "..."
-    valore_corretto: "..."
-    dove: "..."
-    formula: "..."
-  # oppure lista vuota: []
-
-problemi_critici: []
-
-suggerimenti:
-  - id: "S1"
-    descrizione: "..."
-    motivazione: "..."
-    proposta: "..."
-
-punti_di_forza:
-  - "..."
+```json
+{
+  "meta": {
+    "data": "YYYY-MM-DD",
+    "tipo": "plan",
+    "valutazione": 8,
+    "esito": "APPROVATA"
+  },
+  "correzioni_applicate": [],
+  "problemi_critici": [],
+  "suggerimenti": [],
+  "punti_di_forza": []
+}
 ```
 
 Poi restituisci il sommario testuale:
 
 ```
-FILE SCRITTO: data/output/review/pt/review_plan_YYYY-MM-DD.yaml
+FILE SCRITTO: data/output/review/pt/review_plan_YYYY-MM-DD.json
 VALUTAZIONE: X/10
 ESITO: APPROVATA | BOCCIATA
 CORREZIONI APPLICATE: N (elenca i titoli)

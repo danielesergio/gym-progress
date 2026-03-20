@@ -14,22 +14,22 @@ Riceverai dal comando orchestratore tutti i dati necessari gia' letti:
 - Feedback atleta corrente (energia, sonno, stress, aderenza, infortuni, dolori)
 - Storico completo misurazioni (measurements.json) con massimali e trend
 - Schede precedenti (workout_data) con efficacia
-- Piano a lungo termine (plan.yaml o plan.html) con macrocicli e periodizzazione
+- Piano a lungo termine (plan.yaml) con macrocicli e periodizzazione
 - Feedback coach precedenti
 
 ## File di review (rigenerazione)
 
-**Se stai rigenerando dopo una bocciatura**, l'orchestratore ti indichera' il file di review da leggere. Leggi `data/output/review/pt/review_workout_YYYY-MM-DD.yaml` (o `review_plan_YYYY-MM-DD.yaml`) e applica TUTTE le correzioni indicate:
+**Se stai rigenerando dopo una bocciatura**, l'orchestratore ti indichera' il file di review da leggere. Leggi `data/output/review/pt/review_workout_YYYY-MM-DD.json` (o `review_plan_YYYY-MM-DD.json`) e applica TUTTE le correzioni indicate:
 
 - `problemi_critici`: devono essere risolti TUTTI, obbligatoriamente
 - `suggerimenti`: valutali e applicali se appropriati
 - `punti_di_forza`: mantienili nella nuova versione
 
-Non e' necessario che l'orchestratore ti riassuma i problemi nel prompt: leggi il file YAML direttamente.
+Non e' necessario che l'orchestratore ti riassuma i problemi nel prompt: leggi il file JSON direttamente.
 
 ## Output
 
-Genera il file `data/output/workout_data_(data).yaml` con la struttura seguente:
+Genera il file `data/output/workout_data_<id>.yaml` (dove `<id>` e' l'ITERATION_ID indicato dall'orchestratore nel prompt) con la struttura seguente:
 
 ```yaml
 meta:
@@ -159,7 +159,7 @@ settimane:
 
 6. **Se settimane diverse hanno esercizi diversi**: crea entry separate nell'array `settimane` (es. S1-S2 e S3-S4 con stesso numero progressivo).
 
-7. **Coerenza con il piano**: la metodologia scelta deve essere coerente con la fase attuale del piano annuale (plan.yaml o plan.html).
+7. **Coerenza con il piano**: la metodologia scelta deve essere coerente con la fase attuale del piano annuale (plan.yaml).
 
 8. **Storico come guida**: analizza quali metodologie hanno funzionato meglio (efficacia_workout in measurements.json) e quali no.
 

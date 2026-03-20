@@ -10,7 +10,7 @@ JSON normalizzati in docs/data/:
   docs/data/volume.json        — volume per distretto (pre-calcolato)
   docs/data/diet.json          — dieta corrente
   docs/data/plan.json          — piano a lungo termine
-  docs/data/feedback.json      — feedback coach { "html": "..." }
+  docs/data/feedback.json      — feedback coach + atleta { "coach_html": "...", "atleta_html": "..." }
 
 Uso:
     python scripts/generate_data.py
@@ -161,6 +161,142 @@ def md_to_html(text: str) -> str:
 
 
 # ---------------------------------------------------------------------------
+# Feedback parsers (structured extraction)
+# ---------------------------------------------------------------------------
+
+def _parse_md_sections(text: str) -> dict:
+    """Split markdown text into {section_name: [lines]} by ## headings."""
+    sections: dict = {}
+    current = None
+    for line in text.split("\n"):
+        m = re.match(r"^##\s+(.+)", line)
+        if m:
+            current = m.group(1).strip()
+            sections[current] = []
+        elif current is not None:
+            sections[current].append(line)
+    return sections
+
+
+def parse_atleta_md(text: str) -> dict:
+    """Parse athlete self-assessment into a structured dict."""
+    sections = _parse_md_sections(text)
+    # key-value: - **Key**: value  (parenthetical unit inside ** is kept as part of key)
+    kv_re = re.compile(r"^\s*-\s+\*\*([^*]+)\*\*\s*(?:\([^)]*\))?\s*:?\s*(.*)")
+    # sub-item (indented):   - Label (unit): value   or   - text
+    sub_re = re.compile(r"^\s{2,}-\s+(.+)")
+
+    data: dict = {}
+
+    for sec_name, lines in sections.items():
+        sec_lower = sec_name.lower()
+        kv: dict = {}
+        sub_items: dict = {}
+        last_key = None
+
+        for line in lines:
+            m = kv_re.match(line)
+            if m:
+                key = m.group(1).strip()
+                val = m.group(2).strip()
+                kv[key] = val
+                last_key = key
+                sub_items[key] = []
+                continue
+            if last_key is not None:
+                m2 = sub_re.match(line)
+                if m2:
+                    raw = m2.group(1).strip()
+                    # try "Label (unit): value" or "Label: value"
+                    km = re.match(r"^(.+?)\s*(?:\([^)]*\))?\s*:\s*(.*)", raw)
+                    if km:
+                        sub_items[last_key].append({"k": km.group(1).strip(), "v": km.group(2).strip()})
+                    else:
+                        sub_items[last_key].append({"k": None, "v": raw})
+
+        # Build sec_data merging subs
+        sec_data: dict = {}
+        for k, v in kv.items():
+            subs = sub_items.get(k, [])
+            if subs:
+                if all(s["k"] for s in subs):
+                    sec_data[k] = {s["k"]: s["v"] for s in subs}
+                else:
+                    sec_data[k] = [s["v"] for s in subs if s["v"]]
+            else:
+                sec_data[k] = v
+
+        if "sentito" in sec_lower:
+            data["sensazioni"] = sec_data
+        elif "allenamento" in sec_lower:
+            data["allenamento"] = sec_data
+        elif "dieta" in sec_lower:
+            data["dieta"] = sec_data
+        elif "progress" in sec_lower:
+            data["progressi"] = sec_data
+        elif "massimal" in sec_lower:
+            lifts = []
+            for lift_name, raw in sec_data.items():
+                if isinstance(raw, str):
+                    lm = re.match(r"(\d+(?:\.\d+)?)\s*kg\s*[xX×]\s*(\d+)", raw)
+                    if lm:
+                        peso = float(lm.group(1))
+                        reps = int(lm.group(2))
+                        orm = round(peso * (1 + reps / 30))
+                        lifts.append({"lift": lift_name, "peso": peso, "reps": reps, "orm_stimato": orm, "raw": raw})
+                    elif raw:
+                        lifts.append({"lift": lift_name, "peso": None, "reps": None, "orm_stimato": None, "raw": raw})
+            data["massimali"] = lifts
+        elif "compos" in sec_lower or "corporea" in sec_lower:
+            corpo: dict = {}
+            for k, v in sec_data.items():
+                if isinstance(v, dict):
+                    misure: dict = {}
+                    for mk, mv in v.items():
+                        try:
+                            misure[mk] = float(mv)
+                        except (ValueError, TypeError):
+                            misure[mk] = mv
+                    corpo["misure"] = misure
+                else:
+                    try:
+                        corpo[k] = float(v) if v else None
+                    except (ValueError, TypeError):
+                        corpo[k] = v
+            data["corpo"] = corpo
+        elif "altro" in sec_lower:
+            data["altro"] = sec_data
+
+    return data
+
+
+def parse_coach_md(text: str) -> list:
+    """Split coach feedback into [{title, html}] sections by ## headings."""
+    sections = []
+    current_title = None
+    current_lines: list = []
+
+    for line in text.split("\n"):
+        m = re.match(r"^##\s+(.+)", line)
+        if m:
+            if current_title is not None:
+                content = "\n".join(current_lines).strip()
+                if content:
+                    sections.append({"title": current_title, "html": md_to_html(content)})
+            current_title = m.group(1).strip()
+            current_lines = []
+        elif current_title is not None:
+            current_lines.append(line)
+
+    if current_title is not None:
+        content = "\n".join(current_lines).strip()
+        if content:
+            sections.append({"title": current_title, "html": md_to_html(content)})
+
+    return sections
+
+
+# ---------------------------------------------------------------------------
 # Volume calculation
 # ---------------------------------------------------------------------------
 
@@ -222,7 +358,7 @@ def compute_volume(workout_data: dict) -> list:
 # ---------------------------------------------------------------------------
 
 def enrich_measurements(measurements: list) -> list:
-    """Aggiungi metadati derivati per il rendering (variazione %, tendenza, badge)."""
+    """Aggiungi metadati derivati per il rendering (variazione %, tendenza, badge, tipo massimali)."""
     if not measurements:
         return measurements
 
@@ -248,6 +384,16 @@ def enrich_measurements(measurements: list) -> list:
             m_copy["delta_bf_pct"] = 0
             m_copy["delta_mm_kg"] = 0
             m_copy["bf_trend"] = "baseline"
+
+        # Aggiungi tipo massimale (R=Reale, S=Stimato) se non presente
+        # Assume che se il campo massimali_tipo non esiste, tutti sono "R" (reali)
+        if "squat_1rm_tipo" not in m_copy:
+            m_copy["squat_1rm_tipo"] = m_copy.get("squat_1rm_tipo", "R")
+        if "panca_1rm_tipo" not in m_copy:
+            m_copy["panca_1rm_tipo"] = m_copy.get("panca_1rm_tipo", "R")
+        if "stacco_1rm_tipo" not in m_copy:
+            m_copy["stacco_1rm_tipo"] = m_copy.get("stacco_1rm_tipo", "R")
+
         enriched.append(m_copy)
     return enriched
 
@@ -349,12 +495,23 @@ def main():
         print("  ! piano non trovato")
 
     # --- feedback ---
-    fb_md = latest_file("feedback_coach", [".md"])
+    fb_coach_md = latest_file("feedback_coach", [".md"])
+    fb_atleta_md = latest_file("feedback_atleta", [".md"])
     fb_html = latest_file("feedback", [".html"])
-    if fb_md:
-        write_json(os.path.join(out, "feedback.json"), {"html": md_to_html(read_text(fb_md))})
+    if fb_coach_md or fb_atleta_md:
+        coach_text = read_text(fb_coach_md) if fb_coach_md else None
+        atleta_text = read_text(fb_atleta_md) if fb_atleta_md else None
+        write_json(os.path.join(out, "feedback.json"), {
+            "coach_sections": parse_coach_md(coach_text) if coach_text else [],
+            "coach_html": md_to_html(coach_text) if coach_text else None,
+            "atleta": parse_atleta_md(atleta_text) if atleta_text else {},
+            "atleta_html": md_to_html(atleta_text) if atleta_text else None,
+        })
     elif fb_html:
-        write_json(os.path.join(out, "feedback.json"), {"html": read_text(fb_html)})
+        write_json(os.path.join(out, "feedback.json"), {
+            "coach_sections": [], "coach_html": read_text(fb_html),
+            "atleta": {}, "atleta_html": None,
+        })
     else:
         print("  ! feedback non trovato")
 

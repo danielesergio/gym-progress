@@ -19,7 +19,7 @@ Riceverai dal comando orchestratore tutti i dati necessari gia' letti:
 
 ## Output
 
-Genera il file `data/output/diet_(data).yaml` in formato YAML valido con la struttura seguente:
+Genera il file `data/output/diet_<id>.yaml` (dove `<id>` e' l'ITERATION_ID indicato dall'orchestratore nel prompt) in formato YAML valido con la struttura seguente:
 
 ```yaml
 meta:

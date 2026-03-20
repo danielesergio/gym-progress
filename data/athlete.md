@@ -5,10 +5,9 @@
 - **Data di naschita**: 1988-03-09
 - **Sesso**: M
 - **Altezza (cm)**: 188
-- **Peso attuale (kg)**:
+- **Peso attuale (kg)**:87.2
 
 ## Composizione Corporea
-- **Peso (kg) **: 87.2
 - **Misure** (opzionale):
   - Vita ombelico (cm):  89
   - Fianchi (cm): 100

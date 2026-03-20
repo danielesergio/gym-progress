@@ -1,0 +1,73 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "PtReviewReport",
+  "description": "Report del gym-pt-senior-reviewer per scheda allenamento o piano a lungo termine.",
+  "type": "object",
+  "required": ["meta", "correzioni_applicate", "problemi_critici", "suggerimenti", "punti_di_forza"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["data", "tipo", "valutazione", "esito"],
+      "additionalProperties": false,
+      "properties": {
+        "data":       { "type": "string", "description": "Data review YYYY-MM-DD." },
+        "tipo":       { "type": "string", "enum": ["workout", "plan"] },
+        "valutazione":{ "type": "integer", "minimum": 1, "maximum": 10 },
+        "esito":      { "type": "string", "enum": ["APPROVATA", "BOCCIATA"] }
+      }
+    },
+    "correzioni_applicate": {
+      "type": "array",
+      "description": "Errori numerici corretti direttamente nel file sorgente.",
+      "items": {
+        "type": "object",
+        "required": ["id", "descrizione", "valore_errato", "valore_corretto", "dove", "formula"],
+        "additionalProperties": false,
+        "properties": {
+          "id":              { "type": "string" },
+          "descrizione":     { "type": "string" },
+          "valore_errato":   { "type": "string" },
+          "valore_corretto": { "type": "string" },
+          "dove":            { "type": "string" },
+          "formula":         { "type": "string" }
+        }
+      }
+    },
+    "problemi_critici": {
+      "type": "array",
+      "description": "Problemi che causano BOCCIATA. Lista vuota = nessun problema critico.",
+      "items": {
+        "type": "object",
+        "required": ["id", "descrizione", "dove", "come_correggere"],
+        "additionalProperties": false,
+        "properties": {
+          "id":              { "type": "string" },
+          "descrizione":     { "type": "string" },
+          "dove":            { "type": "string" },
+          "come_correggere": { "type": "string" }
+        }
+      }
+    },
+    "suggerimenti": {
+      "type": "array",
+      "description": "Miglioramenti non bloccanti.",
+      "items": {
+        "type": "object",
+        "required": ["id", "descrizione", "motivazione", "proposta"],
+        "additionalProperties": false,
+        "properties": {
+          "id":          { "type": "string" },
+          "descrizione": { "type": "string" },
+          "motivazione": { "type": "string" },
+          "proposta":    { "type": "string" }
+        }
+      }
+    },
+    "punti_di_forza": {
+      "type": "array",
+      "description": "Aspetti positivi da mantenere.",
+      "items": { "type": "string" }
+    }
+  }
+}

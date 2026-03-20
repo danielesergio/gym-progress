@@ -1,0 +1,42 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "UXReviewerReport",
+  "description": "Report del gym-ux-reviewer sull'usabilita' della dashboard fitness.",
+  "type": "object",
+  "required": ["valutazione", "problemi"],
+  "additionalProperties": false,
+  "properties": {
+    "valutazione": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 10,
+      "description": "Valutazione globale UX da 0 a 10."
+    },
+    "problemi": {
+      "type": "object",
+      "description": "Conteggio problemi per priorita'.",
+      "required": ["Alta", "Media", "Bassa"],
+      "additionalProperties": false,
+      "properties": {
+        "Alta":  { "type": "integer", "minimum": 0 },
+        "Media": { "type": "integer", "minimum": 0 },
+        "Bassa": { "type": "integer", "minimum": 0 }
+      }
+    },
+    "lista_alta": {
+      "type": "array",
+      "description": "Titoli sintetici dei problemi Alta priorita' (uno per voce).",
+      "items": { "type": "string" }
+    },
+    "lista_media": {
+      "type": "array",
+      "description": "Titoli sintetici dei problemi Media priorita' (uno per voce).",
+      "items": { "type": "string" }
+    },
+    "lista_bassa": {
+      "type": "array",
+      "description": "Titoli sintetici dei problemi Bassa priorita' (uno per voce).",
+      "items": { "type": "string" }
+    }
+  }
+}

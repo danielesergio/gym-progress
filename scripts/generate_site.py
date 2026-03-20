@@ -123,6 +123,7 @@ tr.total-row { font-weight: 700; background: var(--surface2); }
 .tag-primary { background: rgba(108,140,255,0.2); color: var(--accent); }
 .tag-secondary { background: rgba(78,205,196,0.2); color: var(--green); }
 .tag-tertiary { background: rgba(255,217,61,0.15); color: var(--yellow); }
+.tag-danger { background: rgba(255,107,107,0.2); color: var(--red); }
 details.muscle-detail { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0.5rem; }
 details.muscle-detail summary { padding: 0.75rem 1rem; cursor: pointer; font-weight: 600; font-size: 0.95rem; }
 details.muscle-detail summary:hover { color: var(--accent); }
@@ -277,6 +278,7 @@ function renderDashboard(measurements, planData) {
     var total = (sq && pa && st) ? sq + pa + st : 0;
     var ffmi = last.ffmi_adj || '-';
     var tdee = last.tdee_kcal || 2871;
+    var tdee_is_fallback = !last.tdee_kcal;
 
     var targets = {};
     if (planData && planData.target && planData.target.length > 0) {
@@ -320,8 +322,12 @@ function renderDashboard(measurements, planData) {
     html += card('Squat', sq || '-', 'kg', 'Target: ' + targets.squat + ' kg' + progressBar(sq || 0, targets.squat));
     html += card('Panca', pa || '-', 'kg', 'Target: ' + targets.panca + ' kg' + progressBar(pa || 0, targets.panca));
     html += card('Stacco', st || '-', 'kg', 'Target: ' + targets.stacco + ' kg' + progressBar(st || 0, targets.stacco));
-    html += card('Calorie target', tdee + 300, 'kcal', 'TDEE ' + tdee + ' + surplus 300');
+    var tdee_sub = (tdee_is_fallback ? '⚠️ STIMA AUTOMATICA: ' : 'TDEE ') + tdee + ' + surplus 300';
+    html += card('Calorie target', tdee + 300, 'kcal', tdee_sub, tdee_is_fallback ? 'orange' : '');
     html += '</div>';
+    if (tdee_is_fallback) {
+        html += '<div style="background:rgba(255,169,77,0.15); border:2px solid var(--orange); border-radius:8px; padding:1rem; margin-bottom:1.5rem;"><strong style="color:var(--orange)">⚠️ Avviso TDEE</strong><p style="margin:0.5rem 0 0;color:var(--text-muted);font-size:0.95rem">Il fabbisogno calorico è stato stimato automaticamente. Per precisione, è consigliato un test di settimana per verificare la reale manutenzione. Consulta il coach se hai dubbi.</p></div>';
+    }
 
     // Chart
     html += '<h3 style="margin:1.5rem 0 .75rem">Andamento Massimali</h3>';
@@ -330,13 +336,17 @@ function renderDashboard(measurements, planData) {
 
     // History table with delta info
     html += '<h3 style="margin:1.5rem 0 .75rem">Storico misurazioni</h3>';
+    html += '<p class="subtitle"><span style="display:inline-block;margin-right:1rem;"><strong style="color:var(--text);">R</strong> = Reale | <strong style="color:var(--orange);">S</strong> = Stimato</span></p>';
     html += '<div class="table-wrap"><table><thead><tr>';
-    ['Data','Peso','Δ Peso','BF%','Δ BF','Trend','Massa magra','FFMI adj','Squat','Panca','Stacco','Note'].forEach(function(h){
+    ['Data','Peso','Δ Peso','BF%','Δ BF','Trend','Massa magra','FFMI adj','Squat','Panca','Stacco','Vita','Petto','Fianchi','Note'].forEach(function(h){
         html += '<th>' + h + '</th>';
     });
     html += '</tr></thead><tbody>';
     measurements.forEach(function(m) {
-        var trendIcon = m.bf_trend === 'migliorante' ? '📈' : m.bf_trend === 'peggiorante' ? '📉' : '➡️';
+        var trendIcon = m.bf_trend === 'migliorante' ? '✅' : m.bf_trend === 'peggiorante' ? '⚠️' : '➡️';
+        var sqTypeSpan = m.squat_1rm ? '<span style="color:' + (m.squat_1rm_tipo==='S'?'var(--orange)':'var(--text)') + ';font-size:0.75rem;font-weight:600;margin-left:0.25rem">' + (m.squat_1rm_tipo || 'R') + '</span>' : '';
+        var paTypeSpan = m.panca_1rm ? '<span style="color:' + (m.panca_1rm_tipo==='S'?'var(--orange)':'var(--text)') + ';font-size:0.75rem;font-weight:600;margin-left:0.25rem">' + (m.panca_1rm_tipo || 'R') + '</span>' : '';
+        var stTypeSpan = m.stacco_1rm ? '<span style="color:' + (m.stacco_1rm_tipo==='S'?'var(--orange)':'var(--text)') + ';font-size:0.75rem;font-weight:600;margin-left:0.25rem">' + (m.stacco_1rm_tipo || 'R') + '</span>' : '';
         html += '<tr>'
             + '<td>' + esc(m.data) + '</td>'
             + '<td>' + esc(m.peso_kg) + '</td>'
@@ -346,9 +356,12 @@ function renderDashboard(measurements, planData) {
             + '<td>' + trendIcon + '</td>'
             + '<td>' + esc(m.massa_magra_kg) + '</td>'
             + '<td>' + esc(m.ffmi_adj) + '</td>'
-            + '<td>' + esc(m.squat_1rm) + '</td>'
-            + '<td>' + esc(m.panca_1rm) + '</td>'
-            + '<td>' + esc(m.stacco_1rm) + '</td>'
+            + '<td>' + esc(m.squat_1rm) + sqTypeSpan + '</td>'
+            + '<td>' + esc(m.panca_1rm) + paTypeSpan + '</td>'
+            + '<td>' + esc(m.stacco_1rm) + stTypeSpan + '</td>'
+            + '<td>' + (m.vita_cm ? esc(m.vita_cm) + ' cm' : '&mdash;') + '</td>'
+            + '<td>' + (m.petto_cm ? esc(m.petto_cm) + ' cm' : '&mdash;') + '</td>'
+            + '<td>' + (m.fianchi_cm ? esc(m.fianchi_cm) + ' cm' : '&mdash;') + '</td>'
             + '<td>' + esc(m.note) + '</td>'
             + '</tr>';
     });
@@ -428,12 +441,13 @@ function renderWorkout(data) {
             + '</ol></div>';
     }
     function exerciseTable(esercizi) {
-        var h = '<div class="table-wrap"><table><thead><tr><th>#</th><th>Esercizio</th><th>Serie x Reps</th><th>Peso / Intensita</th><th>Recupero</th><th>Gruppo</th></tr></thead><tbody>';
+        var h = '<div class="table-wrap"><table><thead><tr><th>#</th><th>Esercizio</th><th>Serie x Reps</th><th>Peso / Intensita</th><th>Recupero</th><th>Gruppo</th><th>Note</th></tr></thead><tbody>';
         esercizi.forEach(function(ex, i) {
             var nome = ex.principale ? '<strong>' + esc(ex.nome) + '</strong>' : esc(ex.nome);
+            var note = ex.note ? esc(ex.note) : '&mdash;';
             h += '<tr><td>' + (i+1) + '</td><td>' + nome + '</td>'
-                + '<td>' + esc(ex.reps) + '</td><td>' + esc(ex.peso) + '</td>'
-                + '<td>' + esc(ex.recupero) + '</td><td>' + esc(ex.gruppo) + '</td></tr>';
+                + '<td>' + esc(ex.serie) + ' &times; ' + esc(ex.reps) + '</td><td>' + esc(ex.peso) + '</td>'
+                + '<td>' + esc(ex.recupero) + '</td><td>' + esc(ex.gruppo) + '</td><td>' + note + '</td></tr>';
         });
         return h + '</tbody></table></div>';
     }
@@ -466,24 +480,70 @@ function renderWorkout(data) {
 
     // Week tabs
     html += '<div class="sub-nav" id="week-nav">';
-    html += '<a class="sub-nav-item active" onclick="switchWeek(\'info\', this)">Info</a>';
+    html += '<a class="sub-nav-item active" onclick="switchWeek(\\'info\\', this)">Info</a>';
     settimane.forEach(function(s) {
-        html += '<a class="sub-nav-item" onclick="switchWeek(\'sett' + s.numero + '\', this)">Settimana ' + s.numero + '</a>';
+        html += '<a class="sub-nav-item" onclick="switchWeek(\\'sett' + s.numero + '\\', this)">Settimana ' + s.numero + '</a>';
     });
     html += '</div>';
 
     // Info panel
     html += '<div id="panel-info" class="panel active">';
-    html += '<h2>' + esc(meta.tipo_fase) + '</h2><ul>';
-    html += '<li><strong>Periodo</strong>: ' + esc(meta.periodo) + '</li>';
-    html += '<li><strong>Durata</strong>: ' + esc(meta.durata_settimane) + ' settimane</li>';
-    html += '<li><strong>Frequenza</strong>: ' + esc(meta.frequenza_settimanale) + ' sessioni/settimana</li>';
-    html += '<li><strong>Obiettivo</strong>: ' + esc(meta.obiettivo) + '</li>';
-    html += '</ul>';
+    // Cards riepilogo
+    html += '<div class="cards">';
+    html += '<div class="card accent"><div class="label">Fase</div><div class="value" style="font-size:1.1rem;line-height:1.3">' + esc(meta.tipo_fase) + '</div><div class="sub">' + esc(meta.periodo) + '</div></div>';
+    html += '<div class="card"><div class="label">Durata</div><div class="value">' + esc(meta.durata_settimane) + '<span class="unit"> sett.</span></div></div>';
+    html += '<div class="card"><div class="label">Frequenza</div><div class="value">' + esc(meta.frequenza_settimanale) + '<span class="unit"> sess/sett</span></div></div>';
+    html += '</div>';
+    // Obiettivo
+    html += '<div style="background:var(--surface2);border-left:3px solid var(--accent);border-radius:0 8px 8px 0;padding:0.75rem 1rem;margin:0.75rem 0">';
+    html += '<div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem">Obiettivo</div>';
+    html += '<div style="color:var(--text);line-height:1.6">' + esc(meta.obiettivo) + '</div>';
+    html += '</div>';
+    // Note infortunio
+    if (meta.note_infortunio) {
+        html += '<div style="background:rgba(255,107,107,0.08);border:2px solid var(--red);border-radius:8px;padding:0.875rem 1rem;margin:0.75rem 0">';
+        html += '<div style="font-weight:700;color:var(--red);margin-bottom:0.5rem;font-size:0.9rem;text-transform:uppercase;letter-spacing:0.03em">&#9888; Note Infortunio</div>';
+        html += '<div style="color:var(--text-muted);font-size:0.9rem;line-height:1.6">' + esc(meta.note_infortunio) + '</div>';
+        html += '</div>';
+    }
+    // Mesociclo
+    var mc = data.mesociclo || {};
+    if (mc.nome) {
+        html += '<h3 style="margin:1.5rem 0 0.75rem;font-size:1rem;color:var(--accent2);text-transform:uppercase;letter-spacing:0.03em">Mesociclo: ' + esc(mc.nome) + '</h3>';
+        if (mc.obiettivo) {
+            html += '<div style="background:var(--surface2);border-left:3px solid var(--accent2);border-radius:0 8px 8px 0;padding:0.75rem 1rem;margin-bottom:0.75rem">';
+            html += '<div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem">Obiettivo</div>';
+            html += '<div style="color:var(--text);font-size:0.9rem;line-height:1.6">' + esc(mc.obiettivo) + '</div>';
+            html += '</div>';
+        }
+        if (mc.metodologia) {
+            html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem;margin-bottom:0.75rem">';
+            html += '<div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem">Metodologia</div>';
+            html += '<div style="color:var(--text-muted);font-size:0.9rem;line-height:1.7">' + esc(mc.metodologia) + '</div>';
+            html += '</div>';
+        }
+        if (mc.logica && mc.logica.length) {
+            html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem;margin-bottom:0.75rem">';
+            html += '<div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.75rem">Logica di periodizzazione</div>';
+            html += '<ol style="margin-left:1.25rem;color:var(--text-muted);font-size:0.9rem">';
+            mc.logica.forEach(function(l){ html += '<li style="margin:0.35rem 0">' + esc(l) + '</li>'; });
+            html += '</ol></div>';
+        }
+    }
+    // Note generali
     if (data.note_generali && data.note_generali.length) {
-        html += '<h3>Note generali</h3><ul>';
-        data.note_generali.forEach(function(n){ html += '<li>' + esc(n) + '</li>'; });
-        html += '</ul>';
+        html += '<h3 style="margin:1.5rem 0 0.75rem">Note generali</h3>';
+        html += '<div style="display:flex;flex-direction:column;gap:0.4rem">';
+        data.note_generali.forEach(function(n, i) {
+            var upper = n.toUpperCase();
+            var isAlert = upper.indexOf('VIET') !== -1 || upper.indexOf('STOP') !== -1 || upper.indexOf('PRIORIT') !== -1;
+            var borderColor = isAlert ? 'var(--red)' : 'var(--border)';
+            var bgColor = isAlert ? 'rgba(255,107,107,0.06)' : 'var(--surface)';
+            html += '<div style="background:' + bgColor + ';border:1px solid ' + borderColor + ';border-radius:8px;padding:0.55rem 1rem;font-size:0.875rem;color:var(--text-muted);line-height:1.55">';
+            html += '<span style="color:var(--text-muted);font-size:0.72rem;margin-right:0.4rem">' + (i+1) + '.</span>' + esc(n);
+            html += '</div>';
+        });
+        html += '</div>';
     }
     html += '</div>';
 
@@ -500,7 +560,7 @@ function renderWorkout(data) {
             html += '<div class="sub-nav sub-nav-days" id="day-nav-' + sid + '">';
             giorni.forEach(function(g, i) {
                 var ac = i === 0 ? ' active' : '';
-                html += '<a class="sub-nav-item' + ac + '" onclick="switchDay(\'' + sid + '\', ' + i + ', this)">' + esc(g.giorno) + '</a>';
+                html += '<a class="sub-nav-item' + ac + '" onclick="switchDay(\\'' + sid + '\\', ' + i + ', this)">' + esc(g.giorno) + '</a>';
             });
             html += '</div>';
         }
@@ -525,9 +585,9 @@ function renderWorkout(data) {
             }
             if (giorni.length > 1) {
                 html += '<div class="day-nav">';
-                if (i > 0) html += '<a onclick="switchDay(\'' + sid + '\', ' + (i-1) + ', null)">&larr; ' + esc(giorni[i-1].giorno) + '</a>';
+                if (i > 0) html += '<a onclick="switchDay(\\'' + sid + '\\', ' + (i-1) + ', null)">&larr; ' + esc(giorni[i-1].giorno) + '</a>';
                 else html += '<span></span>';
-                if (i < giorni.length - 1) html += '<a onclick="switchDay(\'' + sid + '\', ' + (i+1) + ', null)">' + esc(giorni[i+1].giorno) + ' &rarr;</a>';
+                if (i < giorni.length - 1) html += '<a onclick="switchDay(\\'' + sid + '\\', ' + (i+1) + ', null)">' + esc(giorni[i+1].giorno) + ' &rarr;</a>';
                 else html += '<span></span>';
                 html += '</div>';
             }
@@ -746,7 +806,7 @@ function renderPlan(data) {
     var html = '<h2 class="page-title">Piano a Lungo Termine</h2>';
     html += '<div class="sub-nav" id="plan-nav">';
     tabs.forEach(function(t, i) {
-        html += '<a class="sub-nav-item' + (i===0?' active':'') + '" onclick="planTab(\'' + t.id + '\', this)">' + t.label + '</a>';
+        html += '<a class="sub-nav-item' + (i===0?' active':'') + '" onclick="planTab(\\'' + t.id + '\\', this)">' + t.label + '</a>';
     });
     html += '</div>';
 
@@ -777,29 +837,70 @@ function renderPlan(data) {
 
     // Fasi
     html += '<div id="plan-fasi" class="panel">';
-    fasi.forEach(function(fase) {
-        html += '<h4>Fase ' + esc(fase.numero) + ': ' + esc(fase.nome) + '</h4><ul>';
-        if (fase.durata_settimane) html += '<li><strong>Durata</strong>: ' + fase.durata_settimane + ' settimane</li>';
-        if (fase.obiettivo) html += '<li><strong>Obiettivo</strong>: ' + esc(fase.obiettivo) + '</li>';
-        if (fase.metodologia) html += '<li><strong>Metodologia</strong>: ' + esc(fase.metodologia) + '</li>';
-        if (fase.note) html += '<li><strong>Note</strong>: ' + esc(fase.note) + '</li>';
-        html += '</ul>';
+    var faseColors = ['var(--accent)','var(--accent2)','var(--yellow)','var(--orange)','var(--text-muted)'];
+    fasi.forEach(function(fase, fi) {
+        var col = faseColors[fi] || 'var(--text-muted)';
+        html += '<details class="muscle-detail" style="margin-bottom:0.6rem" ' + (fi===0?'open':'') + '>';
+        html += '<summary style="display:flex;align-items:center;gap:0.75rem;padding:0.875rem 1rem">';
+        html += '<span style="background:' + col + ';color:var(--bg);border-radius:50%;width:1.6rem;height:1.6rem;display:inline-flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;flex-shrink:0">' + fase.numero + '</span>';
+        html += '<span style="flex:1;font-weight:600;font-size:0.95rem">' + esc(fase.nome) + '</span>';
+        if (fase.durata_settimane) html += '<span style="font-size:0.8rem;color:var(--text-muted);background:var(--surface2);padding:0.2rem 0.6rem;border-radius:4px;white-space:nowrap">' + fase.durata_settimane + ' sett.</span>';
+        html += '</summary>';
+        html += '<div style="padding:0 1rem 1rem">';
+        if (fase.obiettivo) {
+            html += '<div style="background:var(--surface2);border-left:3px solid ' + col + ';border-radius:0 8px 8px 0;padding:0.75rem 1rem;margin-bottom:0.75rem">';
+            html += '<div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem">Obiettivo</div>';
+            html += '<div style="color:var(--text);font-size:0.9rem;line-height:1.6">' + esc(fase.obiettivo) + '</div>';
+            html += '</div>';
+        }
+        if (fase.metodologia) {
+            html += '<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem;margin-bottom:0.75rem">';
+            html += '<div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem">Metodologia</div>';
+            html += '<div style="color:var(--text-muted);font-size:0.875rem;line-height:1.7">' + esc(fase.metodologia) + '</div>';
+            html += '</div>';
+        }
+        if (fase.note) {
+            html += '<div style="background:rgba(255,169,77,0.07);border:1px solid rgba(255,169,77,0.3);border-radius:8px;padding:0.75rem 1rem">';
+            html += '<div style="font-size:0.72rem;color:var(--orange);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem">Note</div>';
+            html += '<div style="color:var(--text-muted);font-size:0.875rem;line-height:1.6">' + esc(fase.note) + '</div>';
+            html += '</div>';
+        }
+        html += '</div></details>';
     });
     html += '</div>';
 
     // Strategia
-    html += '<div id="plan-strategia" class="panel"><ul>';
-    Object.entries(strategia).forEach(function(e) {
-        html += '<li><strong>' + esc(e[0].replace(/_/g,' ')) + '</strong>: ' + esc(e[1]) + '</li>';
-    });
-    html += '</ul></div>';
+    html += '<div id="plan-strategia" class="panel">';
+    html += '<div class="cards">';
+    if (strategia.fase_attuale) {
+        var sfCol = strategia.fase_attuale === 'cut' ? 'var(--red)' : strategia.fase_attuale === 'bulk' ? 'var(--green)' : 'var(--accent)';
+        html += '<div class="card" style="border-color:' + sfCol + '"><div class="label">Fase attuale</div><div class="value" style="color:' + sfCol + ';font-size:1.5rem;text-transform:uppercase">' + esc(strategia.fase_attuale) + '</div></div>';
+    }
+    if (strategia.kcal_target) html += card('Calorie target', strategia.kcal_target, 'kcal', 'Deficit: ' + (strategia.deficit_kcal || '-') + ' kcal');
+    if (strategia.proteine_g_totali) html += card('Proteine', strategia.proteine_g_totali, 'g/giorno', (strategia.proteine_g_per_kg || '-') + ' g/kg peso');
+    if (strategia.deficit_kcal) html += card('Deficit', strategia.deficit_kcal, 'kcal', 'Deficit giornaliero');
+    html += '</div>';
+    if (strategia.note_strategia) {
+        html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1rem 1.25rem;margin-top:0.5rem">';
+        html += '<div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.75rem">Strategia dettagliata</div>';
+        html += '<div style="color:var(--text-muted);font-size:0.9rem;line-height:1.75">' + esc(strategia.note_strategia) + '</div>';
+        html += '</div>';
+    }
+    var knownSKeys = ['fase_attuale','deficit_kcal','kcal_target','proteine_g_per_kg','proteine_g_totali','note_strategia'];
+    var extraS = Object.entries(strategia).filter(function(e){ return knownSKeys.indexOf(e[0]) === -1; });
+    if (extraS.length) {
+        html += '<ul style="margin:1rem 0 0 1.25rem;color:var(--text-muted);font-size:0.9rem">';
+        extraS.forEach(function(e){ html += '<li style="margin:0.4rem 0"><strong style="color:var(--text)">' + esc(e[0].replace(/_/g,' ')) + '</strong>: ' + esc(e[1]) + '</li>'; });
+        html += '</ul>';
+    }
+    html += '</div>';
 
     // Rischi
     html += '<div id="plan-rischi" class="panel">';
     if (rischi.length) {
         html += '<div class="table-wrap"><table><thead><tr><th>Area</th><th>Livello</th><th>Azione</th></tr></thead><tbody>';
         rischi.forEach(function(r) {
-            var clsMap = { alto: 'tag-primary', medio: 'tag-secondary', basso: 'tag-tertiary' };
+            var clsMap = { alto: 'tag-danger', medio: 'tag-secondary', basso: 'tag-tertiary' };
             html += '<tr><td>' + esc(r.area) + '</td><td><span class="tag ' + (clsMap[r.livello]||'') + '">' + esc(r.livello) + '</span></td><td>' + esc(r.azione) + '</td></tr>';
         });
         html += '</tbody></table></div>';
@@ -825,14 +926,209 @@ function planTab(id, link) {
 # ---------------------------------------------------------------------------
 
 FEEDBACK_JS = SHARED_JS + """
+<style>
+.fb-panel { display: none; }
+.fb-panel.active { display: block; }
+.fb-section {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; margin-bottom: 0.75rem; overflow: hidden;
+}
+.fb-section > summary {
+    padding: 1rem 1.25rem; cursor: pointer; font-size: 0.95rem; font-weight: 600;
+    color: var(--text); list-style: none; display: flex; align-items: center;
+    gap: 0.6rem; transition: background 0.15s; user-select: none;
+}
+.fb-section > summary::-webkit-details-marker { display: none; }
+.fb-section > summary::before {
+    content: '▶'; font-size: 0.6rem; color: var(--accent);
+    transition: transform 0.2s; flex-shrink: 0;
+}
+.fb-section[open] > summary::before { transform: rotate(90deg); }
+.fb-section > summary:hover { background: var(--surface2); }
+.fb-section-body { padding: 0.5rem 1.5rem 1.25rem; border-top: 1px solid var(--border); }
+.fb-sub-title {
+    font-size: 0.75rem; font-weight: 700; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.06em; margin: 1.75rem 0 0.75rem;
+}
+.fb-kv-list {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden; margin-bottom: 0.5rem;
+}
+.fb-kv-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 0.65rem 1.25rem; border-bottom: 1px solid var(--border); gap: 1rem;
+}
+.fb-kv-row:last-child { border-bottom: none; }
+.fb-kv-key { color: var(--text-muted); font-size: 0.875rem; flex-shrink: 0; }
+.fb-kv-val { color: var(--text); font-weight: 600; font-size: 0.875rem; text-align: right; }
+.fb-note {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 0.9rem 1.25rem; margin-bottom: 0.6rem;
+    color: var(--text-muted); font-size: 0.875rem; line-height: 1.65;
+}
+.fb-note.injury {
+    background: rgba(255,107,107,0.05); border-color: rgba(255,107,107,0.3);
+}
+.fb-injury-label {
+    display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--red); margin-bottom: 0.35rem;
+}
+</style>
 <script>
 fetch('data/feedback.json').then(function(r){ return r.json(); }).then(renderFeedback)
     .catch(function(){ document.getElementById('main-content').innerHTML = '<p>Dati non disponibili.</p>'; });
 
+var PLACEHOLDER_RE = /^\\([^)]+\\)\\s*$/;
+function isPlaceholder(v) { return !v || PLACEHOLDER_RE.test(String(v).trim()); }
+
 function renderFeedback(data) {
     var root = document.getElementById('main-content');
-    var html = data.html || '<p>Nessun feedback disponibile.</p>';
-    root.innerHTML = '<div class="md-content">' + html + '</div>';
+    var atleta = data.atleta || {};
+    var coachSections = data.coach_sections || [];
+    var hasCoach  = coachSections.length > 0 || !!data.coach_html;
+    var hasAtleta = Object.keys(atleta).length > 0 || !!data.atleta_html;
+
+    if (!hasCoach && !hasAtleta) {
+        root.innerHTML = '<p class="loading">Nessun feedback disponibile.</p>';
+        return;
+    }
+
+    var html = '<h2 class="page-title">Feedback Mensile</h2>';
+
+    // ── KPI CARDS (peso + lifts sempre visibili) ─────────────────────────
+    var kpis = '';
+    if (atleta.corpo) {
+        var peso = atleta.corpo['Peso (kg)'];
+        if (peso != null) kpis += card('Peso', peso, 'kg', '', 'green');
+    }
+    if (atleta.massimali) {
+        atleta.massimali.forEach(function(l) {
+            if (l.orm_stimato) {
+                kpis += card(l.lift + ' 1RM est.', l.orm_stimato, 'kg',
+                    esc(l.peso) + ' kg &times; ' + esc(l.reps) + ' rep', 'accent');
+            }
+        });
+    }
+    if (kpis) html += '<div class="cards" style="margin-bottom:1.75rem">' + kpis + '</div>';
+
+    // ── TAB NAV ──────────────────────────────────────────────────────────
+    var tabs = '';
+    if (hasCoach)  tabs += '<span class="sub-nav-item active" onclick="switchFbTab(event,\\'fb-coach\\')">Risposta Coach</span>';
+    if (hasAtleta) tabs += '<span class="sub-nav-item' + (hasCoach ? '' : ' active') + '" onclick="switchFbTab(event,\\'fb-atleta\\')">Autovalutazione</span>';
+    html += '<div id="fb-nav" class="sub-nav" style="margin-bottom:1.5rem">' + tabs + '</div>';
+
+    // ── COACH PANEL ──────────────────────────────────────────────────────
+    if (hasCoach) {
+        html += '<div id="fb-coach" class="fb-panel active">';
+        if (coachSections.length > 0) {
+            coachSections.forEach(function(sec, i) {
+                html += '<details class="fb-section"' + (i === 0 ? ' open' : '') + '>'
+                    + '<summary>' + esc(sec.title) + '</summary>'
+                    + '<div class="fb-section-body md-content">' + sec.html + '</div>'
+                    + '</details>';
+            });
+        } else {
+            html += '<div class="md-content">' + (data.coach_html || '') + '</div>';
+        }
+        html += '</div>';
+    }
+
+    // ── ATLETA PANEL ─────────────────────────────────────────────────────
+    if (hasAtleta) {
+        html += '<div id="fb-atleta" class="fb-panel' + (hasCoach ? '' : ' active') + '">';
+
+        if (Object.keys(atleta).length > 0) {
+
+            // MASSIMALI
+            if (atleta.massimali && atleta.massimali.length > 0) {
+                html += '<p class="fb-sub-title">Massimali del mese</p><div class="cards">';
+                atleta.massimali.forEach(function(l) {
+                    var sub = l.orm_stimato
+                        ? '1RM stimato: <strong style="color:var(--accent)">' + l.orm_stimato + ' kg</strong>'
+                        : esc(l.raw || '—');
+                    html += card(l.lift, l.peso != null ? l.peso : '—',
+                        l.reps ? 'kg &times; ' + l.reps : '', sub, 'accent');
+                });
+                html += '</div>';
+            }
+
+            // COMPOSIZIONE CORPOREA
+            if (atleta.corpo) {
+                html += '<p class="fb-sub-title">Composizione Corporea</p><div class="cards">';
+                var p = atleta.corpo['Peso (kg)'];
+                if (p != null) html += card('Peso', p, 'kg', '', 'green');
+                var misure = atleta.corpo.misure || {};
+                var misLabel = {
+                    'Vita ombelico': 'Vita', 'Fianchi': 'Fianchi', 'Petto': 'Petto',
+                    'Braccio dx': 'Braccio', 'Coscia dx': 'Coscia', 'collo': 'Collo'
+                };
+                Object.keys(misure).forEach(function(k) {
+                    var v = misure[k];
+                    if (v != null) html += card(misLabel[k] || k, v, 'cm', '', '');
+                });
+                html += '</div>';
+            }
+
+            // SENSAZIONI / ALLENAMENTO / DIETA / PROGRESSI
+            [
+                { key: 'sensazioni',  title: 'Come ti sei sentito' },
+                { key: 'allenamento', title: 'Allenamento' },
+                { key: 'dieta',       title: 'Dieta' },
+                { key: 'progressi',   title: 'Progressi Percepiti' },
+            ].forEach(function(s) {
+                var sec = atleta[s.key];
+                if (!sec) return;
+                var rows = Object.keys(sec).filter(function(k) { return !isPlaceholder(sec[k]); });
+                if (!rows.length) return;
+                html += '<p class="fb-sub-title">' + esc(s.title) + '</p><div class="fb-kv-list">';
+                rows.forEach(function(k) {
+                    var v = sec[k];
+                    var display = Array.isArray(v) ? v.join(' — ') : v;
+                    html += '<div class="fb-kv-row">'
+                        + '<span class="fb-kv-key">' + esc(k) + '</span>'
+                        + '<span class="fb-kv-val">' + esc(display) + '</span>'
+                        + '</div>';
+                });
+                html += '</div>';
+            });
+
+            // INFORTUNI
+            var altro = atleta.altro || {};
+            var infortuni = altro['Infortuni o dolori'];
+            if (infortuni && !isPlaceholder(infortuni)) {
+                html += '<p class="fb-sub-title">Infortuni / Dolori</p>'
+                    + '<div class="fb-note injury">'
+                    + '<span class="fb-injury-label">&#9888; Segnalazione</span>'
+                    + esc(infortuni) + '</div>';
+            }
+
+            // COMMENTI LIBERI
+            var commenti = altro['Commenti liberi'];
+            if (commenti) {
+                var commList = Array.isArray(commenti) ? commenti : [commenti];
+                var filtered = commList.filter(function(c) { return c && !isPlaceholder(c); });
+                if (filtered.length) {
+                    html += '<p class="fb-sub-title">Commenti e richieste</p>';
+                    filtered.forEach(function(c) { html += '<div class="fb-note">' + esc(c) + '</div>'; });
+                }
+            }
+
+        } else {
+            html += '<div class="md-content">' + (data.atleta_html || '') + '</div>';
+        }
+
+        html += '</div>';
+    }
+
+    root.innerHTML = html;
+}
+
+function switchFbTab(e, id) {
+    document.querySelectorAll('#fb-nav .sub-nav-item').forEach(function(el){ el.classList.remove('active'); });
+    document.querySelectorAll('.fb-panel').forEach(function(el){ el.classList.remove('active'); });
+    e.currentTarget.classList.add('active');
+    var panel = document.getElementById(id);
+    if (panel) panel.classList.add('active');
 }
 </script>
 """

@@ -1,0 +1,138 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "plan-page-layout",
+    "task_titolo": "Struttura pagina Piano e Obiettivi",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "La pagina plan.html esiste in docs/ ed è apribile nel browser senza errori 404",
+      "soddisfatto": true,
+      "dettaglio": "File esiste in docs/plan.html con DOCTYPE valido, head ben formato e struttura HTML completa (124 righe)."
+    },
+    {
+      "criterio": "La pagina mostra header, nav-tab con tab 'Piano' evidenziato (classe active), main con tre sezioni, footer",
+      "soddisfatto": true,
+      "dettaglio": "Presenti: header.page-header (riga 16), nav.tab-list con link Piano (riga 32-54), main#page-content (riga 61), footer.page-footer (riga 114). Struttura completa e ordinata."
+    },
+    {
+      "criterio": "Il tab 'Piano' nella navbar ha class='nav-tab active' e aria-current='page'",
+      "soddisfatto": true,
+      "dettaglio": "Link Piano (righe 50-54) ha class='nav-tab active' e aria-current='page'. Conforme al pattern tablist WAI-ARIA."
+    },
+    {
+      "criterio": "docs/plan.html contiene <section id='plan-timeline'> con aria-label appropriato",
+      "soddisfatto": true,
+      "dettaglio": "Section presente a riga 65 con id='plan-timeline' e aria-label='Timeline fasi del programma annuale'. Header e placeholder inclusi."
+    },
+    {
+      "criterio": "docs/plan.html contiene <section id='plan-strength-targets'> con aria-label appropriato",
+      "soddisfatto": true,
+      "dettaglio": "Section presente a riga 81 con id='plan-strength-targets' e aria-label='Target di forza progressivi'. Container #plan-targets-container incluso."
+    },
+    {
+      "criterio": "docs/plan.html contiene <section id='plan-nutrition-strategy'> con aria-label appropriato",
+      "soddisfatto": true,
+      "dettaglio": "Section presente a riga 95 con id='plan-nutrition-strategy' e aria-label='Strategia nutrizionale per fase'. Container #plan-nutrition-container incluso."
+    },
+    {
+      "criterio": "docs/js/plan.js contiene la funzione async renderPlan() e il listener DOMContentLoaded",
+      "soddisfatto": true,
+      "dettaglio": "Listener DOMContentLoaded presente a riga 6, funzione async renderPlan() definita a riga 18. Pattern corretto secondo convenzioni progetto."
+    },
+    {
+      "criterio": "docs/js/plan.js esegue fetch('data/plan.json') senza errori in console quando la pagina carica",
+      "soddisfatto": true,
+      "dettaglio": "Fetch a riga 20 esegue correttamente il caricamento. Gestione errori completa con try-catch (righe 19-34). Log di conferma a riga 24: console.log('[plan.js] plan.json caricato...')."
+    },
+    {
+      "criterio": "docs/css/plan.css contiene regole per .plan-timeline con overflow-x: auto per scrollabilità orizzontale su desktop",
+      "soddisfatto": true,
+      "dettaglio": "Classe .plan-timeline-scroll (righe 46-53) ha overflow-x: auto. Anche scrollbar stilizzata con custom scrollbar CSS (webkit)."
+    },
+    {
+      "criterio": "docs/css/plan.css contiene media query per mobile (max-width: 768px) che rende la timeline navigabile verticalmente",
+      "soddisfatto": true,
+      "dettaglio": "Media query a riga 242-259 trasforma timeline in layout verticale: .plan-phase-cards { flex-direction: column; } e .plan-phase-card { width: 100%; }."
+    },
+    {
+      "criterio": "docs/plan.html importa css/variables.css, css/layout.css, css/plan.css nell'ordine corretto",
+      "soddisfatto": true,
+      "dettaglio": "Righe 7-9: link tags in ordine corretto (variables.css → layout.css → plan.css). Consente override corretto delle custom properties."
+    },
+    {
+      "criterio": "docs/plan.html include <script src='js/nav.js' defer> e <script src='js/plan.js' defer> prima di </body>",
+      "soddisfatto": true,
+      "dettaglio": "Righe 120-121: entrambi i script con defer, collocati prima di </body>. nav.js è il primo script (handlePage initialization), plan.js il secondo."
+    },
+    {
+      "criterio": "La pagina è navigabile su mobile (viewport meta tag presente, nessun overflow orizzontale non intenzionale)",
+      "soddisfatto": true,
+      "dettaglio": "Viewport meta tag a riga 5: 'width=device-width, initial-scale=1.0'. Media query mobile elimina overflow-x sulla timeline (riga 251). Struttura responsive."
+    },
+    {
+      "criterio": "La fase corrente è visivamente distinguibile dalle fasi future (classe CSS .plan-phase-card--current applicata dal JS)",
+      "soddisfatto": true,
+      "dettaglio": "plan.js riga 77-80 applica classe .plan-phase-card--current se fase.stato === 'corrente'. plan.css riga 98-107 definisce stile: border-color accent, background elevated, shadow. Distinzione visiva evidente."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/plan.html",
+      "esiste": true,
+      "note": "File HTML principale della pagina Piano. Contiene struttura completa: DOCTYPE, head con CSS imports, header, nav-tab, main con tre sezioni skeleton, footer, script tags. 124 righe, ben formattato."
+    },
+    {
+      "path": "docs/css/plan.css",
+      "esiste": true,
+      "note": "Foglio stile pagina. Definisce layout sezioni, timeline scrollabile (overflow-x: auto), card fasi con classe corrente evidenziata, container target forza e nutrizione, media query mobile per layout verticale. Usa custom properties da variables.css. 312 righe."
+    },
+    {
+      "path": "docs/js/plan.js",
+      "esiste": true,
+      "note": "Script logica pagina. Contiene: listener DOMContentLoaded, renderPlan() async, fetch plan.json, renderTimeline() che popola cards con classe --current, buildPhaseCard() builder HTML, renderError() per gestione errori. 114 righe."
+    },
+    {
+      "path": "docs/data/plan.json",
+      "esiste": true,
+      "note": "Dati reali JSON. Contiene 10 fasi (fase 0-9), fase corrente 'Recupero TOS' con stato='corrente', massimali attuali, target a 4 orizzonti, strategia nutrizionale, situazione infortunio. Fetch compatibile."
+    },
+    {
+      "path": "docs/css/variables.css",
+      "esiste": true,
+      "note": "Custom properties globali. Contiene palette colori (--color-accent: #ff6b35, --color-bg-*, --color-text-*), tipografia, font-size, border-radius, spacing, transition, breakpoint. plan.css le usa correttamente."
+    },
+    {
+      "path": "docs/css/layout.css",
+      "esiste": true,
+      "note": "Stili strutturali condivisi. Contiene .page-header, .tab-list, .nav-tab, .nav-tab.active, .container, .page-footer. plan.html usa queste classi, plan.css non le ridefinisce."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "CSS custom properties ben utilizzate. plan.css usa coerentemente tutte le variabili da variables.css per colori, spacing, tipografia, border-radius, transition, shadowbox. Implementazione pulita e manutenibile.",
+      "file": "docs/css/plan.css"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Placeholder skeleton ben strutturato. Le tre sezioni mostrano messaggi 'Caricamento...' in attesa dei task figli che completeranno il rendering. Questo è conforme ai requisiti del task layout.",
+      "file": "docs/plan.html"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Gestione errori robusta in plan.js. Try-catch con console.error e renderError() per tutti e tre i container. Se plan.json non carica, l'utente vede messaggio di errore invece di pagina vuota.",
+      "file": "docs/js/plan.js"
+    }
+  ],
+  "sommario": {
+    "esito_finale": "OK",
+    "criteri_soddisfatti": 14,
+    "criteri_totali": 14,
+    "anomalie_bloccanti": 0,
+    "anomalie_warning": 0,
+    "note": "Implementazione completa e conforme a tutti i criteri di accettazione. La struttura pagina è pronta per i task figli (phases-timeline, strength-targets-table, nutrition-strategy) che completeranno il rendering del contenuto. HTML, CSS e JS seguono le convenzioni del progetto, usano correttamente le custom properties globali e pattern WAI-ARIA. Responsive design implementato con media query per mobile."
+  }
+}

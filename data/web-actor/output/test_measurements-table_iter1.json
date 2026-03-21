@@ -1,0 +1,95 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "measurements-table",
+    "task_titolo": "Tabella storica misurazioni",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Tutte e 6 le rilevazioni storiche sono presenti nella tabella in ordine cronologico crescente (2022 → 2026)",
+      "soddisfatto": true,
+      "dettaglio": "La funzione renderMeasurementsTable() itera su tutti i record senza filtrare e mantiene l'ordine originale dei dati. I 6 record (2022-10-22, 2023-04-10, 2024-05-25, 2024-11-29, 2025-10-02, 2026-03-20) verranno tutti renderizzati in una riga ciascuno della tabella."
+    },
+    {
+      "criterio": "Le colonne principali (Data, Peso, BF%, Massa Magra, Squat, Panca, Stacco) sono visibili su viewport mobile (≤ 768px)",
+      "soddisfatto": true,
+      "dettaglio": "Le colonne principali non hanno la classe 'col-mobile-hide' e rimangono visibili. CSS media query a linea 245-246 applica display:none solo a .col-mobile-hide, quindi le colonne senza questa classe rimangono visibili su mobile."
+    },
+    {
+      "criterio": "Le colonne secondarie (FFMI, Vita, Petto, Braccio, Coscia) sono nascoste su mobile via classe .col-mobile-hide e CSS",
+      "soddisfatto": true,
+      "dettaglio": "Tutte e 5 le colonne secondarie hanno la classe 'col-mobile-hide' applicata nelle celle TD (linee 543-547 per header, 577-589 per body). CSS media query (max-width:768px) applica display:none a .col-mobile-hide."
+    },
+    {
+      "criterio": "La tabella è scorrevole orizzontalmente su mobile grazie a .progress-table-container con overflow-x:auto già presente",
+      "soddisfatto": true,
+      "dettaglio": "Il container #table-misurazioni ha class 'progress-table-container' (HTML linea 98). CSS linee 73-77 definisce overflow-x:auto e -webkit-overflow-scrolling:touch per supporto mobile."
+    },
+    {
+      "criterio": "I valori null o stringa vuota sono mostrati come '—' senza errori JavaScript",
+      "soddisfatto": true,
+      "dettaglio": "La funzione fmtNum() (linee 511-516) verifica null, undefined, stringa vuota e NaN, restituendo '—' per tutti questi casi. Utilizzata in tutte le celle numeriche (peso, BF%, massa magra, FFMI, vita, petto, braccio, coscia). Nessun errore JavaScript possibile."
+    },
+    {
+      "criterio": "Le note non vuote ('Allenamento in casa', 'Australia...') sono accessibili tramite tooltip (attributo title) o riga aggiuntiva",
+      "soddisfatto": true,
+      "dettaglio": "Le note non vuote vengono mostrate in due modi: (1) icona ⓘ con attributo title contenente il testo della nota completo (linee 601-606), con proper escape HTML (replace(/\\\"/g, '&quot;')); (2) riga aggiuntiva <tr class='measurements-table__note-row'> con colspan=13 (linee 614-619). Entrambi i meccanismi sono implementati."
+    },
+    {
+      "criterio": "I massimali mostrano il tipo (R/S) accanto al valore, es. '145.8 (S)'",
+      "soddisfatto": true,
+      "dettaglio": "La funzione badgeTipo() (linee 519-525) genera uno span con classe 'td-badge--reale' o 'td-badge--stimato' contenente la lettera tipo. La funzione cellaMassimale() (linee 528-532) combina il valore numerico (con unità 'kg') più il badge. Utilizzata per squat_1rm, panca_1rm, stacco_1rm (linee 592-598). CSS definisce gli stili per .td-badge--reale e .td-badge--stimato (linee 184-194)."
+    },
+    {
+      "criterio": "docs/js/progress.js contiene la funzione renderMeasurementsTable(data)",
+      "soddisfatto": true,
+      "dettaglio": "Funzione definita alle linee 496-625 con firma corretta: function renderMeasurementsTable(data). Contiene tutta la logica di rendering della tabella inclusa la gestione dei dati, il filtraggio, e la generazione dell'HTML."
+    },
+    {
+      "criterio": "docs/js/progress.js richiama renderMeasurementsTable(data) in renderProgress() (riga 512 decommentata)",
+      "soddisfatto": true,
+      "dettaglio": "La funzione renderMeasurementsTable(data) è richiamata alla linea 654 dentro renderProgress(). La chiamata non è commentata. Questo è corretto: il task ha decommentato la chiamata come richiesto."
+    },
+    {
+      "criterio": "docs/css/progress.css contiene la classe .col-mobile-hide con display:none nel breakpoint @media (max-width:768px)",
+      "soddisfatto": true,
+      "dettaglio": "Media query a linee 221-248: dentro @media (max-width:768px) è definito .col-mobile-hide { display: none; } alle linee 245-247. Le colonne secondarie scompaiono su viewport ≤ 768px."
+    },
+    {
+      "criterio": "Non viene eseguito un secondo fetch() in renderMeasurementsTable — i dati vengono ricevuti come parametro da renderProgress()",
+      "soddisfatto": true,
+      "dettaglio": "La funzione renderMeasurementsTable() riceve 'data' come parametro (linea 496) da renderProgress() (linea 654). Non contiene alcun fetch() interno. I dati vengono ricevuti come parametro, non recuperati nuovamente."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/progress.js",
+      "esiste": true,
+      "note": "File contiene la funzione renderMeasurementsTable(data) completamente implementata (linee 496-625) con tutta la logica di rendering, gestione null/empty, tooltip note, badge massimali, colonne responsive. Funzione richiamata non commentata in renderProgress() a linea 654."
+    },
+    {
+      "path": "docs/css/progress.css",
+      "esiste": true,
+      "note": "File contiene gli stili completi: .measurements-table (linee 99-143), .col-mobile-hide (linee 245-247), .td-badge--reale e .td-badge--stimato (linee 184-194), .td-note-icon (linee 197-203), .measurements-table__note-row (linee 206-218). Media query mobile definito correttamente."
+    },
+    {
+      "path": "docs/progress.html",
+      "esiste": true,
+      "note": "Container #table-misurazioni con class progress-table-container esiste a linea 98. Struttura corretta: <section id='section-tabella'> contiene <div class='progress-table-container' id='table-misurazioni'>. Script progress.js incluso a linea 116."
+    },
+    {
+      "path": "docs/data/measurements.json",
+      "esiste": true,
+      "note": "File contiene 6 record ordinati cronologicamente dal 2022-10-22 al 2026-03-20 con tutti i campi richiesti: data, peso_kg, body_fat_pct, massa_magra_kg, ffmi_adj, vita_cm, petto_cm, braccio_dx_cm, coscia_dx_cm, squat_1rm, panca_1rm, stacco_1rm, squat_1rm_tipo, panca_1rm_tipo, stacco_1rm_tipo, note. Ultimo record ha massimali_tipo='S'."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "La funzione cellaMassimale() restituisce '—' se il valore è null, ma il badge non viene mai generato in questo caso (logica corretta). Potrebbe essere resa più esplicita aggiungendo un commento, ma non è un problema funzionale.",
+      "file": "docs/js/progress.js"
+    }
+  ]
+}

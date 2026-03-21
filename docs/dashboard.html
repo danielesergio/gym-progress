@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard — Daniele Fitness</title>
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════
+       HEADER — nome atleta + data ultima mis.
+  ══════════════════════════════════════════ -->
+  <header class="page-header" id="main-header" role="banner">
+    <div class="container">
+      <div class="header-brand">
+        <span class="header-athlete-name">Daniele</span>
+        <span class="header-tagline">Fitness &amp; Powerlifting</span>
+      </div>
+      <div class="header-meta" aria-label="Ultima misurazione">
+        <span class="header-meta-label">Ultima misurazione:</span>
+        <span class="header-meta-value" id="header-last-date">—</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════
+       NAV TAB — 5 sezioni (stili active in task navigation-tabs)
+  ══════════════════════════════════════════ -->
+  <nav role="tablist" class="tab-list" id="nav-tabs" aria-label="Navigazione sezioni">
+    <div class="container">
+      <a href="dashboard.html"
+         role="tab"
+         class="nav-tab active"
+         aria-current="page"
+         aria-label="Dashboard atleta">Dashboard</a>
+      <a href="progress.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Progressi nel tempo">Progressi</a>
+      <a href="workout.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Scheda allenamento">Allenamento</a>
+      <a href="diet.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Piano dieta">Dieta</a>
+      <a href="plan.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Piano annuale e obiettivi">Piano</a>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════
+       MAIN — contenuto dashboard (iniettato da dashboard.js)
+  ══════════════════════════════════════════ -->
+  <main id="page-content" aria-label="Contenuto principale">
+    <div class="container">
+      <!-- Fallback no-JS: dashboard.js sovrascrive questo contenuto al caricamento -->
+      <div id="dashboard-grid" aria-label="Griglia dashboard atleta">
+        <div id="card-stato" class="dashboard-card" aria-label="Stato attuale atleta">
+          <p class="dashboard-card__placeholder">Caricamento stato atleta…</p>
+        </div>
+        <div id="card-massimali" class="dashboard-card" aria-label="Massimali Big 3">
+          <p class="dashboard-card__placeholder">Caricamento massimali…</p>
+        </div>
+        <div id="card-fase" class="dashboard-card" aria-label="Fase corrente programma">
+          <p class="dashboard-card__placeholder">Caricamento fase programma…</p>
+        </div>
+        <div id="card-target" class="dashboard-card" aria-label="Target progressivi">
+          <p class="dashboard-card__placeholder">Caricamento target…</p>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- ══════════════════════════════════════════
+       FOOTER — minimale
+  ══════════════════════════════════════════ -->
+  <footer class="page-footer" id="main-footer" role="contentinfo">
+    <div class="container">
+      <p class="footer-text">Daniele Fitness &copy; 2026</p>
+    </div>
+  </footer>
+
+  <script src="js/nav.js" defer></script>
+  <script src="js/dashboard.js" defer></script>
+
+</body>
+</html>

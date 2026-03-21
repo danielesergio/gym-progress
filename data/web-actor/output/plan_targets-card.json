@@ -1,0 +1,139 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "targets-card",
+    "task_title": "Card target progressivi di forza",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "targets-card",
+    "type": "component",
+    "title": "Card target progressivi di forza",
+    "description": "Card che mostra i target futuri di Squat, Panca e Stacco a 3, 6 e 12 mesi e lungo termine (2-5 anni). Presentati in forma tabellare o a colonne temporali. Serve a dare motivazione e prospettiva. I target a lungo termine sono Squat 200 / Panca 150 / Stacco 250 kg.",
+    "inputs": [
+      "plan_data"
+    ],
+    "outputs": [
+      "TargetsCard"
+    ],
+    "acceptance_criteria": [
+      "I target a 3, 6, 12 mesi sono visibili per tutti e 3 gli esercizi",
+      "Il target a lungo termine è evidenziato come obiettivo finale",
+      "La presentazione è leggibile anche su mobile"
+    ],
+    "notes": "Il container HTML #card-target esiste già in dashboard.html (riga 74). La funzione renderDashboard() in dashboard.js già chiama le altre card ma non popola #card-target: va aggiunta la funzione renderTargetsCard(plan). I dati sono in plan.json → array target[], 4 elementi con orizzonte '3 mesi', '6 mesi', '12 mesi', 'Lungo termine (2-5 anni)'. I campi per ogni target: orizzonte (string), data (string), squat (number), panca (number), stacco (number), note (string). Il target lungo termine ha valori interi (200/150/250) e va evidenziato visivamente."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/dashboard.js",
+        "motivo": "Aggiungere la funzione renderTargetsCard(plan) e richiamarla dentro renderDashboard(). La funzione legge plan.target[], costruisce la tabella/griglia orizzontti × esercizi, evidenzia il target lungo termine con classe CSS dedicata.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "Aggiungere stili per la targets-card: griglia colonne temporali (.targets-card__grid), intestazione orizzonte (.targets-card__horizon), riga valori (.targets-card__row), celle valore per esercizio (.targets-card__value), classe di evidenziazione obiettivo finale (.targets-card__horizon--longterm), responsività mobile-first.",
+        "esiste": true
+      }
+    ],
+    "da_creare": [],
+    "da_leggere": [
+      {
+        "path": "docs/data/plan.json",
+        "motivo": "Struttura dati reale: array target[] con 4 elementi. Ogni elemento ha: orizzonte (es. '3 mesi'), data (es. '2026-06'), squat (float o int), panca (float o int), stacco (float o int), note (string). Il 4° elemento ha orizzonte 'Lungo termine (2-5 anni)' con valori 200/150/250."
+      },
+      {
+        "path": "docs/js/dashboard.js",
+        "motivo": "File da modificare: capire il pattern esistente delle funzioni render (renderAthleteStatusCard, renderStrengthSummaryCard, renderProgramPhaseCard) per rispettare le convenzioni di stile e struttura. La nuova renderTargetsCard() deve seguire lo stesso pattern: riceve plan come parametro, usa getElementById('card-target'), scrive innerHTML, gestisce null con fallback '—'."
+      },
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "File da modificare: verificare classi già esistenti (dashboard-card__title, strength-card__*, phase-card__*) per evitare conflitti di naming e riusare le variabili CSS già definite. Le nuove classi useranno prefisso targets-card__."
+      },
+      {
+        "path": "docs/dashboard.html",
+        "motivo": "Verifica struttura HTML: il container #card-target è già presente alla riga 74 con class='dashboard-card'. Non va toccato l'HTML — la card è già nel DOM, il JS deve solo iniettare il contenuto via innerHTML."
+      },
+      {
+        "path": "docs/css/variables.css",
+        "motivo": "Verificare le variabili CSS disponibili (colori, spaziature, tipografia) da usare negli stili della targets-card. In particolare: --color-accent per evidenziare il target lungo termine, --color-text-primary/secondary/faint per gerarchia testuale."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS (ES2022)",
+      "styling": "CSS custom properties — nessun framework CSS",
+      "grafici": {
+        "nome": "Chart.js",
+        "versione": "4.x",
+        "cdn": "https://cdn.jsdelivr.net/npm/chart.js",
+        "nota": "NON richiesto per questo task — la targets-card è tabellare/grid, nessun canvas"
+      },
+      "dati": "fetch() su file JSON statici in docs/data/ — il developer NON modifica mai docs/data/"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase (es. targetsData, horizonLabel)",
+      "classi_css": "kebab-case con prefisso componente (es. targets-card__grid, targets-card__value)",
+      "pattern_js": "funzione renderXxxCard(plan) chiamata dentro renderDashboard() — stessa firma delle card già implementate",
+      "gestione_null": "fallback '—' per valori null/undefined; if (!plan || !plan.target) mostrare 'Dati non disponibili'",
+      "innerHTML": "le card sono popolate via innerHTML — no appendChild, no template literals con costruzioni complesse",
+      "fetch": "i dati plan.json sono già caricati dal DOMContentLoaded esistente e passati come parametro — NON fare un fetch() separato dentro renderTargetsCard()"
+    },
+    "pagina": {
+      "nome": "Dashboard",
+      "file": "docs/dashboard.html",
+      "js": "docs/js/dashboard.js",
+      "css": "docs/css/dashboard.css",
+      "dati_json": ["data/measurements.json", "data/plan.json", "data/workout.json"]
+    },
+    "struttura_dati_plan_target": {
+      "campo": "plan.target",
+      "tipo": "Array di 4 oggetti",
+      "schema": {
+        "orizzonte": "string — '3 mesi' | '6 mesi' | '12 mesi' | 'Lungo termine (2-5 anni)'",
+        "data": "string — es. '2026-06', '2028-2031'",
+        "squat": "number — float (es. 148.1) per breve/medio termine, intero (200) per lungo termine",
+        "panca": "number — float (es. 118.2) o intero (150)",
+        "stacco": "number — float (es. 202.2) o intero (250)",
+        "note": "string — descrizione sintetica"
+      },
+      "nota_longterm": "L'elemento con orizzonte 'Lungo termine (2-5 anni)' è l'obiettivo finale dichiarato dall'atleta (Squat 200 / Panca 150 / Stacco 250 kg) — va evidenziato con stile visivo distinto (es. bordo colorato, badge, sfondo differente)"
+    }
+  },
+  "implementazione_suggerita": {
+    "layout_card": "Griglia CSS a 4 colonne orizzontali (una per orizzonte temporale) con 3 righe per esercizio. Su mobile: griglia 2×2 oppure lista verticale per orizzonte. Alternativa più semplice: tabella HTML (<table>) con 4 colonne orizzonte e 3 righe esercizio — più leggibile su schermi piccoli con overflow-x: auto.",
+    "struttura_html_suggerita": "<h2 class='dashboard-card__title'>Target di Forza</h2><div class='targets-card__table-wrapper'><table class='targets-card__table'><thead>...</thead><tbody>...</tbody></table></div>",
+    "evidenziazione_longterm": "La colonna 'Lungo termine' (o la sua cella) riceve class 'targets-card__col--longterm' con --color-accent come colore testo/bordo e un badge testuale '🎯 Obiettivo' o 'Goal' sopra i valori.",
+    "mobile": "overflow-x: auto sul wrapper della tabella per permettere scroll orizzontale su schermi stretti. Font-size ridotto su mobile via media query.",
+    "valori_formato": "Per 3/6/12 mesi usare toFixed(1) → es. '148.1 kg'. Per lungo termine usare valori interi → '200 kg'. Unità 'kg' in span con classe diminutiva (riuso strength-card__unit o classe analoga targets-card__unit)."
+  },
+  "criteri_accettazione": [
+    "I target a 3, 6, 12 mesi sono visibili per tutti e 3 gli esercizi (Squat, Panca, Stacco)",
+    "Il target a lungo termine (Squat 200 / Panca 150 / Stacco 250 kg) è evidenziato come obiettivo finale con stile visivo distinto",
+    "La presentazione è leggibile anche su mobile (overflow-x: auto o layout verticale alternativo)",
+    "docs/js/dashboard.js contiene la funzione renderTargetsCard(plan)",
+    "renderTargetsCard() viene chiamata dentro renderDashboard() dopo renderProgramPhaseCard()",
+    "renderTargetsCard() gestisce plan null o plan.target vuoto/mancante senza lanciare eccezioni (fallback 'Dati non disponibili')",
+    "docs/css/dashboard.css contiene le classi .targets-card__* necessarie al layout della card",
+    "Il container #card-target in docs/dashboard.html NON viene modificato (il JS inietta solo il contenuto via innerHTML)",
+    "Non viene effettuato un nuovo fetch() dentro renderTargetsCard() — usa il parametro plan già disponibile",
+    "I valori a 3/6/12 mesi sono mostrati con una cifra decimale (toFixed(1)); i valori lungo termine sono interi"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "dashboard-layout",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/dashboard.html",
+        "docs/js/dashboard.js",
+        "docs/css/dashboard.css",
+        "docs/css/variables.css",
+        "docs/css/layout.css"
+      ],
+      "note": "Tutti i file sono presenti in docs/. Il container #card-target esiste già in dashboard.html (riga 74). La funzione renderDashboard() esiste in dashboard.js. Il CSS di base per .dashboard-card è già definito in dashboard.css."
+    }
+  ]
+}

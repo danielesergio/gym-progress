@@ -1,0 +1,198 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "WebArchitecture",
+  "description": "Definizione di stack, struttura progetto e convenzioni prodotta da gym-web-architect.",
+  "type": "object",
+  "required": ["meta", "stack", "struttura", "convenzioni"],
+  "additionalProperties": false,
+  "properties": {
+    "meta": {
+      "type": "object",
+      "required": ["data", "sommario", "motivazione_stack"],
+      "additionalProperties": false,
+      "properties": {
+        "data":               { "type": "string", "description": "Data di generazione (YYYY-MM-DD)" },
+        "sommario":           { "type": "string", "description": "Descrizione del progetto e degli obiettivi architetturali" },
+        "motivazione_stack":  { "type": "string", "description": "Spiegazione della scelta dello stack rispetto alle alternative valutate" },
+        "vincoli_ricevuti":   { "type": "array", "items": { "type": "string" }, "description": "Vincoli espliciti ricevuti dal prompt (es. 'no build step', 'solo file statici')" }
+      }
+    },
+    "stack": {
+      "type": "object",
+      "required": ["framework", "styling", "dati", "deploy"],
+      "additionalProperties": false,
+      "properties": {
+        "framework": {
+          "type": "object",
+          "required": ["nome", "versione", "motivazione"],
+          "additionalProperties": false,
+          "properties": {
+            "nome":        { "type": "string", "description": "Es. 'plain HTML/JS', 'React', 'Next.js', 'Vue'" },
+            "versione":    { "type": "string", "description": "Versione o 'latest'" },
+            "motivazione": { "type": "string" },
+            "cdn":         { "type": "string", "description": "URL CDN se usato senza bundler, null altrimenti" }
+          }
+        },
+        "styling": {
+          "type": "object",
+          "required": ["nome", "motivazione"],
+          "additionalProperties": false,
+          "properties": {
+            "nome":        { "type": "string", "description": "Es. 'CSS custom properties', 'Tailwind', 'CSS Modules'" },
+            "motivazione": { "type": "string" },
+            "cdn":         { "type": "string" }
+          }
+        },
+        "grafici": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "nome":        { "type": "string", "description": "Es. 'Chart.js', 'D3', 'nessuno'" },
+            "versione":    { "type": "string" },
+            "motivazione": { "type": "string" },
+            "cdn":         { "type": "string" }
+          }
+        },
+        "dati": {
+          "type": "object",
+          "required": ["formato", "fonte", "aggiornamento"],
+          "additionalProperties": false,
+          "properties": {
+            "formato":       { "type": "string", "description": "Es. 'JSON statici', 'API REST', 'CSV'" },
+            "fonte":         { "type": "string", "description": "Da dove arrivano i dati (es. 'docs/data/*.json via fetch()')" },
+            "aggiornamento": { "type": "string", "description": "Come e quando vengono aggiornati i dati" }
+          }
+        },
+        "build": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "tool":        { "type": "string", "description": "Es. 'nessuno', 'Vite', 'webpack', 'Next.js build'" },
+            "comando":     { "type": "string", "description": "Comando per buildare, es. 'npm run build'" },
+            "output_dir":  { "type": "string", "description": "Directory di output, es. 'docs/'" },
+            "motivazione": { "type": "string" }
+          }
+        },
+        "deploy": {
+          "type": "object",
+          "required": ["target", "motivazione"],
+          "additionalProperties": false,
+          "properties": {
+            "target":      { "type": "string", "description": "Es. 'GitHub Pages', 'Vercel', 'server locale'" },
+            "motivazione": { "type": "string" },
+            "note":        { "type": "string" }
+          }
+        },
+        "dipendenze_esterne": {
+          "type": "array",
+          "description": "Librerie aggiuntive oltre al framework principale",
+          "items": {
+            "type": "object",
+            "required": ["nome", "uso"],
+            "additionalProperties": false,
+            "properties": {
+              "nome":    { "type": "string" },
+              "uso":     { "type": "string" },
+              "cdn":     { "type": "string" },
+              "npm":     { "type": "string" }
+            }
+          }
+        }
+      }
+    },
+    "struttura": {
+      "type": "object",
+      "required": ["root", "descrizione", "albero"],
+      "additionalProperties": false,
+      "properties": {
+        "root":        { "type": "string", "description": "Directory radice del sito, es. 'docs/'" },
+        "descrizione": { "type": "string", "description": "Spiegazione dell'organizzazione generale" },
+        "albero": {
+          "type": "array",
+          "description": "Struttura ad albero del progetto",
+          "items": {
+            "type": "object",
+            "required": ["path", "tipo", "descrizione"],
+            "additionalProperties": false,
+            "properties": {
+              "path":       { "type": "string", "description": "Percorso relativo dalla root del sito, es. 'data/measurements.json'" },
+              "tipo":       { "type": "string", "enum": ["file", "directory"] },
+              "descrizione":{ "type": "string", "description": "Scopo del file o della directory" },
+              "generato_da":{ "type": "string", "description": "Script o agente che genera questo file, se applicabile" },
+              "obbligatorio":{ "type": "boolean", "description": "Se false, il file è opzionale o generato condizionalmente" }
+            }
+          }
+        }
+      }
+    },
+    "convenzioni": {
+      "type": "object",
+      "required": ["naming", "dati", "codice"],
+      "additionalProperties": false,
+      "properties": {
+        "naming": {
+          "type": "object",
+          "required": ["file_html", "file_json", "variabili_js", "classi_css"],
+          "additionalProperties": false,
+          "properties": {
+            "file_html":    { "type": "string", "description": "Es. 'kebab-case, es. workout-detail.html'" },
+            "file_json":    { "type": "string", "description": "Es. 'snake_case, es. workout_data.json'" },
+            "variabili_js": { "type": "string", "description": "Es. 'camelCase'" },
+            "classi_css":   { "type": "string", "description": "Es. 'kebab-case con prefisso pagina, es. .workout-card'" },
+            "id_html":      { "type": "string", "description": "Convenzione per gli id HTML" }
+          }
+        },
+        "dati": {
+          "type": "object",
+          "required": ["formato_date", "valori_null", "unita_misura"],
+          "additionalProperties": false,
+          "properties": {
+            "formato_date":  { "type": "string", "description": "Es. 'ISO 8601: YYYY-MM-DD'" },
+            "valori_null":   { "type": "string", "description": "Come gestire i null nel rendering (es. 'mostrare trattino —')" },
+            "unita_misura":  { "type": "string", "description": "Es. 'sempre in kg e cm, mai lb o pollici'" },
+            "arrotondamento":{ "type": "string", "description": "Es. '1 decimale per kg, intero per kcal'" }
+          }
+        },
+        "codice": {
+          "type": "object",
+          "required": ["struttura_js", "gestione_errori"],
+          "additionalProperties": false,
+          "properties": {
+            "struttura_js": {
+              "type": "string",
+              "description": "Pattern JS da seguire, es. 'una funzione render per pagina, dati caricati con fetch() al DOMContentLoaded'"
+            },
+            "gestione_errori": {
+              "type": "string",
+              "description": "Come gestire fetch falliti, JSON malformati, dati mancanti"
+            },
+            "commenti": {
+              "type": "string",
+              "description": "Quando e come commentare il codice"
+            },
+            "no_framework_interno": {
+              "type": "string",
+              "description": "Cosa non usare per mantenere la codebase semplice (es. 'no jQuery, no lodash')"
+            }
+          }
+        },
+        "pagine": {
+          "type": "array",
+          "description": "Definizione di ogni pagina del sito: nome, URL, dati che legge, responsabilità",
+          "items": {
+            "type": "object",
+            "required": ["nome", "file", "dati_json", "responsabilita"],
+            "additionalProperties": false,
+            "properties": {
+              "nome":           { "type": "string" },
+              "file":           { "type": "string", "description": "Es. 'docs/dashboard.html'" },
+              "dati_json":      { "type": "array", "items": { "type": "string" }, "description": "File JSON che questa pagina legge via fetch()" },
+              "responsabilita": { "type": "string", "description": "Cosa mostra e fa questa pagina" },
+              "note":           { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}

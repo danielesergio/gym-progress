@@ -1,0 +1,84 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "weight-bf-chart",
+    "task_titolo": "Grafico andamento peso e body fat",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Il grafico mostra tutti e 6 i punti di misurazione",
+      "soddisfatto": true,
+      "dettaglio": "La funzione renderWeightBfChart() filtra l'array data e crea 6 dataset point per ciascun record (2022-10-22, 2023-04-10, 2024-05-25, 2024-11-29, 2025-10-02, 2026-03-20). Nessuno è escluso."
+    },
+    {
+      "criterio": "Peso e BF% sono distinguibili (colori o assi diversi)",
+      "soddisfatto": true,
+      "dettaglio": "Peso (kg) con colore #ff6b35 (arancione) su asse Y sinistro. BF% con colore #ffc107 (giallo) su asse Y destro (y1). Leggenda mostra label distindate 'Peso (kg)' e 'BF%'. Massa magra (opzionale) aggiunta su asse sinistro con colore #4caf50 (verde) e stile tratteggiato."
+    },
+    {
+      "criterio": "Le etichette delle date sull'asse X sono leggibili senza sovrapposizioni",
+      "soddisfatto": true,
+      "dettaglio": "Asse X lineare con maxTicksLimit: 6. Con 6 punti non c'è affollamento. Callback formatta le date con formatDateIT() (es. '22 ott 2022', '10 apr 2023'). Leggibilità garantita."
+    },
+    {
+      "criterio": "L'asse Y del peso non parte da 0: min impostato dinamicamente",
+      "soddisfatto": true,
+      "dettaglio": "Asse Y peso con min: Math.floor(minPeso - 2) → Math.floor(78.3 - 2) = 76 kg. Non parte da 0. Range sensato per visualizzazione."
+    },
+    {
+      "criterio": "docs/js/progress.js contiene la funzione renderWeightBfChart(data)",
+      "soddisfatto": true,
+      "dettaglio": "Funzione completa presente a linee 48-257. Gestisce creazione grafico, dataset, tooltip, legenda e assi duali."
+    },
+    {
+      "criterio": "docs/js/progress.js salva l'istanza Chart.js in progressCharts['pesoBf']",
+      "soddisfatto": true,
+      "dettaglio": "Linee 107-109: progressCharts['pesoBf']?.destroy() per cleanup, poi assegnazione della nuova istanza Chart. Pattern corretto per re-render."
+    },
+    {
+      "criterio": "docs/js/progress.js chiama renderWeightBfChart(data) dentro renderProgress(data)",
+      "soddisfatto": true,
+      "dettaglio": "Linea 283 in renderProgress(): renderWeightBfChart(data) è attiva (decommentata). Viene chiamata nel flusso principale di fetch e render."
+    },
+    {
+      "criterio": "La funzione gestisce array vuoto o dati mancanti senza lanciare eccezioni",
+      "soddisfatto": true,
+      "dettaglio": "Linee 58-67: filtra record validi (d && d.data), gestisce array vuoto mostrando placeholder 'Nessun dato disponibile.'. Linee 76, 81, 86: usa ?? null per null-coalescing. Nessun accesso diretto non sicuro a proprietà."
+    },
+    {
+      "criterio": "Il canvas #chart-peso-bf viene aggiornato correttamente con i dati fetch()'ati",
+      "soddisfatto": true,
+      "dettaglio": "Canvas id='chart-peso-bf' presente in progress.html linea 71. La funzione lo seleziona (linea 54), costruisce dataset da measurements.json, inizializza Chart.js e renderizza."
+    },
+    {
+      "criterio": "Nessuna modifica a docs/progress.html né a docs/data/measurements.json",
+      "soddisfatto": true,
+      "dettaglio": "HTML non modificato: canvas e container erano già presenti dal task progress-page-layout. File measurements.json non modificato: struttura e 6 record integri."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/progress.js",
+      "esiste": true,
+      "note": "File modificato correttamente. Funzione renderWeightBfChart(data) aggiunta a linee 48-257. Chiamata attiva in renderProgress() linea 283. Gestione null robustra, Chart.js istanziato e salvato in progressCharts['pesoBf']."
+    },
+    {
+      "path": "docs/css/progress.css",
+      "esiste": true,
+      "note": "File non necessita modifiche. Container .progress-chart-container (linee 66-70) ha height responsive (320px, 240px mobile, 380px desktop). Classe .progress-chart-peso-bf-legend è definita ma non usata (Chart.js gestisce leggenda internamente). CSS sufficiente."
+    },
+    {
+      "path": "docs/progress.html",
+      "esiste": true,
+      "note": "File non modificato. Canvas id='chart-peso-bf' presente linea 71 con container .progress-chart-container. Attributi aria-label presenti per accessibilità."
+    },
+    {
+      "path": "docs/data/measurements.json",
+      "esiste": true,
+      "note": "File non modificato. Contiene 6 record con campi data, peso_kg, body_fat_pct, massa_magra_kg tutti valorizzati (nessun null). Range peso: 78.3-89.4 kg. Range BF%: 12.0-17.8%."
+    }
+  ],
+  "anomalie": []
+}

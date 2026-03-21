@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "meal-card",
+    "task_title": "Card pasto con alimenti e macros",
+    "bloccato": false,
+    "motivo_blocco": null,
+    "nota_stato": "L'implementazione della MealCard risulta GIA' PRESENTE nei file esistenti. Le funzioni renderMealCard() e renderMealsList() sono in docs/js/diet.js (righe 188-265). Gli stili .diet-meal-card e .diet-meal-table sono in docs/css/diet.css (righe 254-384). Il container #meals-list e' in docs/diet.html. Il developer deve VERIFICARE la correttezza rispetto ai criteri, non scrivere codice da zero."
+  },
+  "task": {
+    "id": "meal-card",
+    "type": "component",
+    "title": "Card pasto con alimenti e macros",
+    "description": "Card per ciascuno dei 5 pasti giornalieri. Mostra: nome del pasto, orario indicativo, lista alimenti con grammi e kcal, totale pasto (kcal, proteine, carbo, grassi). Gli alimenti sono elencati in modo compatto ma leggibile (tabella con 6 colonne: nome, grammi, kcal, prot, carbo, grassi). Su mobile la card e' a piena larghezza.",
+    "inputs": ["diet_data"],
+    "outputs": ["MealCard"],
+    "acceptance_criteria": [
+      "Ogni pasto mostra nome, orario, lista alimenti e totale macros",
+      "I grammi di ogni alimento sono indicati",
+      "Il totale kcal del pasto e' immediatamente visibile",
+      "I 5 pasti sono tutti presenti per entrambi i tipi di giorno"
+    ],
+    "notes": "I dati provengono da docs/data/diet.json. La struttura JSON e': giorni[].pasti[] con campi nome, orario, alimenti[] (nome, grammi, kcal, proteine, carbo, grassi) e totale (kcal, proteine, carbo, grassi). Due tipi di giorno: 'allenamento' (5 pasti, 2875 kcal) e 'riposo' (5 pasti, 2601 kcal). Il toggle giorno e' gia' gestito da renderDiet() tramite currentDayType."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "Contiene gia' renderMealCard() (riga 188) e renderMealsList() (riga 243). Verificare: (1) renderAlimentiRows() visualizza grammi con suffisso 'g'; (2) totale kcal e' nel header della card (riga 207: kcalTot + ' kcal'); (3) gestione null per tutti i campi con fallback '—'; (4) entrambi i tipi di giorno (allenamento/riposo) producono 5 pasti ciascuno tramite renderDiet(). Se verifica passa: NESSUNA modifica necessaria.",
+        "esiste": true,
+        "stato_attuale": "IMPLEMENTATO — funzioni renderMealCard(), renderAlimentiRows(), renderMealsList() presenti e complete"
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Contiene gia' stili .diet-meal-card, .diet-meal-card__header, .diet-meal-card__nome, .diet-meal-card__orario, .diet-meal-card__totale, .diet-meal-table, .diet-meal-table-wrapper (overflow-x: auto per mobile). Verificare che su mobile (max-width: 600px) la card sia a piena larghezza — il layout .diet-meals-stack e' flex-direction: column senza larghezza fissa, quindi si espande gia' a piena larghezza. Se verifica passa: NESSUNA modifica necessaria.",
+        "esiste": true,
+        "stato_attuale": "IMPLEMENTATO — tutte le classi .diet-meal-card* e .diet-meal-table* presenti"
+      },
+      {
+        "path": "docs/diet.html",
+        "motivo": "Contiene gia' <section id='meals-list' class='diet-meals-list'> con placeholder di caricamento. Il JS popola questo container dinamicamente. Verificare struttura semantica: la sezione ha aria-label='Lista pasti del giorno' e aria-live='polite'. Se verifica passa: NESSUNA modifica necessaria.",
+        "esiste": true,
+        "stato_attuale": "IMPLEMENTATO — container #meals-list presente con attributi ARIA corretti"
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/diet.json",
+        "motivo": "Struttura dati da cui le meal card leggono. Campi rilevanti: giorni[] con tipo ('allenamento'|'riposo'), pasti[] con nome (string), orario (HH:MM), alimenti[] (nome, grammi: int, kcal: int, proteine: int, carbo: int, grassi: int), totale (kcal, proteine, carbo, grassi). 5 pasti per giorno allenamento (Colazione 07:30, Spuntino mattina 10:30, Pranzo 13:00, Merenda 16:30, Cena 20:00), 5 pasti per giorno riposo (stessi slot orari). Nessun valore null nei campi numerici degli alimenti nei dati correnti — ma il codice gestisce null con fallback '—'."
+      },
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "File da verificare: leggere le funzioni renderMealCard() (riga 188), renderAlimentiRows() (riga 167), renderMealsList() (riga 243) per confermare completezza rispetto ai criteri di accettazione."
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "File da verificare: leggere le sezioni MEAL CARD (riga 254) e TABELLA ALIMENTI (riga 319) per confermare responsivita' mobile e leggibilita'."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS ES2022",
+      "grafici": null,
+      "dati": "fetch() su docs/data/diet.json — file generato da script Python, il developer non lo tocca mai"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase (es. dayData, kcalTot, proteineTot)",
+      "costanti_js": "UPPER_SNAKE_CASE (es. DATA_PATH = 'data/diet.json')",
+      "classi_css": "kebab-case con prefisso 'diet-' per tutte le classi specifiche della pagina (es. .diet-meal-card, .diet-meal-table, .diet-meal-card__header)",
+      "id_html": "kebab-case (es. #meals-list, #macros-summary)",
+      "gestione_null": "Operatore ?? con fallback '—' per valori null/undefined. Mai stringa 'null' o 'undefined' visibile. Esempio: a.grammi != null ? a.grammi + 'g' : '—'",
+      "arrotondamento": "Math.round() per kcal, proteine, carbo, grassi (tutti interi). I grammi sono gia' interi nel JSON.",
+      "pattern_js": "renderMealCard(pasto) costruisce HTML stringa per una card, renderMealsList(dayData) popola #meals-list con tutte le card del giorno. Chiamate da renderDiet(data) che riceve l'intero diet.json.",
+      "no_inline_style": "Nessun style='...' inline — usare classi CSS. Eccezione: la barra proporzioni macros usa style per le larghezze percentuali calcolate dinamicamente.",
+      "mobile_first": "La card .diet-meal-card usa overflow: hidden. La tabella alimenti ha .diet-meal-table-wrapper con overflow-x: auto per scroll orizzontale su mobile. La card e' a piena larghezza su mobile perche' .diet-meals-stack e' flex-direction: column senza larghezza fissa."
+    },
+    "pagina": {
+      "nome": "Dieta",
+      "file": "docs/diet.html",
+      "js": "docs/js/diet.js",
+      "css": ["docs/css/variables.css", "docs/css/layout.css", "docs/css/diet.css"],
+      "dati_json": ["data/diet.json"],
+      "funzione_principale": "renderDiet(data) — riceve tutto diet.json, filtra per currentDayType, chiama renderMealsList(dayData)"
+    },
+    "struttura_dati_rilevante": {
+      "path_pasti": "data.giorni[i].pasti",
+      "filtro_giorno": "data.giorni.find(g => g.tipo === currentDayType)",
+      "tipo_giorno_valori": ["allenamento", "riposo"],
+      "pasti_per_giorno": 5,
+      "campi_pasto": ["nome", "orario", "alimenti", "totale"],
+      "campi_alimento": ["nome", "grammi", "kcal", "proteine", "carbo", "grassi"],
+      "campi_totale": ["kcal", "proteine", "carbo", "grassi"]
+    }
+  },
+  "criteri_accettazione": [
+    "Funzionale: ogni card mostra nome del pasto (es. 'Colazione') e orario indicativo (es. '07:30')",
+    "Funzionale: ogni card mostra la lista di tutti gli alimenti del pasto con i grammi indicati",
+    "Funzionale: il totale kcal del pasto e' visibile nel header della card (formato: '634 kcal')",
+    "Funzionale: il totale macros (P, C, G) e' visibile nel header della card accanto ai kcal",
+    "Funzionale: sono presenti 5 card pasto per il giorno allenamento (Colazione, Spuntino mattina, Pranzo, Merenda, Cena)",
+    "Funzionale: sono presenti 5 card pasto per il giorno riposo (stessi 5 pasti, alimenti diversi)",
+    "Funzionale: su mobile la card occupa tutta la larghezza disponibile",
+    "Funzionale: la tabella alimenti e' leggibile su mobile (scroll orizzontale se necessario)",
+    "Tecnico: docs/js/diet.js contiene la funzione renderMealCard(pasto) che restituisce HTML stringa",
+    "Tecnico: docs/js/diet.js contiene la funzione renderAlimentiRows(alimenti) che costruisce le <tr> degli alimenti",
+    "Tecnico: docs/js/diet.js contiene la funzione renderMealsList(dayData) che popola #meals-list",
+    "Tecnico: docs/diet.html contiene <section id='meals-list' class='diet-meals-list'>",
+    "Tecnico: docs/css/diet.css contiene la regola .diet-meal-card con background-color e border-radius",
+    "Tecnico: docs/css/diet.css contiene .diet-meal-table-wrapper con overflow-x: auto",
+    "Tecnico: valori null in qualsiasi campo alimento vengono visualizzati come '—' senza eccezioni JS",
+    "Tecnico: i grammi degli alimenti sono visualizzati con suffisso 'g' (es. '80g'), non come numero nudo"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "diet-page-layout",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/diet.html",
+        "docs/js/diet.js",
+        "docs/css/diet.css"
+      ],
+      "note": "Tutti e tre i file esistono in docs/. diet.html ha struttura completa con header, nav, main, footer, toggle tipo giorno, container #macros-summary e #meals-list, sezione integratori."
+    },
+    {
+      "task_id": "macros-summary-bar",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/js/diet.js",
+        "docs/css/diet.css"
+      ],
+      "note": "renderMacrosSummary() e buildProportionBar() presenti in diet.js. Stili .diet-macros-bar, .diet-macros-proportion-bar presenti in diet.css. La barra macros e' operativa e condivide lo stesso fetch() e la stessa logica toggle delle meal card."
+    }
+  ]
+}

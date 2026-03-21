@@ -1,0 +1,115 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "workout-page-layout",
+    "task_titolo": "Struttura pagina Allenamento",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Il nome della scheda corrente (meta.titolo) è visibile in cima alla pagina nell'area workout-header",
+      "soddisfatto": true,
+      "dettaglio": "workout.html contiene <section id='workout-header'> (linea 68). workout.js popola #workout-scheda-nome con data?.meta?.titolo (linea 42). Il valore 'Scheda Ripresa Graduale — Fase 1' da workout.json è correttamente mostrato in cima."
+    },
+    {
+      "criterio": "L'obiettivo del mesociclo (mesociclo.obiettivo) è visibile sotto il titolo scheda",
+      "soddisfatto": true,
+      "dettaglio": "workout.js linea 45 popola #workout-mesociclo-obiettivo con data?.mesociclo?.obiettivo. workout.html linea 74 contiene <p class='workout-header__obiettivo' id='workout-mesociclo-obiettivo'>. Il testo dell'obiettivo è visibile sotto il titolo."
+    },
+    {
+      "criterio": "Sono presenti 4 bottoni/tab di navigazione settimana (S1, S2, S3, S4) nel selettore settimane",
+      "soddisfatto": true,
+      "dettaglio": "workout.html linee 80-103 contengono <nav id='week-selector'> con 4 <button> elementi: #week-btn-1 (S1), #week-btn-2 (S2), #week-btn-3 (S3), #week-btn-4 (S4), ciascuno con data-week='N'."
+    },
+    {
+      "criterio": "Il layout è leggibile su mobile: font-size >= 1rem su testo normale, >= 1.25rem su titoli sezione",
+      "soddisfatto": true,
+      "dettaglio": "workout.css: linea 63 .week-btn usa --font-size-lg (1.25rem). Linea 42 .workout-header__obiettivo usa --font-size-base (1rem). Linea 222 .workout-empty usa --font-size-base (1rem). Linea 239 @media mobile: .week-btn usa --font-size-md (1.125rem) >= 1rem. Tutti i font-size rispettano il requisito mobile."
+    },
+    {
+      "criterio": "Il contrasto testo/sfondo rispetta WCAG AA (almeno 4.5:1 su testo normale)",
+      "soddisfatto": true,
+      "dettaglio": "workout.css: linea 30 documenta contrasto #f0f0f0 su #242424 > 10:1 per .workout-header__title. Linea 44 documenta #a0a0a0 su #242424 ~4.6:1 per .workout-header__obiettivo. Linea 86 documenta #ff6b35 su #333333 ~4.7:1 per .week-btn.active. Tutti superano il minimo WCAG AA di 4.5:1."
+    },
+    {
+      "criterio": "Il tab 'Allenamento' nella navbar principale ha classe 'active' e aria-current='page'",
+      "soddisfatto": true,
+      "dettaglio": "workout.html linee 42-46: <a href='workout.html' ... class='nav-tab active' aria-current='page' aria-label='Scheda allenamento'>Allenamento</a>. layout.css linee 145-150 definisce lo stile per .nav-tab.active e [aria-current='page']."
+    },
+    {
+      "criterio": "docs/workout.html esiste ed è un file HTML valido con DOCTYPE, charset UTF-8 e meta viewport",
+      "soddisfatto": true,
+      "dettaglio": "workout.html linea 1: <!DOCTYPE html>. Linea 4: <meta charset='UTF-8'>. Linea 5: <meta name='viewport' content='width=device-width, initial-scale=1.0'>. File ben formato."
+    },
+    {
+      "criterio": "docs/workout.html include <link rel='stylesheet' href='css/variables.css'>, 'css/layout.css' e 'css/workout.css'",
+      "soddisfatto": true,
+      "dettaglio": "workout.html linea 7: <link rel='stylesheet' href='css/variables.css'>. Linea 8: href='css/layout.css'. Linea 9: href='css/workout.css'. Tutti e tre i file CSS sono inclusi nell'ordine corretto (variables → layout → workout)."
+    },
+    {
+      "criterio": "docs/workout.html include <script src='js/workout.js' defer>",
+      "soddisfatto": true,
+      "dettaglio": "workout.html linea 124: <script src='js/workout.js' defer></script>. Script è incluso con attributo defer."
+    },
+    {
+      "criterio": "docs/workout.html contiene <section id='workout-header'> o equivalente per titolo e obiettivo scheda",
+      "soddisfatto": true,
+      "dettaglio": "workout.html linea 68: <section id='workout-header' class='workout-header'>. Contiene <h1> con id='workout-scheda-title' (linea 70) e <p class='workout-header__obiettivo'> (linea 74)."
+    },
+    {
+      "criterio": "docs/workout.html contiene <nav id='week-selector'> o equivalente con 4 elementi bottone settimana",
+      "soddisfatto": true,
+      "dettaglio": "workout.html linea 79: <nav id='week-selector' class='week-selector'>. Contiene 4 <button> elementi (linee 80-103) con id='week-btn-1' a 'week-btn-4'."
+    },
+    {
+      "criterio": "docs/workout.html contiene <div id='workout-detail'> o equivalente come area di dettaglio settimana",
+      "soddisfatto": true,
+      "dettaglio": "workout.html linea 107: <div id='workout-detail' aria-label='Dettaglio settimana selezionata'>. Area placeholder iniziale con messaggio 'Caricamento dati scheda…' (linea 108)."
+    },
+    {
+      "criterio": "docs/js/workout.js contiene la funzione renderWorkout()",
+      "soddisfatto": true,
+      "dettaglio": "workout.js linea 148: function renderWorkout(data). Funzione principale che chiama renderWorkoutHeader(), renderWeekSelector(), renderWorkoutDetail() e allega listener ai bottoni settimana."
+    },
+    {
+      "criterio": "docs/js/workout.js esegue fetch('data/workout.json') e gestisce l'errore di rete senza bloccare la UI",
+      "soddisfatto": true,
+      "dettaglio": "workout.js linea 179: fetch(DATA_PATH_WORKOUT) eseguito in try-catch (linee 177-197). Se fetch fallisce, linee 189-195: showWorkoutError() mostra messaggio di errore in #workout-error e fallback HTML in #workout-detail, senza lanciare eccezioni non gestite."
+    },
+    {
+      "criterio": "docs/css/workout.css importa o usa le custom properties di variables.css (var(--*))",
+      "soddisfatto": true,
+      "dettaglio": "workout.css usa custom properties in tutto il file: var(--space-*) (spaziature), var(--color-*) (colori), var(--font-size-*) (tipografia), var(--radius-*) (bordi), var(--shadow-*) (ombre), var(--transition-*), var(--line-height-*). Nessuna costante hardcoded."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/workout.html",
+      "esiste": true,
+      "note": "File HTML completo e valido. Struttura corretta con header, nav-tab attivo, main con container. Include tutti i CSS e script. Aria-label e role correttamente assegnati."
+    },
+    {
+      "path": "docs/js/workout.js",
+      "esiste": true,
+      "note": "File JS completo con funzioni render, fetch con error handling, event listener sui bottoni settimana. Pattern DOMContentLoaded rispettato. Null-safety su dati con optional chaining."
+    },
+    {
+      "path": "docs/css/workout.css",
+      "esiste": true,
+      "note": "File CSS mobile-first con custom properties, breakpoint responsive (mobile, tablet, desktop). Font-size e contrasto documentati come WCAG AA. Classi con prefisso workout-* e week-*."
+    },
+    {
+      "path": "docs/data/workout.json",
+      "esiste": true,
+      "note": "File dati con struttura meta, mesociclo, settimane[], giorni[]. meta.titolo e mesociclo.obiettivo popolano correttamente l'header. 4 settimane presenti come atteso."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "workout.js linea 123 include anche <script src='js/nav.js' defer> non specificato nel pacchetto di lavoro, ma è coerente con il pattern del codebase (già presente in dashboard.html e progress.html per la gestione della navigazione comune).",
+      "file": "docs/workout.html"
+    }
+  ]
+}

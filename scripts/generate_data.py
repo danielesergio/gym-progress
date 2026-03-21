@@ -387,12 +387,14 @@ def enrich_measurements(measurements: list) -> list:
 
         # Aggiungi tipo massimale (R=Reale, S=Stimato) se non presente
         # Assume che se il campo massimali_tipo non esiste, tutti sono "R" (reali)
+        default_massimale_tipo = m_copy.get("massimali_tipo", "R")
+        print(f"default massimale = {default_massimale_tipo}")
         if "squat_1rm_tipo" not in m_copy:
-            m_copy["squat_1rm_tipo"] = m_copy.get("squat_1rm_tipo", "R")
+            m_copy["squat_1rm_tipo"] = m_copy.get("squat_1rm_tipo", default_massimale_tipo)
         if "panca_1rm_tipo" not in m_copy:
-            m_copy["panca_1rm_tipo"] = m_copy.get("panca_1rm_tipo", "R")
+            m_copy["panca_1rm_tipo"] = m_copy.get("panca_1rm_tipo", default_massimale_tipo)
         if "stacco_1rm_tipo" not in m_copy:
-            m_copy["stacco_1rm_tipo"] = m_copy.get("stacco_1rm_tipo", "R")
+            m_copy["stacco_1rm_tipo"] = m_copy.get("stacco_1rm_tipo", default_massimale_tipo)
 
         enriched.append(m_copy)
     return enriched
@@ -442,6 +444,65 @@ def enrich_volume(volume: list) -> list:
     }
 
 
+def enrich_plan_fasi(fasi: list) -> list:
+    """
+    Arricchisce le fasi del piano aggiungendo il campo 'stato':
+      - 'corrente' : la fase attiva oggi (basata su periodo_indicativo o numero=0 come fallback)
+      - 'completata': fasi già terminate
+      - 'futura'   : fasi non ancora iniziate
+
+    Il campo 'periodo_indicativo' ha formato "YYYY-MM / YYYY-MM (...)" o "YYYY-MM (...)".
+    Estrae il primo YYYY-MM come data di inizio e il secondo come data di fine (se presente).
+    Se il campo manca o non è parsabile, usa il numero della fase come ordine relativo.
+    """
+    import datetime
+    today = datetime.date.today()
+    today_ym = (today.year, today.month)
+
+    def parse_periodo(periodo_indicativo: str):
+        """Restituisce (anno_inizio, mese_inizio, anno_fine, mese_fine) o None."""
+        if not periodo_indicativo:
+            return None
+        # Cerca tutti i pattern YYYY-MM nel testo
+        matches = re.findall(r"(\d{4})-(\d{2})", periodo_indicativo)
+        if not matches:
+            return None
+        start = (int(matches[0][0]), int(matches[0][1]))
+        end = (int(matches[-1][0]), int(matches[-1][1])) if len(matches) > 1 else start
+        return start, end
+
+    enriched = []
+    current_assigned = False
+
+    for i, fase in enumerate(fasi):
+        fase_copy = dict(fase)
+        periodo = parse_periodo(fase_copy.get("periodo_indicativo", ""))
+
+        if periodo:
+            start_ym, end_ym = periodo
+            if end_ym < today_ym:
+                fase_copy["stato"] = "completata"
+            elif start_ym <= today_ym <= end_ym:
+                fase_copy["stato"] = "corrente"
+                current_assigned = True
+            else:
+                fase_copy["stato"] = "futura"
+        else:
+            # Nessun periodo: fallback basato sull'ordine
+            fase_copy["stato"] = "futura"
+
+        enriched.append(fase_copy)
+
+    # Fallback: se nessuna fase è marcata corrente, usa la prima non completata
+    if not current_assigned:
+        for fase_copy in enriched:
+            if fase_copy.get("stato") != "completata":
+                fase_copy["stato"] = "corrente"
+                break
+
+    return enriched
+
+
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
@@ -488,7 +549,10 @@ def main():
     plan_yaml = os.path.join(DATA_OUT, "plan.yaml")
     plan_html = os.path.join(DATA_OUT, "plan.html")
     if os.path.exists(plan_yaml):
-        write_json(os.path.join(out, "plan.json"), read_yaml(plan_yaml))
+        plan_data = read_yaml(plan_yaml)
+        if isinstance(plan_data, dict) and "fasi" in plan_data:
+            plan_data["fasi"] = enrich_plan_fasi(plan_data["fasi"])
+        write_json(os.path.join(out, "plan.json"), plan_data)
     elif os.path.exists(plan_html):
         write_json(os.path.join(out, "plan.json"), {"html": read_text(plan_html)})
     else:

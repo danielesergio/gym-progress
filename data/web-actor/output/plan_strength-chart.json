@@ -1,0 +1,154 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "strength-chart",
+    "task_title": "Grafico andamento massimali Big 3",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "strength-chart",
+    "type": "component",
+    "title": "Grafico andamento massimali Big 3",
+    "description": "Grafico a linee che mostra l'evoluzione storica di Squat, Panca e Stacco 1RM nel tempo. 6 punti di dati dal 2022 al 2026. I tre esercizi devono essere distinguibili (colori diversi). Deve essere indicato il tipo di massimale (R=reale, S=stimato) su ogni punto, poiché l'ultima rilevazione (2026-03-20) è di tipo S. I valori target futuri (linea tratteggiata o punto) possono essere mostrati come estensione.",
+    "inputs": [
+      "measurements_data",
+      "plan_data"
+    ],
+    "outputs": [
+      "StrengthChart"
+    ],
+    "acceptance_criteria": [
+      "Squat, Panca e Stacco hanno linee distinte con colori diversi",
+      "L'ultimo punto (stimato, massimali_tipo='S') è visivamente differenziato dai punti reali",
+      "I valori numerici sono leggibili al passaggio del mouse (tooltip) o al tap su mobile",
+      "La legenda identifica i 3 esercizi"
+    ],
+    "notes": "Il campo 'massimali_tipo' è una stringa per record (es. 'R' o 'S') — non per singolo esercizio. 5 record hanno massimali_tipo='R', l'ultimo (2026-03-20) ha massimali_tipo='S'. La differenziazione visiva dell'ultimo punto va applicata a tutti e 3 i dataset contemporaneamente per quell'indice. Il campo plan_data (docs/data/plan.json) può essere usato per i target futuri (linea tratteggiata) ma è opzionale — priorità al grafico storico corretto."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "Aggiungere la funzione renderStrengthChart(data) e decommentare la chiamata 'renderStrengthChart(data)' dentro renderProgress(). La funzione deve: costruire 3 dataset Chart.js (squat_1rm, panca_1rm, stacco_1rm) con asse X lineare a timestamp; differenziare visivamente l'ultimo punto stimato (pointStyle diverso o pointBackgroundColor diverso per l'ultimo indice); configurare tooltip con label e valore in kg; aggiungere legenda Chart.js in basso.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/progress.css",
+        "motivo": "Aggiungere eventuali stili per il punto stimato (es. classe .point-stimato) e per il tooltip del grafico massimali se diverso dal default. I badge .badge-reale e .badge-stimato sono già presenti — nessuna modifica richiesta. Verificare se serve aggiungere classi CSS specifiche per la legenda del grafico massimali.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/measurements.json",
+        "motivo": "Struttura dati reale: array di 6 oggetti con campi squat_1rm (float), panca_1rm (float), stacco_1rm (float), massimali_tipo ('R'|'S'), data ('YYYY-MM-DD'). Ultimo record (2026-03-20): squat=145.8, panca=116.7, stacco=198.3, tipo='S'. I 5 precedenti hanno tipo='R'."
+      },
+      {
+        "path": "docs/data/plan.json",
+        "motivo": "Struttura target futuri (campo 'target' con orizzonti 3/6/12 mesi per squat/panca/stacco). Usare per eventuale estensione con linea tratteggiata target — lettura obbligatoria per capire i campi disponibili."
+      },
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "File esistente da modificare. Contiene già: renderWeightBfChart() come modello di stile e pattern Chart.js; progressCharts{} per registro istanze da distruggere; formatDateIT(); showError(); renderProgress() con la chiamata renderStrengthChart(data) già commentata da decommentare."
+      },
+      {
+        "path": "docs/progress.html",
+        "motivo": "Contiene già il markup della sezione massimali: <section id='section-massimali'> con <canvas id='chart-massimali'>, i badge .badge-reale e .badge-stimato nella .progress-section__legend. Nessuna modifica HTML necessaria — tutto già predisposto."
+      },
+      {
+        "path": "docs/css/progress.css",
+        "motivo": "File esistente da modificare se necessario. Già contiene: .badge-reale, .badge-stimato, .progress-chart-container (height: 320px desktop, 240px mobile, 380px ≥1280px), .progress-section__legend. Verificare se serve aggiungere stili per il punto stimato nel grafico Chart.js."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "grafici": {
+        "nome": "Chart.js",
+        "versione": "4.x",
+        "cdn": "https://cdn.jsdelivr.net/npm/chart.js",
+        "note": "Già caricato in progress.html via <script src='...' defer>. Già usato da renderWeightBfChart(). Non occorre aggiungere nulla all'HTML."
+      },
+      "framework": "plain HTML/JS (ES2022)",
+      "styling": "CSS custom properties — variables.css + progress.css"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase (es. squatDataset, timestamps, COLOR_SQUAT)",
+      "classi_css": "kebab-case con prefisso pagina (es. progress-chart-container)",
+      "pattern_js": "Funzione autonoma renderStrengthChart(data) aggiunta a progress.js, chiamata da renderProgress(data). Pattern identico a renderWeightBfChart(): filtra record, costruisce datasets, distrugge istanza precedente via progressCharts['massimali']?.destroy(), crea new Chart().",
+      "gestione_null": "Filtra record con d.data presente. Usa d.squat_1rm ?? null nei dataset. SpanGaps: true su ogni dataset.",
+      "asse_x": "Tipo 'linear' con valori timestamp (new Date(d.data).getTime()). Callback tick formatta con formatDateIT(). maxTicksLimit: 6.",
+      "colori_design_system": {
+        "squat": "#ff6b35 (--color-accent, arancio)",
+        "panca": "#4fc3f7 (--color-info o simile, celeste)",
+        "stacco": "#ce93d8 (viola chiaro, usare var custom o esadecimale diretto)",
+        "grid": "rgba(58,58,58,0.6) (--color-border)",
+        "text_muted": "#a0a0a0 (--color-text-muted)"
+      },
+      "punto_stimato": "Per l'ultimo punto (indice records.length-1, massimali_tipo='S'): usare pointStyle array con 'rectRot' o 'triangle' per l'indice stimato e 'circle' per i reali. In alternativa: pointBackgroundColor array con colore diverso (es. trasparente + bordo) per l'indice stimato. Il badge R/S nella legenda HTML è già presente — il grafico deve solo differenziare visivamente.",
+      "tooltip": {
+        "background": "#2d2d2d",
+        "borderColor": "#3a3a3a",
+        "borderWidth": 1,
+        "titleColor": "#f0f0f0",
+        "bodyColor": "#a0a0a0",
+        "callback_title": "Usa formatDateIT() sul timestamp parsed.x",
+        "callback_label": "Mostra label esercizio + valore in kg + indicatore (R/S) basato su massimali_tipo del record"
+      },
+      "legenda": "display: true, position: 'bottom', labels con color: COLOR_TEXT, usePointStyle: true"
+    },
+    "pagina": {
+      "nome": "Progressi",
+      "file": "docs/progress.html",
+      "js": "docs/js/progress.js",
+      "css": "docs/css/progress.css",
+      "dati_json": ["data/measurements.json"],
+      "canvas_massimali": "chart-massimali",
+      "nota_html": "L'HTML della sezione massimali è già completo in progress.html (riga 75-85). Non occorre modificare progress.html."
+    },
+    "dati_measurements": {
+      "tipo": "Array di 6 oggetti",
+      "campi_rilevanti": ["data", "squat_1rm", "panca_1rm", "stacco_1rm", "massimali_tipo"],
+      "record_stimato": {
+        "data": "2026-03-20",
+        "squat_1rm": 145.8,
+        "panca_1rm": 116.7,
+        "stacco_1rm": 198.3,
+        "massimali_tipo": "S",
+        "indice": 5
+      },
+      "record_reali_range": {
+        "squat": "96–145 kg",
+        "panca": "88–115 kg",
+        "stacco": "116–200 kg",
+        "periodo": "2022-10-22 → 2025-10-02"
+      }
+    }
+  },
+  "criteri_accettazione": [
+    "Squat, Panca e Stacco hanno linee distinte con 3 colori diversi (es. arancio, celeste, viola)",
+    "L'ultimo punto del grafico (2026-03-20, tipo='S') è visivamente differenziato dai 5 punti reali (es. forma diversa o colore diverso del punto)",
+    "Il tooltip al passaggio del mouse mostra data (formato italiano), nome esercizio e valore in kg; su mobile funziona al tap",
+    "La legenda in basso al grafico identifica Squat, Panca e Stacco",
+    "docs/js/progress.js contiene la funzione renderStrengthChart(data)",
+    "In renderProgress(data) la chiamata renderStrengthChart(data) è attiva (non commentata)",
+    "progressCharts['massimali']?.destroy() è chiamato prima di creare la nuova istanza Chart",
+    "Il canvas 'chart-massimali' (già presente in progress.html) viene selezionato con document.getElementById('chart-massimali')",
+    "La funzione gestisce correttamente un array vuoto o dati mancanti senza lanciare eccezioni",
+    "I valori null/undefined in squat_1rm, panca_1rm, stacco_1rm non causano errori (uso di ?? null e spanGaps: true)"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "progress-page-layout",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/progress.html",
+        "docs/js/progress.js",
+        "docs/css/progress.css"
+      ],
+      "note": "Tutti e 3 i file esistono in docs/. progress.html contiene già il markup completo della sezione massimali (<section id='section-massimali'> con <canvas id='chart-massimali'> e badge R/S). progress.js contiene lo scheletro con renderProgress() e la chiamata renderStrengthChart(data) già commentata. progress.css contiene .badge-reale, .badge-stimato, .progress-chart-container e .progress-section__legend già pronti."
+    }
+  ]
+}

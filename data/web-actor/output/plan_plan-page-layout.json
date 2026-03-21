@@ -1,0 +1,147 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "plan-page-layout",
+    "task_title": "Struttura pagina Piano e Obiettivi",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "plan-page-layout",
+    "type": "layout",
+    "title": "Struttura pagina Piano e Obiettivi",
+    "description": "Layout della pagina con una timeline delle 10 fasi annuali, una sezione target di forza progressivi e una sezione strategia nutrizionale per fase. La timeline deve rendere immediatamente chiaro dove si trova l'atleta oggi rispetto al percorso totale.",
+    "inputs": ["MainLayout", "NavBar"],
+    "outputs": ["PlanPageLayout"],
+    "acceptance_criteria": [
+      "La pagina mostra la timeline delle fasi in modo visivo",
+      "La fase corrente è evidenziata sulla timeline",
+      "La pagina è navigabile su mobile"
+    ],
+    "notes": "Il file plan.json contiene 10 fasi (numero 0-9) con campo 'stato' ('corrente' | 'futura'). La fase 0 'Recupero TOS' ha stato 'corrente'. La timeline deve scorrere orizzontalmente su desktop e collassare verticalmente su mobile. Il layout segue il pattern di tutte le altre pagine: header + nav-tab + main + footer, con CSS custom properties da variables.css e layout.css condivisi. I component figli (phases-timeline, strength-targets-table) verranno implementati in task successivi: questo task produce solo la struttura HTML scheletro con i container placeholder."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/plan.html",
+        "motivo": "Creare la pagina completa: DOCTYPE, head con CSS, header, nav-tab con tab 'Piano' active, main con tre sezioni skeleton (#plan-timeline, #plan-strength-targets, #plan-nutrition-strategy), footer, script tags. File non esiste: da creare.",
+        "esiste": false
+      },
+      {
+        "path": "docs/css/plan.css",
+        "motivo": "Creare il foglio stile della pagina: layout sezioni, container timeline (orizzontale scrollabile su desktop, verticale su mobile), placeholder card fasi, tabella target forza, sezione nutrizione. File non esiste: da creare.",
+        "esiste": false
+      },
+      {
+        "path": "docs/js/plan.js",
+        "motivo": "Creare lo script JS: fetch('data/plan.json'), funzione renderPlan() che popola i tre container. Per questo task layout è sufficiente che la funzione esegua il fetch, stampi un log di conferma e lasci i placeholder — i component figli completeranno il rendering. File non esiste: da creare.",
+        "esiste": false
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/plan.json",
+        "motivo": "Struttura dati reale: array 'fasi' (10 oggetti con numero, nome, durata_settimane, periodo_indicativo, obiettivo, metodologia, note, stato), 'massimali_attuali' (squat/panca/stacco), 'target' (array 4 orizzonti: 3 mesi, 6 mesi, 12 mesi, lungo termine), 'strategia_nutrizionale' (per fase), 'situazione' (infortunio TOS). Fase con stato='corrente': fase 0."
+      },
+      {
+        "path": "docs/dashboard.html",
+        "motivo": "Modello strutturale — replicare esattamente: struttura DOCTYPE/head/header/nav/main/footer, convenzione CSS link order (variables.css → layout.css → pagina.css), pattern nav-tab con classe 'active' sul tab corrente, script tags in fondo con nav.js + pagina.js defer."
+      },
+      {
+        "path": "docs/css/layout.css",
+        "motivo": "Classi condivise disponibili: .page-header, .tab-list, .nav-tab, .nav-tab.active, .container, .page-footer, .footer-text — da usare senza ridefinire in plan.css."
+      },
+      {
+        "path": "docs/css/variables.css",
+        "motivo": "Custom properties disponibili per colori (--color-primary, --color-accent, --color-warning, --color-surface, ecc.), spaziature, font, border-radius, breakpoint mobile — da usare in plan.css."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS ES2022 — nessun bundler",
+      "styling": "CSS custom properties — variables.css globale + plan.css per pagina",
+      "grafici": {
+        "nome": "Chart.js",
+        "versione": "4.x",
+        "cdn": "https://cdn.jsdelivr.net/npm/chart.js",
+        "nota": "NON richiesto per questo task layout — nessun grafico nella struttura scheletro. Verrà incluso solo se phases-timeline lo richiede nei task figli."
+      },
+      "dati": "fetch('data/plan.json') — file statico JSON in docs/data/"
+    },
+    "convenzioni": {
+      "naming_html": "kebab-case corto: plan.html",
+      "naming_css": "plan.css (identico al nome pagina)",
+      "naming_js": "plan.js (identico al nome pagina)",
+      "variabili_js": "camelCase — es. planData, currentPhase, phaseIndex",
+      "classi_css": "kebab-case con prefisso 'plan-' per stili specifici, es. .plan-timeline, .plan-phase-card, .plan-phase-card--current, .plan-targets-table",
+      "pattern_js": "fetch('data/plan.json') dentro renderPlan(), chiamata al DOMContentLoaded. Struttura: document.addEventListener('DOMContentLoaded', () => { renderPlan(); }); async function renderPlan() { const res = await fetch('data/plan.json'); const data = await res.json(); /* popola sezioni */ }",
+      "gestione_null": "nessun campo null atteso in plan.json per questo task layout",
+      "responsive": "timeline orizzontale scrollabile (overflow-x: auto) su desktop, colonne verticali su mobile (max-width: 768px)"
+    },
+    "pagina": {
+      "nome": "Piano e Obiettivi",
+      "file_html": "docs/plan.html",
+      "file_css": "docs/css/plan.css",
+      "file_js": "docs/js/plan.js",
+      "dati_json": ["data/plan.json"],
+      "tab_attivo": "Piano (href='plan.html', class='nav-tab active', aria-current='page')"
+    },
+    "struttura_html_main": {
+      "descrizione": "Tre sezioni nel <main id='page-content'>: (1) timeline fasi, (2) tabella target forza, (3) strategia nutrizionale",
+      "sezioni": [
+        {
+          "id": "plan-timeline",
+          "aria-label": "Timeline fasi del programma annuale",
+          "contenuto_placeholder": "div.plan-timeline-scroll > div.plan-phase-cards (generati da plan.js)"
+        },
+        {
+          "id": "plan-strength-targets",
+          "aria-label": "Target di forza progressivi",
+          "contenuto_placeholder": "div#plan-targets-container (popolato da strength-targets-table task)"
+        },
+        {
+          "id": "plan-nutrition-strategy",
+          "aria-label": "Strategia nutrizionale per fase",
+          "contenuto_placeholder": "div#plan-nutrition-container (popolato da task futuro o direttamente da plan.js)"
+        }
+      ]
+    },
+    "dati_plan_json": {
+      "fasi_count": 10,
+      "fase_corrente": { "numero": 0, "nome": "Recupero TOS", "stato": "corrente" },
+      "campo_stato_values": ["corrente", "futura"],
+      "target_orizzonti": ["3 mesi", "6 mesi", "12 mesi", "Lungo termine (2-5 anni)"],
+      "massimali_attuali": { "squat": 145.8, "panca": 116.7, "stacco": 198.3 }
+    }
+  },
+  "criteri_accettazione": [
+    "La pagina plan.html esiste in docs/ ed è apribile nel browser senza errori 404",
+    "La pagina mostra header, nav-tab con tab 'Piano' evidenziato (classe active), main con tre sezioni, footer",
+    "Il tab 'Piano' nella navbar ha class='nav-tab active' e aria-current='page'",
+    "docs/plan.html contiene <section id='plan-timeline'> con aria-label appropriato",
+    "docs/plan.html contiene <section id='plan-strength-targets'> con aria-label appropriato",
+    "docs/plan.html contiene <section id='plan-nutrition-strategy'> con aria-label appropriato",
+    "docs/js/plan.js contiene la funzione async renderPlan() e il listener DOMContentLoaded",
+    "docs/js/plan.js esegue fetch('data/plan.json') senza errori in console quando la pagina carica",
+    "docs/css/plan.css contiene regole per .plan-timeline con overflow-x: auto per scrollabilità orizzontale su desktop",
+    "docs/css/plan.css contiene media query per mobile (max-width: 768px) che rende la timeline navigabile verticalmente",
+    "docs/plan.html importa css/variables.css, css/layout.css, css/plan.css nell'ordine corretto",
+    "docs/plan.html include <script src='js/nav.js' defer> e <script src='js/plan.js' defer> prima di </body>",
+    "La pagina è navigabile su mobile (viewport meta tag presente, nessun overflow orizzontale non intenzionale)",
+    "La fase corrente è visivamente distinguibile dalle fasi future (classe CSS .plan-phase-card--current applicata dal JS)"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "navigation-tabs",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/dashboard.html (nav-tab struttura presente e funzionante)",
+        "docs/js/nav.js (script navigazione condiviso)",
+        "docs/css/layout.css (stili .tab-list, .nav-tab, .nav-tab.active)"
+      ],
+      "note": "La navbar a tab è presente e funzionante in dashboard.html. Il link a plan.html nella nav è già incluso (riga 51-54 di dashboard.html). nav.js esiste in docs/js/. Il developer deve solo aggiungere class='nav-tab active' al tab Piano in plan.html."
+    }
+  ]
+}

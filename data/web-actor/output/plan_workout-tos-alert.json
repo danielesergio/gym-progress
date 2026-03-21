@@ -1,0 +1,118 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "workout-tos-alert",
+    "task_title": "Banner avviso infortunio TOS",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "workout-tos-alert",
+    "type": "ux",
+    "title": "Banner avviso infortunio TOS",
+    "description": "Banner persistente in cima alla pagina allenamento che ricorda all'atleta i vincoli dell'infortunio TOS: esercizi vietati (panca, dip, overhead, trazioni grip stretto, fly) e il protocollo di sicurezza (stop immediato se dolore). Il banner deve essere visibile ma non oscurare la scheda. Include icona di attenzione.",
+    "inputs": ["workout_data"],
+    "outputs": ["TOSAlertBanner"],
+    "acceptance_criteria": [
+      "Il banner è visibile senza scorrere la pagina",
+      "Elenca almeno 4-5 esercizi vietati",
+      "Non occupa più di 1/4 dell'altezza dello schermo"
+    ],
+    "notes": "Il contenuto TOS è già presente in workout.json nei campi mesociclo.logica[0] e note_generali[0]. Il banner deve essere statico (non dinamico via fetch): il contenuto degli esercizi vietati è noto e fisso, ma il titolo/periodo può essere alimentato dal fetch esistente. Priorità alla leggibilità e alla non invasività: il banner non deve nascondere la scheda sottostante."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/workout.html",
+        "motivo": "Inserire il markup HTML del banner TOS (sezione <div id='tos-alert-banner'>) subito dopo l'apertura del <main>, prima del div .container con il contenuto della scheda — in modo che sia il primo elemento visibile senza scroll",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Aggiungere stili per il banner TOS: colore di sfondo warning (giallo/arancio), icona ⚠, layout flex per icona + testo, lista esercizi vietati inline o a pillole, vincolo max-height a 25vh, bordo sinistro accent color",
+        "esiste": true
+      },
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "Aggiungere (o verificare che esista già) la funzione renderTOSBanner() che popola dinamicamente eventuali dati dal JSON (es. titolo fase), oppure confermare che il banner è puramente statico HTML e non richiede logica JS aggiuntiva",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/workout.html",
+        "motivo": "Capire la struttura esistente del <main> e il punto esatto dove inserire il banner (dopo <div class='container'>, prima di #workout-error o dopo)"
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Verificare variabili CSS e classi esistenti per coerenza stilistica (colori warning, naming convention classi workout-*)"
+      },
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "Verificare se esiste già una funzione che gestisce il banner o se renderWorkout() deve essere estesa"
+      },
+      {
+        "path": "docs/data/workout.json",
+        "motivo": "Struttura dati: mesociclo.logica[0] contiene il testo completo dei vincoli TOS; note_generali[0] e [1] contengono le istruzioni di monitoraggio dolore. Campi utili: meta.titolo (nome scheda), mesociclo.logica (array di regole)"
+      },
+      {
+        "path": "docs/css/variables.css",
+        "motivo": "Verificare le custom properties per colori warning/danger già definite nel design system (es. --color-warning, --color-danger, --color-accent)"
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS — ES2022, nessun bundler",
+      "styling": "CSS custom properties (variabili in css/variables.css), classi kebab-case con prefisso pagina (workout-*)",
+      "grafici": "non applicabile a questo task",
+      "dati": "fetch() su docs/data/workout.json — il banner può usare i dati già fetchati da renderWorkout()"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase",
+      "classi_css": "kebab-case con prefisso pagina — es. workout-tos-banner, workout-tos-banner__title, workout-tos-banner__list",
+      "naming_id_html": "kebab-case — es. id='tos-alert-banner'",
+      "pattern_js": "funzione renderWorkout() chiamata a DOMContentLoaded dopo fetch(). Il banner può essere renderizzato da una sotto-funzione renderTOSBanner() chiamata all'interno di renderWorkout(), oppure essere markup HTML statico se il contenuto è completamente fisso",
+      "banner_position": "Primo elemento visibile inside <main> — inserire PRIMA del #workout-error div o subito dopo, comunque sopra #workout-header",
+      "accessibilita": "Usare role='alert' o role='note' + aria-label='Avviso infortunio TOS' sul banner; icona ⚠ con aria-hidden='true'"
+    },
+    "pagina": {
+      "nome": "Workout",
+      "file": "docs/workout.html",
+      "css": "docs/css/workout.css",
+      "js": "docs/js/workout.js",
+      "dati_json": ["docs/data/workout.json"]
+    },
+    "nota_contenuto_tos": {
+      "esercizi_vietati": ["panca piana (qualsiasi variante)", "dip", "military press / overhead press", "trazioni (qualsiasi variante)", "fly / cable crossover", "rematore con bilanciere"],
+      "fonte_json": "workout.json → mesociclo.logica[0] e note_generali[0]",
+      "protocollo_sicurezza": "Stop immediato se dolore a petto, spalla o braccio durante qualsiasi esercizio",
+      "nota": "Il developer può scegliere di hardcodare il contenuto del banner (consigliato per semplicità e visibilità immediata anche prima del fetch) oppure di popolarlo dinamicamente da workout.json dopo il fetch"
+    }
+  },
+  "criteri_accettazione": [
+    "Il banner TOS è visibile senza scorrere la pagina (above the fold)",
+    "Il banner elenca almeno 5 esercizi vietati: panca piana, dip, overhead press, trazioni, fly/cable crossover",
+    "Il banner include il protocollo di sicurezza: stop immediato se dolore a petto/spalla/braccio",
+    "Il banner include un'icona di attenzione (⚠ o equivalente SVG)",
+    "Il banner non occupa più di 25vh (max-height: 25vh o vincolo equivalente)",
+    "Il banner non oscura il selettore settimane né le card sessioni sottostanti",
+    "docs/workout.html contiene un elemento con id='tos-alert-banner' (o classe equivalente workout-tos-banner)",
+    "docs/css/workout.css contiene regole per .workout-tos-banner (o selettore equivalente) con proprietà di colore warning e max-height",
+    "Il banner è accessibile: role='alert' o role='note', aria-label descrittivo, icona con aria-hidden='true'",
+    "Su mobile (viewport < 768px) il banner rimane leggibile e non tracima fuori dal layout"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "workout-page-layout",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/workout.html",
+        "docs/css/workout.css",
+        "docs/js/workout.js"
+      ],
+      "note": "Tutti e tre i file esistono in docs/. Il layout della pagina allenamento è operativo con header, nav, selettore settimane e area dettaglio."
+    }
+  ]
+}

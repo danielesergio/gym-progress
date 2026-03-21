@@ -1,0 +1,75 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "macros-summary-bar",
+    "task_titolo": "Riepilogo macros giornalieri",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Kcal, proteine, carbo e grassi sono mostrati per il giorno selezionato",
+      "soddisfatto": true,
+      "dettaglio": "renderMacrosSummary() estrae i valori da dayData.kcal, dayData.macros.proteine, dayData.macros.carboidrati, dayData.macros.grassi (linee 118–121) e li renderizza in una griglia .diet-macros-bar con 4 celle (linee 138–155). I valori sono arrotondati per kcal e macro."
+    },
+    {
+      "criterio": "I valori cambiano quando si cambia il toggle allenamento/riposo",
+      "soddisfatto": true,
+      "dettaglio": "DOMContentLoaded attacca listener ai toggle btn (linee 345–351). Al click, currentDayType viene aggiornato (linea 347) e renderDiet(dietData) viene chiamato (linea 349). renderDiet() filtra giorni per currentDayType (linea 325) e chiama renderMacrosSummary() con il giorno filtrato. diet.json contiene due giorni (allenamento/riposo) con kcal e macros differenti — il cambio è percepibile."
+    },
+    {
+      "criterio": "La strategia nutrizionale è visibile in forma sintetica nel blocco macros (prima riga di meta.note_strategia)",
+      "soddisfatto": true,
+      "dettaglio": "renderMacrosSummary() estrae la prima riga di notaStrategia con .split('\\n')[0].trim() (linee 125–127) e la inserisce come <p class=\"diet-macros-strategy\"> (riga 137). diet.css definisce lo stile (linee 156–164): font-size sm, colore muted, border-left accent, italic. diet.json contiene note_strategia multiriga; la prima riga è 'Fase 0 — Recupero TOS (Thoracic Outlet Syndrome).'"
+    },
+    {
+      "criterio": "docs/js/diet.js contiene la funzione renderMacrosSummary con almeno due parametri (dayData, notaStrategia)",
+      "soddisfatto": true,
+      "dettaglio": "Linea 109: function renderMacrosSummary(dayData, notaStrategia) — firma corretta con entrambi i parametri."
+    },
+    {
+      "criterio": "docs/js/diet.js contiene la barra a segmenti colorati (elemento con classe diet-macros-proportion-bar o equivalente)",
+      "soddisfatto": true,
+      "dettaglio": "Funzione buildProportionBar() (linee 67–101) crea HTML con .diet-macros-proportion-bar (riga 84) e tre .diet-macros-proportion-bar__segment con varianti --proteine, --carbo, --grassi (righe 85–93). La barra viene inserita nel DOM linea 156. Include anche una legenda (linee 95–99)."
+    },
+    {
+      "criterio": "docs/css/diet.css contiene stili per la barra a segmenti proporzionali con colori distinti per proteine, carbo e grassi",
+      "soddisfatto": true,
+      "dettaglio": "diet.css contiene: .diet-macros-proportion-bar (linee 168–176), .diet-macros-proportion-bar__segment (linee 178–183), .diet-macros-proportion-bar__segment--proteine (#4dabf7 blu, riga 186), .diet-macros-proportion-bar__segment--carbo (#ffd43b giallo, riga 190), .diet-macros-proportion-bar__segment--grassi (#ff8787 rosso, riga 194). Legenda con indicatori colorati (linee 197–232)."
+    },
+    {
+      "criterio": "La barra a segmenti non causa eccezioni quando i macros sono 0 o null (nessuna divisione per zero)",
+      "soddisfatto": true,
+      "dettaglio": "buildProportionBar() converte null/undefined a 0 (linee 68–70). Se totale === 0, restituisce stringa vuota senza renderizzare (riga 77). renderMacrosSummary() converte valori non numerici a null (linee 130–133) prima di passarli a buildProportionBar(). Non esiste nessun operatore divisione (/) nel codice che potrebbe causare divisione per zero."
+    },
+    {
+      "criterio": "La chiamata a renderMacrosSummary in renderDiet() include la nota strategia come secondo argomento",
+      "soddisfatto": true,
+      "dettaglio": "renderDiet(), linea 331: renderMacrosSummary(dayData, data?.meta?.note_strategia ?? null) — passa correttamente il secondo argomento con nullish coalescing fallback."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/diet.js",
+      "esiste": true,
+      "note": "Contiene renderMacrosSummary(dayData, notaStrategia) aggiornata, buildProportionBar() e renderDiet() che passa correttamente la nota strategia. Firma e logica sono corrette."
+    },
+    {
+      "path": "docs/css/diet.css",
+      "esiste": true,
+      "note": "Contiene stili per .diet-macros-proportion-bar, .diet-macros-proportion-bar__segment con varianti --proteine, --carbo, --grassi (colori distinti), e .diet-macros-strategy. Tutti gli stili rispettano le convenzioni CSS (kebab-case, prefisso diet-)."
+    },
+    {
+      "path": "docs/data/diet.json",
+      "esiste": true,
+      "note": "Struttura dati confermata: meta.note_strategia (multiriga), meta.fase, giorni[] con tipo 'allenamento'/'riposo', kcal e macros.proteine/carboidrati/grassi. Dati validi."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "La barra a segmenti ha min-width: 2px e gap: 2px tra i segmenti. In caso di percentuali molto piccole, un segmento potrebbe diventare invisibile per overflow del gap. Tuttavia, il progetto è visualmente coerente e il min-width previene la perdita totale di visibilità. Non è un problema critico, solo un'osservazione di design.",
+      "file": "docs/css/diet.css"
+    }
+  ]
+}

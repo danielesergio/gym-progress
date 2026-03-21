@@ -1,0 +1,246 @@
+/* ============================================================
+   layout.css — Stili strutturali condivisi
+   Daniele Fitness | header / nav / main / footer / container
+   ============================================================ */
+
+/* ── Reset & base ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-base);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-normal);
+  line-height: var(--line-height-normal);
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Container responsive ── */
+.container {
+  width: 100%;
+  max-width: var(--container-max-width);
+  margin-inline: auto;
+  padding-inline: var(--space-4);
+}
+
+/* ── PAGE HEADER ── */
+.page-header {
+  background-color: var(--color-bg-secondary);
+  border-bottom: 2px solid var(--color-accent);
+  height: var(--header-height);
+  display: flex;
+  align-items: center;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: var(--shadow-md);
+}
+
+.page-header .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.header-brand {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.header-athlete-name {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-accent);
+  letter-spacing: -0.02em;
+  line-height: var(--line-height-tight);
+  text-transform: uppercase;
+}
+
+.header-tagline {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-normal);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.header-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.header-meta-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.header-meta-value {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+}
+
+/* ── NAVIGAZIONE TAB ── */
+.tab-list {
+  background-color: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+  height: var(--nav-height);
+  display: flex;
+  align-items: stretch;
+  overflow-x: auto;
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE/Edge */
+}
+
+.tab-list::-webkit-scrollbar {
+  display: none; /* Chrome/Safari */
+}
+
+.tab-list .container {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  padding-inline: 0;
+}
+
+.nav-tab {
+  display: inline-flex;
+  align-items: center;
+  padding-inline: var(--space-5);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  text-decoration: none;
+  white-space: nowrap;
+  border-bottom: 3px solid transparent;
+  transition: color var(--transition-fast), border-color var(--transition-fast),
+              background-color var(--transition-fast);
+  cursor: pointer;
+}
+
+.nav-tab:hover {
+  color: var(--color-text);
+  background-color: var(--color-bg-elevated);
+}
+
+.nav-tab.active,
+.nav-tab[aria-current="page"] {
+  color: var(--color-accent);
+  border-bottom-color: var(--color-accent);
+  font-weight: var(--font-weight-semibold);
+}
+
+.nav-tab:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+  background-color: var(--color-bg-elevated);
+}
+
+/* ── MAIN CONTENT ── */
+#page-content {
+  flex: 1;
+  padding-block: var(--space-8);
+}
+
+#page-content .container {
+  /* il contenuto di pagina gestisce il proprio layout interno */
+}
+
+/* ── PAGE FOOTER ── */
+.page-footer {
+  background-color: var(--color-bg-secondary);
+  border-top: 1px solid var(--color-border);
+  padding-block: var(--space-4);
+}
+
+.page-footer .container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.footer-text {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-faint);
+  text-align: center;
+  letter-spacing: 0.04em;
+}
+
+/* ── RESPONSIVE: Mobile (<= 375px) ── */
+@media (max-width: 375px) {
+  :root {
+    --header-height: 56px;
+    --nav-height: 44px;
+  }
+
+  .container {
+    padding-inline: var(--space-3);
+  }
+
+  .header-athlete-name {
+    font-size: var(--font-size-lg);
+  }
+
+  .header-tagline {
+    display: none;
+  }
+
+  .header-meta-label {
+    display: none;
+  }
+
+  .nav-tab {
+    padding-inline: var(--space-4);
+    font-size: var(--font-size-xs);
+  }
+
+  #page-content {
+    padding-block: var(--space-5);
+  }
+}
+
+/* ── RESPONSIVE: Tablet (>= 768px) ── */
+@media (min-width: 768px) {
+  .container {
+    padding-inline: var(--space-6);
+  }
+
+  .header-athlete-name {
+    font-size: var(--font-size-2xl);
+  }
+
+  .nav-tab {
+    padding-inline: var(--space-6);
+    font-size: var(--font-size-base);
+  }
+}
+
+/* ── RESPONSIVE: Desktop (>= 1280px) ── */
+@media (min-width: 1280px) {
+  .container {
+    padding-inline: var(--space-8);
+  }
+
+  #page-content {
+    padding-block: var(--space-10);
+  }
+}

@@ -1,0 +1,94 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "supplements-section",
+    "task_titolo": "Sezione piano integratori",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Tutti e 4 gli integratori (Creatina monoidrato, Vitamina D3, Omega-3, Whey) sono elencati con dose e timing",
+      "soddisfatto": true,
+      "dettaglio": "docs/data/diet.json contiene array root 'integratori' con 4 elementi: Creatina monoidrato (5g, timing mattino/post-allenamento), Vitamina D3 (2000 UI, con pranzo), Omega-3 EPA+DHA (2-3g, pranzo+cena), Proteina Whey (60g/die, colazione+merenda). renderSupplementCard() estrae dose e timing per ogni elemento."
+    },
+    {
+      "criterio": "Il campo 'note' (motivo dell'assunzione) è visibile per ogni integratore nella card",
+      "soddisfatto": true,
+      "dettaglio": "renderSupplementCard() (righe 274-293 diet.js) renderizza il campo note: ${note ? `<p class=\"diet-supplement-card__note\">${note}</p>` : ''}. Tutti e 4 gli integratori in diet.json hanno il campo 'note' valorizzato. CSS .diet-supplement-card__note (righe 476-483) stila il testo con border-top e padding-top."
+    },
+    {
+      "criterio": "La sezione integratori è visivamente separata dalla sezione pasti (border-top: 3px solid var(--color-success) su .diet-supplements)",
+      "soddisfatto": true,
+      "dettaglio": "diet.css righe 388-395: .diet-supplements ha border-top: 3px solid var(--color-success). Questa classe è applicata a <section id='supplements-section'> in diet.html riga 96. Separazione visiva verde conforme."
+    },
+    {
+      "criterio": "La sezione è sempre visibile indipendentemente dal toggle allenamento/riposo",
+      "soddisfatto": true,
+      "dettaglio": "diet.html riga 96: <section id='supplements-section'> è fuori dal container #meals-list e non ha dipendenze da currentDayType. diet.js riga 337: renderSupplements() viene chiamato in renderDiet() con data?.integratori ?? [] (array root), NON filtrando per tipo di giorno."
+    },
+    {
+      "criterio": "docs/diet.html contiene <section id='supplements-section' class='diet-supplements'>",
+      "soddisfatto": true,
+      "dettaglio": "diet.html riga 96: <section id='supplements-section' class='diet-supplements' aria-label='Integratori'> presente."
+    },
+    {
+      "criterio": "docs/diet.html contiene <div id='supplements-list'> dove vengono iniettate le card via JS",
+      "soddisfatto": true,
+      "dettaglio": "diet.html riga 101: <div id='supplements-list' class='diet-supplements__list'> presente. renderSupplements() (diet.js riga 300) popola questo container via innerHTML."
+    },
+    {
+      "criterio": "docs/js/diet.js contiene la funzione renderSupplements(integratori)",
+      "soddisfatto": true,
+      "dettaglio": "diet.js righe 299-309: funzione renderSupplements(integratori) implementata. Signature: riceve array, controlla se vuoto, popola #supplements-list con map di renderSupplementCard()."
+    },
+    {
+      "criterio": "docs/js/diet.js contiene la funzione renderSupplementCard(integratore)",
+      "soddisfatto": true,
+      "dettaglio": "diet.js righe 274-293: funzione renderSupplementCard(integratore) implementata. Restituisce HTML article con header (nome + dose badge), timing e note (condizionato)."
+    },
+    {
+      "criterio": "renderSupplementCard() gestisce campi null/undefined con fallback '—' senza lanciare eccezioni",
+      "soddisfatto": true,
+      "dettaglio": "diet.js righe 275-278: const nome = integratore?.nome ?? '—'; const dose = integratore?.dose ?? '—'; const timing = integratore?.timing ?? '—'; const note = integratore?.note ?? ''; Tutti i campi usano optional chaining (?.) e nullish coalescing (??). Nessun accesso diretto a proprietà che potrebbe lanciare eccezioni."
+    },
+    {
+      "criterio": "renderDiet() chiama renderSupplements(data?.integratori ?? []) — array root, non dal giorno selezionato",
+      "soddisfatto": true,
+      "dettaglio": "diet.js riga 337: renderSupplements(data?.integratori ?? []); dentro renderDiet(). L'array integratori è estratto da data root, non da giorni[].pasti. Indipendente da currentDayType."
+    },
+    {
+      "criterio": "Il catch block in DOMContentLoaded imposta un empty state in #supplements-list in caso di errore fetch",
+      "soddisfatto": true,
+      "dettaglio": "diet.js righe 374-375: nel catch block, const supplements = document.getElementById('supplements-list'); if (supplements) supplements.innerHTML = '<p class=\"diet-empty\">Dati non disponibili.</p>';. Empty state garantito in caso di errore."
+    },
+    {
+      "criterio": "Ogni card mostra: nome integratore, badge dose (verde), timing, testo note",
+      "soddisfatto": true,
+      "dettaglio": "renderSupplementCard() (righe 274-293) renderizza: <h3 class='diet-supplement-card__nome'> (nome), <span class='diet-supplement-card__dose'> (dose badge), <p class='diet-supplement-card__timing'> (timing), <p class='diet-supplement-card__note'> (note). CSS .diet-supplement-card__dose (righe 451-461) applica background verde (rgba(76, 175, 80, 0.1)) e colore verde (--color-success)."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/data/diet.json",
+      "esiste": true,
+      "note": "Array root 'integratori' contiene 4 oggetti con campi: nome, dose, timing, note. Tutti i campi sono valorizzati (nessun null nei dati attuali)."
+    },
+    {
+      "path": "docs/diet.html",
+      "esiste": true,
+      "note": "Markup HTML corretto: <section id='supplements-section' class='diet-supplements'> con <div id='supplements-list'>. Aria-label presente. Struttura accessibile."
+    },
+    {
+      "path": "docs/js/diet.js",
+      "esiste": true,
+      "note": "Funzioni renderSupplementCard() e renderSupplements() implementate. Chiamata da renderDiet() con data?.integratori ?? []. Null safety via ?. e ??. Fallback nel catch block."
+    },
+    {
+      "path": "docs/css/diet.css",
+      "esiste": true,
+      "note": "Stili completi per sezione integratori: .diet-supplements (border-top: 3px solid var(--color-success)), .diet-supplement-card, .diet-supplement-card__dose (badge verde), .diet-supplement-card__note (border-top interno)."
+    }
+  ],
+  "anomalie": []
+}

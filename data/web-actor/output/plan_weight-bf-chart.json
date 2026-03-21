@@ -1,0 +1,135 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "weight-bf-chart",
+    "task_title": "Grafico andamento peso e body fat",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "weight-bf-chart",
+    "type": "component",
+    "title": "Grafico andamento peso e body fat",
+    "description": "Grafico a linee con doppio asse Y che mostra l'andamento di peso (kg) e BF% nel tempo. I dati coprono 6 punti dal 2022-10 al 2026-03, con frequenza irregolare (a volte molti mesi tra una misurazione e l'altra). L'asse X sono le date, l'asse Y sinistro il peso in kg, il destro il BF%. Deve gestire l'irregolarità degli intervalli senza interruzioni visive. Opzionale: linea separata per la massa magra.",
+    "inputs": [
+      "measurements_data"
+    ],
+    "outputs": [
+      "WeightBFChart"
+    ],
+    "acceptance_criteria": [
+      "Il grafico mostra tutti e 6 i punti di misurazione",
+      "Peso e BF% sono distinguibili (colori o assi diversi)",
+      "Le etichette delle date sono leggibili senza sovrapposizioni",
+      "L'asse Y del peso non parte da 0 (range sensato, es. 70-95 kg)"
+    ],
+    "notes": "Il canvas #chart-peso-bf e il container .progress-chart-container sono già presenti in progress.html (task progress-page-layout completato). Lo scheletro renderProgress() in progress.js ha già il placeholder commentato '/* renderWeightBfChart(data); */'. Il task deve solo aggiungere la funzione renderWeightBfChart(data) in progress.js e attivarla dentro renderProgress()."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "Aggiungere la funzione renderWeightBfChart(data) che costruisce il grafico Chart.js doppio asse e attivare la chiamata dentro renderProgress(data) decommentando la riga '/* renderWeightBfChart(data); */'",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/progress.css",
+        "motivo": "Aggiungere (se necessari) stili specifici per il grafico peso/BF — es. leggenda custom, tooltip styling. Il container .progress-chart-container esiste già con height: 320px (desktop: 380px, mobile: 240px).",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/measurements.json",
+        "motivo": "Struttura dati reale: array di 6 oggetti con campi data (YYYY-MM-DD), peso_kg (float), body_fat_pct (float), massa_magra_kg (float). Nessun valore null nei 6 record per questi 3 campi — tutti valorizzati. Date: 2022-10-22, 2023-04-10, 2024-05-25, 2024-11-29, 2025-10-02, 2026-03-20."
+      },
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "File da modificare: capire dove inserire renderWeightBfChart(), la variabile progressCharts già disponibile come registro istanze, formatDateIT() già disponibile, showError() già disponibile."
+      },
+      {
+        "path": "docs/progress.html",
+        "motivo": "Verificare il canvas esistente: <canvas id='chart-peso-bf'> è già presente nella sezione #section-peso-bf con il container .progress-chart-container. Nessuna modifica HTML necessaria."
+      },
+      {
+        "path": "docs/css/progress.css",
+        "motivo": "File da modificare: verificare gli stili esistenti del container .progress-chart-container (height responsive già definita) per decidere se aggiungere stili aggiuntivi per la leggenda del grafico doppio asse."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "grafici": {
+        "nome": "Chart.js",
+        "versione": "4.x",
+        "cdn": "https://cdn.jsdelivr.net/npm/chart.js",
+        "nota": "CDN già incluso in progress.html con tag <script defer>. Non aggiungere un secondo tag."
+      }
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase — es. weightBfChart, labels, pesoDataset, bfDataset",
+      "costanti_js": "UPPER_SNAKE_CASE per costanti globali — es. CHART_COLORS (se definite)",
+      "classi_css": "kebab-case con prefisso pagina — es. .progress-chart-peso-bf-legend",
+      "id_html": "kebab-case — il canvas esistente è #chart-peso-bf (non modificare l'id)",
+      "gestione_null": "I 6 record hanno tutti body_fat_pct e peso_kg valorizzati — nessun null atteso. Usare comunque ?? null per sicurezza nei dataset, con spanGaps: true se si usa tipo 'line'.",
+      "formato_date_etichette": "Usare formatDateIT() già definita in progress.js per le label dell'asse X: '22 ott 2022', '10 apr 2023', ecc.",
+      "pattern_js": "Aggiungere renderWeightBfChart(data) in progress.js. Salvare l'istanza in progressCharts['pesoBf'] = new Chart(...). Chiamare progressCharts['pesoBf']?.destroy() prima di ricreare. Chiamare la funzione da renderProgress(data).",
+      "struttura_grafico": "Chart.js tipo 'line', dati con type: 'linear' sull'asse X per gestire la distribuzione temporale irregolare (convertire date ISO in timestamp con new Date(d.data).getTime()). Asse Y sinistro (y) per peso_kg, asse Y destro (y1) per body_fat_pct. Opzione suggerita: spanGaps: true.",
+      "range_asse_peso": "Impostare min/max del dataset peso con padding (es. min: Math.floor(minPeso - 2), max: Math.ceil(maxPeso + 2)) per non partire da 0.",
+      "leggibilita_date": "Con 6 punti su ~3.5 anni l'asse X non è affollato. Usare le label formattate con formatDateIT(). Se si usa asse lineare con timestamps, usare tick.callback per formattare le label.",
+      "no": "No jQuery, no var, no inline style, no ES modules"
+    },
+    "pagina": {
+      "nome": "Progressi",
+      "file": "docs/progress.html",
+      "js": "docs/js/progress.js",
+      "css": "docs/css/progress.css",
+      "dati_json": ["data/measurements.json"],
+      "canvas_esistente": "#chart-peso-bf",
+      "container_esistente": ".progress-chart-container",
+      "note": "La pagina ha già il layout, il canvas e il CSS base. Serve solo la logica JS del grafico."
+    }
+  },
+  "dati_reali": {
+    "fonte": "docs/data/measurements.json",
+    "n_record": 6,
+    "campi_usati": ["data", "peso_kg", "body_fat_pct", "massa_magra_kg"],
+    "record": [
+      { "data": "2022-10-22", "peso_kg": 78.3, "body_fat_pct": 12.0, "massa_magra_kg": 68.9 },
+      { "data": "2023-04-10", "peso_kg": 81.4, "body_fat_pct": 13.7, "massa_magra_kg": 70.2 },
+      { "data": "2024-05-25", "peso_kg": 82.1, "body_fat_pct": 13.7, "massa_magra_kg": 70.9 },
+      { "data": "2024-11-29", "peso_kg": 85.4, "body_fat_pct": 17.8, "massa_magra_kg": 70.2 },
+      { "data": "2025-10-02", "peso_kg": 89.4, "body_fat_pct": 17.8, "massa_magra_kg": 73.5 },
+      { "data": "2026-03-20", "peso_kg": 87.2, "body_fat_pct": 17.1, "massa_magra_kg": 72.3 }
+    ],
+    "range_peso_kg": { "min": 78.3, "max": 89.4 },
+    "range_bf_pct": { "min": 12.0, "max": 17.8 },
+    "range_mm_kg": { "min": 68.9, "max": 73.5 },
+    "note_irregolarita": "Gli intervalli tra misurazioni variano da 5-6 mesi fino a 11 mesi (tra 2024-11-29 e 2025-10-02). L'asse X con timestamps lineari (Date.getTime()) gestisce correttamente questa irregolarità senza interpolazione fittizia."
+  },
+  "criteri_accettazione": [
+    "Il grafico mostra tutti e 6 i punti di misurazione (labels.length === 6)",
+    "Peso e BF% sono distinguibili: due dataset con colori diversi e due assi Y separati (sinistro per peso, destro per BF%)",
+    "Le etichette delle date sull'asse X sono leggibili senza sovrapposizioni (6 punti = spazio sufficiente)",
+    "L'asse Y del peso non parte da 0: min impostato dinamicamente (es. Math.floor(minPeso - 2) → ~76)",
+    "docs/js/progress.js contiene la funzione renderWeightBfChart(data)",
+    "docs/js/progress.js salva l'istanza Chart.js in progressCharts['pesoBf']",
+    "docs/js/progress.js chiama renderWeightBfChart(data) dentro renderProgress(data) (riga decommentata)",
+    "La funzione gestisce array vuoto o dati mancanti senza lanciare eccezioni",
+    "Il canvas #chart-peso-bf viene aggiornato correttamente con i dati fetch()'ati",
+    "Nessuna modifica a docs/progress.html (canvas già presente) né a docs/data/measurements.json"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "progress-page-layout",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/progress.html",
+        "docs/js/progress.js",
+        "docs/css/progress.css"
+      ],
+      "note": "Tutti e tre i file sono presenti in docs/. progress.html ha già il canvas #chart-peso-bf e il container .progress-chart-container. progress.js ha già renderProgress(), showError(), formatDateIT(), progressCharts e il fetch DOMContentLoaded. progress.css ha già gli stili .progress-chart-container con altezze responsive."
+    }
+  ]
+}

@@ -1,0 +1,255 @@
+/* ============================================================
+   progress.css — Stili specifici pagina Progressi
+   Daniele Fitness | sezioni, grafici, tabella, badge
+   ============================================================ */
+
+/* ── Sezione generica ── */
+.progress-section {
+  margin-block-end: var(--space-10);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+}
+
+.progress-section:last-child {
+  margin-block-end: 0;
+}
+
+/* ── Titolo sezione ── */
+.progress-section__title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  margin-block-end: var(--space-5);
+  padding-block-end: var(--space-3);
+  border-bottom: 2px solid var(--color-accent);
+  line-height: var(--line-height-tight);
+}
+
+/* ── Legenda badge massimale ── */
+.progress-section__legend {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-block-end: var(--space-4);
+  flex-wrap: wrap;
+}
+
+/* ── Badge tipo massimale ── */
+.badge-reale,
+.badge-stimato {
+  display: inline-flex;
+  align-items: center;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1;
+}
+
+.badge-reale {
+  background-color: rgba(76, 175, 80, 0.2);
+  color: var(--color-success);
+  border: 1px solid rgba(76, 175, 80, 0.4);
+}
+
+.badge-stimato {
+  background-color: rgba(255, 193, 7, 0.15);
+  color: var(--color-warning);
+  border: 1px solid rgba(255, 193, 7, 0.35);
+}
+
+/* ── Container canvas Chart.js ── */
+.progress-chart-container {
+  position: relative;
+  width: 100%;
+  height: 320px;
+}
+
+/* ── Container tabella ── */
+.progress-table-container {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ── Placeholder caricamento / errore ── */
+.progress-placeholder {
+  color: var(--color-text-muted);
+  font-size: var(--font-size-sm);
+  text-align: center;
+  padding-block: var(--space-8);
+}
+
+/* ── Messaggio errore globale ── */
+.progress-error {
+  background-color: rgba(244, 67, 54, 0.1);
+  border: 1px solid rgba(244, 67, 54, 0.3);
+  border-radius: var(--radius-md);
+  color: var(--color-danger);
+  padding: var(--space-4) var(--space-5);
+  margin-block-end: var(--space-6);
+  font-size: var(--font-size-sm);
+}
+
+/* ── Tabella storico misurazioni ── */
+.measurements-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.measurements-table thead th {
+  background-color: var(--color-bg-elevated);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.measurements-table tbody td {
+  padding: var(--space-3) var(--space-4);
+  color: var(--color-text);
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+  vertical-align: middle;
+}
+
+.measurements-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.measurements-table tbody tr:hover td {
+  background-color: var(--color-bg-elevated);
+}
+
+.measurements-table .td-date {
+  color: var(--color-accent);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-mono);
+}
+
+.measurements-table .td-muted {
+  color: var(--color-text-muted);
+}
+
+/* ── Leggenda grafico peso/BF ── */
+.progress-chart-peso-bf-legend {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+  flex-wrap: wrap;
+  margin-block-start: var(--space-3);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+}
+
+.progress-chart-peso-bf-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.progress-chart-peso-bf-legend__swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+/* ── Badge tipo massimale inline nella cella ── */
+.measurements-table .td-badge {
+  display: inline-block;
+  margin-inline-start: var(--space-1);
+  padding: 1px var(--space-2);
+  border-radius: var(--radius-full);
+  font-size: 10px;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  line-height: 1.4;
+  vertical-align: middle;
+}
+
+.measurements-table .td-badge--reale {
+  background-color: rgba(76, 175, 80, 0.18);
+  color: var(--color-success);
+  border: 1px solid rgba(76, 175, 80, 0.35);
+}
+
+.measurements-table .td-badge--stimato {
+  background-color: rgba(255, 193, 7, 0.15);
+  color: var(--color-warning);
+  border: 1px solid rgba(255, 193, 7, 0.35);
+}
+
+/* ── Icona nota (tooltip nativo) ── */
+.measurements-table .td-note-icon {
+  display: inline-block;
+  cursor: help;
+  font-style: normal;
+  font-size: var(--font-size-sm);
+  color: var(--color-accent);
+}
+
+/* ── Riga aggiuntiva note ── */
+.measurements-table__note-row td {
+  padding-block-start: 0;
+  padding-block-end: var(--space-2);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-style: italic;
+  border-bottom: 1px solid var(--color-border);
+  white-space: normal !important;
+}
+
+.measurements-table__note-row:last-child td {
+  border-bottom: none;
+}
+
+/* ── Responsive: mobile ≤ 768px ── */
+@media (max-width: 768px) {
+  /* Le sezioni si impilano verticalmente (già block di default, ma esplicito) */
+  .progress-section {
+    display: block;
+    width: 100%;
+    margin-block-end: var(--space-6);
+    padding: var(--space-4);
+  }
+
+  .progress-chart-container {
+    height: 240px;
+  }
+
+  .progress-section__title {
+    font-size: var(--font-size-base);
+  }
+
+  .measurements-table thead th,
+  .measurements-table tbody td {
+    padding: var(--space-2) var(--space-3);
+    font-size: var(--font-size-xs);
+  }
+
+  /* ── Nascondi colonne secondarie su mobile ── */
+  .col-mobile-hide {
+    display: none;
+  }
+}
+
+/* ── Responsive: desktop ≥ 1280px ── */
+@media (min-width: 1280px) {
+  .progress-chart-container {
+    height: 380px;
+  }
+}

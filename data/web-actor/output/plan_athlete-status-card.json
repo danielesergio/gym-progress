@@ -1,0 +1,129 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "athlete-status-card",
+    "task_title": "Card stato attuale atleta",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "athlete-status-card",
+    "type": "component",
+    "title": "Card stato attuale atleta",
+    "description": "Card che mostra i dati corporei dell'ultima misurazione (2026-03-20): peso 87.2 kg, BF 17.1%, massa magra 72.3 kg, FFMI 20.0, TDEE 2870 kcal. Include anche un breve stato testuale sulla fase corrente (es. 'Recupero TOS — Fase 1'). I valori devono essere chiaramente leggibili con etichette descrittive.",
+    "inputs": ["measurements_data"],
+    "outputs": ["AthleteStatusCard"],
+    "acceptance_criteria": [
+      "Mostra peso, BF%, massa magra, FFMI e TDEE dell'ultima misurazione",
+      "Mostra la fase corrente del programma",
+      "I valori hanno etichette comprensibili (non solo sigla)"
+    ],
+    "notes": "La funzione renderDashboard() in dashboard.js crea il contenitore #card-stato ma lo lascia vuoto (commento: 'verrà popolata dal task dashboard-cards'). Questo task deve aggiungere la funzione renderAthleteStatusCard(last, plan) che inietta il markup nella div#card-stato. Il dato 'fase corrente' proviene da plan.json (array fasi, stato='corrente'). Se plan.json non è disponibile, mostrare solo i dati corporei senza il badge fase."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/dashboard.js",
+        "motivo": "Aggiungere la funzione renderAthleteStatusCard(last, plan) e richiamarla dentro renderDashboard() dopo che #card-stato è nel DOM. La funzione legge i campi dell'ultima misurazione (peso_kg, body_fat_pct, massa_magra_kg, ffmi_adj, tdee_kcal) e il nome della fase corrente da plan.fasi.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "Aggiungere stili per la card stato atleta: griglia interna dei KPI (.status-card__grid), singola riga metrica (.status-card__metric), etichetta (.status-card__label), valore (.status-card__value), badge fase (.status-card__phase-badge), titolo della card (.dashboard-card__title).",
+        "esiste": true
+      }
+    ],
+    "da_creare": [],
+    "da_leggere": [
+      {
+        "path": "docs/data/measurements.json",
+        "motivo": "Struttura dell'ultima misurazione (indice -1 dell'array). Campi rilevanti: data (YYYY-MM-DD), peso_kg (float, es. 87.2), body_fat_pct (float, es. 17.1), massa_magra_kg (float, es. 72.3), ffmi_adj (float, es. 20.0), tdee_kcal (int, es. 2870). Nessun campo null nell'ultima entry.",
+        "struttura_chiave": {
+          "data": "2026-03-20",
+          "peso_kg": 87.2,
+          "body_fat_pct": 17.1,
+          "massa_magra_kg": 72.3,
+          "ffmi_adj": 20.0,
+          "tdee_kcal": 2870
+        }
+      },
+      {
+        "path": "docs/js/dashboard.js",
+        "motivo": "File da modificare — capire il punto di inserimento. La funzione renderDashboard() ricostruisce il DOM con innerHTML e lascia #card-stato vuoto. renderAthleteStatusCard() va chiamata subito dopo che renderDashboard() ha eseguito innerHTML, passando last e plan."
+      },
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "File da modificare — capire le variabili CSS già usate (--color-bg-card, --color-border, --radius-lg, --space-6, ecc.) e le classi esistenti (.dashboard-card) per coerenza visiva."
+      },
+      {
+        "path": "docs/dashboard.html",
+        "motivo": "Verificare la struttura HTML esistente di #card-stato e #dashboard-grid. Non richiede modifiche HTML: il contenuto della card è iniettato interamente da JS."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS ES2022",
+      "grafici": null,
+      "note": "Questa card non usa Chart.js — solo markup HTML+CSS renderizzato via innerHTML in JS."
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase (es. lastMeasurement, currentPhase)",
+      "classi_css": "kebab-case con prefisso pagina per specifici (es. .status-card__grid, .status-card__metric), senza prefisso per layout condivisi",
+      "id_html": "kebab-case (es. #card-stato già esistente nel DOM)",
+      "gestione_null": "Usare operatore ?? '—' per ogni campo. Esempio: last.peso_kg?.toFixed(1) ?? '—'. Nessuna stringa 'null' o 'undefined' visibile.",
+      "arrotondamento": "1 decimale per kg e % (toFixed(1)), 1 decimale per FFMI (toFixed(1)), intero per kcal (toFixed(0) o Math.round)",
+      "formato_date": "Visualizzazione italiana: usare formatDateIt() già definita in dashboard.js",
+      "struttura_js": "Funzione renderAthleteStatusCard(last, plan) aggiunta al file dashboard.js, chiamata dentro renderDashboard() dopo innerHTML. Segue pattern: riceve dati, costruisce stringa HTML, inietta nel container con innerHTML.",
+      "no": "No inline style, no var, no jQuery, no framework"
+    },
+    "pagina": {
+      "nome": "Dashboard",
+      "file": "docs/dashboard.html",
+      "js": "docs/js/dashboard.js",
+      "css": "docs/css/dashboard.css",
+      "container_target": "#card-stato",
+      "dati_json": ["data/measurements.json", "data/plan.json", "data/workout_data.json"],
+      "funzione_principale": "renderDashboard(measurements, plan, workout)"
+    },
+    "dettaglio_implementazione": {
+      "punto_inserimento_js": "Aggiungere la funzione renderAthleteStatusCard(last, plan) prima di renderDashboard(). Chiamarla dentro renderDashboard() subito dopo l'assegnazione di container.innerHTML, passando last e plan.",
+      "struttura_html_card": "La card deve avere: (1) un titolo .dashboard-card__title ('Stato Atleta'), (2) un badge testuale .status-card__phase-badge con la fase corrente (da plan.fasi?.find(f => f.stato === 'corrente')?.nome ?? '—'), (3) una griglia .status-card__grid con 5 metriche (.status-card__metric ciascuna con .status-card__label e .status-card__value).",
+      "metriche_da_mostrare": [
+        { "label": "Peso", "campo": "peso_kg", "unita": "kg", "formato": "toFixed(1)" },
+        { "label": "Body Fat", "campo": "body_fat_pct", "unita": "%", "formato": "toFixed(1)" },
+        { "label": "Massa Magra", "campo": "massa_magra_kg", "unita": "kg", "formato": "toFixed(1)" },
+        { "label": "FFMI", "campo": "ffmi_adj", "unita": "", "formato": "toFixed(1)" },
+        { "label": "TDEE", "campo": "tdee_kcal", "unita": "kcal", "formato": "Math.round()" }
+      ],
+      "piano_fallback": "Se last è null/undefined, mostrare 5 metriche con valore '—'. Se plan è null, omettere il badge fase (non mostrare '—' nel badge, nasconderlo con display:none o non renderizzarlo)."
+    }
+  },
+  "criteri_accettazione": [
+    "La card #card-stato mostra il peso 87.2 kg con etichetta 'Peso'",
+    "La card #card-stato mostra il BF% 17.1% con etichetta 'Body Fat' (non solo 'BF%')",
+    "La card #card-stato mostra la massa magra 72.3 kg con etichetta 'Massa Magra'",
+    "La card #card-stato mostra FFMI 20.0 con etichetta 'FFMI'",
+    "La card #card-stato mostra TDEE 2870 kcal con etichetta 'TDEE'",
+    "La card mostra la fase corrente del programma (es. badge con testo 'Recupero TOS — Fase 1')",
+    "Se plan.json non è disponibile, la card mostra comunque i 5 valori corporei senza errori",
+    "Nessun valore mostra la stringa 'null' o 'undefined' nel DOM",
+    "docs/js/dashboard.js contiene la funzione renderAthleteStatusCard(last, plan)",
+    "renderAthleteStatusCard() è chiamata dentro renderDashboard() dopo la creazione del DOM",
+    "docs/css/dashboard.css contiene regole per .status-card__grid, .status-card__metric, .status-card__label, .status-card__value",
+    "La card è visivamente coerente con le altre .dashboard-card (usa le stesse variabili CSS)"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "dashboard-layout",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/dashboard.html",
+        "docs/js/dashboard.js",
+        "docs/css/dashboard.css"
+      ],
+      "note": "Tutti e 3 i file esistono in docs/. dashboard.html contiene #card-stato con classe .dashboard-card. dashboard.js contiene renderDashboard() con il container HTML già impostato (innerHTML con #card-stato vuoto). dashboard.css contiene .dashboard-card con stili base e la griglia #dashboard-grid responsive."
+    }
+  ]
+}

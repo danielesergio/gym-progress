@@ -1,0 +1,95 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "workout-tos-alert",
+    "task_titolo": "Banner avviso infortunio TOS",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Il banner TOS è visibile senza scorrere la pagina (above the fold)",
+      "soddisfatto": true,
+      "dettaglio": "Banner posizionato alle righe 66-87 di workout.html, subito dopo <main id=\"page-content\">, prima di qualsiasi altro container. Primo elemento visibile nella viewport."
+    },
+    {
+      "criterio": "Il banner elenca almeno 5 esercizi vietati: panca piana, dip, overhead press, trazioni, fly/cable crossover",
+      "soddisfatto": true,
+      "dettaglio": "Lista <ul> alle righe 74-80 contiene 6 esercizi vietati: Panca piana, Dip, Military press/Overhead press, Trazioni, Fly/Cable crossover, Rematore con bilanciere. Soddisfa il requisito minimo di 5."
+    },
+    {
+      "criterio": "Il banner include il protocollo di sicurezza: stop immediato se dolore a petto/spalla/braccio",
+      "soddisfatto": true,
+      "dettaglio": "Elemento <p class=\"workout-tos-banner__safety\"> alle righe 82-84 contiene il protocollo: 'Stop immediato se dolore a petto, spalla o braccio durante qualsiasi esercizio'."
+    },
+    {
+      "criterio": "Il banner include un'icona di attenzione (⚠ o equivalente SVG)",
+      "soddisfatto": true,
+      "dettaglio": "Icona Unicode ⚠ presente alla riga 71 in <span class=\"workout-tos-banner__icon\" aria-hidden=\"true\">⚠</span>. Stilizzata in workout.css righe 26-31 con colore warning."
+    },
+    {
+      "criterio": "Il banner non occupa più di 25vh (max-height: 25vh o vincolo equivalente)",
+      "soddisfatto": true,
+      "dettaglio": "CSS riga 13: 'max-height: 25vh;' applicato direttamente a .workout-tos-banner. Overflow gestito con 'overflow-y: auto;' se il contenuto supera il limite."
+    },
+    {
+      "criterio": "Il banner non oscura il selettore settimane né le card sessioni sottostanti",
+      "soddisfatto": true,
+      "dettaglio": "Banner è un elemento statico di flusso (non fixed/absolute), seguito da <div class=\"container\"> con il resto del contenuto. Layout semantico non sovrappone elementi sottostanti."
+    },
+    {
+      "criterio": "docs/workout.html contiene un elemento con id='tos-alert-banner' (o classe equivalente workout-tos-banner)",
+      "soddisfatto": true,
+      "dettaglio": "HTML riga 66: <div id=\"tos-alert-banner\" class=\"workout-tos-banner\" ...>. ID e classe presenti come richiesto."
+    },
+    {
+      "criterio": "docs/css/workout.css contiene regole per .workout-tos-banner con proprietà di colore warning e max-height",
+      "soddisfatto": true,
+      "dettaglio": "CSS righe 8-95 contengono regole complete: background-color warning, border-left accent, max-height: 25vh, layout flex, responsive mobile. Tutte le proprietà presenti e corrette."
+    },
+    {
+      "criterio": "Il banner è accessibile: role='alert' o role='note', aria-label descrittivo, icona con aria-hidden='true'",
+      "soddisfatto": true,
+      "dettaglio": "HTML riga 68: role=\"note\" | riga 69: aria-label=\"Avviso infortunio TOS — leggere prima di allenarsi\" | riga 71: icona con aria-hidden=\"true\". Accessibilità WCAG AA conforme."
+    },
+    {
+      "criterio": "Su mobile (viewport < 768px) il banner rimane leggibile e non tracima fuori dal layout",
+      "soddisfatto": true,
+      "dettaglio": "CSS media query @media (max-width: 767px) alle righe 82-95: padding ottimizzato, font-size ridotto per icona (var(--font-size-lg)), liste pillole con flex-wrap consentono il capo a capo su righe multiple senza overflow."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/workout.html",
+      "esiste": true,
+      "note": "Banner TOS markup presente e posizionato correttamente. Struttura semantica, attributi ARIA e id='tos-alert-banner' conformi alle specifiche."
+    },
+    {
+      "path": "docs/css/workout.css",
+      "esiste": true,
+      "note": "Stili banner TOS completi dalle righe 6-95. Definite tutte le classi BEM: .workout-tos-banner, .workout-tos-banner__inner, .workout-tos-banner__icon, .workout-tos-banner__body, .workout-tos-banner__title, .workout-tos-banner__list, .workout-tos-banner__safety. Responsive design per mobile incluso."
+    },
+    {
+      "path": "docs/js/workout.js",
+      "esiste": true,
+      "note": "Funzione renderTOSBanner(data) definita alle righe 38-46. Aggiorna dinamicamente il titolo del banner con il nome della scheda da workout.json se disponibile. Gestisce null safety con optional chaining e nullish coalescing. Integrata in renderWorkout() riga 222."
+    },
+    {
+      "path": "docs/css/variables.css",
+      "esiste": true,
+      "note": "Variabili CSS necessarie definite: --color-warning: #ffc107 (riga 25), --color-text: #f0f0f0 (riga 13), --color-danger: #f44336 (riga 26), tutte le variabili di spacing e tipografia utilizzate dal banner."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "Font size su mobile (< 768px): le pillole esercizi vietati usano var(--font-size-xs) = 0.75rem (12px). Conforme agli standard web per tag/label, ma leggermente sotto WCAG AA per body text (1rem minimo). Non bloccante poiché le pillole sono elementi secondari di enfasi.",
+      "file": "docs/css/workout.css riga 92"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Il banner non include un meccanismo di chiusura (close button) — è perennemente visibile per enfasi sulla sicurezza TOS. Scelta di design coerente con l'intento di ricordanza costante, non è un alert dismissible. Verificare se è il comportamento atteso.",
+      "file": "docs/workout.html"
+    }
+  ]
+}

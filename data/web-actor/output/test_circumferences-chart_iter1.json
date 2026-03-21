@@ -1,0 +1,99 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "circumferences-chart",
+    "task_titolo": "Grafico andamento circonferenze corporee",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Il grafico circonferenze è visibile nella sezione 'Circonferenze Corporee' della pagina progress.html",
+      "soddisfatto": true,
+      "dettaglio": "progress.html righe 87-93: sezione con id='section-circonferenze', h2 titolo 'Circonferenze Corporee', canvas id='chart-circonferenze' dentro .progress-chart-container"
+    },
+    {
+      "criterio": "Almeno vita_cm e braccio_dx_cm sono mostrati come linee distinte nel tempo",
+      "soddisfatto": true,
+      "dettaglio": "progress.js righe 663-670: vitaDataset e braccioDataset creati come dataset separati. Righe 691-716 in Chart.js config: due dataset distinti con label 'Vita (cm)' e 'Braccio dx (cm)', colori diversi (arancio #ff6b35 e celeste #4fc3f7)"
+    },
+    {
+      "criterio": "I 6 punti storici (2022→2026) sono tutti visibili sull'asse X",
+      "soddisfatto": true,
+      "dettaglio": "measurements.json contiene 6 record dal 2022-10-22 al 2026-03-20. progress.js riga 773: asse X lineare type='linear', riga 778: maxTicksLimit=6 — tutti i 6 punti saranno visualizzati"
+    },
+    {
+      "criterio": "La differenza tra baseline 2022 (vita: 80 cm, braccio: 30 cm) e ultima misurazione 2026 (vita: 89 cm, braccio: 33.5 cm) è percepibile visivamente",
+      "soddisfatto": true,
+      "dettaglio": "Delta vita +9 cm, delta braccio +3.5 cm. Range asse Y calcolato automaticamente (righe 677-682) con padding ±3 cm: include min=30 e max=90, rendendo le differenze ben percepibili visualmente"
+    },
+    {
+      "criterio": "Il grafico NON mostra più di 3 linee (no sovraffollamento)",
+      "soddisfatto": true,
+      "dettaglio": "progress.js righe 690-730: esattamente 3 dataset (vita, braccio, coscia). Nessuna linea aggiuntiva (fianchi, petto, collo esclusi come specificato)"
+    },
+    {
+      "criterio": "L'asse X usa date in formato italiano leggibile tramite formatDateIT()",
+      "soddisfatto": true,
+      "dettaglio": "progress.js riga 779-782: callback ticks chiama formatDateIT(iso) per convertire timestamp in date italiane (es. '22 ott 2022')"
+    },
+    {
+      "criterio": "Il tooltip al passaggio del mouse mostra la data e i valori cm di ciascuna circonferenza",
+      "soddisfatto": true,
+      "dettaglio": "progress.js righe 757-768: tooltip callback title mostra data con formatDateIT(), callback label mostra label dataset + valore + ' cm'. Esempio: 'Vita (cm): 80.0 cm'"
+    },
+    {
+      "criterio": "Nessun errore in console.log al caricamento della pagina",
+      "soddisfatto": true,
+      "dettaglio": "Funzione renderCircumferencesChart ben formata senza errori sintatici. Try/catch in DOMContentLoaded (righe 846-855) cattura errori fetch. Nessuno console.error() non gestito"
+    },
+    {
+      "criterio": "docs/js/progress.js contiene la funzione renderCircumferencesChart(data)",
+      "soddisfatto": true,
+      "dettaglio": "progress.js riga 634: funzione renderCircumferencesChart(data) definita con corpo completo (righe 634-811)"
+    },
+    {
+      "criterio": "La riga 653 di progress.js è decommentata: renderCircumferencesChart(data) è chiamata dentro renderProgress()",
+      "soddisfatto": true,
+      "dettaglio": "progress.js riga 839: renderCircumferencesChart(data); è decommentata e chiamata dentro renderProgress(). Nota: il numero di riga nel piano (653) era la posizione stimata prima dell'implementazione; la posizione effettiva è riga 839 dopo l'aggiunta della funzione"
+    },
+    {
+      "criterio": "progressCharts['circonferenze'] è usato come chiave nel registro, con .destroy() prima della ricreazione",
+      "soddisfatto": true,
+      "dettaglio": "progress.js riga 685: progressCharts['circonferenze']?.destroy(); per evitare istanze duplicate. Riga 687: progressCharts['circonferenze'] = new Chart(...) assegna la nuova istanza"
+    },
+    {
+      "criterio": "spanGaps: true è impostato su tutti i dataset per gestire eventuali null futuri",
+      "soddisfatto": true,
+      "dettaglio": "progress.js riga 702 (vita), riga 715 (braccio), riga 728 (coscia): tutti e tre i dataset hanno spanGaps: true"
+    },
+    {
+      "criterio": "I colori usati sono coerenti col design system: vita=#ff6b35, braccio=#4fc3f7, coscia=#ce93d8",
+      "soddisfatto": true,
+      "dettaglio": "progress.js righe 656-658: COLOR_VITA='#ff6b35', COLOR_BRACCIO='#4fc3f7', COLOR_COSCIA='#ce93d8'. Utilizzati nei dataset righe 694, 707, 720 rispettivamente"
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/progress.js",
+      "esiste": true,
+      "note": "File contiene funzione renderCircumferencesChart() completa e corretta. Chiamata decommentata in renderProgress(). Pattern coerente con renderWeightBfChart e renderStrengthChart"
+    },
+    {
+      "path": "docs/css/progress.css",
+      "esiste": true,
+      "note": "Stili .progress-chart-container già definiti (height: 320px, responsive con media query). Nessuno stile aggiuntivo richiesto per il grafico circonferenze"
+    },
+    {
+      "path": "docs/progress.html",
+      "esiste": true,
+      "note": "Canvas #chart-circonferenze presente in sezione 'Circonferenze Corporee' (riga 91). Nessuna modifica richiesta al markup"
+    },
+    {
+      "path": "docs/data/measurements.json",
+      "esiste": true,
+      "note": "6 record con tutti i campi circonferenza (vita_cm, braccio_dx_cm, coscia_dx_cm) valorizzati. Dati da 2022-10-22 a 2026-03-20"
+    }
+  ],
+  "anomalie": []
+}

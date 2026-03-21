@@ -1,0 +1,105 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "program-phase-card",
+    "task_titolo": "Card fase corrente del programma",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "La card #card-fase mostra il nome della fase corrente (es. 'Recupero TOS')",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js riga 221: <span class=\"phase-card__name\">${nome}</span>. Nome estratto da faseCorrente?.nome con fallback '—'. plan.json contiene 'Recupero TOS' in fasi[0].nome"
+    },
+    {
+      "criterio": "La card mostra il numero della fase (es. 'Fase 0')",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js riga 220: <span class=\"phase-card__number\">${numero}</span>. Numero formattato come 'Fase ${numero}' con fallback '—'. plan.json contiene numero: 0"
+    },
+    {
+      "criterio": "La card mostra il periodo indicativo (es. '2026-03 / 2026-04 (settimane 1-2)')",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js riga 223: <p class=\"phase-card__period\">${periodo}</p>. Periodo estratto da faseCorrente?.periodo_indicativo. plan.json contiene il valore atteso"
+    },
+    {
+      "criterio": "La card mostra l'obiettivo della fase in forma sintetica (testo da plan.fasi[].obiettivo)",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js riga 224: <p class=\"phase-card__objective\">${obiettivo}</p>. Obiettivo letto direttamente da faseCorrente?.obiettivo con fallback '—'"
+    },
+    {
+      "criterio": "La barra di progressione mostra visivamente la settimana corrente su 52 totali",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js righe 225-226: <div class=\"phase-card__progress-bar\"><div class=\"phase-card__progress-fill\" style=\"width: ${percentuale}%\"></div></div>. CSS (righe 292-308) definisce .phase-card__progress-bar e .phase-card__progress-fill con height, background-color e transition"
+    },
+    {
+      "criterio": "La label della barra riporta il testo 'Settimana X di 52'",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js riga 228: <p class=\"phase-card__progress-label\">Settimana ${settCorrente} di ${TOTALE_SETTIMANE}</p> dove TOTALE_SETTIMANE = 52"
+    },
+    {
+      "criterio": "Se plan è null o fasi è vuoto, #card-fase mostra 'Dati non disponibili' senza eccezioni",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js righe 192-196: if (!plan || fasi.length === 0) { container.innerHTML = '<p class=\"error-message\">Dati non disponibili</p>'; return; }"
+    },
+    {
+      "criterio": "docs/js/dashboard.js contiene la funzione renderProgramPhaseCard(plan)",
+      "soddisfatto": true,
+      "dettaglio": "Funzione definita alle righe 187-230 con JSDoc completo (righe 180-186). Firma: renderProgramPhaseCard(plan)"
+    },
+    {
+      "criterio": "renderProgramPhaseCard() viene chiamata dentro renderDashboard()",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js riga 276: renderProgramPhaseCard(plan); chiamata direttamente all'interno di renderDashboard(measurements, plan, workout)"
+    },
+    {
+      "criterio": "docs/css/dashboard.css contiene la classe .phase-card__progress-bar e .phase-card__progress-fill",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.css righe 292-308: .phase-card__progress-bar definito con width, height, background-color, border-radius, overflow, margin-bottom. .phase-card__progress-fill definito con height, background-color, border-radius, transition, min-width"
+    },
+    {
+      "criterio": "La percentuale della barra è calcolata come Math.round(settCorrente / 52 * 100) e non supera 100%",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js riga 215: const percentuale = Math.min(100, Math.round(settCorrente / TOTALE_SETTIMANE * 100)); Garantisce max 100% e arrotondamento con Math.round"
+    },
+    {
+      "criterio": "Nessun uso di Chart.js per questa card",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: nessun import Chart.js o riferimento a chart in dashboard.js per la card fase. Barra è pure HTML/CSS. HTML importa solo nav.js e dashboard.js"
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/dashboard.js",
+      "esiste": true,
+      "note": "File contiene renderProgramPhaseCard() con calcolo settimana corrente, fallback dati, e integrazione in renderDashboard(). 323 righe totali. JSDoc conforme. Nessun errore sintattico."
+    },
+    {
+      "path": "docs/css/dashboard.css",
+      "esiste": true,
+      "note": "File contiene stili per .phase-card__header, .phase-card__number, .phase-card__name, .phase-card__period, .phase-card__objective, .phase-card__progress-bar, .phase-card__progress-fill, .phase-card__progress-label (righe 248-317). Seguono convenzioni BEM e usano variabili CSS custom (--color-*, --space-*, --radius-, --font-size-*)"
+    },
+    {
+      "path": "docs/dashboard.html",
+      "esiste": true,
+      "note": "Container #card-fase presente (riga 71-73) con aria-label e classe dashboard-card. Nessuna modifica necessaria al documento HTML come previsto dal piano."
+    },
+    {
+      "path": "docs/data/plan.json",
+      "esiste": true,
+      "note": "File contiene array fasi[] con tutti i campi richiesti. Fase 0 ha stato: 'corrente' con numero, nome, periodo_indicativo, obiettivo ben formati."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "Data di inizio programma (1 marzo 2026) è hardcoded in dashboard.js riga 211. Questo è appropriato per questo sistema ma vale la pena documentare se il programma cambia data.",
+      "file": "docs/js/dashboard.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Variabile TOTALE_SETTIMANE è locale alla funzione renderProgramPhaseCard (riga 214). Se questo valore dovesse diventare configurabile in futuro, potrebbe essere estratto in una costante globale.",
+      "file": "docs/js/dashboard.js"
+    }
+  ]
+}

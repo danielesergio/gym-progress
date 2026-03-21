@@ -261,12 +261,11 @@ def run_analyst(prompt: str, timeout: int = 900) -> None:
         "--dangerously-skip-permissions",
         "--output-format", "text",
         "--agent", "gym-performance-analyst",
-        prompt,
     ]
     print("\n[ACTION] gym-performance-analyst avviato...\n")
     try:
         result = subprocess.run(
-            cmd, capture_output=False,
+            cmd, input=prompt, capture_output=False, text=True,
             encoding="utf-8", errors="replace",
             cwd=PROJECT_ROOT, timeout=timeout,
         )
@@ -307,7 +306,30 @@ def main() -> None:
         action="store_true",
         help="Mostra il prompt senza invocare l'agente",
     )
+    parser.add_argument(
+        "--log-context",
+        action="store_true",
+        help="Logga file e info calcolate passati nel prompt dell'agente",
+    )
     args = parser.parse_args()
+
+    def log_context(agent: str, files: list, calcs: list = None) -> None:
+        if not args.log_context:
+            return
+        LABEL = {
+            "incorporato":  "Incorporato  ",
+            "obbligatorio": "Da leggere   ",
+            "discrezione":  "A discrezione",
+        }
+        print(f"\n  [CONTEXT] {agent}")
+        for path_raw, modalita in files:
+            p = path_raw if isinstance(path_raw, Path) else Path(path_raw)
+            abs_p = p if p.is_absolute() else PROJECT_ROOT / p
+            stato = f"{abs_p.stat().st_size:>7} B" if abs_p.exists() else "  MANCANTE"
+            rel = abs_p.relative_to(PROJECT_ROOT) if abs_p.is_relative_to(PROJECT_ROOT) else abs_p
+            print(f"    [{LABEL.get(modalita, modalita)}] {rel}  ({stato})")
+        for desc in (calcs or []):
+            print(f"    [Info calcolata ] {desc}")
 
     # Selezione interattiva se non passata da CLI
     mode = args.mode
@@ -364,6 +386,19 @@ def main() -> None:
     if confirm != "s":
         print("Annullato.")
         return
+
+    # Costruisci lista file per log_context
+    period_files = []
+    period_files.append((OUTPUT_DIR / "measurements.json", "obbligatorio"))
+    for sid, files in resolved.items():
+        for label, path in files.items():
+            if path:
+                period_files.append((path, "obbligatorio"))
+    log_context("gym-performance-analyst", period_files, [
+        f"Modalita': {mode} | Lift: {', '.join(lifts)}",
+        f"Periodi selezionati: {len(selected)} ({selection_desc})",
+        "Delta massimali e delta/anno per periodo (calcolati da Python)",
+    ])
 
     run_analyst(prompt)
 

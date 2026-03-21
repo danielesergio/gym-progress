@@ -1,0 +1,115 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "strength-summary-card",
+    "task_title": "Card massimali attuali (Big 3)",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "strength-summary-card",
+    "type": "component",
+    "title": "Card massimali attuali (Big 3)",
+    "description": "Card compatta che mostra i massimali correnti stimati di Squat (145.8 kg), Panca (116.7 kg) e Stacco (198.3 kg). Per ogni esercizio mostra anche il target a 12 mesi per dare contesto all'avanzamento. Indica che i massimali dell'ultima rilevazione sono di tipo 'S' (stimato) vs 'R' (reale).",
+    "inputs": [
+      "measurements_data",
+      "plan_data"
+    ],
+    "outputs": [
+      "StrengthSummaryCard"
+    ],
+    "acceptance_criteria": [
+      "Squat, Panca e Stacco sono visualizzati con il valore attuale",
+      "Accanto ad ogni massimale è presente il target a 12 mesi",
+      "Il tipo di massimale (Stimato / Reale) è indicato"
+    ],
+    "notes": "I dati del massimale vengono dall'ultima voce dell'array measurements.json (fields: squat_1rm, panca_1rm, stacco_1rm, massimali_tipo). Il target a 12 mesi viene dal primo oggetto in plan.json[\"target\"] con orizzonte '12 mesi' (fields: squat, panca, stacco). Il campo massimali_tipo (valore 'S' o 'R') è un flag globale sull'ultima misurazione (non per esercizio). Nota: nell'ultima misurazione (2026-03-20) il campo massimali_tipo vale 'S', mentre i campi squat_1rm_tipo / panca_1rm_tipo / stacco_1rm_tipo valgono 'R' — usare massimali_tipo come indicatore globale della stima."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/dashboard.js",
+        "motivo": "Aggiungere la funzione renderStrengthSummaryCard(last, plan) che popola #card-massimali con i tre esercizi Big 3, il valore attuale, il target a 12 mesi e il badge tipo (S/R). Richiamarla da renderDashboard() dopo renderAthleteStatusCard().",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "Aggiungere stili per la card massimali: layout lista Big 3, riga esercizio, valore principale, target secondario, badge tipo S/R con colori distinti.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/measurements.json",
+        "motivo": "Struttura dati: array cronologico. Ultima voce (index -1) contiene squat_1rm (float), panca_1rm (float), stacco_1rm (float), massimali_tipo ('S'|'R'). Campi per singolo esercizio: squat_1rm_tipo, panca_1rm_tipo, stacco_1rm_tipo (presenti ma valore 'R' anche quando il globale è 'S'). Usare massimali_tipo come indicatore generale."
+      },
+      {
+        "path": "docs/data/plan.json",
+        "motivo": "Struttura dati: oggetto con campo 'target' (array). L'oggetto con orizzonte '12 mesi' contiene squat (float), panca (float), stacco (float) — target a 12 mesi. Esempio: squat 155.1, panca 122.6, stacco 213.7."
+      },
+      {
+        "path": "docs/js/dashboard.js",
+        "motivo": "File da modificare. Leggere per capire il pattern esistente (renderAthleteStatusCard, showError, formatDateIt), l'entry point DOMContentLoaded e come i dati measurements/plan sono già disponibili nella firma renderDashboard(measurements, plan, workout). La nuova funzione si inserisce nello stesso file seguendo il pattern esistente."
+      },
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "File da modificare. Leggere le custom properties e classi esistenti (.dashboard-card__title, .status-card__label, .status-card__value, .status-card__unit) per mantenere coerenza visiva e riutilizzare dove possibile il naming kebab-case con prefisso card."
+      },
+      {
+        "path": "docs/dashboard.html",
+        "motivo": "Conferma che #card-massimali è già presente nel DOM (div con id='card-massimali' e class='dashboard-card'). Non richiede modifica — il JS inietta innerHTML in quel container."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS ES2022",
+      "grafici": null,
+      "css": "CSS custom properties — nessun framework"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase",
+      "classi_css": "kebab-case con prefisso logico (es. strength-card__*, dashboard-card__*)",
+      "gestione_null": "Fallback '—' per tutti i valori null/undefined prima del rendering. Controllo esplicito != null.",
+      "pattern_js": "Funzione renderXxxCard(last, plan) chiamata da renderDashboard() — stessa firma e pattern di renderAthleteStatusCard(). innerHTML iniettato nel container via document.getElementById('card-massimali').",
+      "pattern_fetch": "I fetch di measurements.json e plan.json sono già presenti in DOMContentLoaded. Non aggiungere nuovi fetch — i dati arrivano già come parametri a renderDashboard().",
+      "badge_tipo": "Badge testuale inline: 'Stimato' se massimali_tipo === 'S', 'Reale' se massimali_tipo === 'R'. Colorazione: Stimato → accent secondario/giallo, Reale → accent primario/verde."
+    },
+    "pagina": {
+      "nome": "Dashboard",
+      "file": "docs/dashboard.html",
+      "js": "docs/js/dashboard.js",
+      "css": "docs/css/dashboard.css",
+      "dati_json": ["data/measurements.json", "data/plan.json"]
+    },
+    "struttura_html_card": {
+      "container": "#card-massimali (già nel DOM — non toccare dashboard.html)",
+      "pattern": "innerHTML iniettato dalla funzione JS. Struttura attesa: titolo H2 + badge tipo globale + lista 3 esercizi (squat, panca, stacco), ciascuno con nome, valore attuale, freccia/label target 12 mesi."
+    }
+  },
+  "criteri_accettazione": [
+    "Squat, Panca e Stacco sono visualizzati con il valore attuale nella card #card-massimali",
+    "Accanto ad ogni massimale è presente il target a 12 mesi (es. '→ 155.1 kg')",
+    "Il tipo di massimale (Stimato / Reale) è indicato tramite badge testuale",
+    "Il badge mostra 'Stimato' quando massimali_tipo === 'S', 'Reale' quando === 'R'",
+    "I valori null in squat_1rm / panca_1rm / stacco_1rm non causano eccezioni — viene mostrato '—'",
+    "Il target a 12 mesi non causa eccezioni se plan.target non contiene l'orizzonte '12 mesi' — viene mostrato '—'",
+    "docs/js/dashboard.js contiene la funzione renderStrengthSummaryCard()",
+    "renderStrengthSummaryCard() viene chiamata all'interno di renderDashboard()",
+    "docs/css/dashboard.css contiene gli stili per la card massimali (es. .strength-card__exercise o simile)",
+    "La card è visivamente coerente con card-stato: usa le stesse custom properties CSS (--color-*, --space-*, --font-size-*, --radius-*)"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "dashboard-layout",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/dashboard.html",
+        "docs/js/dashboard.js",
+        "docs/css/dashboard.css"
+      ],
+      "note": "dashboard.html esiste con #card-massimali già nel DOM. dashboard.js esiste con renderDashboard() e pattern fetch. dashboard.css esiste con .dashboard-card e custom properties. Il task può procedere senza blocchi."
+    }
+  ]
+}

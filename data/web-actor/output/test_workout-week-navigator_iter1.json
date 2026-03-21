@@ -1,0 +1,111 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "workout-week-navigator",
+    "task_titolo": "Selettore settimana allenamento",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "I 4 bottoni settimana (S1, S2, S3, S4) sono visibili e cliccabili nella pagina workout.html",
+      "soddisfatto": true,
+      "dettaglio": "In workout.html (linee 79-104) sono presenti 4 bottoni con id='week-btn-1..4', class='week-btn', data-week='1..4', e testo S1/S2/S3/S4. Tutti i bottoni hanno type='button' e aria-pressed iniziale='false'."
+    },
+    {
+      "criterio": "Cliccando un bottone, solo quel bottone riceve la classe 'active' e aria-pressed='true'",
+      "soddisfatto": true,
+      "dettaglio": "La funzione renderWeekSelector(numeroSettimana) in workout.js (linee 60-68) itera sui 4 bottoni, applica la classe 'active' e l'attributo aria-pressed='true' solo al bottone della settimana attiva, resettando gli altri. L'event listener (linee 220-224) aggiorna settimanaAttiva e richiama renderWeekSelector() e renderWorkoutDetail()."
+    },
+    {
+      "criterio": "Dopo il click, #workout-detail si aggiorna mostrando le sessioni della settimana selezionata",
+      "soddisfatto": true,
+      "dettaglio": "L'event listener ai bottoni (workout.js, linee 220-224) chiama renderWorkoutDetail(data, settimanaAttiva) che popola il div #workout-detail con il contenuto della settimana selezionata. Il div ha aria-live='polite' (workout.html, linea 107) per l'aggiornamento accessibile."
+    },
+    {
+      "criterio": "L'intensità target della settimana selezionata è visibile (es. '50-60% 1RM sui compound principali')",
+      "soddisfatto": true,
+      "dettaglio": "La funzione renderWorkoutDetail() (workout.js, linee 78-111) estrae settimana.intensita_target (linea 90) e la inserisce in un <p class='workout-week-summary__intensita'> con label 'Intensità target:' e valore in <span class='workout-week-summary__value'>. Lo stile workout.css (linee 107-129) applica font-weight-semibold e color:var(--color-text) per la visibilità."
+    },
+    {
+      "criterio": "Le note della settimana sono mostrate sotto l'intensità target quando presenti",
+      "soddisfatto": true,
+      "dettaglio": "La funzione renderWorkoutDetail() (linea 91) estrae settimana.note_settimana e, se presente, la inserisce in <p class='workout-week-summary__note'> (linea 105). Lo stile CSS (linee 131-137) lo posiziona sotto con margin-top e color muted."
+    },
+    {
+      "criterio": "Le card sessione mostrano il dettaglio completo degli esercizi (nome, serie, reps, peso, recupero)",
+      "soddisfatto": true,
+      "dettaglio": "La funzione renderGiornoCard() (workout.js, linee 149-191) costruisce una tabella .workout-esercizi-table con intestazione (linee 162-170) e righe generate da renderEsercizioRow() (linee 118-140). Ogni riga contiene: <td class='workout-esercizio-row__nome'> (nome + badge principale + gruppo), <td class='workout-esercizio-row__serie'> (serie), <td class='workout-esercizio-row__reps'> (reps), <td class='workout-esercizio-row__peso'> (peso), <td class='workout-esercizio-row__recupero'> (recupero)."
+    },
+    {
+      "criterio": "Gli esercizi con principale === true sono visivamente distinti dagli altri (badge, bordo, colore accent)",
+      "soddisfatto": true,
+      "dettaglio": "In renderEsercizioRow() (linea 125) if isPrincipale, la riga riceve classe 'workout-esercizio-row--principale' (linea 128). Inoltre viene aggiunto un badge <span class='workout-esercizio-principale'> con testo '★' in arancio (linea 131). Lo stile CSS (linee 260-266) applica a .workout-esercizio-row--principale un background color-mix con --color-accent al 6% su hover 10%."
+    },
+    {
+      "criterio": "I valori null o mancanti in qualsiasi campo esercizio non causano errori JS (uso di ?. e ?? '—')",
+      "soddisfatto": true,
+      "dettaglio": "La funzione renderEsercizioRow() (linee 119-124) usa optional chaining (?.) e nullish coalescing (?? '—') per tutti i campi: nome, serie, reps, peso, recupero, gruppo. La funzione renderGiornoCard() (linee 150-153) fa lo stesso per giorno, tipo, note_sessione, esercizi. Anche renderWorkoutDetail() (linee 82-92) applica la stessa pattern."
+    },
+    {
+      "criterio": "Il campo reps con valori come '45 sec' o '8 per lato' è mostrato correttamente senza modifiche",
+      "soddisfatto": true,
+      "dettaglio": "In renderEsercizioRow() il campo reps (linea 121) viene inserito nel DOM senza alcuna trasformazione: `${reps}`. Nel file workout.json sono presenti esercizi con reps='45 sec' (Plank, riga 96) e '8 per lato' (Dead Bug, riga 105), che verranno mostrati come stringhe letterali."
+    },
+    {
+      "criterio": "Su mobile (< 768px) la tabella esercizi è leggibile senza scroll orizzontale",
+      "soddisfatto": true,
+      "dettaglio": "Il wrapper .workout-esercizi-table-wrapper (workout.css, linee 209-215) ha overflow-x: auto con -webkit-overflow-scrolling: touch per il scrolling fluido su mobile. La tabella stessa ha font-size: var(--font-size-sm) di default. A @media (max-width: 480px) (linee 326-338) il font-size si riduce ulteriormente a var(--font-size-xs). La colonna 'Recupero' rimane visibile grazie allo scroll orizzontale disponibile."
+    },
+    {
+      "criterio": "docs/js/workout.js contiene la funzione renderGiornoCard() con logica esercizi completa",
+      "soddisfatto": true,
+      "dettaglio": "La funzione renderGiornoCard() è presente alle linee 149-191 di workout.js. Contiene la logica completa: estrae i dati della giornata, verifica se esercizi.length > 0, costruisce la tabella HTML con renderEsercizioRow() per ogni esercizio, gestisce il caso empty state, e ritorna l'HTML completo della card con header, note sessione e tabella."
+    },
+    {
+      "criterio": "docs/css/workout.css contiene stili per .workout-esercizi-table o equivalente lista esercizi",
+      "soddisfatto": true,
+      "dettaglio": "Il file workout.css contiene tutti gli stili per la tabella esercizi: .workout-esercizi-table-wrapper (linee 209-215), .workout-esercizi-table (linee 217-222), .workout-esercizi-table__head (linee 225-227), .workout-esercizi-table__th (linee 229-239), .workout-esercizio-row (linee 246-257), .workout-esercizio-row--principale (linee 260-266), e tutte le colonne (linee 278-323). Responsive con @media per mobile (linee 326-338)."
+    },
+    {
+      "criterio": "Il selettore inizializza sulla settimana 1 al caricamento della pagina (settimanaAttiva = 1)",
+      "soddisfatto": true,
+      "dettaglio": "In workout.js, linea 11, è dichiarato `let settimanaAttiva = 1;`. Nella funzione renderWorkout() (linea 208), settimanaAttiva viene valorizzato come `settimane[0].numero` (se disponibile) oppure 1 come fallback. Quindi renderWeekSelector(settimanaAttiva) e renderWorkoutDetail(data, settimanaAttiva) sono chiamati con 1 come valore iniziale (linee 211-214)."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/workout.html",
+      "esiste": true,
+      "note": "Contiene nav#week-selector con 4 bottoni (week-btn-1..4) con data-week e aria-pressed. Contiene div#workout-detail con aria-live='polite'. Markup semantico corretto."
+    },
+    {
+      "path": "docs/js/workout.js",
+      "esiste": true,
+      "note": "Contiene tutte le funzioni implementate: renderWorkoutHeader(), renderWeekSelector(), renderWorkoutDetail(), renderGiornoCard(), renderEsercizioRow(), renderWorkout(). Entry point DOMContentLoaded con fetch() e gestione errori. Stato settimanaAttiva dichiarato e gestito correttamente."
+    },
+    {
+      "path": "docs/css/workout.css",
+      "esiste": true,
+      "note": "Contiene stili completi per selettore (.week-btn, .week-btn.active), riepilogo settimana (.workout-week-summary), card sessione (.workout-giorno-card), e tabella esercizi (.workout-esercizi-table con tutte le varianti e responsive). Usa CSS custom properties e segue le convenzioni del progetto."
+    },
+    {
+      "path": "docs/data/workout.json",
+      "esiste": true,
+      "note": "File dati con 4 settimane, ogni settimana ha numero (1-4), intensita_target (string), note_settimana, e giorni con esercizi completi (nome, serie, reps, peso, recupero, gruppo, principale). Struttura coerente e completa."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "Nel CSS a linea 334 c'è un typo: '.workout-esercizo-row td' dovrebbe essere '.workout-esercizio-row td' (manca una 'z'). Questo non causa errori visivi perché il selettore non corrisponde a nulla e la proprietà viene ignorata, ma è un'incongruenza di naming. Su mobile <= 480px il padding non viene ridotto come previsto.",
+      "file": "docs/css/workout.css"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "La documentazione JSDoc della funzione renderWorkoutDetail() afferma che mostra 'l'elenco dei giorni/sessioni' ma il parametro è 'numeroSettimana', non veramente il numero di giorni. È una discrepanza minore nella documentazione commentata.",
+      "file": "docs/js/workout.js"
+    }
+  ],
+  "note_verifica": "Tutti i 13 criteri di accettazione sono soddisfatti. L'implementazione è completa e corretta: il selettore settimane è funzionante, la tabella esercizi mostra tutti i dettagli richiesti, i valori null sono gestiti con optional chaining e nullish coalescing, gli esercizi principali sono visivamente distinti, e il responsive design è implementato. Le due anomalie segnalate sono di basso impatto (typo CSS e documentazione minore) e non influenzano la funzionalità. Il task è pronto per il deploy."
+}

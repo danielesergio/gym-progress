@@ -88,7 +88,7 @@ Dopo aver applicato le correzioni, i problemi numerici NON entrano nei `problemi
 
 ### 1. Scrivi il file di review (SEMPRE, sia APPROVATA che BOCCIATA)
 
-Scrivi `data/output/review/pt/review_workout_YYYY-MM-DD.json` (usa la data corrente) come **JSON valido**:
+Scrivi `data/output/review/pt/review_workout_<id>.json` (usa la data corrente) come **JSON valido**:
 
 ```json
 {
@@ -96,7 +96,8 @@ Scrivi `data/output/review/pt/review_workout_YYYY-MM-DD.json` (usa la data corre
     "data": "YYYY-MM-DD",
     "tipo": "workout",
     "valutazione": 8,
-    "esito": "APPROVATA"
+    "esito": "APPROVATA",
+    "numero_review": 1
   },
   "correzioni_applicate": [
     {
@@ -133,12 +134,15 @@ Scrivi `data/output/review/pt/review_workout_YYYY-MM-DD.json` (usa la data corre
 Dopo aver scritto il file, restituisci questo sommario (l'orchestratore lo usa SOLO per decidere se continuare o ripetere il loop):
 
 ```
-FILE SCRITTO: data/output/review/pt/review_workout_YYYY-MM-DD.json
+FILE SCRITTO: data/output/review/pt/review_workout_<id>.json
 VALUTAZIONE: X/10
 ESITO: APPROVATA | BOCCIATA
+NUMERO_REVIEW: N
 CORREZIONI APPLICATE: N (elenca i titoli — errori numerici corretti direttamente)
 PROBLEMI CRITICI: N (elenca solo i titoli)
 ```
+
+Il campo `numero_review` nel JSON deve corrispondere al numero di tentativo indicato dall'orchestratore nel prompt.
 
 ### Criteri di esito
 - **APPROVATA**: valutazione >= 8 E nessun problema critico
@@ -190,7 +194,7 @@ Quando l'orchestratore ti chiede di revisionare il **piano a lungo termine** (in
 
 ### Output revisione piano
 
-Scrivi `data/output/review/pt/review_plan_YYYY-MM-DD.json` con la stessa struttura del review workout, ma con `"tipo": "plan"`:
+Scrivi `data/output/review/pt/review_plan_<id>.json` con la stessa struttura del review workout, ma con `"tipo": "plan"`:
 
 ```json
 {
@@ -198,7 +202,8 @@ Scrivi `data/output/review/pt/review_plan_YYYY-MM-DD.json` con la stessa struttu
     "data": "YYYY-MM-DD",
     "tipo": "plan",
     "valutazione": 8,
-    "esito": "APPROVATA"
+    "esito": "APPROVATA",
+    "numero_review": 1
   },
   "correzioni_applicate": [],
   "problemi_critici": [],
@@ -210,12 +215,15 @@ Scrivi `data/output/review/pt/review_plan_YYYY-MM-DD.json` con la stessa struttu
 Poi restituisci il sommario testuale:
 
 ```
-FILE SCRITTO: data/output/review/pt/review_plan_YYYY-MM-DD.json
+FILE SCRITTO: data/output/review/pt/review_plan_<id>.json
 VALUTAZIONE: X/10
 ESITO: APPROVATA | BOCCIATA
+NUMERO_REVIEW: N
 CORREZIONI APPLICATE: N (elenca i titoli)
 PROBLEMI CRITICI: N (elenca solo i titoli)
 ```
+
+Il campo `numero_review` nel JSON deve corrispondere al numero di tentativo indicato dall'orchestratore nel prompt.
 
 Stessi criteri di esito: **APPROVATA** se valutazione >= 8 e nessun problema critico, **BOCCIATA** altrimenti.
 

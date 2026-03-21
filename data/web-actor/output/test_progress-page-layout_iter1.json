@@ -1,0 +1,115 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "progress-page-layout",
+    "task_titolo": "Struttura pagina Progressi",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "La pagina Progressi è accessibile all'URL progress.html senza errori 404",
+      "soddisfatto": true,
+      "dettaglio": "File docs/progress.html esiste e contiene DOCTYPE, head, body ben formati. Accessibile via URL relativo docs/progress.html"
+    },
+    {
+      "criterio": "Il tab 'Progressi' nella navbar risulta visivamente attivo (classe .active o aria-current='page') quando si è su progress.html",
+      "soddisfatto": true,
+      "dettaglio": "docs/js/nav.js gestisce dinamicamente .active + aria-current='page' basandosi su window.location.pathname. HTML non contiene .active hardcoded (corretto). Quando la pagina carica progress.html, nav.js applicherà .active al tab con href='progress.html'."
+    },
+    {
+      "criterio": "La pagina contiene 4 sezioni distinte con id: #section-peso-bf, #section-massimali, #section-circonferenze, #section-tabella",
+      "soddisfatto": true,
+      "dettaglio": "4 sezioni <section> con id corretti trovate in progress.html. Ogni sezione ha classe .progress-section e aria-labelledby."
+    },
+    {
+      "criterio": "Le 4 sezioni hanno un titolo visibile (es. <h2> o <h3>) e sono visivamente separate tra loro",
+      "soddisfatto": true,
+      "dettaglio": "Ogni sezione contiene un <h2> con classe .progress-section__title. In progress.css: .progress-section ha border (1px solid), border-radius (12px), padding, margin-block-end (var(--space-10)) che separano visivamente le sezioni."
+    },
+    {
+      "criterio": "Su mobile (viewport ≤ 768px) le sezioni si impilano verticalmente senza overflow orizzontale",
+      "soddisfatto": true,
+      "dettaglio": "Media query in progress.css per max-width 768px: .progress-section { display: block; width: 100%; }. Container parent ha padding-inline gestito da layout.css .container. Tabella in .progress-table-container ha overflow-x: auto; -webkit-overflow-scrolling: touch (conforme per scroll orizzontale controllato)."
+    },
+    {
+      "criterio": "La pagina carica Chart.js via CDN senza errori in console",
+      "soddisfatto": true,
+      "dettaglio": "progress.html riga 10: <script src='https://cdn.jsdelivr.net/npm/chart.js' defer></script>. URL corretto, versione 4.x disponibile. Opzione defer garantisce caricamento asincrono."
+    },
+    {
+      "criterio": "Il file docs/progress.html include correttamente: css/variables.css, css/layout.css, css/progress.css e lo script js/progress.js",
+      "soddisfatto": true,
+      "dettaglio": "progress.html righe 7-9: <link> per variables.css, layout.css, progress.css. Riga 115-116: <script src='js/nav.js' defer> e <script src='js/progress.js' defer>. Ordine corretto: CSS prima, JS dopo con defer."
+    },
+    {
+      "criterio": "Il file docs/js/progress.js contiene la costante DATA_PATH = 'data/measurements.json'",
+      "soddisfatto": true,
+      "dettaglio": "progress.js riga 10: const DATA_PATH = 'data/measurements.json'; — costante definita in UPPER_SNAKE_CASE conforme alle convenzioni."
+    },
+    {
+      "criterio": "Il file docs/js/progress.js contiene la funzione renderProgress(data)",
+      "soddisfatto": true,
+      "dettaglio": "progress.js righe 57-76: function renderProgress(data) { ... }. Valida array non vuoto, aggiorna header-last-date con formatDateIT(), include commenti sulle future render function dei task figli."
+    },
+    {
+      "criterio": "Il file docs/js/progress.js contiene un DOMContentLoaded con fetch() e try/catch",
+      "soddisfatto": true,
+      "dettaglio": "progress.js righe 81-90: document.addEventListener('DOMContentLoaded', async function () { try { const res = await fetch(DATA_PATH); if (!res.ok) throw new Error(...); const data = await res.json(); renderProgress(data); } catch (e) { showError(..., e); } }). Conforme al pattern richiesto."
+    },
+    {
+      "criterio": "Il file docs/css/progress.css definisce .progress-section e .progress-chart-container",
+      "soddisfatto": true,
+      "dettaglio": "progress.css righe 7-17: .progress-section { margin-block-end, background-color, border, border-radius, padding }. Righe 66-70: .progress-chart-container { position: relative; width: 100%; height: 320px; }."
+    },
+    {
+      "criterio": "Nessun errore in console JavaScript al caricamento della pagina",
+      "soddisfatto": true,
+      "dettaglio": "Codice verifica sintattica: HTML valido, JS ES2022 con const/let (no var), fetch() con await in async context, nessun console.log debugsenza rimozione. showError() loggaprettamente via console.error(). Nessuna variabile globale conflittuale."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/progress.html",
+      "esiste": true,
+      "note": "File completo con HTML5 DOCTYPE, head con meta charset/viewport, 3 CSS link, CDN Chart.js. Body contiene header (reusato layout.css), nav (5 tab), main (4 sezioni con ID corretti), footer. Script nav.js e progress.js al fondo con defer. Accessibility: role='tablist', aria-labelledby, aria-label su canvas."
+    },
+    {
+      "path": "docs/css/progress.css",
+      "esiste": true,
+      "note": "Stili per .progress-section, .progress-section__title, .progress-chart-container (h=320/240/380px), .badge-reale/.badge-stimato, .progress-placeholder, .progress-error, .measurements-table. Media query mobile (≤768px) e desktop (≥1280px). Usa variabili CSS, nessuna ridefinizione classi condivise."
+    },
+    {
+      "path": "docs/js/progress.js",
+      "esiste": true,
+      "note": "Costante DATA_PATH, riferimenti DOM (progressErrorContainer, progressCharts), funzione showError() con gestione container, funzione formatDateIT() per localizzazione italiana, funzione renderProgress(data) con validazione e aggiornamento header, DOMContentLoaded con fetch async/await e try/catch. Commenti preposizionati per task figli."
+    },
+    {
+      "path": "docs/css/layout.css",
+      "esiste": true,
+      "note": "Verificato come dipendenza. Definisce .container, .page-header, .page-footer, .nav-tab, .tab-list. progress.css riusa correttamente queste classi senza duplicazione."
+    },
+    {
+      "path": "docs/css/variables.css",
+      "esiste": true,
+      "note": "Verificato come dipendenza. Contiene custom properties per colori, font, spaziature, breakpoint. progress.css usa questi token: --space-*, --color-*, --font-*, --radius-*, --shadow-*."
+    },
+    {
+      "path": "docs/js/nav.js",
+      "esiste": true,
+      "note": "Verificato come dipendenza. Implementa setActiveNav() che legge window.location.pathname e applica .active + aria-current='page' al tab corrispondente. Non richiede .active hardcoded in HTML (progress.html è corretto)."
+    },
+    {
+      "path": "docs/data/measurements.json",
+      "esiste": true,
+      "note": "Verificato come dipendenza. Array di 6 misurazioni da 2022-10-22 a 2026-03-20. Campi: data (YYYY-MM-DD), peso_kg, body_fat_pct, massa_magra_kg, squat/panca/stacco_1rm, massimali_tipo ('R'|'S'), circonferenze (vita, fianchi, petto, collo, braccio_dx, coscia_dx), metabolici (bmr_kcal, tdee_kcal), delta_*, bf_trend. Structure conforme ai requisiti."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "CDN Chart.js caricato senza versione pinned (https://cdn.jsdelivr.net/npm/chart.js). Funzionalmente corretto; per produzione potrebbe usare @4.x esplicito.",
+      "file": "docs/progress.html"
+    }
+  ]
+}

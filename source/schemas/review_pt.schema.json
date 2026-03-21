@@ -8,13 +8,14 @@
   "properties": {
     "meta": {
       "type": "object",
-      "required": ["data", "tipo", "valutazione", "esito"],
+      "required": ["data", "tipo", "valutazione", "esito", "numero_review"],
       "additionalProperties": false,
       "properties": {
-        "data":       { "type": "string", "description": "Data review YYYY-MM-DD." },
-        "tipo":       { "type": "string", "enum": ["workout", "plan"] },
-        "valutazione":{ "type": "integer", "minimum": 1, "maximum": 10 },
-        "esito":      { "type": "string", "enum": ["APPROVATA", "BOCCIATA"] }
+        "data":          { "type": "string", "description": "Data review YYYY-MM-DD." },
+        "tipo":          { "type": "string", "enum": ["workout", "plan"] },
+        "valutazione":   { "type": "integer", "minimum": 1, "maximum": 10 },
+        "esito":         { "type": "string", "enum": ["APPROVATA", "BOCCIATA"] },
+        "numero_review": { "type": "integer", "minimum": 1, "description": "Numero progressivo del tentativo di revisione (1 = primo)." }
       }
     },
     "correzioni_applicate": {

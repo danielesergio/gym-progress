@@ -1,0 +1,828 @@
+/* ============================================================
+   workout.css — Stili specifici pagina Allenamento
+   Daniele Fitness | Mobile-first, WCAG AA, prefisso workout-*
+   ============================================================ */
+
+/* ── BANNER AVVISO INFORTUNIO TOS ── */
+
+.workout-tos-banner {
+  background-color: rgba(255, 193, 7, 0.1);
+  border-left: 4px solid var(--color-warning);
+  border-bottom: 1px solid rgba(255, 193, 7, 0.25);
+  padding: var(--space-3) var(--space-5);
+  max-height: 25vh;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.workout-tos-banner__inner {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  max-width: var(--container-max-width);
+  margin-inline: auto;
+}
+
+.workout-tos-banner__icon {
+  font-size: var(--font-size-xl);
+  color: var(--color-warning);
+  flex-shrink: 0;
+  line-height: 1.3;
+}
+
+.workout-tos-banner__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.workout-tos-banner__title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-warning);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin: 0 0 var(--space-2) 0;
+  line-height: var(--line-height-tight);
+}
+
+.workout-tos-banner__list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-2);
+  list-style: none;
+  margin: 0 0 var(--space-2) 0;
+  padding: 0;
+}
+
+.workout-tos-banner__list li {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  background-color: rgba(255, 193, 7, 0.15);
+  border: 1px solid rgba(255, 193, 7, 0.3);
+  border-radius: var(--radius-full);
+  padding: var(--space-1) var(--space-3);
+  white-space: nowrap;
+  line-height: 1.4;
+}
+
+.workout-tos-banner__safety {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin: 0;
+  line-height: var(--line-height-normal);
+}
+
+.workout-tos-banner__safety strong {
+  color: var(--color-danger);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Mobile: banner compatto, pillole su più righe */
+@media (max-width: 767px) {
+  .workout-tos-banner {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .workout-tos-banner__icon {
+    font-size: var(--font-size-lg);
+  }
+
+  .workout-tos-banner__list li {
+    font-size: var(--font-size-xs);
+    padding: 2px var(--space-2);
+  }
+}
+
+/* ── WORKOUT HEADER (titolo scheda + obiettivo mesociclo) ── */
+
+.workout-header {
+  margin-bottom: var(--space-6);
+  padding: var(--space-6);
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  border-left: 4px solid var(--color-accent);
+  box-shadow: var(--shadow-sm);
+}
+
+.workout-header__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.workout-header__title {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  font-size: var(--font-size-lg);       /* >= 1.25rem su titolo sezione ✓ */
+  font-weight: var(--font-weight-bold);
+  line-height: var(--line-height-tight);
+  color: var(--color-text);             /* #f0f0f0 su #242424 — contrasto > 10:1 ✓ */
+}
+
+.workout-header__label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+}
+
+.workout-header__obiettivo {
+  font-size: var(--font-size-base);     /* 1rem >= 1rem ✓ */
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-muted);       /* #a0a0a0 su #242424 — contrasto ~4.6:1 ✓ WCAG AA */
+  line-height: var(--line-height-loose);
+}
+
+/* ── SELETTORE SETTIMANE ── */
+
+#week-selector {
+  display: flex;
+  gap: var(--space-3);
+  margin-bottom: var(--space-6);
+  flex-wrap: wrap;
+}
+
+.week-btn {
+  flex: 1;
+  min-width: 60px;
+  padding-block: var(--space-4);
+  padding-inline: var(--space-3);
+  font-family: var(--font-base);
+  font-size: var(--font-size-lg);       /* >= 1.25rem per leggibilità mobile ✓ */
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);       /* contrasto adeguato su sfondo card */
+  background-color: var(--color-bg-card);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  text-align: center;
+  transition:
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    background-color var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.week-btn:hover {
+  color: var(--color-text);
+  background-color: var(--color-bg-elevated);
+  border-color: var(--color-border-light);
+}
+
+.week-btn.active,
+.week-btn[aria-pressed="true"] {
+  color: var(--color-accent);           /* #ff6b35 su #333333 — contrasto ~4.7:1 ✓ WCAG AA */
+  background-color: var(--color-accent-dim);
+  border-color: var(--color-accent);
+  font-weight: var(--font-weight-bold);
+}
+
+.week-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* ── RIEPILOGO SETTIMANA ── */
+
+.workout-week-summary {
+  padding: var(--space-4) var(--space-5);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+  margin-bottom: var(--space-5);
+  border: 1px solid var(--color-border);
+}
+
+.workout-week-summary__intensita {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  font-size: var(--font-size-base);     /* >= 1rem ✓ */
+  line-height: var(--line-height-normal);
+}
+
+.workout-week-summary__label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  flex-shrink: 0;
+}
+
+.workout-week-summary__value {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);             /* #f0f0f0 — contrasto > 7:1 su bg-secondary ✓ */
+}
+
+.workout-week-summary__note {
+  margin-top: var(--space-3);
+  font-size: var(--font-size-base);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-loose);
+  font-style: italic;
+}
+
+/* ── AREA DETTAGLIO SETTIMANA ── */
+
+#workout-detail {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.workout-giorni {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ── CARD SESSIONE GIORNALIERA ── */
+
+.workout-giorno-card {
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-lg);
+  border: 1px solid var(--color-border);
+  padding: var(--space-5);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--transition-fast);
+}
+
+.workout-giorno-card:hover {
+  border-color: var(--color-border-light);
+}
+
+.workout-giorno-card__header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-3);
+}
+
+.workout-giorno-card__giorno {
+  font-size: var(--font-size-lg);       /* >= 1.25rem — titolo sezione ✓ */
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);             /* contrasto > 10:1 su bg-card ✓ */
+  line-height: var(--line-height-tight);
+}
+
+.workout-giorno-card__tipo {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-accent);
+  background-color: var(--color-accent-dim);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+}
+
+.workout-giorno-card__note {
+  font-size: var(--font-size-base);     /* >= 1rem ✓ */
+  color: var(--color-text-muted);
+  line-height: var(--line-height-loose);
+  margin-bottom: var(--space-3);
+  font-style: italic;
+}
+
+.workout-giorno-card__esercizi-count {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-faint);
+  font-family: var(--font-mono);
+}
+
+/* ── TABELLA ESERCIZI ── */
+
+.workout-esercizi-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: var(--space-3);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.workout-esercizi-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+  table-layout: auto;
+}
+
+/* Intestazione tabella */
+.workout-esercizi-table__head {
+  background-color: var(--color-bg-secondary);
+}
+
+.workout-esercizi-table__th {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.workout-esercizi-table__th--num {
+  text-align: center;
+}
+
+/* Righe esercizio */
+.workout-esercizio-row {
+  border-bottom: 1px solid var(--color-border-light);
+  transition: background-color var(--transition-fast);
+}
+
+.workout-esercizio-row:last-child {
+  border-bottom: none;
+}
+
+.workout-esercizio-row:hover {
+  background-color: var(--color-bg-secondary);
+}
+
+/* Evidenziazione riga esercizio principale (compound) */
+.workout-esercizio-row--principale {
+  background-color: color-mix(in srgb, var(--color-accent) 6%, transparent);
+}
+
+.workout-esercizio-row--principale:hover {
+  background-color: color-mix(in srgb, var(--color-accent) 10%, transparent);
+}
+
+/* Celle tabella */
+.workout-esercizio-row td {
+  padding: var(--space-3) var(--space-3);
+  vertical-align: top;
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+  line-height: var(--line-height-normal);
+}
+
+/* Colonna nome: layout flessibile per badge e gruppo */
+.workout-esercizio-row__nome {
+  min-width: 130px;
+}
+
+.workout-esercizio-row__nome-testo {
+  display: block;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+}
+
+/* Badge "esercizio principale" — stella arancio */
+.workout-esercizio-principale {
+  display: inline-block;
+  margin-left: var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--color-accent);
+  vertical-align: middle;
+  line-height: 1;
+}
+
+/* Label gruppo muscolare sotto al nome */
+.workout-esercizio-row__gruppo {
+  display: block;
+  margin-top: var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-faint);
+  font-style: italic;
+}
+
+/* Colonne numeriche: mono-spaced, centrate */
+.workout-esercizio-row__serie,
+.workout-esercizio-row__reps,
+.workout-esercizio-row__recupero {
+  font-family: var(--font-mono);
+  text-align: center;
+  white-space: nowrap;
+  color: var(--color-text-muted);
+}
+
+/* Colonna peso: mono, allineata a sinistra, può contenere testo lungo */
+.workout-esercizio-row__peso {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+/* ── RESPONSIVE TABELLA: mobile compact (<= 480px) ── */
+@media (max-width: 480px) {
+  /* Su mobile piccolo la tabella si comprime:
+     nascondiamo la colonna Recupero nella viewport stretta,
+     disponibile scrollando orizzontalmente grazie al wrapper. */
+  .workout-esercizi-table {
+    font-size: var(--font-size-xs);
+  }
+
+  .workout-esercizio-row td,
+  .workout-esercizi-table__th {
+    padding: var(--space-2);
+  }
+}
+
+/* ── STATI: errore, placeholder, empty ── */
+
+.workout-error {
+  padding: var(--space-4) var(--space-5);
+  background-color: rgba(244, 67, 54, 0.1);
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  color: var(--color-danger);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  margin-bottom: var(--space-5);
+}
+
+.workout-placeholder,
+.workout-empty {
+  font-size: var(--font-size-base);     /* >= 1rem ✓ */
+  color: var(--color-text-faint);
+  text-align: center;
+  padding-block: var(--space-8);
+}
+
+/* ── RESPONSIVE: Mobile (<= 767px) — card verticali a piena larghezza ── */
+@media (max-width: 767px) {
+  .workout-giorni {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+  }
+
+  .workout-giorno-card {
+    width: 100%;
+    box-sizing: border-box;
+  }
+}
+
+/* ── RESPONSIVE: Mobile (<= 375px) ── */
+@media (max-width: 375px) {
+  .workout-header {
+    padding: var(--space-4);
+  }
+
+  .workout-header__title {
+    font-size: var(--font-size-md);
+  }
+
+  .week-btn {
+    font-size: var(--font-size-md);     /* >= 1.125rem > 1rem ✓ */
+    padding-block: var(--space-4);
+  }
+
+  .workout-giorno-card {
+    padding: var(--space-4);
+  }
+
+  .workout-giorno-card__header {
+    flex-direction: column;
+    gap: var(--space-2);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TEST DAY — Sezione protocolli submassimali (Settimana 4, Sabato)
+   Mobile-first: font >= 1rem, touch-target adeguati per uso in palestra
+   ══════════════════════════════════════════════════════════════ */
+
+/* Card giornaliera Test Day: bordo accent speciale per distinguerla */
+.workout-giorno-card--testday {
+  border-color: var(--color-accent);
+  border-left: 4px solid var(--color-accent);
+}
+
+/* Sezione contenitore Test Day */
+.workout-testday-section {
+  margin-top: var(--space-4);
+}
+
+.workout-testday-section__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+  background-color: color-mix(in srgb, var(--color-accent) 10%, transparent);
+  border-radius: var(--radius-md);
+  border-left: 3px solid var(--color-accent);
+}
+
+.workout-testday-section__icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.workout-testday-section__title {
+  font-size: var(--font-size-lg);       /* >= 1.25rem ✓ */
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  line-height: var(--line-height-tight);
+  margin: 0 0 var(--space-1) 0;
+}
+
+.workout-testday-section__subtitle {
+  font-size: var(--font-size-base);     /* >= 1rem ✓ */
+  color: var(--color-text-muted);
+  margin: 0;
+}
+
+.workout-testday-section__note {
+  font-size: var(--font-size-base);     /* >= 1rem ✓ */
+  color: var(--color-text-muted);
+  line-height: var(--line-height-loose);
+  font-style: italic;
+  margin-bottom: var(--space-4);
+  padding: var(--space-3) var(--space-4);
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+/* Griglia card protocolli */
+.workout-testday-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* ── Card singolo protocollo ── */
+.workout-testday-card {
+  background-color: var(--color-bg-secondary);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+/* Variante ESCLUSA — danger (Panca Piana) */
+.workout-testday-card--escluso {
+  border-color: var(--color-danger);
+  border-left: 4px solid var(--color-danger);
+  background-color: rgba(244, 67, 54, 0.06);
+}
+
+.workout-testday-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding: var(--space-4) var(--space-4);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.workout-testday-card--escluso .workout-testday-card__header {
+  border-bottom-color: rgba(244, 67, 54, 0.25);
+}
+
+.workout-testday-card__nome {
+  font-size: var(--font-size-lg);       /* >= 1.25rem ✓ */
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  line-height: var(--line-height-tight);
+  margin: 0;
+}
+
+.workout-testday-card--escluso .workout-testday-card__nome {
+  color: var(--color-danger);
+}
+
+/* Badge target / esclusa */
+.workout-testday-card__badge {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-accent);
+  background-color: var(--color-accent-dim);
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-full);
+  line-height: 1.4;
+  flex-shrink: 0;
+}
+
+.workout-testday-card__badge--escluso {
+  color: var(--color-danger);
+  background-color: rgba(244, 67, 54, 0.12);
+  font-size: var(--font-size-base);     /* >= 1rem, più visibile su mobile ✓ */
+  font-weight: var(--font-weight-bold);
+  padding: var(--space-2) var(--space-4);
+  border: 1px solid rgba(244, 67, 54, 0.35);
+}
+
+/* Motivazione esclusione */
+.workout-testday-card__target-escluso {
+  font-size: var(--font-size-base);     /* >= 1rem ✓ */
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-danger);
+  padding: var(--space-4) var(--space-4);
+  margin: 0;
+  line-height: var(--line-height-normal);
+}
+
+/* ── Tabella serie Test Day ── */
+.workout-testday-table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.workout-testday-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: auto;
+}
+
+.workout-testday-table__head {
+  background-color: var(--color-bg-elevated, var(--color-bg-secondary));
+}
+
+.workout-testday-table__th {
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  text-align: left;
+  white-space: nowrap;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.workout-testday-table__th--num {
+  text-align: center;
+}
+
+.workout-testday-table__th--note {
+  text-align: left;
+}
+
+/* Righe serie */
+.workout-testday-serie-row {
+  border-bottom: 1px solid var(--color-border-light);
+  transition: background-color var(--transition-fast);
+}
+
+.workout-testday-serie-row:last-child {
+  border-bottom: none;
+}
+
+.workout-testday-serie-row:hover {
+  background-color: var(--color-bg-secondary);
+}
+
+/* Righe RISCALDAMENTO — stile normale */
+.workout-testday-serie-row td {
+  padding: var(--space-3) var(--space-3);
+  font-size: var(--font-size-base);     /* >= 1rem per leggibilità in palestra ✓ */
+  color: var(--color-text-muted);
+  vertical-align: top;
+  line-height: var(--line-height-normal);
+}
+
+/* Righe TENTATIVO — evidenziate con accent + bold */
+.workout-testday-serie-row--tentativo {
+  background-color: color-mix(in srgb, var(--color-accent) 8%, transparent);
+}
+
+.workout-testday-serie-row--tentativo:hover {
+  background-color: color-mix(in srgb, var(--color-accent) 13%, transparent);
+}
+
+.workout-testday-serie-row--tentativo td {
+  color: var(--color-text);
+  font-weight: var(--font-weight-semibold);
+}
+
+/* Colonne specifiche */
+.workout-testday-serie-row__set {
+  min-width: 140px;
+  font-weight: var(--font-weight-medium);
+}
+
+.workout-testday-serie-row--tentativo .workout-testday-serie-row__set {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-accent);
+}
+
+.workout-testday-serie-row__peso {
+  font-family: var(--font-mono);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.workout-testday-serie-row__reps {
+  font-family: var(--font-mono);
+  text-align: center;
+  white-space: nowrap;
+}
+
+.workout-testday-serie-row__note {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-faint);
+  font-style: italic;
+  min-width: 120px;
+}
+
+.workout-testday-serie-row--tentativo .workout-testday-serie-row__note {
+  font-size: var(--font-size-base);     /* >= 1rem per note tentativo ✓ */
+  color: var(--color-text-muted);
+  font-style: normal;
+}
+
+/* ── Responsive Test Day: mobile (<= 767px) ── */
+@media (max-width: 767px) {
+  .workout-testday-section__header {
+    padding: var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .workout-testday-card__header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-2);
+    padding: var(--space-3);
+  }
+
+  .workout-testday-card__badge {
+    font-size: var(--font-size-base);   /* >= 1rem su mobile ✓ */
+  }
+
+  .workout-testday-serie-row td {
+    padding: var(--space-3) var(--space-2);
+    font-size: var(--font-size-base);   /* >= 1rem — critico per consultazione in palestra ✓ */
+  }
+
+  .workout-testday-table__th {
+    padding: var(--space-2);
+    font-size: var(--font-size-xs);
+  }
+
+  .workout-testday-serie-row__set {
+    min-width: 110px;
+  }
+
+  .workout-testday-card__target-escluso {
+    padding: var(--space-3);
+    font-size: var(--font-size-base);   /* >= 1rem ✓ */
+  }
+}
+
+/* ── Responsive Test Day: compact mobile (<= 375px) ── */
+@media (max-width: 375px) {
+  .workout-testday-section__title {
+    font-size: var(--font-size-md);
+  }
+
+  .workout-testday-serie-row__note {
+    display: none;   /* Su schermi compatti nascondi le note per evitare overflow */
+  }
+
+  .workout-testday-table__th--note {
+    display: none;
+  }
+}
+
+/* ── RESPONSIVE: Tablet (>= 768px) ── */
+@media (min-width: 768px) {
+  .workout-header__title {
+    font-size: var(--font-size-xl);
+    flex-direction: row;
+    align-items: baseline;
+    gap: var(--space-3);
+  }
+
+  .workout-header__label {
+    font-size: var(--font-size-sm);
+  }
+
+  #week-selector {
+    gap: var(--space-4);
+  }
+
+  .week-btn {
+    min-width: 80px;
+    padding-block: var(--space-4);
+    font-size: var(--font-size-xl);
+  }
+
+  .workout-giorni {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-5);
+  }
+}
+
+/* ── RESPONSIVE: Desktop (>= 1280px) ── */
+@media (min-width: 1280px) {
+  .workout-giorni {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}

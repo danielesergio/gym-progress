@@ -1,0 +1,117 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "phases-timeline",
+    "task_title": "Timeline visiva delle fasi del programma",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "phases-timeline",
+    "type": "component",
+    "title": "Timeline visiva delle fasi del programma",
+    "description": "Componente visivo che rappresenta le 10 fasi del programma su un asse temporale (52 settimane totali, marzo 2026 — marzo 2027). Ogni fase mostra: numero, nome, durata, periodo indicativo. La fase corrente (Fase 1) è evidenziata. Le fasi passate (Fase 0) sono marcate come completate. Il componente deve gestire bene la lettura su mobile (possibile scrolling orizzontale o layout verticale alternativo).",
+    "inputs": [
+      "plan_data"
+    ],
+    "outputs": [
+      "PhasesTimeline"
+    ],
+    "acceptance_criteria": [
+      "Tutte le 10 fasi sono visibili con nome e durata",
+      "La fase corrente è chiaramente evidenziata",
+      "Il periodo temporale di ogni fase è indicato",
+      "Su mobile il componente è leggibile (scroll o layout verticale)"
+    ],
+    "notes": "La struttura HTML skeleton (#plan-phase-cards) esiste già in docs/plan.html. Le funzioni renderTimeline() e buildPhaseCard() esistono già in docs/js/plan.js ma non gestiscono il caso 'completata' (fasi passate). Il CSS in docs/css/plan.css è già completo per la timeline incluso il layout mobile verticale. Il lavoro si concentra su: (1) aggiungere supporto visivo per fasi con stato 'completata' in JS e CSS; (2) verificare che il campo stato in plan.json sia aggiornato correttamente (Fase 0 ha stato 'corrente' nel JSON ma nella descrizione del task risulta 'completata'). Il developer deve coordinare con la fonte dati: se plan.json non ha mai stato='completata', il JS deve derivarlo logicamente (es. numero < numero_fase_corrente)."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/plan.js",
+        "motivo": "Aggiungere supporto alle fasi completate in buildPhaseCard(): classe CSS .plan-phase-card--completed, badge 'Completata', logica per derivare fasi passate quando stato non è 'completata' (es. confronto numero con la fase corrente). La funzione renderTimeline() deve aggiornare la meta-informazione con il periodo totale (52 settimane, mar 2026 — mar 2027).",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/plan.css",
+        "motivo": "Aggiungere stili per .plan-phase-card--completed: opacità ridotta, colore bordo neutro, badge 'Completata' con colore distinto (es. verde tenue). Le regole mobile esistenti coprono già il layout verticale; verificare che si applichi correttamente anche alle card completate.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/plan.json",
+        "motivo": "Struttura dati fasi: array 'fasi' con campi numero (int 0-9), nome (string), durata_settimane (int), periodo_indicativo (string, es. '2026-03 / 2026-04 (settimane 1-2)'), obiettivo (string), stato (string: 'corrente' | 'futura' — ATTENZIONE: il JSON attuale non contiene 'completata', solo Fase 0 ha stato 'corrente'). Il developer deve implementare logica derivata per marcare le fasi passate."
+      },
+      {
+        "path": "docs/js/plan.js",
+        "motivo": "Implementazione esistente di renderTimeline() e buildPhaseCard() — da estendere, non riscrivere. Capire il pattern attuale prima di modificare."
+      },
+      {
+        "path": "docs/css/plan.css",
+        "motivo": "Stili esistenti per .plan-phase-card, .plan-phase-card--current, .plan-phase-badge e il layout responsive mobile — da estendere con .plan-phase-card--completed."
+      },
+      {
+        "path": "docs/plan.html",
+        "motivo": "Struttura HTML esistente: confermare posizione del container #plan-phase-cards dentro .plan-timeline-scroll, attributi aria già presenti, e la struttura della section #plan-timeline."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS — ES2022, no build step",
+      "styling": "CSS custom properties (variables.css), file plan.css per stili specifici",
+      "grafici": "Chart.js non necessario per questo componente — la timeline è CSS puro"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase (es. currentPhase, fazieCompletate, phaseCard)",
+      "classi_css": "kebab-case con prefisso 'plan-' per classi specifiche (es. .plan-phase-card--completed, .plan-phase-badge--completed)",
+      "id_html": "kebab-case (es. #plan-phase-cards, #plan-timeline-meta)",
+      "struttura_js": "estendere buildPhaseCard(fase, indexFaseCorrente) — aggiungere parametro per derivare lo stato 'completata' — nessun nuovo pattern, solo estensione della funzione esistente",
+      "gestione_null": "fase.numero ?? '—', fase.nome ?? '—', fase.periodo_indicativo ?? '—', fase.durata_settimane != null ? `${fase.durata_settimane} settimane` : '—'",
+      "no": "no jQuery, no var, no inline style, no ES modules",
+      "mobile": "il breakpoint 768px in plan.css già cambia .plan-phase-cards a flex-direction: column e .plan-phase-card a width: 100% con layout row — funziona anche per le card completate"
+    },
+    "pagina": {
+      "nome": "Piano e Obiettivi",
+      "file_html": "docs/plan.html",
+      "file_js": "docs/js/plan.js",
+      "file_css": "docs/css/plan.css",
+      "dati_json": ["data/plan.json"],
+      "container_target": "#plan-phase-cards",
+      "scroll_wrapper": ".plan-timeline-scroll"
+    },
+    "stato_corrente_implementazione": {
+      "plan.html": "COMPLETO — skeleton HTML con #plan-phase-cards presente",
+      "plan.js": "PARZIALE — renderTimeline() e buildPhaseCard() esistono ma gestiscono solo stato 'corrente' e 'futura', mancano fasi 'completate'",
+      "plan.css": "QUASI COMPLETO — stili per .plan-phase-card e .plan-phase-card--current presenti, manca .plan-phase-card--completed"
+    }
+  },
+  "criteri_accettazione": [
+    "Tutte le 10 fasi (Fase 0 — Fase 9) sono visibili nella sezione #plan-timeline di docs/plan.html",
+    "Ogni card fase mostra: numero fase, nome, periodo indicativo, durata in settimane",
+    "La fase corrente ha classe CSS .plan-phase-card--current e badge 'Corrente' visibile",
+    "Le fasi completate (numero < numero fase corrente) hanno classe .plan-phase-card--completed e badge 'Completata'",
+    "Le fasi future non hanno badge né evidenziazione speciale",
+    "Su viewport mobile (<=768px) le card si dispongono in colonna verticale a larghezza piena (flex-direction: column già in plan.css)",
+    "Su viewport desktop le card sono affiancate in riga scrollabile orizzontalmente (.plan-timeline-scroll con overflow-x: auto)",
+    "docs/js/plan.js contiene la funzione buildPhaseCard() aggiornata con gestione dei tre stati: 'corrente', 'completata' (derivata), 'futura'",
+    "docs/css/plan.css contiene la classe .plan-phase-card--completed con stili visivamente distinti (es. opacità ridotta o colore bordo neutro-verde)",
+    "La funzione non lancia eccezioni se plan.json non contiene fasi o se campi sono null/undefined",
+    "Il campo #header-current-phase nell'header riporta il nome della fase corrente caricata da plan.json",
+    "Il campo #plan-timeline-meta riporta la fase corrente e/o il periodo totale del programma"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "plan-page-layout",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/plan.html",
+        "docs/js/plan.js",
+        "docs/css/plan.css"
+      ],
+      "note": "Tutti e tre i file esistono in docs/. docs/plan.html ha già la struttura con #plan-phase-cards, docs/js/plan.js ha già renderTimeline() e buildPhaseCard() di base, docs/css/plan.css ha già gli stili completi per la timeline incluso il responsive mobile."
+    }
+  ]
+}

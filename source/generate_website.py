@@ -516,9 +516,28 @@ Descrivi cosa hai corretto."""
 
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--max-iter", type=int, default=3, help="Iterazioni massime (default: 3)")
+    parser.add_argument("--max-iter",    type=int, default=3,  help="Iterazioni massime (default: 3)")
+    parser.add_argument("--log-context", action="store_true",  help="Logga file e info calcolate passati nel prompt di ogni agente")
     args = parser.parse_args()
     max_iter = args.max_iter
+
+    def log_context(agent: str, files: list, calcs: list = None) -> None:
+        if not args.log_context:
+            return
+        LABEL = {
+            "incorporato":  "Incorporato  ",
+            "obbligatorio": "Da leggere   ",
+            "discrezione":  "A discrezione",
+        }
+        print(f"\n  [CONTEXT] {agent}")
+        for path_raw, modalita in files:
+            p = path_raw if isinstance(path_raw, Path) else Path(path_raw)
+            abs_p = p if p.is_absolute() else PROJECT_ROOT / p
+            stato = f"{abs_p.stat().st_size:>7} B" if abs_p.exists() else "  MANCANTE"
+            rel = abs_p.relative_to(PROJECT_ROOT) if abs_p.is_relative_to(PROJECT_ROOT) else abs_p
+            print(f"    [{LABEL.get(modalita, modalita)}] {rel}  ({stato})")
+        for desc in (calcs or []):
+            print(f"    [Info calcolata ] {desc}")
 
     web: dict = _WEB_DEFAULT.copy()
     ux: dict  = _UX_DEFAULT.copy()
@@ -536,6 +555,11 @@ def main() -> None:
         if not ok:
             log("ERROR", f"Script fallito:\n{script_output}")
             log("FIX", "Invoco gym-web-developer per diagnostica...")
+            log_context("gym-web-developer [error_fix]", [
+                ("scripts/generate_site.py",  "discrezione"),
+                ("scripts/generate_data.py",  "discrezione"),
+                ("scripts/volume_calc.py",    "discrezione"),
+            ], ["Output errore script incorporato nel prompt (max 3000 char)"])
             run_agent("gym-web-developer", build_developer_error_prompt(script_output))
             ok2, out2 = generate_data()
             if not ok2:
@@ -552,6 +576,10 @@ def main() -> None:
             for issue in contract_issues:
                 log("ERROR", f"  {issue}")
             log("FIX", "Invoco gym-web-developer per correggere la struttura JSON...")
+            log_context("gym-web-developer [contract_fix]", [
+                ("scripts/generate_data.py", "discrezione"),
+                ("scripts/volume_calc.py",   "discrezione"),
+            ], [f"Lista {len(contract_issues)} problemi contratti JS↔JSON incorporata nel prompt"])
             run_agent("gym-web-developer", build_contract_fix_prompt(contract_issues))
             log("ACTION", "Ri-eseguo generate_data.py dopo la correzione...")
             ok3, out3 = generate_data()
@@ -570,6 +598,16 @@ def main() -> None:
         # Step B: web-tester + ux-reviewer in parallelo (LLM)
         # ------------------------------------------------------------------
         log("ACTION", "Lancio web-tester e ux-reviewer in parallelo...")
+        log_context("gym-web-tester", [
+            ("docs",            "discrezione"),
+            ("docs/data",       "discrezione"),
+        ], [f"Schema JSON report: {WEB_SCHEMA.name}",
+            f"Output report: {WEB_REPORT.name}"])
+        log_context("gym-ux-reviewer", [
+            ("docs",            "discrezione"),
+            ("docs/data",       "discrezione"),
+        ], [f"Schema JSON report: {UX_SCHEMA.name}",
+            f"Output report: {UX_REPORT.name}"])
         run_agents_parallel([
             ("gym-web-tester",  build_tester_prompt()),
             ("gym-ux-reviewer", build_ux_prompt()),
@@ -595,6 +633,13 @@ def main() -> None:
             # Step D: gym-web-developer corregge il codice (LLM)
             # ------------------------------------------------------------------
             log("FIX", "Invoco gym-web-developer per correggere i problemi...")
+            log_context("gym-web-developer [developer_fix]", [
+                (WEB_REPORT,                  "incorporato"),
+                (UX_REPORT,                   "incorporato"),
+                ("scripts/generate_site.py",  "discrezione"),
+                ("scripts/generate_data.py",  "discrezione"),
+                ("scripts/volume_calc.py",    "discrezione"),
+            ])
             run_agent("gym-web-developer", build_developer_fix_prompt())
     else:
         log("WARN", f"Raggiunte {max_iter} iterazioni. Problemi residui presenti.")

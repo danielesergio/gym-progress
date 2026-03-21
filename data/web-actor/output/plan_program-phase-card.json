@@ -1,0 +1,124 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "program-phase-card",
+    "task_title": "Card fase corrente del programma",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "program-phase-card",
+    "type": "component",
+    "title": "Card fase corrente del programma",
+    "description": "Card che mostra la fase attiva del piano annuale letta da plan.json. Attualmente in Fase 0 — Recupero TOS (stato: 'corrente'). Include nome e numero della fase, periodo indicativo, obiettivo sintetico e una barra di progressione visiva che mostra in quale settimana si trova l'atleta sul totale delle 52 settimane pianificate. La settimana corrente va calcolata dinamicamente in base alla data odierna e alla data d'inizio stimata del programma (inizio marzo 2026 = settimana 1). La barra non richiede Chart.js: è un elemento HTML/CSS puro (progress bar con CSS).",
+    "inputs": [
+      "plan_data"
+    ],
+    "outputs": [
+      "ProgramPhaseCard"
+    ],
+    "acceptance_criteria": [
+      "Mostra il nome e il numero della fase corrente",
+      "Mostra il periodo e la durata della fase",
+      "Mostra l'obiettivo della fase in forma sintetica",
+      "Una barra o indicatore mostra la progressione sull'anno (settimana X di 52)"
+    ],
+    "notes": "La fase corrente è quella con stato === 'corrente' in plan.fasi. Fallback: prima fase con stato !== 'completata', poi fasi[0]. La settimana corrente si stima calcolando i giorni trascorsi dall'inizio del programma (1 marzo 2026) e dividendo per 7. Usare Math.ceil per arrotondare. Clamp tra 1 e 52. Nessuna dipendenza da librerie esterne: la barra progressione è un <div> con width calcolato in percentuale."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/dashboard.js",
+        "motivo": "Aggiungere la funzione renderProgramPhaseCard() che popola #card-fase con nome fase, numero, periodo, obiettivo e barra di progressione settimanale. Richiamarla dentro renderDashboard() dopo le card già esistenti.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "Aggiungere gli stili per la card fase: .phase-card__header, .phase-card__name, .phase-card__period, .phase-card__objective, .phase-card__progress-bar (wrapper + fill), .phase-card__progress-label. Nessuna dipendenza da librerie esterne.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/plan.json",
+        "motivo": "Struttura dati: array fasi[] con campi numero (int), nome (string), durata_settimane (int), periodo_indicativo (string), obiettivo (string), stato ('corrente'|'futura'|'completata'). La fase corrente è quella con stato === 'corrente'."
+      },
+      {
+        "path": "docs/js/dashboard.js",
+        "motivo": "Pattern JS esistente: capire dove inserire renderProgramPhaseCard() e come richiamarla dentro renderDashboard(plan). Rispettare lo stile: JSDoc, camelCase, fallback espliciti per null/undefined."
+      },
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "Convenzioni CSS esistenti: variabili CSS custom (--color-*, --space-*, --font-size-*, --radius-*), prefissi BEM per card (es. .status-card__, .strength-card__). Applicare lo stesso pattern con .phase-card__."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "struttura_dati_plan": {
+    "nota": "Estratto rilevante da docs/data/plan.json per il developer",
+    "fase_corrente_esempio": {
+      "numero": 0,
+      "nome": "Recupero TOS",
+      "durata_settimane": 2,
+      "periodo_indicativo": "2026-03 / 2026-04 (settimane 1-2)",
+      "obiettivo": "Riprendere a muoversi senza sollecitare il piccolo pettorale e le strutture TOS",
+      "stato": "corrente"
+    },
+    "totale_settimane_piano": 52,
+    "calcolo_settimana_corrente": "const PROGRAM_START = new Date('2026-03-01'); const oggi = new Date(); const settCorrente = Math.min(52, Math.max(1, Math.ceil((oggi - PROGRAM_START) / (7 * 24 * 3600 * 1000))));"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "grafici": {
+        "note": "La barra progressione NON usa Chart.js. È un progress bar CSS puro: un div wrapper con sfondo, e un div figlio con width calcolata in percentuale (settCorrente/52*100)."
+      },
+      "framework": "plain HTML/JS, ES2022",
+      "styling": "CSS custom properties (variabili)"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase",
+      "classi_css": "kebab-case con prefisso componente BEM (es. phase-card__*)",
+      "gestione_null": "Fallback esplicito per ogni campo: null → '—' o valore di default",
+      "pattern_js": "funzione renderProgramPhaseCard(plan) chiamata dentro renderDashboard() dopo le altre card render. JSDoc obbligatorio. Nessun alert(), errori in console.error.",
+      "pattern_css": "Stili raggruppati nella sezione '/* ── Card fase programma ── */' in fondo a dashboard.css, seguendo il pattern già usato per .status-card__ e .strength-card__"
+    },
+    "pagina": {
+      "nome": "Dashboard",
+      "html": "docs/dashboard.html",
+      "js": "docs/js/dashboard.js",
+      "css": "docs/css/dashboard.css",
+      "dati_json": ["data/plan.json"],
+      "container_target": "#card-fase"
+    },
+    "html_esistente": {
+      "nota": "docs/dashboard.html NON va modificato. Il container #card-fase esiste già (riga 71-73 di dashboard.html). La funzione renderProgramPhaseCard() scrive innerHTML dentro quell'elemento.",
+      "container": "<div id=\"card-fase\" class=\"dashboard-card\" aria-label=\"Fase corrente programma\">"
+    }
+  },
+  "criteri_accettazione": [
+    "La card #card-fase mostra il nome della fase corrente (es. 'Recupero TOS')",
+    "La card mostra il numero della fase (es. 'Fase 0')",
+    "La card mostra il periodo indicativo (es. '2026-03 / 2026-04 (settimane 1-2)')",
+    "La card mostra l'obiettivo della fase in forma sintetica (testo da plan.fasi[].obiettivo)",
+    "La barra di progressione mostra visivamente la settimana corrente su 52 totali",
+    "La label della barra riporta il testo 'Settimana X di 52'",
+    "Se plan è null o fasi è vuoto, #card-fase mostra 'Dati non disponibili' senza eccezioni",
+    "docs/js/dashboard.js contiene la funzione renderProgramPhaseCard(plan)",
+    "renderProgramPhaseCard() viene chiamata dentro renderDashboard()",
+    "docs/css/dashboard.css contiene la classe .phase-card__progress-bar e .phase-card__progress-fill",
+    "La percentuale della barra è calcolata come Math.round(settCorrente / 52 * 100) e non supera 100%",
+    "Nessun uso di Chart.js per questa card"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "dashboard-layout",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/dashboard.html",
+        "docs/js/dashboard.js",
+        "docs/css/dashboard.css"
+      ],
+      "note": "Tutti e tre i file esistono in docs/. dashboard.html include già il container #card-fase. dashboard.js include già renderDashboard() con il pattern fetch + render. dashboard.css include già le classi .dashboard-card e le variabili CSS usate."
+    }
+  ]
+}

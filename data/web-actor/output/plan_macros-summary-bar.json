@@ -1,0 +1,103 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "macros-summary-bar",
+    "task_title": "Riepilogo macros giornalieri",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "macros-summary-bar",
+    "type": "component",
+    "title": "Riepilogo macros giornalieri",
+    "description": "Barra o card compatta che mostra i macros totali del giorno selezionato: kcal, proteine (g), carboidrati (g), grassi (g). Può includere una rappresentazione visiva delle proporzioni (barra a segmenti colorati). Mostra anche la strategia nutrizionale sintetica (es. 'Mantenimento calorico — recupero TOS').",
+    "inputs": ["diet_data"],
+    "outputs": ["MacrosSummaryBar"],
+    "acceptance_criteria": [
+      "Kcal, proteine, carbo e grassi sono mostrati per il giorno selezionato",
+      "I valori cambiano quando si cambia tipo di giorno",
+      "La strategia nutrizionale è visibile in forma sintetica"
+    ],
+    "notes": "La funzione renderMacrosSummary già esiste in diet.js e già mostra kcal/macros in una griglia. Mancano due elementi per soddisfare i criteri: (1) la barra a segmenti colorati per le proporzioni proteine/carbo/grassi; (2) la strategia nutrizionale sintetica (prima riga di meta.note_strategia). La funzione renderMacrosSummary riceve solo dayData, non ha accesso al meta — va aggiornata per ricevere anche notaStrategia. renderDiet() dovrà passarla al momento della chiamata."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "Modificare renderMacrosSummary(dayData) → renderMacrosSummary(dayData, notaStrategia): aggiungere barra a segmenti colorati proporzionali a proteine/carbo/grassi (calcolati in kcal) e visualizzare la prima riga di notaStrategia come testo sintetico. Aggiornare la chiamata in renderDiet() passando data.meta.note_strategia.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Aggiungere stili per: .diet-macros-proportion-bar (contenitore barra segmenti), .diet-macros-proportion-bar__segment con varianti --proteine, --carbo, --grassi (colori distinti, altezza fissa), e .diet-macros-strategy (testo sintetico strategia nutrizionale).",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/diet.json",
+        "motivo": "Struttura dati confermata: meta.fase (string), meta.note_strategia (string multiriga — la prima riga è la sintesi), giorni[].tipo ('allenamento'|'riposo'), giorni[].kcal (int), giorni[].macros.proteine (int), giorni[].macros.carboidrati (int), giorni[].macros.grassi (int)"
+      },
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "File da modificare — capire firma attuale di renderMacrosSummary(), posizione della chiamata in renderDiet(), e il pattern generale del file prima di intervenire"
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "File da modificare — verificare classi esistenti .diet-macros-bar e .diet-macros-summary prima di aggiungere nuovi stili, evitare conflitti"
+      },
+      {
+        "path": "docs/diet.html",
+        "motivo": "Verificare il markup di #macros-summary — il contenuto è generato dinamicamente da JS, non serve modificare l'HTML"
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS ES2022",
+      "styling": "CSS custom properties, nessun framework CSS",
+      "grafici": "Chart.js 4.x via CDN — NON usare Chart.js per la barra segmenti: implementarla in CSS puro con flexbox e width percentuale calcolata in JS"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase — es. notaStrategia, proporzioneProteine",
+      "costanti_js": "UPPER_SNAKE_CASE per costanti globali, non aggiungerne di nuove per questo task",
+      "classi_css": "kebab-case con prefisso diet- per classi specifiche della pagina",
+      "id_html": "kebab-case — #macros-summary già esistente, non aggiungere nuovi id HTML",
+      "no_inline_style": "Le larghezze percentuali della barra segmenti vanno impostate via style= inline sull'elemento (eccezione giustificata: sono valori dinamici calcolati da JS, non possono essere in CSS statico)",
+      "gestione_null": "Se proteine/carbo/grassi sono null o 0, non renderizzare la barra segmenti (o mostrarla come barra vuota). Mai dividere per zero.",
+      "struttura_js": "La funzione renderMacrosSummary va aggiornata con firma renderMacrosSummary(dayData, notaStrategia). In renderDiet() la chiamata diventa renderMacrosSummary(dayData, data?.meta?.note_strategia ?? null).",
+      "calcolo_proporzioni": "Proteine e carboidrati: 4 kcal/g. Grassi: 9 kcal/g. Totale kcal da macros = (proteine*4) + (carboidrati*4) + (grassi*9). Percentuale segmento = (macro_kcal / totale_kcal_macros) * 100. Usare toFixed(1) per evitare somme >100% per floating point.",
+      "strategia_sintetica": "Estrarre solo la prima riga di note_strategia con note_strategia.split('\\n')[0]. La stringa risultante è già sintetica (es. 'Fase 0 — Recupero TOS (Thoracic Outlet Syndrome).')."
+    },
+    "pagina": {
+      "nome": "Diet",
+      "file": "docs/diet.html",
+      "js": "docs/js/diet.js",
+      "css": "docs/css/diet.css",
+      "dati_json": ["data/diet.json"]
+    }
+  },
+  "criteri_accettazione": [
+    "Kcal, proteine, carbo e grassi sono mostrati per il giorno selezionato",
+    "I valori cambiano quando si cambia il toggle allenamento/riposo",
+    "La strategia nutrizionale è visibile in forma sintetica nel blocco macros (prima riga di meta.note_strategia)",
+    "docs/js/diet.js contiene la funzione renderMacrosSummary con almeno due parametri (dayData, notaStrategia)",
+    "docs/js/diet.js contiene la barra a segmenti colorati (elemento con classe diet-macros-proportion-bar o equivalente)",
+    "docs/css/diet.css contiene stili per la barra a segmenti proporzionali con colori distinti per proteine, carbo e grassi",
+    "La barra a segmenti non causa eccezioni quando i macros sono 0 o null (nessuna divisione per zero)",
+    "La chiamata a renderMacrosSummary in renderDiet() include la nota strategia come secondo argomento"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "diet-page-layout",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/diet.html",
+        "docs/js/diet.js",
+        "docs/css/diet.css"
+      ],
+      "note": "Tutti e tre i file sono presenti in docs/. docs/diet.html contiene il markup della pagina con i toggle, la sezione #macros-summary, la sezione pasti e la sezione integratori. docs/js/diet.js contiene renderDiet() e renderMacrosSummary() già funzionanti (ma incompleti rispetto a questo task). docs/css/diet.css contiene tutti gli stili del layout diet."
+    }
+  ]
+}

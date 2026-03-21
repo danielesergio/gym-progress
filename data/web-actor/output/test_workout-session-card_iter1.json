@@ -1,0 +1,94 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "workout-session-card",
+    "task_titolo": "Card sessione di allenamento",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Il nome del giorno (es. 'Lunedì') e il tipo sessione (es. 'Lower A — Squat focus + Core') sono visibili in cima alla card",
+      "soddisfatto": true,
+      "dettaglio": "In renderGiornoCard() (riga 169): nomeGiorno e tipo sono estratti dai dati con fallback '—'. Renderizzati in <h3 class='workout-giorno-card__giorno'> (riga 203) e <span class='workout-giorno-card__tipo'> (riga 204)."
+    },
+    {
+      "criterio": "Il tipo sessione ha stile visivo distinto (badge colorato .workout-giorno-card__tipo)",
+      "soddisfatto": true,
+      "dettaglio": "CSS (riga 275-283): .workout-giorno-card__tipo ha background-color: var(--color-accent-dim), border-radius: var(--radius-full), padding var(--space-1) var(--space-3), font-weight: var(--font-weight-medium), color: var(--color-accent). Visivamente distinto come badge."
+    },
+    {
+      "criterio": "Ogni esercizio mostra: nome, serie, reps, peso, recupero nella tabella .workout-esercizi-table",
+      "soddisfatto": true,
+      "dettaglio": "In renderEsercizioRow() (riga 137-159): nome (riga 149), serie (riga 153), reps (riga 154), peso (riga 155), recupero (riga 156) sono tutti renderizzati in <td> distinte con classi CSS specifiche."
+    },
+    {
+      "criterio": "Il gruppo muscolare è visibile sotto al nome esercizio con stile secondario (.workout-esercizio-row__gruppo)",
+      "soddisfatto": true,
+      "dettaglio": "In renderEsercizioRow() (riga 151): ${gruppo ? `<span class='workout-esercizio-row__gruppo'>${gruppo}</span>` : ''}. CSS (riga 391-397): .workout-esercizio-row__gruppo ha display: block, margin-top: var(--space-1), font-size: var(--font-size-xs), color: var(--color-text-faint), font-style: italic. Renderizzato sotto il nome."
+    },
+    {
+      "criterio": "Gli esercizi con principale:true ricevono la classe .workout-esercizio-row--principale e il badge ★ (.workout-esercizio-principale)",
+      "soddisfatto": true,
+      "dettaglio": "In renderEsercizioRow() (riga 144): isPrincipale = esercizio?.principale === true. Riga 147: class 'workout-esercizio-row${isPrincipale ? ' workout-esercizio-row--principale' : ''}'. Riga 150: ${isPrincipale ? '<span class=\"workout-esercizio-principale\" aria-label=\"Esercizio principale\">★</span>' : ''}. CSS (riga 352-358): .workout-esercizio-row--principale con background-color: color-mix(in srgb, var(--color-accent) 6%, transparent)."
+    },
+    {
+      "criterio": "La nota sessione (note_sessione) è presente con stile muted/italic (.workout-giorno-card__note), non invadente",
+      "soddisfatto": true,
+      "dettaglio": "In renderGiornoCard() (riga 206): ${noteSessione ? `<p class='workout-giorno-card__note'>${noteSessione}</p>` : ''}. CSS (riga 285-291): .workout-giorno-card__note ha font-size: var(--font-size-base), color: var(--color-text-muted), line-height: var(--line-height-loose), margin-bottom: var(--space-3), font-style: italic. Renderizzato solo se presente."
+    },
+    {
+      "criterio": "Su mobile (viewport <= 767px) le card sono verticali a piena larghezza (flex-direction: column, no grid multi-colonna)",
+      "soddisfatto": true,
+      "dettaglio": "CSS (riga 454-465): @media (max-width: 767px) mantiene .workout-giorni con flex-direction: column e .workout-giorno-card con width: 100%, box-sizing: border-box."
+    },
+    {
+      "criterio": "Su tablet (>= 768px) le card sono disposte in griglia 2 colonne",
+      "soddisfatto": true,
+      "dettaglio": "CSS (riga 493-520): @media (min-width: 768px) cambia .workout-giorni a display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-5)."
+    },
+    {
+      "criterio": "Su desktop (>= 1280px) le card sono in griglia 3 colonne",
+      "soddisfatto": true,
+      "dettaglio": "CSS (riga 522-527): @media (min-width: 1280px) cambia .workout-giorni a grid-template-columns: repeat(3, 1fr)."
+    },
+    {
+      "criterio": "Tutti i campi null/undefined sono resi come '—' senza eccezioni JS",
+      "soddisfatto": true,
+      "dettaglio": "In renderEsercizioRow() (riga 138-142): nome, serie, reps, peso, recupero tutti con ?? '—'. Gruppo (riga 143) usa ?? '' (design choice per condizionale, accettabile). In renderGiornoCard() (riga 169-171): nomeGiorno, tipo, noteSessione tutti con ?? '—' o ?? ''."
+    },
+    {
+      "criterio": "docs/js/workout.js contiene la funzione renderGiornoCard(giorno)",
+      "soddisfatto": true,
+      "dettaglio": "Funzione definita a riga 168, completa fino a riga 210. Signature: function renderGiornoCard(giorno), ritorna string HTML."
+    },
+    {
+      "criterio": "docs/js/workout.js contiene la funzione renderEsercizioRow(esercizio)",
+      "soddisfatto": true,
+      "dettaglio": "Funzione definita a riga 137, completa fino a riga 159. Signature: function renderEsercizioRow(esercizio), ritorna string HTML."
+    },
+    {
+      "criterio": "docs/css/workout.css contiene la regola .workout-esercizio-row--principale",
+      "soddisfatto": true,
+      "dettaglio": "CSS riga 352-358: .workout-esercizio-row--principale { background-color: color-mix(...), transition: ... } con :hover variant riga 356-358."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/workout.js",
+      "esiste": true,
+      "note": "Implementazione completa: renderGiornoCard() costruisce card con header (giorno + tipo badge), note sessione opzionali, tabella esercizi; renderEsercizioRow() costruisce righe con nome, serie, reps, peso, recupero, gruppo e badge principale; null handling con ?? '—' su tutti i campi numerici/testuali."
+    },
+    {
+      "path": "docs/css/workout.css",
+      "esiste": true,
+      "note": "Stili completi: .workout-giorno-card, .workout-giorno-card__header, .workout-giorno-card__giorno, .workout-giorno-card__tipo (badge), .workout-giorno-card__note (muted/italic); tabella .workout-esercizi-table, righe .workout-esercizio-row, .workout-esercizio-row--principale (color-mix accent 6%), .workout-esercizio-principale (badge ★), .workout-esercizio-row__gruppo (secondario); responsive mobile-first (<= 767px flex column, >= 768px grid 2 colonne, >= 1280px grid 3 colonne)."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "Il campo 'gruppo' in renderEsercizioRow() usa fallback ?? '' (stringa vuota) invece che ?? '—'. Questo è design choice accettabile per condizionali (il rendering avviene solo se gruppo è truthy), ma è leggermente incoerente rispetto alla convenzione generale di usare '—' per tutti i campi. Suggerimento: se si vuole massima coerenza, cambiare riga 143 da `const gruppo = esercizio?.gruppo ?? '';` a `const gruppo = esercizio?.gruppo ?? '—';` e rimuovere il condizionale in riga 151 (mostrare sempre la riga gruppo). Attualmente non è bloccante."
+    }
+  ]
+}

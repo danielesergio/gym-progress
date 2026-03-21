@@ -1,0 +1,105 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "phases-timeline",
+    "task_titolo": "Timeline visiva delle fasi del programma",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Tutte le 10 fasi (Fase 0 — Fase 9) sono visibili nella sezione #plan-timeline di docs/plan.html",
+      "soddisfatto": true,
+      "dettaglio": "plan.json contiene array 'fasi' con 10 elementi (numero 0-9). renderTimeline() itera su fasi e genera una card HTML per ogni fase tramite buildPhaseCard()"
+    },
+    {
+      "criterio": "Ogni card fase mostra: numero fase, nome, periodo indicativo, durata in settimane",
+      "soddisfatto": true,
+      "dettaglio": "buildPhaseCard() costruisce HTML con span .plan-phase-number, .plan-phase-name, .plan-phase-period, .plan-phase-duration. Esempio Fase 0: 'Fase 0', 'Recupero TOS', '2026-03 / 2026-04 (settimane 1-2)', '2 settimane'"
+    },
+    {
+      "criterio": "La fase corrente ha classe CSS .plan-phase-card--current e badge 'Corrente' visibile",
+      "soddisfatto": true,
+      "dettaglio": "JS linea 86: isCurrent = (fase.stato === 'corrente'); linea 93-94: aggiunge classe .plan-phase-card--current; linea 101: genera badge .plan-phase-badge--current con testo 'Corrente'. CSS linea 98-107: stili distinti per current (border accent, background elevated, shadow)"
+    },
+    {
+      "criterio": "Le fasi completate (numero < numero fase corrente) hanno classe .plan-phase-card--completed e badge 'Completata'",
+      "soddisfatto": true,
+      "dettaglio": "JS linea 87-90: logica derivata isCompleted = !isCurrent && currentPhaseNumber !== null && fase.numero < currentPhaseNumber; linea 95-96: aggiunge classe .plan-phase-card--completed; linea 102-103: genera badge .plan-phase-badge--completed con testo 'Completata'. CSS linea 110-120: stili distintivi (opacity 0.65, border-color success green)"
+    },
+    {
+      "criterio": "Le fasi future non hanno badge né evidenziazione speciale",
+      "soddisfatto": true,
+      "dettaglio": "buildPhaseCard() genera badge solo dentro condizioni isCurrent o isCompleted. Fasi future (Fase 1-9 con stato='futura' e numero > 0) non entrano in nessuna condizione, ricevono solo classe base .plan-phase-card senza badge aggiuntivi"
+    },
+    {
+      "criterio": "Su viewport mobile (<=768px) le card si dispongono in colonna verticale a larghezza piena (flex-direction: column già in plan.css)",
+      "soddisfatto": true,
+      "dettaglio": "plan.css linea 278-291: @media (max-width: 768px) applica flex-direction: column su .plan-phase-cards, width: 100% e flex-direction: row su .plan-phase-card per layout a riga. gap ridotto var(--space-2)"
+    },
+    {
+      "criterio": "Su viewport desktop le card sono affiancate in riga scrollabile orizzontalmente (.plan-timeline-scroll con overflow-x: auto)",
+      "soddisfatto": true,
+      "dettaglio": "plan.css linea 46-53: .plan-timeline-scroll ha overflow-x: auto, overflow-y: visible. linea 69-76: .plan-phase-cards ha flex-direction: row, min-width: max-content per garantire scroll. Desktop (> 768px) mantiene layout in riga"
+    },
+    {
+      "criterio": "docs/js/plan.js contiene la funzione buildPhaseCard() aggiornata con gestione dei tre stati: 'corrente', 'completata' (derivata), 'futura'",
+      "soddisfatto": true,
+      "dettaglio": "Funzione buildPhaseCard(fase, currentPhaseNumber) linea 85-122 gestisce: stato 'corrente' (isCurrent = fase.stato === 'corrente'), stato 'completata' derivato (isCompleted = numero < currentPhaseNumber), stato 'futura' (nessuna classe aggiunta). Logica integrata in renderTimeline() linea 73"
+    },
+    {
+      "criterio": "docs/css/plan.css contiene la classe .plan-phase-card--completed con stili visivamente distinti (es. opacità ridotta o colore bordo neutro-verde)",
+      "soddisfatto": true,
+      "dettaglio": "plan.css linea 110-120: .plan-phase-card--completed ha opacity: 0.65, border-color: var(--color-success, #4caf81), background-color: var(--color-bg-card). Hover: opacity: 0.85. Badge .plan-phase-badge--completed linea 176-179: color success-text (#1a4731), background-color success-bg (#d1f0e0)"
+    },
+    {
+      "criterio": "La funzione non lancia eccezioni se plan.json non contiene fasi o se campi sono null/undefined",
+      "soddisfatto": true,
+      "dettaglio": "renderPlan() linea 20-21: fetch con error handling try-catch. renderTimeline() linea 48: if (!Array.isArray(fasi) || fasi.length === 0) mostra placeholder. buildPhaseCard() usa ?? operator e != null check: fase.numero ?? '—', fase.nome ?? '—', fase.durata_settimane != null ? ... : '—'"
+    },
+    {
+      "criterio": "Il campo #header-current-phase nell'header riporta il nome della fase corrente caricata da plan.json",
+      "soddisfatto": true,
+      "dettaglio": "plan.js linea 57-60: headerPhaseEl.textContent = `Fase ${currentPhase.numero} — ${currentPhase.nome}`. plan.html linea 24: elemento <span id='header-current-phase'>—</span> presente in header. Attualmente mostra 'Fase 0 — Recupero TOS' perché Fase 0 ha stato='corrente'"
+    },
+    {
+      "criterio": "Il campo #plan-timeline-meta riporta la fase corrente e/o il periodo totale del programma",
+      "soddisfatto": true,
+      "dettaglio": "plan.js linea 63-70: timelineMetaEl.textContent = `52 settimane · mar 2026 — mar 2027 · fase corrente: ${currentPhase.nome}` se corrente trovata, altrimenti solo '52 settimane · mar 2026 — mar 2027'. plan.html linea 70: elemento <span id='plan-timeline-meta'>caricamento…</span> presente"
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/plan.html",
+      "esiste": true,
+      "note": "Estructura corretta: header con #header-current-phase, nav tab-list, main con #plan-timeline section, .plan-timeline-scroll wrapper, #plan-phase-cards container, placeholder p.plan-placeholder. Script plan.js con defer. Aria-label e role corretti per accessibilità."
+    },
+    {
+      "path": "docs/js/plan.js",
+      "esiste": true,
+      "note": "Implementazione completa: renderPlan() async con fetch plan.json, error handling, renderTimeline() con estrazione currentPhase e update header/meta, buildPhaseCard() con logica tre stati (corrente/completata derivata/futura), generazione HTML con classi dinamiche e badge, gestione null/undefined. JSDoc presente."
+    },
+    {
+      "path": "docs/css/plan.css",
+      "esiste": true,
+      "note": "Stili completi: .plan-timeline-scroll (overflow-x auto), .plan-phase-cards (flex row), .plan-phase-card (base), .plan-phase-card--current (accent border, elevated bg, shadow), .plan-phase-card--completed (opacity 0.65, success border green), badge current/completed con colori distinti, responsive @media (max-width: 768px) con flex-direction column e width 100%"
+    },
+    {
+      "path": "docs/data/plan.json",
+      "esiste": true,
+      "note": "10 fasi (numero 0-9) con campi corretti: numero, nome, durata_settimane, periodo_indicativo, obiettivo, metodologia, note, stato. Fase 0 ha stato='corrente', fasi 1-9 hanno stato='futura'. Struttura dati valida per la timeline."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "Badge completate non testabili con dati attuali. Poiché Fase 0 è la corrente (numero=0), nessuna fase ha numero < 0, quindi la logica di derivazione delle fasi completate è corretta ma non verificabile fino a quando il JSON avrà una fase > 0 come corrente. Questo non è un errore, solo un'osservazione sulla copertura di test.",
+      "file": "docs/js/plan.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Aggiornamento manuale dello stato nel JSON. Il task nota che il JSON attuale non contiene stato='completata', solo 'corrente' e 'futura'. La logica JS deriva correttamente le fasi completate (numero < currentPhaseNumber), ma non è documentato Chi aggiornerà lo stato in plan.json quando una fase diventa corrente. Suggerimento: implementare uno script di aggiornamento automatico basato su data o un admin panel.",
+      "file": "docs/data/plan.json"
+    }
+  ]
+}

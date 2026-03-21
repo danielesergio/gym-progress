@@ -1,0 +1,100 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "strength-chart",
+    "task_titolo": "Grafico andamento massimali Big 3",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Squat, Panca e Stacco hanno linee distinte con 3 colori diversi (es. arancio, celeste, viola)",
+      "soddisfatto": true,
+      "dettaglio": "progress.js riga 291-293 definisce COLOR_SQUAT='#ff6b35', COLOR_PANCA='#4fc3f7', COLOR_STACCO='#ce93d8'. I tre dataset (riga 348-397) usano borderColor, backgroundColor distinti per ogni esercizio."
+    },
+    {
+      "criterio": "L'ultimo punto del grafico (2026-03-20, tipo='S') è visivamente differenziato dai 5 punti reali (es. forma diversa o colore diverso del punto)",
+      "soddisfatto": true,
+      "dettaglio": "progress.js riga 323-325 ricerca il record con massimali_tipo='S'. Le helper function buildPointStyles (riga 303-307), buildPointColors (riga 310-314), buildPointRadius (riga 317-321) creano array per differenziare l'ultimo punto: pointStyle 'rectRot' (rombo) vs 'circle', pointBackgroundColor trasparente (rgba(...,0.4)) vs solido, pointRadius 8 vs 5. Applicati a riga 354-359, 370-375, 386-391 per tutti e 3 i dataset."
+    },
+    {
+      "criterio": "Il tooltip al passaggio del mouse mostra data (formato italiano), nome esercizio e valore in kg; su mobile funziona al tap",
+      "soddisfatto": true,
+      "dettaglio": "progress.js riga 418-443: tooltip configurato con backgroundColor, borderColor, titleColor, bodyColor. Callback title (riga 425-430) converte timestamp a ISO e usa formatDateIT() per formato italiano. Callback label (riga 431-441) mostra dataset.label + valore + tipo (R/S). Chart.js 4.x supporta tap su mobile automaticamente."
+    },
+    {
+      "criterio": "La legenda in basso al grafico identifica Squat, Panca e Stacco",
+      "soddisfatto": true,
+      "dettaglio": "progress.js riga 407-417: legenda configurata con display: true, position: 'bottom', usePointStyle: true. Dataset labels (riga 350, 366, 382): 'Squat 1RM (kg)', 'Panca 1RM (kg)', 'Stacco 1RM (kg)'."
+    },
+    {
+      "criterio": "docs/js/progress.js contiene la funzione renderStrengthChart(data)",
+      "soddisfatto": true,
+      "dettaglio": "Funzione renderStrengthChart definita a riga 266-483 in progress.js. Contiene logica completa per filtrare record, costruire dataset con timestamp, differenziare punto stimato, configurare Chart.js con tooltip e legenda."
+    },
+    {
+      "criterio": "In renderProgress(data) la chiamata renderStrengthChart(data) è attiva (non commentata)",
+      "soddisfatto": true,
+      "dettaglio": "progress.js riga 510: 'renderStrengthChart(data);' è attiva, non commentata. Chiamata diretta dopo renderWeightBfChart(data) nella funzione renderProgress()."
+    },
+    {
+      "criterio": "progressCharts['massimali']?.destroy() è chiamato prima di creare la nuova istanza Chart",
+      "soddisfatto": true,
+      "dettaglio": "progress.js riga 343: 'progressCharts['massimali']?.destroy();' distrugge istanza precedente prima di riga 345 'progressCharts['massimali'] = new Chart(...)'."
+    },
+    {
+      "criterio": "Il canvas 'chart-massimali' (già presente in progress.html) viene selezionato con document.getElementById('chart-massimali')",
+      "soddisfatto": true,
+      "dettaglio": "progress.js riga 267: 'const canvas = document.getElementById('chart-massimali');'. Canvas presente in progress.html riga 83 con id='chart-massimali'."
+    },
+    {
+      "criterio": "La funzione gestisce correttamente un array vuoto o dati mancanti senza lanciare eccezioni",
+      "soddisfatto": true,
+      "dettaglio": "progress.js riga 271-279: Array.isArray(data) + filter per record validi, then length check. Se length === 0, inserisce placeholder 'Nessun dato disponibile' e return. Nessun tentativo di accesso a proprietà su array vuoto."
+    },
+    {
+      "criterio": "I valori null/undefined in squat_1rm, panca_1rm, stacco_1rm non causano errori (uso di ?? null e spanGaps: true)",
+      "soddisfatto": true,
+      "dettaglio": "progress.js riga 328-340: dataset costruiti con 'd.squat_1rm ?? null', 'd.panca_1rm ?? null', 'd.stacco_1rm ?? null'. Riga 363, 379, 395: 'spanGaps: true' su tutti e 3 i dataset. Chart.js non disegna linee tra punti null con spanGaps: true."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/progress.js",
+      "esiste": true,
+      "note": "Contiene renderStrengthChart() completa (riga 266-483), renderWeightBfChart(), renderProgress(), showError(), formatDateIT(). Tutti i pattern Chart.js corretti: progressCharts registry, destroy prima di new Chart(), dataset con ?? null, spanGaps: true, tooltip con callback, legenda configurata."
+    },
+    {
+      "path": "docs/css/progress.css",
+      "esiste": true,
+      "note": "Contiene .progress-section, .progress-chart-container (320px base, 240px mobile, 380px ≥1280px), .badge-reale, .badge-stimato, .progress-section__legend. Nessuno stile specifico per punto stimato necessario — Chart.js gestisce via pointStyle e pointBackgroundColor array."
+    },
+    {
+      "path": "docs/progress.html",
+      "esiste": true,
+      "note": "Markup completo: <section id='section-massimali'> (riga 76), <canvas id='chart-massimali'> (riga 83), badge R/S nella .progress-section__legend (riga 78-81). Chart.js caricato via CDN (riga 10). progress.js incluso (riga 116)."
+    },
+    {
+      "path": "docs/data/measurements.json",
+      "esiste": true,
+      "note": "Contiene 6 record: 5 con massimali_tipo='R', ultimo (2026-03-20) con massimali_tipo='S'. Campi squat_1rm, panca_1rm, stacco_1rm presenti e validi. Data in formato YYYY-MM-DD."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "La funzione buildPointRadius() (riga 317-321) è usata per impostare sia pointRadius che pointBorderWidth. Il nome suggerisce solo raggio, ma funziona correttamente per entrambi. Potrebbe essere rinominata a buildPointProperty() per chiarezza, ma non è un errore.",
+      "file": "docs/js/progress.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "I dati in measurements.json contengono sia 'massimali_tipo' (per record) sia 'squat_1rm_tipo', 'panca_1rm_tipo', 'stacco_1rm_tipo' (ridondanti, sempre='R'). La funzione renderStrengthChart usa correttamente 'massimali_tipo', non questi campi ridondanti. Non è un problema, solo una nota sulla struttura dati.",
+      "file": "docs/data/measurements.json"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Chart.js è caricato via CDN (progress.html riga 10). Se la rete è offline, il grafico non funzionerà. Tuttavia, è lo stesso pattern usato per renderWeightBfChart e rispecchia l'architettura dichiarata. Non è un problema di implementazione, ma una limitazione della scelta di stack.",
+      "file": "docs/progress.html"
+    }
+  ]
+}

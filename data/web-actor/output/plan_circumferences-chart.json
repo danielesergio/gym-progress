@@ -1,0 +1,141 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "circumferences-chart",
+    "task_title": "Grafico andamento circonferenze corporee",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "circumferences-chart",
+    "type": "component",
+    "title": "Grafico andamento circonferenze corporee",
+    "description": "Grafico a linee che mostra l'evoluzione nel tempo delle circonferenze corporee chiave: vita_cm (proxy grasso) e braccio_dx_cm (proxy massa muscolare). Opzionalmente coscia_dx_cm come terza linea. La pagina progress.html e il file progress.js esistono già con la struttura predisposta: il canvas #chart-circonferenze è già nel DOM e la funzione renderCircumferencesChart(data) è già chiamata da renderProgress() (riga 653, attualmente commentata). Il task consiste nell'implementare la funzione e decommentare la chiamata.",
+    "inputs": [
+      "measurements_data"
+    ],
+    "outputs": [
+      "CircumferencesChart"
+    ],
+    "acceptance_criteria": [
+      "Almeno vita e braccio sono mostrati nel tempo",
+      "Il grafico è leggibile senza sovraffollamento di linee",
+      "La differenza tra prima e ultima misurazione è percepibile"
+    ],
+    "notes": "Il canvas #chart-circonferenze esiste già in progress.html (riga 91). La funzione renderCircumferencesChart(data) è già referenziata in renderProgress() ma commentata (riga 653). Il developer deve: 1) aggiungere la funzione renderCircumferencesChart() in progress.js, 2) decommentare la chiamata in renderProgress(), 3) aggiungere eventuali stili mancanti in progress.css. Nessuna modifica a progress.html richiesta. Dati disponibili: 6 misurazioni dal 2022-10-22 al 2026-03-20 — tutti i record hanno vita_cm, braccio_dx_cm, coscia_dx_cm valorizzati (nessun null)."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "Aggiungere la funzione renderCircumferencesChart(data) con Chart.js (linee vita, braccio, coscia). Decommentare la riga 653: '/* renderCircumferencesChart(data); */' → 'renderCircumferencesChart(data);'. La funzione va inserita prima di renderProgress(), seguendo il pattern già usato da renderWeightBfChart e renderStrengthChart: asse X lineare con timestamp, spanGaps:true, colori dal design system.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/progress.css",
+        "motivo": "Verificare se esistono stili specifici per il container del grafico circonferenze. Il container .progress-chart-container è già definito per gli altri grafici — nessun stile aggiuntivo è probabilmente necessario, ma il developer deve verificare e aggiungere regole dedicate solo se il grafico richiede un'altezza o un layout diverso.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/measurements.json",
+        "motivo": "Struttura dati reale: array di 6 oggetti con campi circonferenze vita_cm (number), braccio_dx_cm (number), coscia_dx_cm (number), fianchi_cm (number), petto_cm (number), collo_cm (number), data (YYYY-MM-DD). Nessun valore null nei 6 record disponibili — tutti i campi circonferenza sono valorizzati."
+      },
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "File da modificare: leggere il pattern già stabilito (renderWeightBfChart, renderStrengthChart) per seguire le stesse convenzioni. In particolare: uso di progressCharts{} come registro, asse X lineare con timestamp, formatDateIT() per i tooltip, gestione null con spanGaps:true. Decommentare la riga 653 in renderProgress()."
+      },
+      {
+        "path": "docs/css/progress.css",
+        "motivo": "File da modificare: verificare stili esistenti .progress-chart-container e .progress-section per capire se il grafico circonferenze necessita stili dedicati o riusa quelli già definiti."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "grafici": {
+        "nome": "Chart.js",
+        "versione": "4.x",
+        "cdn": "https://cdn.jsdelivr.net/npm/chart.js",
+        "nota": "Già incluso in progress.html via <script src='https://cdn.jsdelivr.net/npm/chart.js' defer>. Nessuna aggiunta richiesta."
+      },
+      "framework": "plain HTML/JS (ES2022)",
+      "styling": "CSS custom properties — nessun preprocessore"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase",
+      "classi_css": "kebab-case con prefisso pagina (progress-*)",
+      "gestione_null": "spanGaps: true nei dataset Chart.js; filtro record con d && d.data",
+      "pattern_js": "funzione renderXxx(data) chiamata da renderProgress(data) che riceve l'array già fetchato — nessun fetch aggiuntivo nella render function",
+      "asse_x": "type: 'linear' con valori timestamp (ms). Callback ticks: new Date(value).toISOString().slice(0,10) → formatDateIT()",
+      "tooltip_title": "callback title: items[0].parsed.x → new Date(ts).toISOString().slice(0,10) → formatDateIT()",
+      "registro_grafici": "progressCharts['nomeChiave'] — chiamare .destroy() prima di ricreare per evitare istanze duplicate",
+      "responsive": "responsive: true, maintainAspectRatio: false su ogni istanza Chart.js",
+      "interazione": "interaction: { mode: 'index', intersect: false }",
+      "legenda": "position: 'bottom', usePointStyle: true, color: '#a0a0a0'"
+    },
+    "colori_design_system": {
+      "vita": "#ff6b35",
+      "braccio": "#4fc3f7",
+      "coscia": "#ce93d8",
+      "grid": "rgba(58,58,58,0.6)",
+      "text_muted": "#a0a0a0",
+      "nota": "Stessi colori usati da renderStrengthChart per coerenza: arancio=proxy forza/grasso, celeste=proxy massa, viola=proxy composizione"
+    },
+    "pagina": {
+      "nome": "Progressi",
+      "file_html": "docs/progress.html",
+      "file_js": "docs/js/progress.js",
+      "file_css": "docs/css/progress.css",
+      "dati_json": ["data/measurements.json"],
+      "canvas_esistente": "#chart-circonferenze (riga 91 di progress.html)"
+    },
+    "dati_circonferenze": {
+      "campi_chiave": ["vita_cm", "braccio_dx_cm", "coscia_dx_cm"],
+      "campi_secondari": ["fianchi_cm", "petto_cm", "collo_cm"],
+      "valori_baseline_2022": {
+        "vita_cm": 80,
+        "braccio_dx_cm": 30,
+        "coscia_dx_cm": 54
+      },
+      "valori_ultima_2026": {
+        "vita_cm": 89,
+        "braccio_dx_cm": 33.5,
+        "coscia_dx_cm": 57
+      },
+      "delta_vita": "+9 cm (incremento — grasso aumentato)",
+      "delta_braccio": "+3.5 cm (crescita muscolare)",
+      "delta_coscia": "+3 cm",
+      "nota_leggibilita": "3 linee sono il massimo raccomandato per evitare sovraffollamento. Vita + Braccio obbligatorie, Coscia opzionale come terza linea. NON includere fianchi, petto, collo nel grafico principale."
+    }
+  },
+  "criteri_accettazione": [
+    "Il grafico circonferenze è visibile nella sezione 'Circonferenze Corporee' della pagina progress.html",
+    "Almeno vita_cm e braccio_dx_cm sono mostrati come linee distinte nel tempo",
+    "I 6 punti storici (2022→2026) sono tutti visibili sull'asse X",
+    "La differenza tra baseline 2022 (vita: 80 cm, braccio: 30 cm) e ultima misurazione 2026 (vita: 89 cm, braccio: 33.5 cm) è percepibile visivamente",
+    "Il grafico NON mostra più di 3 linee (no sovraffollamento)",
+    "L'asse X usa date in formato italiano leggibile tramite formatDateIT()",
+    "Il tooltip al passaggio del mouse mostra la data e i valori cm di ciascuna circonferenza",
+    "Nessun errore in console.log al caricamento della pagina",
+    "docs/js/progress.js contiene la funzione renderCircumferencesChart(data)",
+    "La riga 653 di progress.js è decommentata: renderCircumferencesChart(data) è chiamata dentro renderProgress()",
+    "progressCharts['circonferenze'] è usato come chiave nel registro, con .destroy() prima della ricreazione",
+    "spanGaps: true è impostato su tutti i dataset per gestire eventuali null futuri",
+    "I colori usati sono coerenti col design system: vita=#ff6b35, braccio=#4fc3f7, coscia=#ce93d8"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "progress-page-layout",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/progress.html",
+        "docs/js/progress.js",
+        "docs/css/progress.css"
+      ],
+      "note": "File presenti in docs/. progress.html contiene già il canvas #chart-circonferenze (riga 91) nella sezione 'Circonferenze Corporee'. progress.js contiene già la struttura renderProgress() con il placeholder commentato per renderCircumferencesChart(data) (riga 653). Il registro progressCharts{} è già definito (riga 16). Il task può procedere senza blocchi."
+    }
+  ]
+}

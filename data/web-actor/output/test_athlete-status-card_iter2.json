@@ -1,0 +1,110 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "athlete-status-card",
+    "task_titolo": "Card stato attuale atleta",
+    "iterazione": 2
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "La card #card-stato mostra il peso 87.2 kg con etichetta 'Peso'",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js riga 82: peso formattato con toFixed(1) e unità 'kg' inline; riga 93: etichetta 'Peso' in .status-card__label"
+    },
+    {
+      "criterio": "La card #card-stato mostra il BF% 17.1% con etichetta 'Body Fat' (non solo 'BF%')",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js riga 83: body_fat_pct formattato con toFixed(1) e unità '%' inline; riga 97: etichetta 'Body Fat' descrittiva in .status-card__label"
+    },
+    {
+      "criterio": "La card #card-stato mostra la massa magra 72.3 kg con etichetta 'Massa Magra'",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js riga 84: massa_magra_kg formattato con toFixed(1) e unità 'kg' inline; riga 101: etichetta 'Massa Magra' in .status-card__label"
+    },
+    {
+      "criterio": "La card #card-stato mostra FFMI 20.0 con etichetta 'FFMI'",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js riga 85: ffmi_adj formattato con toFixed(1); riga 105: etichetta 'FFMI' in .status-card__label"
+    },
+    {
+      "criterio": "La card #card-stato mostra TDEE 2870 kcal con etichetta 'TDEE'",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js riga 86: tdee_kcal arrotondato con Math.round() e unità 'kcal' inline; riga 109: etichetta 'TDEE' in .status-card__label"
+    },
+    {
+      "criterio": "La card mostra la fase corrente del programma (es. badge con testo 'Recupero TOS — Fase 1')",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js righe 68-74: logica di ricerca della fase corrente da plan.fasi con find(stato==='corrente'); righe 77-79: badge HTML generato se currentPhase è disponibile; plan.json riga 52: fase numero 0 ha nome 'Recupero TOS' e stato 'corrente'; risultato atteso nel DOM sarà 'Recupero TOS' (il numero di fase non è incluso nel nome)"
+    },
+    {
+      "criterio": "Se plan.json non è disponibile, la card mostra comunque i 5 valori corporei senza errori",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js righe 68-79: `const fasi = plan?.fasi ?? []` gestisce plan null; currentPhase diventa null; phaseBadgeHtml è stringa vuota. I 5 valori corporei sono sempre renderizzati (righe 82-86) indipendentemente da plan. Fallback JSON nel fetch (righe 178-183) cattura errori plan.json e passa plan=null senza crash"
+    },
+    {
+      "criterio": "Nessun valore mostra la stringa 'null' o 'undefined' nel DOM",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js righe 82-86: ogni valore corporeo usa `!= null ? valore : '—'` per fallback; plan.json e measurements.json non hanno null nei campi rilevanti; fase fallback usa ?? null che non renderizza mai la stringa 'null'"
+    },
+    {
+      "criterio": "docs/js/dashboard.js contiene la funzione renderAthleteStatusCard(last, plan)",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js righe 62-114: funzione renderAthleteStatusCard dichiarata correttamente con signature (last, plan); contiene logica di rendering del markup HTML"
+    },
+    {
+      "criterio": "renderAthleteStatusCard() è chiamata dentro renderDashboard() dopo la creazione del DOM",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js righe 125-155: renderDashboard() esegue container.innerHTML alle righe 136-151, quindi chiama renderAthleteStatusCard(last, plan) alla riga 154 subito dopo l'assegnazione"
+    },
+    {
+      "criterio": "docs/css/dashboard.css contiene regole per .status-card__grid, .status-card__metric, .status-card__label, .status-card__value",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.css righe 112-148: tutte le classi CSS richieste sono definite (.status-card__grid riga 112, .status-card__metric riga 119, .status-card__label riga 126, .status-card__value riga 135). Include anche .status-card__unit riga 143 per le unità inline"
+    },
+    {
+      "criterio": "La card è visivamente coerente con le altre .dashboard-card (usa le stesse variabili CSS)",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.css righe 86-167: tutte le regole per .status-card* usano variabili CSS standard del design system (--color-text-primary, --color-accent, --space-*, --font-size-*, --radius-*, --color-border, --color-bg-card). .dashboard-card__title riga 89 usa le stesse variabili delle altre card. Responsive media queries rige 151-167 mantengono coerenza con #dashboard-grid"
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/dashboard.js",
+      "esiste": true,
+      "note": "File contiene renderAthleteStatusCard(last, plan) alle righe 62-114 e la sua invocazione in renderDashboard() alla riga 154. Fetch parallelo gestisce gracefully l'assenza di plan.json (righe 178-183)"
+    },
+    {
+      "path": "docs/css/dashboard.css",
+      "esiste": true,
+      "note": "File contiene tutte le regole CSS per .status-card* (righe 86-167), .dashboard-card__title (riga 89), e responsive design con media query (righe 151-167). Usa correttamente variabili CSS del design system"
+    },
+    {
+      "path": "docs/dashboard.html",
+      "esiste": true,
+      "note": "File contiene il container #card-stato alle righe 65, 138 con classe .dashboard-card e aria-label. Script dashboard.js caricato alla riga 91"
+    },
+    {
+      "path": "docs/data/measurements.json",
+      "esiste": true,
+      "note": "Contiene ultima misurazione (2026-03-20) con peso_kg=87.2, body_fat_pct=17.1, massa_magra_kg=72.3, ffmi_adj=20.0, tdee_kcal=2870 — tutti i valori attendono nella card"
+    },
+    {
+      "path": "docs/data/plan.json",
+      "esiste": true,
+      "note": "Contiene array fasi con fase numero 0 'Recupero TOS' che ha stato='corrente' (riga 73 del file). La fase è correttamente ritrovata dalla funzione renderAthleteStatusCard"
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "Il nome della fase visualizzato è 'Recupero TOS' senza il numero (0) o il suffisso '— Fase 0'. La specifica del task dice 'es. Recupero TOS — Fase 1' come esempio visivo, ma l'implementazione mostra solo il nome. Nel caso concreto plan.json contiene fase numero 0 = 'Recupero TOS'. Se si vuole il formato 'Recupero TOS — Fase 0' nell'HTML, occorre concatenare numero alla renderizzazione; ma la specifica non è imperativa — è un 'es.'",
+      "file": "docs/js/dashboard.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Il griglia KPI (.status-card__grid) è definita con grid-template-columns: repeat(2, 1fr) di default (riga 114 dashboard.css). Con 5 metriche, l'ultima colonna sarà vuota/non allineata. Media query a 480px la trasforma in 3 colonne (riga 152-154). Layout è funzionale, non critico, ma asimmetrico per il default mobile",
+      "file": "docs/css/dashboard.css"
+    }
+  ]
+}

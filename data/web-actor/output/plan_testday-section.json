@@ -1,0 +1,128 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "testday-section",
+    "task_title": "Sezione Test Day (settimana 4)",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "testday-section",
+    "type": "component",
+    "title": "Sezione Test Day (settimana 4)",
+    "description": "Presentazione dedicata al Test Day submassimale della settimana 4 (Sabato). Mostra il protocollo di riscaldamento progressivo e i tentativi per Squat e Stacco (la Panca è esclusa per TOS). Per ogni tentativo: peso target, reps, note. Evidenzia chiaramente che la Panca è categoricamente esclusa. Il formato deve essere consultabile in palestra durante il test.",
+    "inputs": [
+      "workout_data"
+    ],
+    "outputs": [
+      "TestDaySection"
+    ],
+    "acceptance_criteria": [
+      "Il protocollo di Squat e Stacco è mostrato con tutti i tentativi",
+      "Per ogni tentativo sono visibili peso e note",
+      "La Panca è visibilmente indicata come esclusa (con motivazione)",
+      "Il formato è consultabile su mobile in palestra"
+    ],
+    "notes": "La struttura dati del Test Day è in docs/data/workout.json, settimana 4, giorno 'Sabato', campo 'protocolli' (array). Ogni protocollo ha: nome, target (string descrittivo), serie[] (oggetti con set, peso, reps, note, tentativo:bool). La Panca Piana ha serie:[] e target:'ESCLUSA — Sindrome TOS attiva'. Il giorno Sabato settimana 4 usa 'protocolli' anziché 'esercizi' — la funzione renderGiornoCard() esistente non gestisce questo caso: va estesa con un branch dedicato oppure si crea una funzione separata renderTestDayCard(). La sezione Test Day deve apparire SOLO quando la settimana attiva è la 4 e deve integrarsi nell'area #workout-detail dopo le sessioni normali, oppure come card speciale all'interno del giorno Sabato. Dato che i giorni S4 Sabato già usa il campo 'protocolli' (non 'esercizi'), la funzione renderGiornoCard() deve rilevare la presenza di 'protocolli' e delegare a renderTestDayCard(). La visualizzazione deve essere mobile-first: font grandi, layout verticale, righe ampie con touch-target adeguati per consultazione in palestra."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "Aggiungere funzione renderTestDayCard(protocollo) per renderizzare un singolo protocollo Test Day (serie di riscaldamento + tentativi). Aggiungere funzione renderTestDaySection(giorno) che itera su giorno.protocolli[]. Modificare renderGiornoCard() per rilevare presenza di 'protocolli' anziché 'esercizi' e delegare a renderTestDaySection(). Nessun fetch aggiuntivo richiesto: i dati sono già in workoutData.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Aggiungere stili per la sezione Test Day: .workout-testday-section (container con bordo accent speciale), .workout-testday-card (card protocollo), .workout-testday-card--escluso (variante rossa/danger per Panca), .workout-testday-table (tabella serie con colonne Set | Peso | Reps | Note), evidenziazione righe tentativo vs riscaldamento, responsive mobile-first con font >= 1rem per consultazione in palestra.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/workout.json",
+        "motivo": "Struttura dati Test Day: settimana 4 (numero:4), giorno 'Sabato', tipo 'Test Day (Adattato TOS — Valutazione Submassimale)', campo 'protocolli' (array). Ogni protocollo: { nome:string, target:string, serie:[ { set:string, peso:string, reps:number, note:string, tentativo:bool } ] }. La Panca ha serie:[] e target:'ESCLUSA — Sindrome TOS attiva'. Squat: 4 riscaldamenti + 4 tentativi (l'ultimo opzionale). Stacco: 3 riscaldamenti + 4 tentativi (l'ultimo opzionale). Campo 'tentativo:true' identifica i tentativi veri."
+      },
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "Codice esistente da estendere: renderGiornoCard() usa giorno.esercizi — va aggiunto branch per giorno.protocolli. Pattern JS da rispettare: funzioni pure che restituiscono string HTML, nessun side-effect, camelCase, template literal, gestione null con ??"
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Stili esistenti da rispettare e da cui derivare i nuovi stili Test Day: prefisso 'workout-', CSS custom properties (var(--color-accent), var(--color-danger), var(--color-warning), var(--color-bg-card), etc.), pattern tabella da workout-esercizi-table, pattern card da workout-giorno-card, breakpoint mobile <= 767px"
+      },
+      {
+        "path": "docs/workout.html",
+        "motivo": "Struttura HTML esistente: la sezione Test Day viene iniettata dinamicamente in #workout-detail dal JS — nessuna modifica all'HTML statico è necessaria per il markup principale. Verificare che non esistano placeholder HTML da rimuovere."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS (ES2022)",
+      "grafici": null,
+      "dati": "fetch() su docs/data/workout.json — già eseguita da renderWorkout(), dati disponibili in workoutData"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase",
+      "funzioni_render": "funzioni pure che restituiscono string HTML (template literal); nessun side-effect; chiamate con dati già fetchati",
+      "classi_css": "kebab-case con prefisso pagina (workout-*)",
+      "gestione_null": "operatore ?? per valori mancanti, array vuoto [] trattato come caso escluso (Panca)",
+      "pattern_entry": "DOMContentLoaded → fetch() → renderWorkout(data) → renderWorkoutDetail() → renderGiornoCard() [esteso con branch protocolli → renderTestDaySection()]",
+      "responsive": "mobile-first, breakpoint 767px (colonne) e 375px (compact); font-size >= 1rem su mobile per leggibilità in palestra"
+    },
+    "pagina": {
+      "nome": "Allenamento",
+      "file": "docs/workout.html",
+      "js": "docs/js/workout.js",
+      "css": "docs/css/workout.css",
+      "dati_json": ["data/workout.json"]
+    },
+    "struttura_dati_testday": {
+      "path_json": "settimane[numero==4].giorni[giorno=='Sabato']",
+      "campo_discriminante": "protocolli (array) — presente solo nel giorno Test Day al posto di esercizi",
+      "protocollo_schema": {
+        "nome": "string — es. 'Squat', 'Panca Piana', 'Stacco da Terra'",
+        "target": "string — descrizione del target o 'ESCLUSA — Sindrome TOS attiva'",
+        "serie": "array — vuoto [] se esercizio escluso"
+      },
+      "serie_schema": {
+        "set": "string — es. 'Riscaldamento 1', 'Tentativo 1', 'Tentativo 4 (opzionale)'",
+        "peso": "string — es. '40 kg', '130 kg'",
+        "reps": "number",
+        "note": "string — può essere stringa vuota",
+        "tentativo": "bool — true per tentativi veri, false per riscaldamenti"
+      },
+      "rilevamento_escluso": "protocollo.serie.length === 0 oppure protocollo.target.includes('ESCLUSA')"
+    }
+  },
+  "criteri_accettazione": [
+    "Il protocollo di Squat è mostrato con riscaldamenti e tentativi distinti visivamente",
+    "Il protocollo di Stacco da Terra è mostrato con riscaldamenti e tentativi distinti visivamente",
+    "La Panca Piana è visualizzata come blocco 'ESCLUSA' con colore danger/rosso e motivazione (Sindrome TOS)",
+    "Per ogni tentativo (tentativo:true) sono visibili set, peso, reps e note",
+    "Per ogni riscaldamento (tentativo:false) sono visibili set, peso, reps e note opzionale",
+    "La sezione Test Day appare solo quando la settimana selezionata è la 4",
+    "Il layout è mobile-first con font >= 1rem e touch-target adeguati (consultabile su smartphone in palestra)",
+    "docs/js/workout.js contiene la funzione renderTestDayCard(protocollo)",
+    "docs/js/workout.js contiene la funzione renderTestDaySection(giorno)",
+    "docs/js/workout.js — renderGiornoCard() riconosce il campo 'protocolli' e delega a renderTestDaySection()",
+    "docs/css/workout.css contiene la classe .workout-testday-section",
+    "docs/css/workout.css contiene la classe .workout-testday-card--escluso con stile danger",
+    "Le righe con tentativo:true sono visivamente distinte dalle righe di riscaldamento (es. background accent, font-weight bold)",
+    "Nessun errore JS nella console quando si seleziona S4 e si visualizza il giorno Sabato"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "workout-session-card",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/workout.html",
+        "docs/js/workout.js",
+        "docs/css/workout.css"
+      ],
+      "note": "Tutti e tre i file esistono in docs/. workout.js contiene renderGiornoCard(), renderEsercizioRow(), renderWorkoutDetail() e l'entry point DOMContentLoaded con fetch(). workout.html ha la struttura con #workout-detail. workout.css ha tutti gli stili per card e tabella esercizi. La dipendenza è soddisfatta."
+    }
+  ]
+}

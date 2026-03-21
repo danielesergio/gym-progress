@@ -327,7 +327,7 @@ def build_new_measurement(
         try:
             bf          = body_fat_navy(sesso, vita, collo, altezza, fianchi or 0)
             massa_magra = round(peso * (1 - bf / 100), 1)
-            entry["body_fat_pct"]  = bf
+            entry["body_fat_pct"]   = bf
             entry["massa_magra_kg"] = massa_magra
             entry["ffmi_adj"]       = ffmi_adjusted(massa_magra, altezza)
             entry["bmr_kcal"]       = int(bmr_mifflin(peso, altezza, eta, sesso))
@@ -336,6 +336,8 @@ def build_new_measurement(
             log("WARN", f"Calcolo body composition fallito: {e}")
             _fill_body_nulls(entry)
     else:
+        missing = [k for k, v in [("vita_cm", vita), ("collo_cm", collo), ("altezza_cm", altezza)] if not v]
+        log("WARN", f"Body composition non calcolata -campi mancanti: {', '.join(missing)}")
         _fill_body_nulls(entry)
 
     # 1RM da test (Epley)
@@ -370,12 +372,54 @@ def _fill_body_nulls(entry: dict) -> None:
         entry[k] = None
 
 
+def enrich_missing_body_composition(measurements: list, profile: dict) -> int:
+    """
+    Calcola body_fat_pct, massa_magra_kg, ffmi_adj, bmr_kcal, tdee_kcal per le
+    entry storiche che hanno i dati antropometrici ma mancano dei valori calcolati.
+    Ritorna il numero di entry arricchite.
+    """
+    if not _BODY_CALC_OK:
+        return 0
+
+    altezza = profile.get("altezza_cm", 188.0)
+    sesso   = profile.get("sesso", "M")
+    enriched = 0
+
+    for entry in measurements:
+        if entry.get("body_fat_pct") is not None:
+            continue  # gia' calcolato
+
+        vita    = entry.get("vita_cm")
+        collo   = entry.get("collo_cm")
+        fianchi = entry.get("fianchi_cm")
+        peso    = entry.get("peso_kg")
+        eta     = entry.get("eta", profile.get("eta", 30))
+
+        if not (vita and collo and peso):
+            continue
+
+        try:
+            bf          = body_fat_navy(sesso, vita, collo, altezza, fianchi or 0)
+            massa_magra = round(peso * (1 - bf / 100), 1)
+            entry["body_fat_pct"]   = bf
+            entry["massa_magra_kg"] = massa_magra
+            entry["ffmi_adj"]       = ffmi_adjusted(massa_magra, altezza)
+            entry["bmr_kcal"]       = int(bmr_mifflin(peso, altezza, eta, sesso))
+            entry["tdee_kcal"]      = int(entry["bmr_kcal"] * 1.55)
+            enriched += 1
+        except Exception as e:
+            log("WARN", f"Enrichment entry {entry.get('data','?')}: {e}")
+
+    return enriched
+
+
 # ---------------------------------------------------------------------------
 # LLM invocation via claude CLI
 # ---------------------------------------------------------------------------
 
 def run_agent(agent_type: Optional[str], prompt: str, timeout: int = 720) -> str:
-    """Invoca claude CLI in modalita' non-interattiva."""
+    """Invoca claude CLI in modalita' non-interattiva. Il prompt viene passato via stdin
+    per evitare il limite Windows sulla lunghezza degli argomenti (WinError 206)."""
     cmd = [
         "claude", "--print",
         "--dangerously-skip-permissions",
@@ -383,12 +427,11 @@ def run_agent(agent_type: Optional[str], prompt: str, timeout: int = 720) -> str
     ]
     if agent_type:
         cmd += ["--agent", agent_type]
-    cmd.append(prompt)
 
     log("ACTION", f"LLM: {agent_type or 'default'}")
     try:
         result = subprocess.run(
-            cmd, capture_output=True, text=True,
+            cmd, input=prompt, capture_output=True, text=True,
             encoding="utf-8", errors="replace",
             cwd=PROJECT_ROOT, timeout=timeout,
         )
@@ -400,11 +443,11 @@ def run_agent(agent_type: Optional[str], prompt: str, timeout: int = 720) -> str
         return ""
 
 
-def run_agents_parallel(tasks: list) -> dict:
+def run_agents_parallel(tasks: list, timeout: int = 720) -> dict:
     """Lancia piu' agenti in parallelo. tasks = [(agent_type, prompt), ...]"""
     results: dict = {}
     with ThreadPoolExecutor(max_workers=len(tasks)) as executor:
-        futures = {executor.submit(run_agent, ag, pr): ag for ag, pr in tasks}
+        futures = {executor.submit(run_agent, ag, pr, timeout): ag for ag, pr in tasks}
         for future in as_completed(futures):
             ag = futures[future]
             try:
@@ -421,28 +464,30 @@ def run_agents_parallel(tasks: list) -> dict:
 
 def parse_review(path: Path) -> tuple:
     """
-    Legge un review JSON. Ritorna (approvato: bool, valutazione: int, problemi: list).
+    Legge un review JSON.
+    Ritorna (approvato: bool, valutazione: int, problemi: list, numero_review: int).
     Approvato = valutazione >= 8 AND nessun problema critico, oppure esito == APPROVATA.
     """
     if not path.exists():
         log("WARN", f"Review non trovato: {path.name} -considerato BOCCIATO")
-        return False, 0, ["(file non trovato)"]
+        return False, 0, ["(file non trovato)"], 0
     try:
-        data        = json.loads(path.read_text(encoding="utf-8"))
-        meta        = data.get("meta", {}) or {}
-        valutazione = int(meta.get("valutazione", 0))
-        esito       = str(meta.get("esito", "")).upper()
-        problemi    = data.get("problemi_critici", []) or []
+        data          = json.loads(path.read_text(encoding="utf-8"))
+        meta          = data.get("meta", {}) or {}
+        valutazione   = int(meta.get("valutazione", 0))
+        esito         = str(meta.get("esito", "")).upper()
+        numero_review = int(meta.get("numero_review", 1))
+        problemi      = data.get("problemi_critici", []) or []
         if not isinstance(problemi, list):
             problemi = [problemi]
         approvato = (valutazione >= 8 and len(problemi) == 0) or esito == "APPROVATA"
-        return approvato, valutazione, problemi
+        return approvato, valutazione, problemi, numero_review
     except json.JSONDecodeError as e:
         log("ERROR", f"JSON non valido in {path.name}: {e}")
-        return False, 0, [f"JSON invalido: {e}"]
+        return False, 0, [f"JSON invalido: {e}"], 0
     except Exception as e:
         log("ERROR", f"Errore parsing review {path.name}: {e}")
-        return False, 0, [str(e)]
+        return False, 0, [str(e)], 0
 
 
 # ---------------------------------------------------------------------------
@@ -566,8 +611,39 @@ def _rates_text(rates: dict) -> str:
 
 
 def _last_n_measurements(measurements: list, n: int = 5) -> str:
-    return json.dumps(measurements[-n:] if len(measurements) > n else measurements,
-                      indent=2, ensure_ascii=False)
+    rows = measurements[-n:] if len(measurements) > n else measurements
+    if not rows:
+        return "(nessuna misurazione)"
+
+    cols = [
+        ("data",            "data"),
+        ("peso_kg",         "peso"),
+        ("body_fat_pct",    "bf%"),
+        ("massa_magra_kg",  "massa_magra"),
+        ("ffmi_adj",        "ffmi"),
+        ("bmr_kcal",        "bmr"),
+        ("tdee_kcal",       "tdee"),
+        ("squat_1rm",       "squat"),
+        ("panca_1rm",       "panca"),
+        ("stacco_1rm",      "stacco"),
+        ("massimali_tipo",  "tipo"),
+        ("efficacia_workout", "efficacia"),
+        ("note",            "note"),
+    ]
+
+    def fmt(v):
+        if v is None:
+            return "-"
+        if isinstance(v, float):
+            return f"{v:.1f}"
+        return str(v)
+
+    header = "| " + " | ".join(label for _, label in cols) + " |"
+    sep    = "| " + " | ".join("---" for _ in cols) + " |"
+    lines  = [header, sep]
+    for row in rows:
+        lines.append("| " + " | ".join(fmt(row.get(key)) for key, _ in cols) + " |")
+    return "\n".join(lines)
 
 
 def _latest_file(pattern: str) -> str:
@@ -627,10 +703,11 @@ Genera il piano a lungo termine `data/output/plan.yaml` con la struttura standar
 - Scrivi SOLO il file plan.yaml, nessun testo aggiuntivo"""
 
 
-def build_plan_review_prompt(ctx: dict) -> str:
+def build_plan_review_prompt(ctx: dict, numero_review: int = 1) -> str:
     plan_text = read_text(OUTPUT_DIR / "plan.yaml")
     return f"""Sei il personal trainer senior (revisore).
-Valuta il piano a lungo termine appena generato in `data/output/plan.yaml`.
+Valuta il piano a lungo termine in `data/output/plan.yaml`.
+Questo e' il tentativo di revisione numero {numero_review} — scrivi `"numero_review": {numero_review}` nel campo meta del JSON.
 
 ## Piano da revisionare
 ```yaml
@@ -651,7 +728,7 @@ Valuta il piano a lungo termine appena generato in `data/output/plan.yaml`.
 ```
 
 ## Istruzioni
-Scrivi il report in `data/output/review/pt/review_plan_{DATE_STR}.json` come JSON valido.
+Scrivi il report in `data/output/review/pt/review_plan_{ITERATION_ID}.json` come JSON valido.
 
 Schema richiesto:
 ```json
@@ -666,7 +743,7 @@ Regole:
 
 def build_plan_regen_prompt(ctx: dict) -> str:
     return f"""Sei il personal trainer certificato. Il piano e' stato bocciato.
-Leggi `data/output/review/pt/review_plan_{DATE_STR}.json` e correggi `data/output/plan.yaml`
+Leggi `data/output/review/pt/review_plan_{ITERATION_ID}.json` e correggi `data/output/plan.yaml`
 applicando TUTTI i problemi_critici e i suggerimenti indicati.
 
 ## {_rates_text(ctx['rates'])}
@@ -852,7 +929,8 @@ Genera la dieta settimanale `data/output/diet_{ITERATION_ID}.yaml`.
 ## Istruzioni
 - Adatta apporto calorico alla fase del piano (recupero / forza / ipertrofia / cut)
 - Rispetta preferenze e difficolta' riportate
-- Struttura: meta, giorni (7), integratori"""
+- Struttura: meta, giorni (7), integratori
+- **Usa il tool Write per salvare il file** `data/output/diet_{ITERATION_ID}.yaml` sul disco. Non stampare il contenuto su stdout."""
 
 
 def build_workout_prompt(ctx: dict) -> str:
@@ -902,11 +980,12 @@ def build_workout_prompt(ctx: dict) -> str:
 - Privilegia le metodologie empiricamente efficaci dal report performance (se disponibile)"""
 
 
-def build_workout_review_prompt(ctx: dict) -> str:
+def build_workout_review_prompt(ctx: dict, numero_review: int = 1) -> str:
     workout_text = read_text(OUTPUT_DIR / f"workout_data_{ITERATION_ID}.yaml")
 
     return f"""Sei il personal trainer senior (revisore).
-Valuta la scheda di allenamento appena generata.
+Valuta la scheda di allenamento in `data/output/workout_data_{ITERATION_ID}.yaml`.
+Questo e' il tentativo di revisione numero {numero_review} — scrivi `"numero_review": {numero_review}` nel campo meta del JSON.
 
 ## Scheda da revisionare
 ```yaml
@@ -930,7 +1009,7 @@ Valuta la scheda di allenamento appena generata.
 {_performance_analysis_text()}
 
 ## Istruzioni
-Scrivi il report in `data/output/review/pt/review_workout_{DATE_STR}.json` come JSON valido.
+Scrivi il report in `data/output/review/pt/review_workout_{ITERATION_ID}.json` come JSON valido.
 
 Schema richiesto:
 ```json
@@ -946,7 +1025,7 @@ Regole:
 
 def build_workout_regen_prompt(ctx: dict) -> str:
     return f"""Sei il personal trainer certificato. La scheda e' stata bocciata.
-Leggi `data/output/review/pt/review_workout_{DATE_STR}.json` e correggi `data/output/workout_data_{ITERATION_ID}.yaml`
+Leggi `data/output/review/pt/review_workout_{ITERATION_ID}.json` e correggi `data/output/workout_data_{ITERATION_ID}.yaml`
 applicando TUTTI i problemi_critici e i suggerimenti indicati.
 
 ## {_rates_text(ctx['rates'])}
@@ -1009,10 +1088,64 @@ def load_all_data() -> dict:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     parser.add_argument("--max-iter",    type=int,  default=3,     help="Iterazioni max loop revisione (default: 3)")
-    parser.add_argument("--dry-run",     action="store_true",       help="Solo fase 1-2-3a (calcoli, nessun LLM)")
+    parser.add_argument("--dry-run",     action="store_true",      help="Solo fase 1-2-3a (calcoli, nessun LLM)")
+    parser.add_argument("--log-context", action="store_true",  default=True,     help="Logga file e info calcolate passati nel prompt di ogni agente")
+    mode_group = parser.add_mutually_exclusive_group()
+    mode_group.add_argument("--new",    dest="mode", action="store_const", const="new",
+                            help="Nuova esecuzione: nuovo ITERATION_ID, tutte le fasi LLM eseguite")
+    mode_group.add_argument("--resume", dest="mode", action="store_const", const="resume",
+                            help="Riprendi esecuzione parziale: riusa ITERATION_ID di oggi, salta fasi gia' completate")
     args = parser.parse_args()
 
+    if args.mode is None:
+        print("Modalita':")
+        print("  1. new    -nuova esecuzione (nuovo ID, tutte le fasi)")
+        print("  2. resume -riprendi esecuzione parziale (riusa ID, salta fasi completate)")
+        choice = input("Scelta [1/2]: ").strip()
+        args.mode = "resume" if choice == "2" else "new"
+        print(f"Modalita': {args.mode}\n")
+
+    RESUME = args.mode == "resume"
     MAX_ITER = args.max_iter
+    LOG_CONTEXT = args.log_context
+
+    # -----------------------------------------------------------------------
+    # Helper: log file/info passati nel prompt di un agente
+    # -----------------------------------------------------------------------
+    def log_context(agent: str, files: list, calcs: list = None) -> None:
+        """
+        files  = [(path_str, modalita')]
+                 modalita': "incorporato" | "obbligatorio" | "discrezione"
+        calcs  = [descrizione_stringa, ...]  — info calcolate iniettate nel prompt
+        """
+        if not LOG_CONTEXT:
+            return
+        LABEL = {
+            "incorporato":  "Incorporato  ",
+            "obbligatorio": "Da leggere   ",
+            "discrezione":  "A discrezione",
+        }
+        print(f"\n  [CONTEXT] {agent}")
+        for path_raw, modalita in files:
+            # Supporta sia Path che stringa, anche con glob (es. OUTPUT_DIR / "diet_*.yaml")
+            p = path_raw if isinstance(path_raw, Path) else Path(path_raw)
+            abs_p = p if p.is_absolute() else PROJECT_ROOT / p
+            # Risolvi glob: mostra il file piu' recente o il pattern se non trovato
+            if "*" in str(abs_p):
+                matches = sorted(abs_p.parent.glob(abs_p.name), reverse=True)
+                if matches:
+                    abs_p = matches[0]
+                    p = abs_p.relative_to(PROJECT_ROOT)
+                else:
+                    p = abs_p.relative_to(PROJECT_ROOT) if abs_p.is_relative_to(PROJECT_ROOT) else abs_p
+                    print(f"    [{LABEL.get(modalita, modalita)}] {p}  (  MANCANTE)")
+                    continue
+            else:
+                p = abs_p.relative_to(PROJECT_ROOT) if abs_p.is_relative_to(PROJECT_ROOT) else abs_p
+            stato = f"{abs_p.stat().st_size:>7} B" if abs_p.exists() else "  MANCANTE"
+            print(f"    [{LABEL.get(modalita, modalita)}] {p}  ({stato})")
+        for desc in (calcs or []):
+            print(f"    [Info calcolata ] {desc}")
     plan_approved    = False
     workout_approved = False
 
@@ -1036,6 +1169,18 @@ def main() -> None:
         f"squat={feedback.get('squat_test')}, panca={feedback.get('panca_test')}, "
         f"stacco={feedback.get('stacco_test')}")
 
+    enriched_count = enrich_missing_body_composition(ctx["measurements"], athlete_profile)
+    if enriched_count > 0:
+        (OUTPUT_DIR / "measurements.json").write_text(
+            json.dumps(ctx["measurements"], indent=2, ensure_ascii=False),
+            encoding="utf-8"
+        )
+        log("OK", f"Arricchite {enriched_count} entry storiche con body composition")
+    misure_mancanti = [k for k in ("vita_cm","collo_cm","fianchi_cm","petto_cm","braccio_dx_cm","coscia_dx_cm")
+                       if not feedback.get(k)]
+    if misure_mancanti:
+        log("WARN", f"Misure non trovate nel feedback: {', '.join(misure_mancanti)}")
+
     rates_raw = calc_progression_rates(ctx["measurements"])
     rates     = apply_corrections(rates_raw, ctx["measurements"], ctx["feedback_text"])
     ctx["rates"] = rates
@@ -1052,10 +1197,20 @@ def main() -> None:
     # ──────────────────────────────────────────────────────────────────
     separator("FASE 3a -Aggiornamento measurements.json")
 
+    global ITERATION_ID
+    existing_today = ctx["measurements"][-1]
+
+    if RESUME and existing_today and existing_today.get("id") and existing_today["id"] != ITERATION_ID:
+        log("INFO", f"RESUME: riuso ITERATION_ID={existing_today['id']} dall'entry {DATE_STR}")
+        ITERATION_ID = existing_today["id"]
+    elif not RESUME and existing_today:
+        log("INFO", f"NEW: entry {DATE_STR} esistente con id={existing_today['id']} -sara' ignorata, nuovo id={ITERATION_ID}")
+        existing_today = None  # forza la creazione di una nuova entry
+
     new_m = build_new_measurement(feedback, athlete_profile, ctx["measurements"])
     if new_m:
-        if any(m.get("data") == DATE_STR for m in ctx["measurements"]):
-            log("WARN", f"Entry {DATE_STR} gia' presente -non duplicata")
+        if existing_today:
+            log("WARN", f"Entry {DATE_STR} gia' presente (id={ITERATION_ID}) -non duplicata")
         else:
             ctx["measurements"].append(new_m)
             (OUTPUT_DIR / "measurements.json").write_text(
@@ -1071,78 +1226,205 @@ def main() -> None:
         log("INFO", "Dry-run: terminato. Nessun LLM invocato.")
         return
 
+    REVIEW_PT_DIR.mkdir(parents=True, exist_ok=True)
+    plan_review_path    = REVIEW_PT_DIR / f"review_plan_{ITERATION_ID}.json"
+    workout_review_path = REVIEW_PT_DIR / f"review_workout_{ITERATION_ID}.json"
+
+
+    log("INFO", f"plan_review_path.yaml {plan_review_path.exists()} - ${plan_review_path.absolute()}")
+    log("INFO", f"workout_review_path.yaml {workout_review_path.exists()} - ${workout_review_path.absolute()}")
     # ──────────────────────────────────────────────────────────────────
     # FASE 3b -Piano a lungo termine
     # ──────────────────────────────────────────────────────────────────
     separator("FASE 3b -Generazione piano a lungo termine")
-    REVIEW_PT_DIR.mkdir(parents=True, exist_ok=True)
-    plan_review_path = REVIEW_PT_DIR / f"review_plan_{DATE_STR}.json"
+    plan_file = OUTPUT_DIR / "plan.yaml"
+    plan_start_iter = 1
+    plan_need_regen = False
 
-    log("ACTION", "gym-personal-trainer -> plan.yaml")
-    run_agent("gym-personal-trainer", build_plan_prompt(ctx))
-
-    # Loop revisione piano
-    for i in range(1, MAX_ITER + 1):
-        separator(f"FASE 3b-loop -Revisione piano ({i}/{MAX_ITER})")
-        log("ACTION", "gym-pt-senior-reviewer -> review_plan")
-        run_agent("gym-pt-senior-reviewer", build_plan_review_prompt(ctx))
-
-        approved, score, problems = parse_review(plan_review_path)
-        log("INFO", f"Piano: valutazione={score}/10, approvato={approved}, "
-            f"problemi_critici={len(problems)}")
-
+    if RESUME and plan_file.exists() and plan_review_path.exists():
+        approved, score, problems, num_rev = parse_review(plan_review_path)
         if approved:
-            log("OK", f"Piano APPROVATO ({score}/10)")
+            log("OK", f"Piano gia' APPROVATO (review {num_rev}, {score}/10) -3b saltata")
             plan_approved = True
-            break
-
-        if i < MAX_ITER:
-            log("WARN", f"Piano BOCCIATO -rigenerazione (iter {i + 1}/{MAX_ITER})")
-            run_agent("gym-personal-trainer", build_plan_regen_prompt(ctx))
+        else:
+            plan_start_iter = num_rev + 1
+            plan_need_regen = True
+            log("INFO", f"Piano esistente, review {num_rev} BOCCIATA -riprendo da iter {plan_start_iter}")
+    elif RESUME and plan_file.exists():
+        log("INFO", "plan.yaml esistente, nessuna review trovata -inizio revisione")
+    else:
+        log("ACTION", "gym-personal-trainer -> plan.yaml")
+        log_context("gym-personal-trainer [build_plan]", [
+            ("data/athlete.md",           "incorporato"),
+            ("data/goals",                "incorporato"),
+            ("data/preferences",          "incorporato"),
+            ("data/feedback_atleta.md",   "incorporato"),
+            ("data/output/plan.yaml",     "incorporato"),
+            ("data/output/performance_analysis.yaml", "incorporato"),
+        ], ["Misurazioni storiche (ultime 5) — tabella markdown",
+            "Rate progressione corretti per eta'/infortuni/stallo"])
+        run_agent("gym-personal-trainer", build_plan_prompt(ctx))
 
     if not plan_approved:
-        log("WARN", f"Piano non approvato dopo {MAX_ITER} iterazioni -procedo con ultima versione")
+        if plan_need_regen:
+            log("WARN", f"Rigenerazione piano prima di review {plan_start_iter}")
+            log_context("gym-personal-trainer [regen_plan]", [
+                (OUTPUT_DIR / f"review/pt/review_plan_{ITERATION_ID}.json", "obbligatorio"),
+                ("data/output/plan.yaml",                                   "obbligatorio"),
+                ("data/athlete.md",                                         "discrezione"),
+                (OUTPUT_DIR / f"feedback_atleta_{ITERATION_ID}.md",        "discrezione"),
+                ("data/goals",                                              "discrezione"),
+                ("data/preferences",                                        "discrezione"),
+            ], ["Rate progressione corretti per eta'/infortuni/stallo"])
+            run_agent("gym-personal-trainer", build_plan_regen_prompt(ctx))
+
+        for i in range(plan_start_iter, MAX_ITER + 1):
+            separator(f"FASE 3b-loop -Revisione piano ({i}/{MAX_ITER})")
+            log("ACTION", "gym-pt-senior-reviewer -> review_plan")
+            log_context("gym-pt-senior-reviewer [review_plan]", [
+                ("data/output/plan.yaml",       "incorporato"),
+                ("data/athlete.md",             "incorporato"),
+                ("data/feedback_atleta.md",     "incorporato"),
+            ], [f"Misurazioni storiche (ultime 5) — tabella markdown",
+                "Rate progressione corretti per eta'/infortuni/stallo",
+                f"Schema JSON review: source/schemas/review_pt.schema.json"])
+            run_agent("gym-pt-senior-reviewer", build_plan_review_prompt(ctx, i))
+
+            approved, score, problems, _ = parse_review(plan_review_path)
+            log("INFO", f"Piano: valutazione={score}/10, approvato={approved}, "
+                f"problemi_critici={len(problems)}")
+
+            if approved:
+                log("OK", f"Piano APPROVATO ({score}/10)")
+                plan_approved = True
+                break
+
+            if i < MAX_ITER:
+                log("WARN", f"Piano BOCCIATO -rigenerazione (iter {i + 1}/{MAX_ITER})")
+                run_agent("gym-personal-trainer", build_plan_regen_prompt(ctx))
+
+        if not plan_approved:
+            log("WARN", f"Piano non approvato dopo {MAX_ITER} iterazioni -procedo con ultima versione")
 
     # ──────────────────────────────────────────────────────────────────
     # FASE 3c -Feedback coach
     # ──────────────────────────────────────────────────────────────────
     separator("FASE 3c -Generazione feedback coach")
-    log("ACTION", f"gym-personal-trainer -> feedback_coach_{ITERATION_ID}.md")
-    run_agent("gym-personal-trainer", build_feedback_coach_prompt(ctx))
+    feedback_coach_path = OUTPUT_DIR / f"feedback_coach_{ITERATION_ID}.md"
+    if RESUME and feedback_coach_path.exists():
+        log("SKIP", f"feedback_coach_{ITERATION_ID}.md gia' presente -salto generazione")
+    else:
+        log("ACTION", f"gym-personal-trainer -> feedback_coach_{ITERATION_ID}.md")
+        log_context("gym-personal-trainer [feedback_coach]", [
+            ("data/feedback_atleta.md",   "incorporato"),
+            ("data/output/plan.yaml",     "incorporato"),
+        ], ["Delta mensile massimali e composizione corporea (calcolato da Python)",
+            "Misurazioni storiche (ultime 3) — tabella markdown",
+            "Rate progressione corretti per eta'/infortuni/stallo"])
+        run_agent("gym-personal-trainer", build_feedback_coach_prompt(ctx))
     write_efficacia_to_measurements(ctx["measurements"])
 
     # ──────────────────────────────────────────────────────────────────
     # FASE 3d+3e -Dieta + Scheda in parallelo
     # ──────────────────────────────────────────────────────────────────
     separator("FASE 3d+3e -Dieta e scheda allenamento (parallelo)")
-    log("ACTION", "gym-dietologo || gym-personal-trainer -> diet + workout_data")
-    run_agents_parallel([
-        ("gym-dietologo",        build_diet_prompt(ctx)),
-        ("gym-personal-trainer", build_workout_prompt(ctx)),
-    ])
+    diet_file       = OUTPUT_DIR / f"diet_{ITERATION_ID}.yaml"
+    workout_file_de = OUTPUT_DIR / f"workout_data_{ITERATION_ID}.yaml"
+    tasks = []
+    if RESUME and diet_file.exists():
+        log("SKIP", f"diet_{ITERATION_ID}.yaml esistente -dietologo saltato")
+    else:
+        log_context("gym-dietologo [build_diet]", [
+            ("data/athlete.md",           "incorporato"),
+            ("data/goals",                "incorporato"),
+            ("data/preferences",          "incorporato"),
+            ("data/feedback_atleta.md",   "incorporato"),
+            ("data/output/plan.yaml",     "incorporato"),
+            (OUTPUT_DIR / "diet_*.yaml",  "incorporato"),
+        ], ["Misurazioni storiche (ultime 2) — tabella markdown"])
+        tasks.append(("gym-dietologo", build_diet_prompt(ctx)))
+    if RESUME and workout_file_de.exists():
+        log("SKIP", f"workout_data_{ITERATION_ID}.yaml esistente -personal trainer saltato")
+    else:
+        log_context("gym-personal-trainer [build_workout]", [
+            ("data/athlete.md",                    "incorporato"),
+            ("data/goals",                         "incorporato"),
+            ("data/preferences",                   "incorporato"),
+            ("data/feedback_atleta.md",            "incorporato"),
+            (OUTPUT_DIR / "feedback_coach_*.md",   "incorporato"),
+            ("data/output/plan.yaml",              "incorporato"),
+            (OUTPUT_DIR / "workout_data_*.yaml",   "incorporato"),
+            ("data/output/performance_analysis.yaml", "incorporato"),
+        ], ["Misurazioni storiche (ultime 3) — tabella markdown",
+            "Rate progressione corretti per eta'/infortuni/stallo"])
+        tasks.append(("gym-personal-trainer", build_workout_prompt(ctx)))
+    if tasks:
+        log("ACTION", f"Agenti da eseguire: {', '.join(t[0] for t in tasks)}")
+        run_agents_parallel(tasks, timeout=1200)
+    else:
+        log("INFO", "Dieta e scheda gia' presenti -fase 3d+3e saltata")
 
     # ──────────────────────────────────────────────────────────────────
     # FASE 3f -Loop revisione scheda
     # ──────────────────────────────────────────────────────────────────
-    workout_review_path = REVIEW_PT_DIR / f"review_workout_{DATE_STR}.json"
+    separator("FASE 3f -Revisione scheda")
+    workout_file = OUTPUT_DIR / f"workout_data_{ITERATION_ID}.yaml"
+    workout_start_iter = 1
+    workout_need_regen = False
 
-    for i in range(1, MAX_ITER + 1):
-        separator(f"FASE 3f -Revisione scheda ({i}/{MAX_ITER})")
-        log("ACTION", "gym-pt-senior-reviewer -> review_workout")
-        run_agent("gym-pt-senior-reviewer", build_workout_review_prompt(ctx))
-
-        approved, score, problems = parse_review(workout_review_path)
-        log("INFO", f"Scheda: valutazione={score}/10, approvata={approved}, "
-            f"problemi_critici={len(problems)}")
-
+    if RESUME and workout_file.exists() and workout_review_path.exists():
+        approved, score, problems, num_rev = parse_review(workout_review_path)
         if approved:
-            log("OK", f"Scheda APPROVATA ({score}/10)")
+            log("OK", f"Scheda gia' APPROVATA (review {num_rev}, {score}/10) -3f saltata")
             workout_approved = True
-            break
+        else:
+            workout_start_iter = num_rev + 1
+            workout_need_regen = True
+            log("INFO", f"Scheda esistente, review {num_rev} BOCCIATA -riprendo da iter {workout_start_iter}")
+    elif RESUME and workout_file.exists():
+        log("INFO", f"workout_data_{ITERATION_ID}.yaml esistente, nessuna review -inizio revisione")
+    else:
+        log("WARN", f"workout_data_{ITERATION_ID}.yaml non trovato -deve essere generato prima")
 
-        if i < MAX_ITER:
-            log("WARN", f"Scheda BOCCIATA -rigenerazione (iter {i + 1}/{MAX_ITER})")
+    if not workout_approved:
+        if workout_need_regen:
+            log("WARN", f"Rigenerazione scheda prima di review {workout_start_iter}")
+            log_context("gym-personal-trainer [regen_workout]", [
+                (OUTPUT_DIR / f"review/pt/review_workout_{ITERATION_ID}.json", "obbligatorio"),
+                (OUTPUT_DIR / f"workout_data_{ITERATION_ID}.yaml",            "obbligatorio"),
+                ("data/athlete.md",                                            "discrezione"),
+                (OUTPUT_DIR / f"feedback_atleta_{ITERATION_ID}.md",           "discrezione"),
+                ("data/output/plan.yaml",                                      "discrezione"),
+                ("data/output/measurements.json",                              "discrezione"),
+            ], ["Rate progressione corretti per eta'/infortuni/stallo"])
             run_agent("gym-personal-trainer", build_workout_regen_prompt(ctx))
+
+        for i in range(workout_start_iter, MAX_ITER + 1):
+            separator(f"FASE 3f-loop -Revisione scheda ({i}/{MAX_ITER})")
+            log("ACTION", "gym-pt-senior-reviewer -> review_workout")
+            log_context("gym-pt-senior-reviewer [review_workout]", [
+                (OUTPUT_DIR / f"workout_data_{ITERATION_ID}.yaml", "incorporato"),
+                ("data/output/plan.yaml",                          "incorporato"),
+                ("data/athlete.md",                                "incorporato"),
+                ("data/feedback_atleta.md",                        "incorporato"),
+                ("data/output/performance_analysis.yaml",          "incorporato"),
+            ], ["Misurazioni storiche (ultime 3) — tabella markdown",
+                "Rate progressione corretti per eta'/infortuni/stallo",
+                "Schema JSON review: source/schemas/review_pt.schema.json"])
+            run_agent("gym-pt-senior-reviewer", build_workout_review_prompt(ctx, i))
+
+            approved, score, problems, _ = parse_review(workout_review_path)
+            log("INFO", f"Scheda: valutazione={score}/10, approvata={approved}, "
+                f"problemi_critici={len(problems)}")
+
+            if approved:
+                log("OK", f"Scheda APPROVATA ({score}/10)")
+                workout_approved = True
+                break
+
+            if i < MAX_ITER:
+                log("WARN", f"Scheda BOCCIATA -rigenerazione (iter {i + 1}/{MAX_ITER})")
+                run_agent("gym-personal-trainer", build_workout_regen_prompt(ctx))
 
     if not workout_approved:
         log("WARN", f"Scheda non approvata dopo {MAX_ITER} iterazioni -procedo con ultima versione")
@@ -1150,30 +1432,35 @@ def main() -> None:
     # ──────────────────────────────────────────────────────────────────
     # FASE 4 -Archiviazione
     # ──────────────────────────────────────────────────────────────────
-    separator("FASE 4 -Archiviazione")
-
-    # 4a. Copia feedback_atleta.md -> output/feedback_atleta_(date).md
-    archive_feedback()
-
-    # 4b. Sposta file vecchi -> history/YYYY/
-    archive_old_output_files()
-
-    # 4c. Crea nuovo feedback_atleta.md vuoto per la prossima iterazione
-    m_today = TODAY.month
-    y_today = TODAY.year
-    if m_today == 12:
-        next_m, next_y = 1, y_today + 1
+    if RESUME and (OUTPUT_DIR / f"feedback_atleta_{ITERATION_ID}.md").exists():
+        separator("FASE 4 -SALTATA (gia' completata)")
+        log("INFO", f"feedback_atleta_{ITERATION_ID}.md trovato -fase 4 gia' eseguita")
     else:
-        next_m, next_y = m_today + 1, y_today
-    months_it = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
-                 "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"]
-    next_label = f"{months_it[next_m - 1]} {next_y}"
-    create_empty_feedback(next_label)
+        separator("FASE 4 -Archiviazione")
+
+        # 4a. Copia feedback_atleta.md -> output/feedback_atleta_<id>.md
+        archive_feedback()
+
+        # 4b. Sposta file vecchi -> history/YYYY/
+        archive_old_output_files()
+
+        # 4c. Crea nuovo feedback_atleta.md vuoto per la prossima iterazione
+        m_today = TODAY.month
+        y_today = TODAY.year
+        if m_today == 12:
+            next_m, next_y = 1, y_today + 1
+        else:
+            next_m, next_y = m_today + 1, y_today
+        months_it = ["Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
+                     "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre"]
+        next_label = f"{months_it[next_m - 1]} {next_y}"
+        create_empty_feedback(next_label)
 
     # ──────────────────────────────────────────────────────────────────
     # Sommario finale
     # ──────────────────────────────────────────────────────────────────
     separator("SOMMARIO FINALE")
+    print(f"MODALITA'    : {'RESUME' if RESUME else 'NEW'}")
     print(f"DATA         : {DATE_STR}")
     print(f"ITERATION_ID : {ITERATION_ID}")
     print(f"PIANO        : {'APPROVATO' if plan_approved else 'NON APPROVATO (ultima versione)'}")
@@ -1194,8 +1481,8 @@ def main() -> None:
 
     print()
     print("REVIEW:")
-    print(f"  {REVIEW_PT_DIR / f'review_plan_{DATE_STR}.json'}")
-    print(f"  {REVIEW_PT_DIR / f'review_workout_{DATE_STR}.json'}")
+    print(f"  {REVIEW_PT_DIR / f'review_plan_{ITERATION_ID}.json'}")
+    print(f"  {REVIEW_PT_DIR / f'review_workout_{ITERATION_ID}.json'}")
 
     if not (plan_approved and workout_approved):
         sys.exit(1)

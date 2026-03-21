@@ -1,0 +1,454 @@
+/* ============================================================
+   dashboard.css — Stili specifici pagina Dashboard
+   Le card di dettaglio verranno stilizzate nel task dashboard-cards
+   ============================================================ */
+
+/* ── Griglia card dashboard ── */
+#dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: var(--space-6);
+}
+
+/* ── Card base ── */
+.dashboard-card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-sm);
+  min-height: 120px;
+  min-width: 0; /* evita overflow orizzontale in grid */
+}
+
+/* ── Placeholder testo no-JS ── */
+.dashboard-card__placeholder {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-faint);
+  font-style: italic;
+}
+
+/* ── Stato loading ── */
+.dashboard-card--loading {
+  opacity: 0.6;
+  pointer-events: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-card--loading::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.04) 50%,
+    transparent 100%
+  );
+  animation: card-shimmer 1.5s infinite;
+}
+
+@keyframes card-shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+/* ── Stato errore ── */
+.dashboard-card--error {
+  border-color: var(--color-danger);
+  background-color: rgba(244, 67, 54, 0.06);
+}
+
+/* ── Messaggio errore generico ── */
+.error-message {
+  font-size: var(--font-size-sm);
+  color: var(--color-danger);
+  padding: var(--space-4);
+  text-align: center;
+}
+
+/* ── Tablet: 2 colonne ── */
+@media (min-width: 768px) {
+  #dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* ── Desktop: 2 colonne con max-width gestito dal container ── */
+@media (min-width: 1280px) {
+  #dashboard-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-8);
+  }
+}
+
+/* ── Card stato atleta ── */
+
+/* Titolo della card */
+.dashboard-card__title {
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-3) 0;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+/* Badge fase corrente */
+.status-card__phase-badge {
+  display: inline-block;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-accent);
+  background-color: rgba(var(--color-accent-rgb, 99, 179, 237), 0.12);
+  border: 1px solid rgba(var(--color-accent-rgb, 99, 179, 237), 0.3);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+/* Griglia KPI interna alla card */
+.status-card__grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: var(--space-3) var(--space-4);
+}
+
+/* Singola metrica */
+.status-card__metric {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* Etichetta metrica */
+.status-card__label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 500;
+}
+
+/* Valore metrica */
+.status-card__value {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
+/* Unità di misura inline nel valore */
+.status-card__unit {
+  font-size: var(--font-size-sm);
+  font-weight: 400;
+  color: var(--color-text-secondary);
+  margin-left: var(--space-1);
+}
+
+/* Su schermi più grandi, 3 colonne per le 5 metriche */
+@media (min-width: 480px) {
+  .status-card__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (min-width: 768px) {
+  .status-card__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1280px) {
+  .status-card__grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ── Card massimali Big 3 ── */
+
+/* Badge tipo globale: Stimato / Reale */
+.strength-card__tipo-badge {
+  display: inline-block;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.strength-card__tipo-badge--stimato {
+  color: var(--color-warning);
+  background-color: rgba(255, 193, 7, 0.12);
+  border: 1px solid rgba(255, 193, 7, 0.35);
+}
+
+.strength-card__tipo-badge--reale {
+  color: var(--color-success);
+  background-color: rgba(76, 175, 80, 0.12);
+  border: 1px solid rgba(76, 175, 80, 0.35);
+}
+
+/* Lista dei tre esercizi */
+.strength-card__list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+/* Riga singolo esercizio */
+.strength-card__exercise {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: baseline;
+  gap: var(--space-3);
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.strength-card__exercise:last-child {
+  border-bottom: none;
+}
+
+/* Nome esercizio (Squat / Panca / Stacco) */
+.strength-card__name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+/* Valore attuale del massimale */
+.strength-card__value {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  line-height: var(--line-height-tight);
+  white-space: nowrap;
+}
+
+/* Unità di misura inline nel valore massimale */
+.strength-card__unit {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-muted);
+  margin-left: var(--space-1);
+}
+
+/* Target a 12 mesi */
+.strength-card__target {
+  font-size: var(--font-size-sm);
+  color: var(--color-accent);
+  white-space: nowrap;
+  opacity: 0.85;
+}
+
+/* ── Card fase programma ── */
+
+/* Header: numero + nome fase sulla stessa riga */
+.phase-card__header {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin-bottom: var(--space-3);
+}
+
+/* Numero fase (es. "Fase 0") */
+.phase-card__number {
+  font-size: var(--font-size-sm);
+  font-weight: 700;
+  color: var(--color-accent);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+}
+
+/* Nome fase (es. "Recupero TOS") */
+.phase-card__name {
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  line-height: 1.2;
+}
+
+/* Periodo indicativo */
+.phase-card__period {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0 0 var(--space-3) 0;
+}
+
+/* Obiettivo sintetico della fase */
+.phase-card__objective {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-5) 0;
+  line-height: 1.5;
+}
+
+/* Wrapper barra di progressione */
+.phase-card__progress-bar {
+  width: 100%;
+  height: 8px;
+  background-color: var(--color-border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-bottom: var(--space-2);
+}
+
+/* Fill della barra (width settata inline via JS) */
+.phase-card__progress-fill {
+  height: 100%;
+  background-color: var(--color-accent);
+  border-radius: var(--radius-sm);
+  transition: width 0.4s ease;
+  min-width: 2px; /* sempre visibile anche all'1% */
+}
+
+/* Label "Settimana X di 52" */
+.phase-card__progress-label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-faint);
+  text-align: right;
+  margin: 0;
+  letter-spacing: 0.04em;
+}
+
+/* ── Card target progressivi di forza ── */
+
+/* Wrapper con scroll orizzontale su mobile */
+.targets-card__table-wrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  margin-top: var(--space-2);
+}
+
+/* Tabella principale */
+.targets-card__table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 400px; /* garantisce leggibilità prima dello scroll */
+}
+
+/* Intestazione colonna orizzonte temporale */
+.targets-card__th {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: center;
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
+/* Colonna etichetta esercizio (prima colonna vuota in intestazione) */
+.targets-card__th--label {
+  text-align: left;
+  width: 20%;
+}
+
+/* Intestazione colonna Lungo termine — evidenziata */
+.targets-card__th--longterm {
+  color: var(--color-accent);
+  border-bottom: 2px solid var(--color-accent);
+}
+
+/* Data orizzonte sotto il titolo colonna */
+.targets-card__horizon-date {
+  display: block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-faint);
+  text-transform: none;
+  letter-spacing: 0;
+  margin-top: var(--space-1);
+}
+
+/* Badge "🎯 Obiettivo" per la colonna lungo termine */
+.targets-card__goal-badge {
+  display: block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-accent);
+  background-color: var(--color-accent-dim);
+  border-radius: var(--radius-sm);
+  padding: 2px var(--space-2);
+  margin-top: var(--space-2);
+  text-transform: none;
+  letter-spacing: 0;
+  white-space: nowrap;
+}
+
+/* Riga esercizio */
+.targets-card__row {
+  border-bottom: 1px solid var(--color-border);
+}
+
+.targets-card__row:last-child {
+  border-bottom: none;
+}
+
+/* Etichetta esercizio (prima colonna di ogni riga) */
+.targets-card__exercise-label {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: var(--space-3) var(--space-3) var(--space-3) 0;
+  text-align: left;
+  white-space: nowrap;
+}
+
+/* Cella valore esercizio */
+.targets-card__td {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  text-align: center;
+  padding: var(--space-3);
+  white-space: nowrap;
+}
+
+/* Cella valore lungo termine — sfondo e colore accentuato */
+.targets-card__td--longterm {
+  color: var(--color-accent);
+  background-color: var(--color-accent-dim);
+  border-radius: var(--radius-sm);
+}
+
+/* Unità di misura inline (kg) */
+.targets-card__unit {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-normal);
+  color: var(--color-text-muted);
+  margin-left: var(--space-1);
+}
+
+/* Unità nelle celle lungterm eredita il colore accent attenuato */
+.targets-card__td--longterm .targets-card__unit {
+  color: var(--color-accent);
+  opacity: 0.75;
+}
+
+/* Mobile: font leggermente ridotto per leggibilità */
+@media (max-width: 480px) {
+  .targets-card__td {
+    font-size: var(--font-size-base);
+    padding: var(--space-2);
+  }
+
+  .targets-card__exercise-label {
+    font-size: var(--font-size-xs);
+    padding: var(--space-2) var(--space-2) var(--space-2) 0;
+  }
+
+  .targets-card__th {
+    padding: var(--space-2);
+  }
+}

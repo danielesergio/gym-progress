@@ -1,0 +1,145 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "diet-page-layout",
+    "task_titolo": "Struttura pagina Dieta",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Si può selezionare il tipo di giorno (allenamento / riposo) tramite i bottoni toggle",
+      "soddisfatto": true,
+      "dettaglio": "docs/diet.html contiene due button nella sezione .diet-day-toggle (linee 68-83) con data-day-type='allenamento' e data-day-type='riposo'. JS diet.js linee 285-293 collega i bottoni a event listener che aggiornano currentDayType e ri-renderizzano la pagina."
+    },
+    {
+      "criterio": "I macros totali del giorno selezionato sono visibili in cima alla pagina",
+      "soddisfatto": true,
+      "dettaglio": "HTML: sezione id='macros-summary' (linea 86) con aria-label e aria-live='polite'. JS: renderMacrosSummary() (linee 63-99) popola la sezione con griglia CSS grid 4 colonne (kcal, proteine, carboidrati, grassi) con valori arrotondati e unità (g per macros, kcal senza unità). Valori null gestiti con operatore ?? che mostra '—'."
+    },
+    {
+      "criterio": "La sezione integratori è presente, separata visivamente dagli altri contenuti, e sempre visibile",
+      "soddisfatto": true,
+      "dettaglio": "HTML: sezione id='supplements-section' (linea 96) con titolo 'Integratori' e sottotitolo. CSS: .diet-supplements (linea 308) ha background-color card, border 1px e border-top 3px solid var(--color-success) per separazione visiva. JS: renderSupplements() (linee 240-250) è richiamata sempre in renderDiet() (linea 278), indipendentemente dal toggle giorno."
+    },
+    {
+      "criterio": "docs/diet.html esiste ed è una pagina HTML valida con DOCTYPE, lang='it', charset UTF-8, viewport",
+      "soddisfatto": true,
+      "dettaglio": "File presente in C:\\Users\\danie\\AndroidStudioProjects\\gym\\docs\\diet.html. DOCTYPE presente (linea 1), <html lang='it'> (linea 2), <meta charset='UTF-8'> (linea 4), <meta name='viewport' content='width=device-width, initial-scale=1.0'> (linea 5)."
+    },
+    {
+      "criterio": "docs/diet.html include <link> a css/variables.css, css/layout.css, css/diet.css",
+      "soddisfatto": true,
+      "dettaglio": "Linee 7-9 del file diet.html: <link rel='stylesheet' href='css/variables.css'>, <link rel='stylesheet' href='css/layout.css'>, <link rel='stylesheet' href='css/diet.css'>."
+    },
+    {
+      "criterio": "docs/diet.html include <script src='js/diet.js' defer>",
+      "soddisfatto": true,
+      "dettaglio": "Linea 119: <script src='js/diet.js' defer></script>. L'attributo defer è presente."
+    },
+    {
+      "criterio": "docs/diet.html contiene <nav role='tablist'> con il tab 'Dieta' avente class='nav-tab active' e aria-current='page'",
+      "soddisfatto": true,
+      "dettaglio": "Linee 32-56: <nav role='tablist' class='tab-list' id='nav-tabs' aria-label='Navigazione sezioni'>. Tab 'Dieta' alle linee 46-50 con classe 'nav-tab active' e aria-current='page'."
+    },
+    {
+      "criterio": "docs/diet.html contiene una sezione toggle con due bottoni, attributi data-day-type='allenamento' e data-day-type='riposo'",
+      "soddisfatto": true,
+      "dettaglio": "Linee 68-83: <section class='diet-day-toggle' id='day-toggle'>. Due button: primo (linea 69-74) con data-day-type='allenamento' e classe 'active', secondo (linea 76-82) con data-day-type='riposo'. Entrambi hanno aria-pressed per accessibilità."
+    },
+    {
+      "criterio": "docs/diet.html contiene <section id='macros-summary'> per il riepilogo macros",
+      "soddisfatto": true,
+      "dettaglio": "Linea 86: <section id='macros-summary' class='diet-macros-summary' aria-label='Riepilogo macros giornalieri' aria-live='polite'>."
+    },
+    {
+      "criterio": "docs/diet.html contiene <section id='meals-list'> per la lista pasti",
+      "soddisfatto": true,
+      "dettaglio": "Linea 91: <section id='meals-list' class='diet-meals-list' aria-label='Lista pasti del giorno' aria-live='polite'>."
+    },
+    {
+      "criterio": "docs/diet.html contiene <section id='supplements-section'> per gli integratori",
+      "soddisfatto": true,
+      "dettaglio": "Linea 96: <section id='supplements-section' class='diet-supplements' aria-label='Integratori'>."
+    },
+    {
+      "criterio": "docs/js/diet.js esiste e contiene la costante DATA_PATH = 'data/diet.json'",
+      "soddisfatto": true,
+      "dettaglio": "File presente, linea 7: const DATA_PATH = 'data/diet.json';"
+    },
+    {
+      "criterio": "docs/js/diet.js contiene la funzione renderDiet(data)",
+      "soddisfatto": true,
+      "dettaglio": "Linee 260-279: function renderDiet(data) che chiama renderDietHeader(), renderToggle(), renderMacrosSummary(), renderMealsList(), renderSupplements()."
+    },
+    {
+      "criterio": "docs/js/diet.js contiene la variabile di stato currentDayType con default 'allenamento'",
+      "soddisfatto": true,
+      "dettaglio": "Linea 11: let currentDayType = 'allenamento';"
+    },
+    {
+      "criterio": "docs/js/diet.js gestisce il toggle: al click sui bottoni aggiorna currentDayType e ri-renderizza senza refetch",
+      "soddisfatto": true,
+      "dettaglio": "Linee 285-293: forEach su .diet-toggle-btn, al click aggiorna currentDayType = btn.dataset.dayType e chiama renderDiet(dietData). Il dietData è memorizzato globalmente (linea 10) dopo il fetch iniziale, nessun refetch al toggle."
+    },
+    {
+      "criterio": "docs/js/diet.js utilizza fetch() con try/catch e chiama showError() in caso di errore",
+      "soddisfatto": true,
+      "dettaglio": "Linee 295-317: try { const res = await fetch(DATA_PATH); ... } catch (e) { showError(null, e); ... }. showError() è definita alle linee 20-26 e mostra messaggio nel container #diet-error."
+    },
+    {
+      "criterio": "docs/css/diet.css esiste e contiene stili per .diet-day-toggle, .diet-macros-summary, .diet-meals-list, .diet-supplements",
+      "soddisfatto": true,
+      "dettaglio": "File presente. Classi CSS: .diet-day-toggle (linee 32-37), .diet-macros-summary (linee 77-91), .diet-meals-list (linee 156-158), .diet-supplements (linee 308-315). Tutte le classi usano variabili CSS custom da variables.css."
+    },
+    {
+      "criterio": "Il bottone del tipo giorno corrente ha classe .active visivamente distinta",
+      "soddisfatto": true,
+      "dettaglio": "CSS linee 64-72: .diet-toggle-btn.active ha background-color var(--color-accent-dim), border-color var(--color-accent), color var(--color-accent), font-weight var(--font-weight-semibold). Visivamente distinto dai bottoni inattivi che hanno background-color var(--color-bg-secondary) e color var(--color-text-muted)."
+    },
+    {
+      "criterio": "La pagina non usa var, jQuery, lodash, framework non previsti, inline style",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: JS usa solo let e const, nessun var. Nessun inline style nel HTML. Nessun import/export (ES6 modules). Nessun uso di jQuery, lodash o framework. CSS usa solo custom properties e nessun framework CSS (no Bootstrap/Tailwind)."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/diet.html",
+      "esiste": true,
+      "note": "Pagina HTML completa con DOCTYPE, header, nav a 5 tab con 'Dieta' attivo, sezione toggle giorno, placeholder per macros, pasti e integratori, footer, script defer diet.js e nav.js."
+    },
+    {
+      "path": "docs/js/diet.js",
+      "esiste": true,
+      "note": "Logica completa: costante DATA_PATH, stato currentDayType e dietData, funzioni render specializzate (renderDietHeader, renderToggle, renderMacrosSummary, renderAlimentiRows, renderMealCard, renderMealsList, renderSupplementCard, renderSupplements, renderDiet), event listener toggle, DOMContentLoaded con fetch async/await e try/catch."
+    },
+    {
+      "path": "docs/css/diet.css",
+      "esiste": true,
+      "note": "Stili completi: .diet-error, .diet-loading-placeholder, .diet-empty, .diet-day-toggle e .diet-toggle-btn con stato .active, .diet-macros-summary con griglia 4 colonne responsive, .diet-meals-list con flex column, .diet-meal-card con header e table alimenti, .diet-supplements con separazione visiva (border-top verde), .diet-supplement-card con grid layout. Tutti gli stili usano variabili CSS custom da variables.css."
+    },
+    {
+      "path": "docs/data/diet.json",
+      "esiste": true,
+      "note": "File dati letto dal fetch. Struttura valida: meta con fase/kcal/note, array giorni con due elementi (tipo allenamento e riposo), ciascuno con kcal, macros, array pasti con alimenti e totali, array integratori a livello root. Dati coerenti con quanto renderizzato dalla pagina."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "warning",
+      "descrizione": "Funzione showError(container, error) riceve null come primo parametro (linea 306 in diet.js), ma il parametro non è utilizzato. La funzione ricerca sempre l'elemento #diet-error dal DOM indipendentemente da container. Questo non causa errori, ma è una piccola inconsistenza: il parametro potrebbe essere rimosso oppure usato per mostrare errori in container diversi.",
+      "file": "docs/js/diet.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "CSS linea 72: .diet-toggle-btn.active:hover usa colore hardcoded rgba(255, 107, 53, 0.25) invece della variabile CSS --color-accent-dim. Funzionalmente corretto (sfumatura di hover alternativa), ma non segue il pattern di design system. Potrebbe essere una scelta deliberata per una sfumatura leggermente diversa al hover.",
+      "file": "docs/css/diet.css"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Path fetch relativo 'data/diet.json' (linea 7 in diet.js) funziona solo quando la pagina è servita da GitHub Pages o da server locale con struttura corretta. Questo è atteso dall'architettura e non è un problema, ma è una dipendenza dall'environment di deploy.",
+      "file": "docs/js/diet.js"
+    }
+  ]
+}

@@ -1,0 +1,272 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "anomalie": []
+  },
+  "tasks": [
+    {
+      "ordine": 1,
+      "id": "layout-root",
+      "title": "Layout principale responsive con header e footer",
+      "type": "layout",
+      "feature": "Layout e Navigazione",
+      "feature_priority": 1,
+      "motivazione_ordine": "Primo perché è la struttura fondamentale da cui dipendono layout-root → ogni layout e pagina del sito. Senza il layout principale non si può procedere con nulla.",
+      "dependencies_resolved": [],
+      "sblocca": ["navigation-tabs", "dashboard-layout", "progress-page-layout", "workout-page-layout", "diet-page-layout", "plan-page-layout"]
+    },
+    {
+      "ordine": 2,
+      "id": "navigation-tabs",
+      "title": "Navigazione principale tra le sezioni",
+      "type": "navigation",
+      "feature": "Layout e Navigazione",
+      "feature_priority": 1,
+      "motivazione_ordine": "Secondo perché dipende dal layout-root e a sua volta sblocca tutti i layout di pagina (dashboard, progress, workout, diet, plan). Necessaria prima di costruire qualsiasi pagina.",
+      "dependencies_resolved": ["layout-root"],
+      "sblocca": ["dashboard-layout", "progress-page-layout", "workout-page-layout", "diet-page-layout", "plan-page-layout"]
+    },
+    {
+      "ordine": 3,
+      "id": "dashboard-layout",
+      "title": "Struttura griglia della Dashboard",
+      "type": "layout",
+      "feature": "Dashboard — Riepilogo Atleta",
+      "feature_priority": 2,
+      "motivazione_ordine": "Terzo (priority 2 vs 3/4/5/6): è il layout della pagina principale che l'utente vede per primo. Sblocca 4 component critici della dashboard (athlete-status, strength-summary, program-phase, targets).",
+      "dependencies_resolved": ["navigation-tabs"],
+      "sblocca": ["athlete-status-card", "strength-summary-card", "program-phase-card", "targets-card"]
+    },
+    {
+      "ordine": 4,
+      "id": "athlete-status-card",
+      "title": "Card stato attuale atleta",
+      "type": "component",
+      "feature": "Dashboard — Riepilogo Atleta",
+      "feature_priority": 2,
+      "motivazione_ordine": "Componente della dashboard con priority 2. Mostra i dati più critici (peso, BF%, FFMI) dell'ultima misurazione. Implementabile subito dopo il layout della dashboard.",
+      "dependencies_resolved": ["dashboard-layout"],
+      "sblocca": []
+    },
+    {
+      "ordine": 5,
+      "id": "strength-summary-card",
+      "title": "Card massimali attuali (Big 3)",
+      "type": "component",
+      "feature": "Dashboard — Riepilogo Atleta",
+      "feature_priority": 2,
+      "motivazione_ordine": "Componente della dashboard con priority 2. Mostra Squat, Panca, Stacco attuali e target 12 mesi. Implementabile insieme alle altre card della dashboard.",
+      "dependencies_resolved": ["dashboard-layout"],
+      "sblocca": []
+    },
+    {
+      "ordine": 6,
+      "id": "program-phase-card",
+      "title": "Card fase corrente del programma",
+      "type": "component",
+      "feature": "Dashboard — Riepilogo Atleta",
+      "feature_priority": 2,
+      "motivazione_ordine": "Componente della dashboard con priority 2. Mostra la fase corrente (Fase 1 — Ripresa Graduale) e indicatore di progressione settimanale. Completa la vista d'insieme della dashboard.",
+      "dependencies_resolved": ["dashboard-layout"],
+      "sblocca": []
+    },
+    {
+      "ordine": 7,
+      "id": "targets-card",
+      "title": "Card target progressivi di forza",
+      "type": "component",
+      "feature": "Dashboard — Riepilogo Atleta",
+      "feature_priority": 2,
+      "motivazione_ordine": "Componente della dashboard con priority 2. Mostra target a 3, 6, 12 mesi e lungo termine per motivare l'atleta. Conclude la composizione della dashboard principale.",
+      "dependencies_resolved": ["dashboard-layout"],
+      "sblocca": []
+    },
+    {
+      "ordine": 8,
+      "id": "progress-page-layout",
+      "title": "Struttura pagina Progressi",
+      "type": "layout",
+      "feature": "Sezione Progressi",
+      "feature_priority": 3,
+      "motivazione_ordine": "Layout della pagina Progressi (priority 3). Sblocca 4 component di visualizzazione dati storici (weight-bf-chart, strength-chart, measurements-table, circumferences-chart). Implementabile dopo dashboard.",
+      "dependencies_resolved": ["navigation-tabs"],
+      "sblocca": ["weight-bf-chart", "strength-chart", "measurements-table", "circumferences-chart"]
+    },
+    {
+      "ordine": 9,
+      "id": "weight-bf-chart",
+      "title": "Grafico andamento peso e body fat",
+      "type": "component",
+      "feature": "Sezione Progressi",
+      "feature_priority": 3,
+      "motivazione_ordine": "Primo component della pagina Progressi. Visualizza 6 punti di misurazione di peso e BF% dal 2022 al 2026. Componente chiave per mostrare progresso corporeo.",
+      "dependencies_resolved": ["progress-page-layout"],
+      "sblocca": []
+    },
+    {
+      "ordine": 10,
+      "id": "strength-chart",
+      "title": "Grafico andamento massimali Big 3",
+      "type": "component",
+      "feature": "Sezione Progressi",
+      "feature_priority": 3,
+      "motivazione_ordine": "Component della pagina Progressi. Visualizza evoluzione storica di Squat, Panca, Stacco con distinzione tra misurazioni reali e stimate. Mostra il progresso di forza nel tempo.",
+      "dependencies_resolved": ["progress-page-layout"],
+      "sblocca": []
+    },
+    {
+      "ordine": 11,
+      "id": "measurements-table",
+      "title": "Tabella storica misurazioni",
+      "type": "component",
+      "feature": "Sezione Progressi",
+      "feature_priority": 3,
+      "motivazione_ordine": "Component della pagina Progressi. Tabella completa di tutte le 6 rilevazioni con dettagli (data, peso, BF%, circonferenze, massimali, note). Fornisce accesso ai dati raw storici.",
+      "dependencies_resolved": ["progress-page-layout"],
+      "sblocca": []
+    },
+    {
+      "ordine": 12,
+      "id": "circumferences-chart",
+      "title": "Grafico andamento circonferenze corporee",
+      "type": "component",
+      "feature": "Sezione Progressi",
+      "feature_priority": 3,
+      "motivazione_ordine": "Component della pagina Progressi. Visualizza evoluzione di vita, braccio e altre circonferenze nel tempo. Fornisce una visione alternativa della composizione corporea.",
+      "dependencies_resolved": ["progress-page-layout"],
+      "sblocca": []
+    },
+    {
+      "ordine": 13,
+      "id": "workout-page-layout",
+      "title": "Struttura pagina Allenamento",
+      "type": "layout",
+      "feature": "Sezione Allenamento",
+      "feature_priority": 4,
+      "motivazione_ordine": "Layout della pagina Allenamento (priority 4). Sblocca i component della scheda (week-navigator, session-card, tos-alert). Implementato dopo le pagine priority 2-3.",
+      "dependencies_resolved": ["navigation-tabs"],
+      "sblocca": ["workout-week-navigator", "workout-session-card", "workout-tos-alert"]
+    },
+    {
+      "ordine": 14,
+      "id": "workout-week-navigator",
+      "title": "Selettore settimana allenamento",
+      "type": "component",
+      "feature": "Sezione Allenamento",
+      "feature_priority": 4,
+      "motivazione_ordine": "Component della pagina Allenamento. Permette di selezionare la settimana (1-4) della Fase 1 corrente. Necessario prima di visualizzare le sessioni specifiche.",
+      "dependencies_resolved": ["workout-page-layout"],
+      "sblocca": ["workout-session-card"]
+    },
+    {
+      "ordine": 15,
+      "id": "workout-tos-alert",
+      "title": "Banner avviso infortunio TOS",
+      "type": "ux",
+      "feature": "Sezione Allenamento",
+      "feature_priority": 4,
+      "motivazione_ordine": "Component di sicurezza della pagina Allenamento. Banner che ricorda i vincoli TOS (esercizi vietati, stop se dolore). Implementabile subito per proteggere l'atleta.",
+      "dependencies_resolved": ["workout-page-layout"],
+      "sblocca": []
+    },
+    {
+      "ordine": 16,
+      "id": "workout-session-card",
+      "title": "Card sessione di allenamento",
+      "type": "component",
+      "feature": "Sezione Allenamento",
+      "feature_priority": 4,
+      "motivazione_ordine": "Component della pagina Allenamento. Visualizza una singola sessione con esercizi, serie, reps, pesi e recuperi. Dipende dal week-navigator per selezionare la settimana corretta.",
+      "dependencies_resolved": ["workout-page-layout", "workout-week-navigator"],
+      "sblocca": ["testday-section"]
+    },
+    {
+      "ordine": 17,
+      "id": "testday-section",
+      "title": "Sezione Test Day (settimana 4)",
+      "type": "component",
+      "feature": "Sezione Allenamento",
+      "feature_priority": 4,
+      "motivazione_ordine": "Component della pagina Allenamento. Mostra il protocollo del Test Day submassimale (settimana 4, Squat e Stacco, esclude Panca per TOS). Implementabile dopo le session-card.",
+      "dependencies_resolved": ["workout-session-card"],
+      "sblocca": []
+    },
+    {
+      "ordine": 18,
+      "id": "diet-page-layout",
+      "title": "Struttura pagina Dieta",
+      "type": "layout",
+      "feature": "Sezione Dieta",
+      "feature_priority": 5,
+      "motivazione_ordine": "Layout della pagina Dieta (priority 5). Sblocca i component della nutrizione (macros-summary-bar, meal-card, supplements-section). Implementato dopo allenamento.",
+      "dependencies_resolved": ["navigation-tabs"],
+      "sblocca": ["macros-summary-bar", "meal-card", "supplements-section"]
+    },
+    {
+      "ordine": 19,
+      "id": "macros-summary-bar",
+      "title": "Riepilogo macros giornalieri",
+      "type": "component",
+      "feature": "Sezione Dieta",
+      "feature_priority": 5,
+      "motivazione_ordine": "Component della pagina Dieta. Mostra i macros totali (kcal, proteine, carbo, grassi) per il giorno selezionato (allenamento/riposo). Sblocca l'implementazione dettagliata dei pasti.",
+      "dependencies_resolved": ["diet-page-layout"],
+      "sblocca": ["meal-card"]
+    },
+    {
+      "ordine": 20,
+      "id": "meal-card",
+      "title": "Card pasto con alimenti e macros",
+      "type": "component",
+      "feature": "Sezione Dieta",
+      "feature_priority": 5,
+      "motivazione_ordine": "Component della pagina Dieta. Visualizza i 5 pasti giornalieri con alimenti, grammi e macros per ciascuno. Dipende dal macros-summary-bar per il contesto complessivo.",
+      "dependencies_resolved": ["diet-page-layout", "macros-summary-bar"],
+      "sblocca": []
+    },
+    {
+      "ordine": 21,
+      "id": "supplements-section",
+      "title": "Sezione piano integratori",
+      "type": "component",
+      "feature": "Sezione Dieta",
+      "feature_priority": 5,
+      "motivazione_ordine": "Component della pagina Dieta. Elenca gli integratori (Creatina, Vitamina D3, Omega-3, Whey) con dose, timing e note su importanza per il recupero TOS.",
+      "dependencies_resolved": ["diet-page-layout"],
+      "sblocca": []
+    },
+    {
+      "ordine": 22,
+      "id": "plan-page-layout",
+      "title": "Struttura pagina Piano e Obiettivi",
+      "type": "layout",
+      "feature": "Piano Annuale e Obiettivi",
+      "feature_priority": 6,
+      "motivazione_ordine": "Layout della pagina Piano e Obiettivi (priority 6, ulteriore). Sblocca i component della visione d'insieme pluriennale (phases-timeline, strength-targets-table). Implementato per ultimo.",
+      "dependencies_resolved": ["navigation-tabs"],
+      "sblocca": ["phases-timeline", "strength-targets-table"]
+    },
+    {
+      "ordine": 23,
+      "id": "phases-timeline",
+      "title": "Timeline visiva delle fasi del programma",
+      "type": "component",
+      "feature": "Piano Annuale e Obiettivi",
+      "feature_priority": 6,
+      "motivazione_ordine": "Component della pagina Piano. Timeline visiva delle 10 fasi annuali (52 settimane) con fase corrente evidenziata. Fornisce la visione d'insieme del percorso a lungo termine.",
+      "dependencies_resolved": ["plan-page-layout"],
+      "sblocca": []
+    },
+    {
+      "ordine": 24,
+      "id": "strength-targets-table",
+      "title": "Tabella target di forza progressivi",
+      "type": "component",
+      "feature": "Piano Annuale e Obiettivi",
+      "feature_priority": 6,
+      "motivazione_ordine": "Component della pagina Piano. Tabella dei target di Squat, Panca, Stacco a 3, 6, 12 mesi e lungo termine. Mostra la progressione attesa verso il goal finale (200/150/250 kg).",
+      "dependencies_resolved": ["plan-page-layout"],
+      "sblocca": []
+    }
+  ]
+}

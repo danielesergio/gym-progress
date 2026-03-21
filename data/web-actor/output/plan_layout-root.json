@@ -1,0 +1,138 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "layout-root",
+    "task_title": "Layout principale responsive con header e footer",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "layout-root",
+    "type": "layout",
+    "title": "Layout principale responsive con header e footer",
+    "description": "Struttura contenitore globale che tutte le pagine condividono. Include header con nome atleta e data ultima misurazione, area contenuto centrale, footer minimale. Il design deve trasmettere serietà e concretezza (tema fitness/powerlifting), con palette scura o neutra ad alto contrasto. Il layout deve adattarsi correttamente a mobile, tablet e desktop.",
+    "inputs": ["branding", "athlete_profile"],
+    "outputs": ["MainLayout"],
+    "acceptance_criteria": [
+      "Header visibile su ogni pagina con nome atleta e data ultima misurazione",
+      "Layout responsive: non si rompe su mobile 375px, tablet 768px, desktop 1280px",
+      "Footer presente con informazioni minimali"
+    ],
+    "notes": "Questo è il task fondante: tutti gli altri task di pagina dipendono dal layout definito qui. Il developer crea 4 file: docs/index.html (redirect), docs/dashboard.html (shell HTML della dashboard con layout completo), docs/css/variables.css (design tokens), docs/css/layout.css (stili strutturali header/nav/main/footer). Il nome atleta è 'Daniele'. La data ultima misurazione (2026-03-20) viene iniettata staticamente nell'HTML oppure letta via JS da measurements.json — entrambe le soluzioni sono accettabili a questo stadio, ma la lettura JS è preferita per coerenza con il pattern fetch() del progetto. La navigazione tra tab viene completata dal task navigation-tabs; qui si predispone il markup `<nav role='tablist'>` con i 5 tab già presenti ma non ancora stilizzati come active."
+  },
+  "file": {
+    "da_creare": [
+      {
+        "path": "docs/index.html",
+        "motivo": "Entry point GitHub Pages: contiene meta refresh + JS redirect verso dashboard.html. Nessun contenuto visibile.",
+        "esiste": false
+      },
+      {
+        "path": "docs/dashboard.html",
+        "motivo": "Shell HTML principale della dashboard: struttura semantica completa con <header>, <nav role='tablist'> (5 tab: Dashboard/Progressi/Allenamento/Dieta/Piano), <main id='page-content'>, <footer>. Include i link CSS e lo script defer. Area contenuto lasciata vuota (sarà riempita da task successivi).",
+        "esiste": false
+      },
+      {
+        "path": "docs/css/variables.css",
+        "motivo": "Design tokens globali: palette colori (tema scuro/neutro ad alto contrasto per powerlifting), tipografia, spaziature, breakpoint, border-radius. Importato da ogni CSS di pagina.",
+        "esiste": false
+      },
+      {
+        "path": "docs/css/layout.css",
+        "motivo": "Stili strutturali condivisi: header (nome atleta + data ultima misurazione), nav-tab placeholder, .container responsive, .page-header, footer minimale. Media query per 375px / 768px / 1280px.",
+        "esiste": false
+      }
+    ],
+    "da_modificare": [],
+    "da_leggere": [
+      {
+        "path": "docs/data/measurements.json",
+        "motivo": "Per leggere l'ultima misurazione (ultimo elemento dell'array): campo 'data' (2026-03-20) da mostrare nell'header, campo 'peso_kg' (87.2) opzionale per il subtitle. Struttura: array di oggetti con campi data, peso_kg, body_fat_pct, massa_magra_kg, ffmi_adj, squat_1rm, panca_1rm, stacco_1rm, massimali_tipo, vita_cm, braccio_dx_cm, coscia_dx_cm.",
+        "nota": "Questo file è generato dallo script Python e sarà presente in docs/data/ al momento del deploy. Il developer deve scrivere il fetch() su 'data/measurements.json' (path relativo dalla root docs/). Se il file non è ancora presente in locale, la UI mostra '—' tramite la funzione showError() o fallback. Struttura reale confermata: array con 6 elementi, l'ultimo ha data='2026-03-20', peso_kg=87.2, body_fat_pct=17.1."
+      },
+      {
+        "path": "data/web-actor/output/web_architecture.json",
+        "motivo": "Architettura completa: struttura file docs/, convenzioni naming, pattern JS, struttura HTML base, CSS custom properties, palette e stack tecnologico."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS (ES2022) — nessun bundler, nessun framework",
+      "styling": "CSS custom properties (CSS3) — file variables.css centralizza il tema, layout.css i pattern strutturali",
+      "grafici": "Chart.js 4.x via CDN — NON richiesto in questo task (nessun grafico nel layout base)",
+      "build": "nessuno — file scritti direttamente in docs/",
+      "deploy": "GitHub Pages, branch main, cartella docs/"
+    },
+    "convenzioni": {
+      "naming_file": "kebab-case: layout.css, variables.css, dashboard.html, index.html",
+      "classi_css": "kebab-case senza prefisso per classi condivise di layout: .page-header, .nav-tab, .container, .page-footer, .tab-list",
+      "variabili_js": "camelCase: measurementData, lastMeasurement, athleteName",
+      "costanti_js": "UPPER_SNAKE_CASE: DATA_PATH, ATHLETE_NAME",
+      "id_html": "kebab-case: #main-header, #nav-tabs, #page-content, #main-footer",
+      "no": "No jQuery, no var, no inline style, no document.write(), no ES modules (import/export)",
+      "formato_date": "ISO 8601 in JSON (YYYY-MM-DD); visualizzazione italiana nel DOM (es. '20 mar 2026')",
+      "valori_null": "Mostrare '—' se il dato non è disponibile. Mai mostrare 'null' o 'undefined' all'utente.",
+      "navigazione_attiva": "Ogni pagina HTML aggiunge classe .active al tab corrispondente via JS o attributo aria-current='page'"
+    },
+    "struttura_html_base": {
+      "descrizione": "Template base da applicare a dashboard.html (e tutte le pagine future)",
+      "template": "<!DOCTYPE html><html lang='it'><head><meta charset='UTF-8'><meta name='viewport' content='width=device-width, initial-scale=1.0'><title>[Pagina] — Daniele Fitness</title><link rel='stylesheet' href='css/variables.css'><link rel='stylesheet' href='css/layout.css'><link rel='stylesheet' href='css/[pagina].css'></head><body><header class='page-header' id='main-header'>...</header><nav role='tablist' class='tab-list' id='nav-tabs'>...</nav><main id='page-content'>...</main><footer class='page-footer' id='main-footer'>...</footer><script src='js/[pagina].js' defer></script></body></html>",
+      "meta_title_pattern": "'Dashboard — Daniele Fitness', 'Progressi — Daniele Fitness', ecc."
+    },
+    "struttura_js_per_pagina": {
+      "pattern": "(1) costanti in cima (DATA_PATH), (2) funzione renderNomePagina(data), (3) DOMContentLoaded con fetch() + try/catch + chiamata a renderNomePagina()",
+      "fetch_pattern": "try { const res = await fetch(DATA_PATH); if (!res.ok) throw new Error(res.status); const data = await res.json(); renderPagina(data); } catch(e) { showError(container, e); }",
+      "gestione_errori": "Funzione showError(container, error): mostra 'Dati non disponibili' nel container, chiama console.error(). No alert()."
+    },
+    "design_tema": {
+      "carattere": "Tema fitness/powerlifting — palette scura o neutra ad alto contrasto",
+      "suggerimento_palette": "Sfondo scuro (#1a1a1a o simile), testo chiaro (#f0f0f0), accent cromatico energico (es. arancione #ff6b35 o rosso acceso) per elementi attivi e KPI, grigio intermedio (#2d2d2d) per card e container",
+      "tipografia": "Font sans-serif system stack (no Google Fonts per evitare dipendenze) o font monospace per i numeri dei massimali",
+      "header_contenuto": "Nome atleta (h1 o span grande) + label 'Ultima misurazione:' + data formattata in italiano (es. '20 mar 2026'). La data viene letta da measurements.json (ultimo elemento, campo 'data')."
+    },
+    "responsive_breakpoint": {
+      "mobile": "max-width: 375px — layout colonna singola, header compatto",
+      "tablet": "min-width: 768px — possibile layout a 2 colonne per le card",
+      "desktop": "min-width: 1280px — layout multi-colonna, max-width sul container"
+    },
+    "dati_atleta_noti": {
+      "nome": "Daniele",
+      "ultima_misurazione_data": "2026-03-20",
+      "ultima_misurazione_data_ita": "20 mar 2026",
+      "peso_kg": 87.2,
+      "body_fat_pct": 17.1
+    },
+    "tab_navigazione": {
+      "tab": [
+        { "label": "Dashboard", "href": "dashboard.html", "aria_label": "Dashboard atleta" },
+        { "label": "Progressi", "href": "progress.html", "aria_label": "Progressi nel tempo" },
+        { "label": "Allenamento", "href": "workout.html", "aria_label": "Scheda allenamento" },
+        { "label": "Dieta", "href": "diet.html", "aria_label": "Piano dieta" },
+        { "label": "Piano", "href": "plan.html", "aria_label": "Piano annuale e obiettivi" }
+      ],
+      "nota": "Il markup dei tab va predisposto in questo task. Gli stili .active e le animazioni verranno completati nel task navigation-tabs (ordine 2)."
+    },
+    "footer_contenuto": {
+      "descrizione": "Footer minimale: copyright o dicitura semplice (es. 'Daniele Fitness © 2026'), nessun link aggiuntivo richiesto a questo stadio"
+    }
+  },
+  "criteri_accettazione": [
+    "Header visibile su ogni pagina con nome atleta ('Daniele') e data ultima misurazione",
+    "Layout responsive: non si rompe su mobile 375px, tablet 768px, desktop 1280px",
+    "Footer presente con informazioni minimali",
+    "docs/index.html esiste e contiene un redirect a dashboard.html (meta refresh o JS)",
+    "docs/dashboard.html esiste con struttura semantica: <header>, <nav role='tablist'>, <main>, <footer>",
+    "docs/dashboard.html include i link a css/variables.css, css/layout.css, css/dashboard.css",
+    "docs/dashboard.html include <script src='js/dashboard.js' defer>",
+    "docs/css/variables.css esiste e definisce almeno: colori (--color-bg, --color-text, --color-accent), tipografia (--font-base), spaziature (--space-*), breakpoint",
+    "docs/css/layout.css esiste e contiene stili per .page-header, .tab-list (nav), .container, .page-footer con media query per 375px e 768px",
+    "La data ultima misurazione nell'header è formattata in italiano ('20 mar 2026'), non ISO",
+    "Nessun valore 'null' o 'undefined' visibile nel DOM se measurements.json non è disponibile — viene mostrato '—'",
+    "Il markup dei 5 tab di navigazione è presente in dashboard.html con href corretti verso le 5 pagine",
+    "La classe .active è applicata al tab 'Dashboard' in dashboard.html",
+    "Nessun uso di jQuery, var, inline style o document.write()"
+  ],
+  "dipendenze": []
+}

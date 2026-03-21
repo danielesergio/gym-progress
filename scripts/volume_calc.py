@@ -190,6 +190,16 @@ EXERCISE_MUSCLES = {
         "secondario": [],
         "terziario": [],
     },
+    "lat machine presa larga": {
+        "principale": ["dorsali"],
+        "secondario": ["bicipiti", "romboidi"],
+        "terziario": ["deltoidi posteriori", "core"],
+    },
+    "rematore al cavo presa neutra": {
+        "principale": ["dorsali", "trapezi"],
+        "secondario": ["bicipiti", "deltoidi posteriori"],
+        "terziario": ["erettori spinali"],
+    },
 }
 
 

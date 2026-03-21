@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Piano e Obiettivi — Daniele Fitness</title>
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/plan.css">
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════
+       HEADER — nome atleta
+  ══════════════════════════════════════════ -->
+  <header class="page-header" id="main-header" role="banner">
+    <div class="container">
+      <div class="header-brand">
+        <span class="header-athlete-name">Daniele</span>
+        <span class="header-tagline">Fitness &amp; Powerlifting</span>
+      </div>
+      <div class="header-meta" aria-label="Fase corrente">
+        <span class="header-meta-label">Fase:</span>
+        <span class="header-meta-value" id="header-current-phase">—</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════
+       NAV TAB — Piano active
+  ══════════════════════════════════════════ -->
+  <nav role="tablist" class="tab-list" id="nav-tabs" aria-label="Navigazione sezioni">
+    <div class="container">
+      <a href="dashboard.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Dashboard atleta">Dashboard</a>
+      <a href="progress.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Progressi nel tempo">Progressi</a>
+      <a href="workout.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Scheda allenamento">Allenamento</a>
+      <a href="diet.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Piano dieta">Dieta</a>
+      <a href="plan.html"
+         role="tab"
+         class="nav-tab active"
+         aria-current="page"
+         aria-label="Piano annuale e obiettivi">Piano</a>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════
+       MAIN — tre sezioni skeleton
+  ══════════════════════════════════════════ -->
+  <main id="page-content" aria-label="Contenuto principale">
+    <div class="container">
+
+      <!-- SEZIONE 1: Timeline fasi annuali -->
+      <section id="plan-timeline"
+               class="plan-section"
+               aria-label="Timeline fasi del programma annuale">
+        <div class="plan-section-header">
+          <h2 class="plan-section-title">Programma Annuale</h2>
+          <p class="plan-section-subtitle">10 fasi — <span id="plan-timeline-meta">caricamento…</span></p>
+        </div>
+        <div class="plan-timeline-scroll" role="list" aria-label="Elenco fasi programma">
+          <div id="plan-phase-cards" class="plan-phase-cards">
+            <!-- Placeholder generato da plan.js -->
+            <p class="plan-placeholder">Caricamento timeline fasi…</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- SEZIONE 2: Target di forza progressivi -->
+      <section id="plan-strength-targets"
+               class="plan-section"
+               aria-label="Target di forza progressivi">
+        <div class="plan-section-header">
+          <h2 class="plan-section-title">Target di Forza</h2>
+          <p class="plan-section-subtitle">Proiezioni progressivi sui Big 3</p>
+        </div>
+        <div id="plan-targets-container" class="plan-targets-container">
+          <!-- Placeholder — popolato da strength-targets-table task -->
+          <p class="plan-placeholder">Caricamento target di forza…</p>
+        </div>
+      </section>
+
+      <!-- SEZIONE 3: Strategia nutrizionale per fase -->
+      <section id="plan-nutrition-strategy"
+               class="plan-section"
+               aria-label="Strategia nutrizionale per fase">
+        <div class="plan-section-header">
+          <h2 class="plan-section-title">Strategia Nutrizionale</h2>
+          <p class="plan-section-subtitle">Approccio per fase del programma</p>
+        </div>
+        <div id="plan-nutrition-container" class="plan-nutrition-container">
+          <!-- Placeholder — popolato da task futuro o direttamente da plan.js -->
+          <p class="plan-placeholder">Caricamento strategia nutrizionale…</p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ══════════════════════════════════════════
+       FOOTER — minimale
+  ══════════════════════════════════════════ -->
+  <footer class="page-footer" id="main-footer" role="contentinfo">
+    <div class="container">
+      <p class="footer-text">Daniele Fitness &copy; 2026</p>
+    </div>
+  </footer>
+
+  <script src="js/nav.js" defer></script>
+  <script src="js/plan.js" defer></script>
+
+</body>
+</html>

@@ -1,0 +1,100 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "targets-card",
+    "task_titolo": "Card target progressivi di forza",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "I target a 3, 6, 12 mesi sono visibili per tutti e 3 gli esercizi (Squat, Panca, Stacco)",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js renderTargetsCard() itera su array exercises (Squat, Panca, Stacco) e su plan.target[] (contiene 3 mesi, 6 mesi, 12 mesi + lungo termine). La funzione costruisce celle per ogni combinazione esercizio × orizzonte. plan.json contiene tutti i valori numerici per i tre esercizi nei quattro orizzonti."
+    },
+    {
+      "criterio": "Il target a lungo termine (Squat 200 / Panca 150 / Stacco 250 kg) è evidenziato come obiettivo finale con stile visivo distinto",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js line 254 identifica isLongterm tramite orizzonte === 'Lungo termine (2-5 anni)'. Aggiunge classe CSS targets-card__th--longterm all'intestazione (line 255) e badge '🎯 Obiettivo' (line 256). Nelle celle applica targets-card__td--longterm (line 278). dashboard.css definisce th--longterm con colore accent e bordo 2px (line 356-359); td--longterm con colore accent e sfondo color-accent-dim (line 419-423). piano.json conferma valori 200/150/250 nel 4° elemento (lungo termine)."
+    },
+    {
+      "criterio": "La presentazione è leggibile anche su mobile (overflow-x: auto o layout verticale alternativo)",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.css line 322-326: targets-card__table-wrapper ha overflow-x: auto e -webkit-overflow-scrolling: touch per scroll fluido su mobile. Tabella ha min-width: 400px per garantire leggibilità. Media query @media (max-width: 480px) (line 440-454) riduce font-size e padding per schermi piccoli senza compromettere usabilità."
+    },
+    {
+      "criterio": "docs/js/dashboard.js contiene la funzione renderTargetsCard(plan)",
+      "soddisfatto": true,
+      "dettaglio": "Funzione renderTargetsCard(plan) definita a line 240-305 in dashboard.js. Riceve plan come parametro, estrae plan.target[], costruisce HTML tabellare con thead e tbody, gestisce fallback 'Dati non disponibili'."
+    },
+    {
+      "criterio": "renderTargetsCard() viene chiamata dentro renderDashboard() dopo renderProgramPhaseCard()",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js renderDashboard() (line 316-355): renderTargetsCard(plan) è richiamata a line 354, immediatamente dopo renderProgramPhaseCard(plan) a line 351. L'ordine è corretto."
+    },
+    {
+      "criterio": "renderTargetsCard() gestisce plan null o plan.target vuoto/mancante senza lanciare eccezioni (fallback 'Dati non disponibili')",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js line 245-248: if (!plan || !plan.target || plan.target.length === 0) scrive container.innerHTML = '<p class=\"error-message\">Dati non disponibili</p>' e ritorna. Nessuna eccezione lanciata. Gestione corretta per tutti gli edge case."
+    },
+    {
+      "criterio": "docs/css/dashboard.css contiene le classi .targets-card__* necessarie al layout della card",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.css contiene tutte le classi richieste: targets-card__table-wrapper (line 322), targets-card__table (line 329), targets-card__th (line 336), targets-card__th--label (line 350), targets-card__th--longterm (line 356), targets-card__horizon-date (line 362), targets-card__goal-badge (line 373), targets-card__row (line 388), targets-card__exercise-label (line 397), targets-card__td (line 409), targets-card__td--longterm (line 419), targets-card__unit (line 426). Tutte le classi sono presenti e stilizzate."
+    },
+    {
+      "criterio": "Il container #card-target in docs/dashboard.html NON viene modificato (il JS inietta solo il contenuto via innerHTML)",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.html line 74: <div id=\"card-target\" class=\"dashboard-card\" aria-label=\"Target progressivi\"> rimane intatto (non è stato modificato). dashboard.js renderTargetsCard() accede via getElementById('card-target') (line 241) e popola via innerHTML (line 289), senza toccare la struttura HTML della pagina."
+    },
+    {
+      "criterio": "Non viene effettuato un nuovo fetch() dentro renderTargetsCard() — usa il parametro plan già disponibile",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js renderTargetsCard(plan) (line 240-305): nessun fetch() presente. Usa il parametro plan passato da renderDashboard(). Il parametro plan viene già caricato via fetch in DOMContentLoaded (line 366) e passato a renderDashboard() (line 392), poi a renderTargetsCard() (line 354). Corretto."
+    },
+    {
+      "criterio": "I valori a 3/6/12 mesi sono mostrati con una cifra decimale (toFixed(1)); i valori lungo termine sono interi",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js line 273-276: valStr = isLongterm ? `${val}<span class=\"targets-card__unit\">kg</span>` : `${val.toFixed(1)}<span class=\"targets-card__unit\">kg</span>`. Lungo termine (isLongterm true) → valori interi (es. 200, 150, 250). Breve/medio termine (isLongterm false) → toFixed(1) (es. 148.1, 118.2). Formattazione corretta."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/dashboard.js",
+      "esiste": true,
+      "note": "Contiene funzione renderTargetsCard(plan) completa con logica di costruzione tabella, gestione longterm, fallback dati null. Correttamente richiamata in renderDashboard(). Nessun fetch() separato."
+    },
+    {
+      "path": "docs/css/dashboard.css",
+      "esiste": true,
+      "note": "Contiene tutte le classi targets-card__*. Stili per tabella, intestazioni, celle, responsive su mobile. Evidenziazione longterm con color-accent e sfondo color-accent-dim. Media query per mobile <480px."
+    },
+    {
+      "path": "docs/dashboard.html",
+      "esiste": true,
+      "note": "Container #card-target presente a line 74 con class='dashboard-card'. Non modificato. HTML rimane intatto per il fallback no-JS (mostra placeholder)."
+    },
+    {
+      "path": "docs/data/plan.json",
+      "esiste": true,
+      "note": "Array target[] contiene 4 elementi: 3 mesi, 6 mesi, 12 mesi, Lungo termine (2-5 anni). Ogni target ha orizzonte, data, squat, panca, stacco, note. Valori lungo termine: 200/150/250 come atteso."
+    },
+    {
+      "path": "docs/css/variables.css",
+      "esiste": true,
+      "note": "Definisce variabili CSS globali: --color-accent (#ff6b35), --color-accent-dim (rgba con 0.15), --color-text-muted, --font-size-*, --space-*. Tutte le variabili usate in dashboard.css per targets-card sono disponibili."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "dashboard.js renderTargetsCard() costruisce una cella <th> vuota come placeholder per l'allineamento colonna esercizi (line 295). È corretto ma aggiunge complessità minore. Pratica comune per allineamento tabellare.",
+      "file": "docs/js/dashboard.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Su schermi molto piccoli (<375px) la tabella rimane con overflow-x: auto e il font si riduce leggermente su mobile (max-width 480px). È il comportamento atteso per mobile-first, nessun problema.",
+      "file": "docs/css/dashboard.css"
+    }
+  ]
+}

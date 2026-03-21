@@ -1,0 +1,137 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "dashboard-layout",
+    "task_title": "Struttura griglia della Dashboard",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "dashboard-layout",
+    "type": "layout",
+    "title": "Struttura griglia della Dashboard",
+    "description": "Griglia che organizza i widget della dashboard in modo coerente. Su desktop può essere a 2-3 colonne, su mobile a colonna singola. I widget sono: stato attuale atleta, massimali correnti, fase corrente del programma, prossimi target.",
+    "inputs": ["MainLayout", "NavBar"],
+    "outputs": ["DashboardLayout"],
+    "acceptance_criteria": [
+      "I widget della dashboard sono organizzati in una griglia leggibile",
+      "Su mobile i widget si impilano in colonna singola senza overflow"
+    ],
+    "notes": "I file principali (dashboard.html, css/dashboard.css, js/dashboard.js) esistono già e contengono una griglia `#dashboard-grid` con 4 card placeholder. Il developer deve verificare che la struttura sia completa e corretta rispetto ai criteri, poi aggiungere gli elementi mancanti (titoli card, sezione accessibilità ARIA). I card placeholder figli (`#card-stato`, `#card-massimali`, `#card-fase`, `#card-target`) sono già nel DOM via JS — il developer non deve reinventarli ma può rafforzare la struttura HTML statica per migliorare il no-JS fallback. Non toccare `docs/data/`."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/dashboard.html",
+        "motivo": "Il main#page-content contiene solo un div.container vuoto con commento. Aggiungere un `<div id='dashboard-grid'>` statico con 4 `<div class='dashboard-card'>` come fallback no-JS, oppure verificare che il rendering JS sia sufficiente. Assicurarsi che gli attributi aria-label siano presenti sul grid e sulle card.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "La griglia `#dashboard-grid` esiste già (1 colonna mobile, 2 colonne da 768px). Verificare: (1) nessun overflow orizzontale su viewport 320px, (2) gap e padding coerenti con variables.css, (3) aggiungere eventuale stato `.dashboard-card--loading` o `.dashboard-card--error` per feedback visivo durante il fetch.",
+        "esiste": true
+      },
+      {
+        "path": "docs/js/dashboard.js",
+        "motivo": "La funzione `renderDashboard()` inietta già `#dashboard-grid` con 4 card placeholder. Verificare che: (1) i 4 id di card (`#card-stato`, `#card-massimali`, `#card-fase`, `#card-target`) siano presenti e corretti, (2) venga gestito il caso in cui `measurements` sia un array vuoto senza errori JS, (3) `renderHeaderDate()` sia chiamata correttamente.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/dashboard.html",
+        "motivo": "Leggere per capire la struttura corrente del main#page-content e i tag già presenti (header, nav, footer, script). Base da cui partire per verificare o completare la griglia statica."
+      },
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "Leggere per verificare le regole già esistenti su `#dashboard-grid` e `.dashboard-card` prima di aggiungere nuove regole responsive o stati."
+      },
+      {
+        "path": "docs/js/dashboard.js",
+        "motivo": "Leggere per verificare la funzione `renderDashboard()` e la struttura HTML iniettata nel container, in particolare i 4 id di card usati dai task successivi (`athlete-status-card`, `strength-summary-card`, `program-phase-card`, `targets-card`)."
+      },
+      {
+        "path": "docs/css/layout.css",
+        "motivo": "Leggere per capire le classi condivise disponibili (`.container`, `#page-content`, `.page-header`, `.nav-tab`) e i breakpoint già definiti (375px mobile, 768px tablet, 1280px desktop). Evitare duplicazioni nei CSS di dashboard."
+      },
+      {
+        "path": "docs/css/variables.css",
+        "motivo": "Leggere per conoscere i custom properties disponibili: `--space-*`, `--color-bg-card`, `--color-border`, `--radius-lg`, `--shadow-sm`, `--container-max-width`. Usarli in dashboard.css senza valori hardcoded."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS ES2022 — nessun bundler, nessun framework",
+      "styling": "CSS custom properties da css/variables.css — nessun framework CSS",
+      "grafici": "Chart.js non necessario per questo task (dashboard-layout non include grafici)",
+      "build": "nessuno — i file in docs/ sono già nella forma finale"
+    },
+    "convenzioni": {
+      "naming": {
+        "classi_css": "kebab-case con prefisso pagina per classi specifiche: `.dashboard-card`, `.dashboard-grid` — senza prefisso per classi condivise: `.container`, `.nav-tab`",
+        "id_html": "kebab-case: `#dashboard-grid`, `#card-stato`, `#card-massimali`, `#card-fase`, `#card-target`",
+        "variabili_js": "camelCase: `measurements`, `plan`, `workout`, `last`",
+        "costanti_js": "UPPER_SNAKE_CASE: `DATA_PATH_MEASUREMENTS`, `DATA_PATH_PLAN`, `DATA_PATH_WORKOUT`"
+      },
+      "html": {
+        "struttura_base": "<!DOCTYPE html>, lang='it', meta charset UTF-8, meta viewport, title 'Dashboard — Daniele Fitness', link variables.css + layout.css + dashboard.css, script nav.js + dashboard.js defer in fondo al body",
+        "accessibilita": "Tag semantici: header[role=banner], nav[role=tablist], main, footer[role=contentinfo]. aria-label su elementi interattivi e canvas. I 4 div.dashboard-card devono avere aria-label descrittivo.",
+        "no_chartjs": "Non includere script Chart.js in dashboard.html — la dashboard non ha grafici"
+      },
+      "css_responsive": {
+        "mobile_first": "Stile base = 1 colonna (`grid-template-columns: 1fr`)",
+        "tablet_768": "`@media (min-width: 768px)` → 2 colonne (`repeat(2, 1fr)`)",
+        "desktop_1280": "`@media (min-width: 1280px)` → 2 colonne con `gap: var(--space-8)` (il container max-width limita la larghezza)",
+        "overflow": "Nessun elemento figlio deve causare overflow orizzontale. Usare `min-width: 0` sulle card se necessario."
+      },
+      "js_pattern": {
+        "struttura": "(1) costanti DATA_PATH_* in cima, (2) funzioni utility (formatDateIt, showError), (3) funzioni render (renderHeaderDate, renderDashboard), (4) DOMContentLoaded con fetch() parallelo via Promise.all + try/catch",
+        "fetch": "try { const [r1,r2,r3] = await Promise.all([fetch(...), ...]); ... renderDashboard(m, p, w); } catch(e) { showError(container, e); }",
+        "no_modules": "Non usare import/export — tutto in scope globale della pagina per compatibilità fetch file://",
+        "no_var": "Usare const/let — mai var",
+        "null_handling": "Accesso sicuro con optional chaining: `measurements?.[last]?.data ?? '—'`"
+      }
+    },
+    "pagina": {
+      "nome": "Dashboard",
+      "file": "docs/dashboard.html",
+      "js": "docs/js/dashboard.js",
+      "css": ["docs/css/variables.css", "docs/css/layout.css", "docs/css/dashboard.css"],
+      "dati_json": ["data/measurements.json", "data/plan.json", "data/workout_data.json"],
+      "grafici": false
+    },
+    "id_card_attesi": {
+      "note": "I 4 id seguenti DEVONO essere presenti nel DOM al termine del rendering — i task successivi li cercano via document.getElementById()",
+      "card_stato": "#card-stato — Card stato attuale atleta (usata da task athlete-status-card)",
+      "card_massimali": "#card-massimali — Card massimali Big 3 (usata da task strength-summary-card)",
+      "card_fase": "#card-fase — Card fase corrente programma (usata da task program-phase-card)",
+      "card_target": "#card-target — Card target progressivi (usata da task targets-card)"
+    }
+  },
+  "criteri_accettazione": [
+    "I widget della dashboard sono organizzati in una griglia leggibile (2 colonne su tablet/desktop, 1 colonna su mobile)",
+    "Su mobile (viewport ≤ 375px) i widget si impilano in colonna singola senza overflow orizzontale",
+    "docs/dashboard.html contiene header[role='banner'], nav[role='tablist'] con 5 link .nav-tab, main#page-content, footer[role='contentinfo']",
+    "docs/css/dashboard.css definisce `#dashboard-grid` con `display: grid` e `grid-template-columns: 1fr` come default mobile-first",
+    "docs/css/dashboard.css definisce `@media (min-width: 768px)` che porta la griglia a 2 colonne",
+    "docs/js/dashboard.js contiene la funzione `renderDashboard(measurements, plan, workout)`",
+    "docs/js/dashboard.js inietta nel DOM i 4 id: `#card-stato`, `#card-massimali`, `#card-fase`, `#card-target` all'interno di `#dashboard-grid`",
+    "docs/js/dashboard.js gestisce array `measurements` vuoto senza lanciare eccezioni",
+    "docs/dashboard.html include `<script src='js/nav.js' defer>` e `<script src='js/dashboard.js' defer>` — NON include Chart.js",
+    "Ogni `.dashboard-card` ha un attributo `aria-label` descrittivo"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "navigation-tabs",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/css/layout.css",
+        "docs/js/nav.js",
+        "docs/dashboard.html"
+      ],
+      "note": "La navigazione a tab è già implementata: css/layout.css contiene le regole `.tab-list`, `.nav-tab`, `.nav-tab.active`; js/nav.js contiene `setActiveNav()`; dashboard.html contiene il nav[role='tablist'] con i 5 link alle sezioni."
+    }
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "supplements-section",
+    "task_title": "Sezione piano integratori",
+    "bloccato": false,
+    "motivo_blocco": null,
+    "nota_stato": "ATTENZIONE: Il task risulta già completamente implementato nei file esistenti. docs/diet.html, docs/js/diet.js e docs/css/diet.css contengono già tutta la logica, il markup e gli stili per la sezione integratori. Il developer deve VERIFICARE la correttezza dell'implementazione rispetto ai criteri di accettazione prima di dichiarare il task completato, senza apportare modifiche se non necessario."
+  },
+  "task": {
+    "id": "supplements-section",
+    "type": "component",
+    "title": "Sezione piano integratori",
+    "description": "Lista degli integratori consigliati con dose, timing e note. Integratori presenti: Creatina monoidrato (5g), Vitamina D3 (2000 UI), Omega-3 (2-3g EPA+DHA), Whey protein (60g/die). Ogni integratore ha una breve nota sul perché è importante nella fase corrente (es. Omega-3 per effetto antinfiammatorio TOS).",
+    "inputs": [
+      "diet_data"
+    ],
+    "outputs": [
+      "SupplementsSection"
+    ],
+    "acceptance_criteria": [
+      "Tutti e 4 gli integratori sono elencati con dose e timing",
+      "Il motivo dell'assunzione è visibile per ogni integratore",
+      "La sezione è visivamente separata dai pasti"
+    ],
+    "notes": "I dati degli integratori si trovano nell'array root `integratori` di docs/data/diet.json (NON dentro giorni[].pasti). La sezione è indipendente dal toggle allenamento/riposo: gli integratori sono sempre visibili, ogni giorno. La funzione renderSupplements() riceve data.integratori e chiama renderSupplementCard() per ciascuno."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/diet.html",
+        "motivo": "Contiene già <section id='supplements-section' class='diet-supplements'> con <div id='supplements-list'>. Verificare che il markup sia corretto e accessibile. Nessuna modifica prevista se già conforme.",
+        "esiste": true,
+        "stato_attuale": "IMPLEMENTATO — sezione presente alle righe 96-104"
+      },
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "Contiene già renderSupplementCard(integratore) e renderSupplements(integratori). Verificare che: (1) gestisca correttamente i campi null, (2) sia chiamata con data.integratori nel renderDiet(), (3) rientri nel fallback del catch. Nessuna modifica prevista se già conforme.",
+        "esiste": true,
+        "stato_attuale": "IMPLEMENTATO — funzioni presenti alle righe 274-309, chiamata in renderDiet() alla riga 337"
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Contiene già tutti gli stili .diet-supplements, .diet-supplements__header, .diet-supplements__title, .diet-supplements__subtitle, .diet-supplements__list, .diet-supplement-card, .diet-supplement-card__header, .diet-supplement-card__nome, .diet-supplement-card__dose, .diet-supplement-card__timing, .diet-supplement-card__timing-label, .diet-supplement-card__note. Verificare separazione visiva dai pasti (border-top verde su .diet-supplements). Nessuna modifica prevista se già conforme.",
+        "esiste": true,
+        "stato_attuale": "IMPLEMENTATO — stili presenti alle righe 386-484"
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/diet.json",
+        "motivo": "Struttura dati integratori: array root 'integratori' (non dentro giorni[]). Campi per oggetto: nome (string), dose (string), timing (string), note (string). 4 elementi: Creatina monoidrato (5g), Vitamina D3 (2000 UI), Omega-3 EPA+DHA (2-3g), Proteina Whey (60g/die). Tutti i campi sono sempre valorizzati (nessun null nei dati attuali)."
+      },
+      {
+        "path": "docs/diet.html",
+        "motivo": "Verificare struttura HTML della sezione: presenza di <section id='supplements-section'>, <div id='supplements-list'>, aria-label, separazione dal blocco #meals-list precedente."
+      },
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "Verificare implementazione renderSupplements() e renderSupplementCard(). Controllare gestione null, chiamata da renderDiet(), gestione fallback nel catch block."
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Verificare stili sezione integratori: separazione visiva (border-top: 3px solid var(--color-success)), grid layout delle card, badge dose in verde, sezione note con border-top interno."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS ES2022",
+      "styling": "CSS custom properties (CSS3), prefisso classi: diet-*",
+      "grafici": null,
+      "dati": "fetch() su docs/data/diet.json — file generato da script Python, mai modificare"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase — es. integratore, supplementCard",
+      "costanti_js": "UPPER_SNAKE_CASE — es. DATA_PATH = 'data/diet.json'",
+      "classi_css": "kebab-case con prefisso 'diet-' — es. .diet-supplement-card, .diet-supplement-card__dose",
+      "id_html": "kebab-case — es. #supplements-section, #supplements-list",
+      "gestione_null": "Usare operatore ?? con fallback '—' — es. integratore?.nome ?? '—'",
+      "pattern_js": "renderDiet(data) chiama renderSupplements(data?.integratori ?? []) — indipendente dal toggle giorno",
+      "no_inline_style": "Nessuno style inline nel JS — usare classi CSS",
+      "no_var": "Usare const/let, mai var",
+      "struttura_pagina": "DOMContentLoaded → fetch(DATA_PATH) → try/catch → renderDiet(data) | showError(container, e)"
+    },
+    "pagina": {
+      "nome": "Dieta",
+      "file_html": "docs/diet.html",
+      "file_js": "docs/js/diet.js",
+      "file_css": "docs/css/diet.css",
+      "dati_json": ["data/diet.json"],
+      "funzione_principale": "renderDiet(data)"
+    },
+    "struttura_dati_integratori": {
+      "posizione_nel_json": "root — data.integratori (array, NON dentro data.giorni[])",
+      "campi_oggetto": {
+        "nome": "string — nome commerciale dell'integratore",
+        "dose": "string — es. '5g', '2000 UI', '2-3g EPA+DHA totali', '60g/die (25g colazione + 35g merenda)'",
+        "timing": "string — quando assumerlo",
+        "note": "string — motivazione clinica/sportiva, specifica TOS"
+      },
+      "conteggio_attuale": 4,
+      "integratori_presenti": [
+        "Creatina monoidrato — 5g",
+        "Vitamina D3 — 2000 UI",
+        "Omega-3 (EPA+DHA) — 2-3g EPA+DHA totali",
+        "Proteina Whey — 60g/die"
+      ]
+    }
+  },
+  "criteri_accettazione": [
+    "Tutti e 4 gli integratori (Creatina monoidrato, Vitamina D3, Omega-3, Whey) sono elencati con dose e timing",
+    "Il campo 'note' (motivo dell'assunzione) è visibile per ogni integratore nella card",
+    "La sezione integratori è visivamente separata dalla sezione pasti (border-top: 3px solid var(--color-success) su .diet-supplements)",
+    "La sezione è sempre visibile indipendentemente dal toggle allenamento/riposo",
+    "docs/diet.html contiene <section id='supplements-section' class='diet-supplements'>",
+    "docs/diet.html contiene <div id='supplements-list'> dove vengono iniettate le card via JS",
+    "docs/js/diet.js contiene la funzione renderSupplements(integratori)",
+    "docs/js/diet.js contiene la funzione renderSupplementCard(integratore)",
+    "renderSupplementCard() gestisce campi null/undefined con fallback '—' senza lanciare eccezioni",
+    "renderDiet() chiama renderSupplements(data?.integratori ?? []) — array root, non dal giorno selezionato",
+    "Il catch block in DOMContentLoaded imposta un empty state in #supplements-list in caso di errore fetch",
+    "Ogni card mostra: nome integratore, badge dose (verde), timing, testo note"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "diet-page-layout",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/diet.html",
+        "docs/js/diet.js",
+        "docs/css/diet.css"
+      ],
+      "note": "Tutti e tre i file esistono in docs/. La pagina ha header, navigazione a tab (Dieta attivo), struttura main con container, toggle giorno, sezioni macros/pasti/integratori, footer. js/nav.js caricato per navigazione condivisa."
+    }
+  ]
+}

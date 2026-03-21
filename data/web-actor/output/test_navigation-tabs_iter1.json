@@ -1,0 +1,90 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "navigation-tabs",
+    "task_titolo": "Navigazione principale tra le sezioni",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Tutte e 5 le sezioni sono raggiungibili dalla navigazione: Dashboard, Progressi, Allenamento, Dieta, Piano",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.html contiene <nav role='tablist'> con 5 link: dashboard.html, progress.html, workout.html, diet.html, plan.html (righe 34-54)"
+    },
+    {
+      "criterio": "La sezione corrente è evidenziata visivamente con colore accent e border-bottom-color accent",
+      "soddisfatto": true,
+      "dettaglio": "layout.css righe 145-150: .nav-tab.active, .nav-tab[aria-current='page'] ha color: var(--color-accent) e border-bottom-color: var(--color-accent)"
+    },
+    {
+      "criterio": "Navigazione usabile su mobile senza zoom (overflow-x scroll, no layout rotto)",
+      "soddisfatto": true,
+      "dettaglio": "layout.css: .tab-list ha overflow-x: auto (riga 109) con scrollbar nascosta via scrollbar-width: none (riga 110) e webkit-scrollbar (riga 114-116). Media query mobile riduce padding e font-size"
+    },
+    {
+      "criterio": "docs/css/layout.css contiene le regole .tab-list, .nav-tab, .nav-tab.active, .nav-tab[aria-current='page']",
+      "soddisfatto": true,
+      "dettaglio": "Tutte le regole presenti: .tab-list (righe 103-124), .nav-tab (righe 125-143), .nav-tab.active / [aria-current='page'] (righe 145-150)"
+    },
+    {
+      "criterio": "docs/css/layout.css contiene media query per mobile (≤480px o ≤375px) con .nav-tab a padding ridotto",
+      "soddisfatto": true,
+      "dettaglio": "Media query @media (max-width: 375px) presente (righe 189-219). .nav-tab ha padding-inline: var(--space-4) e font-size: var(--font-size-xs) ridotti rispetto al default"
+    },
+    {
+      "criterio": "docs/css/layout.css contiene .nav-tab:focus-visible con outline per accessibilità tastiera",
+      "soddisfatto": true,
+      "dettaglio": "layout.css righe 152-156: .nav-tab:focus-visible ha outline: 2px solid var(--color-accent) con outline-offset: -2px"
+    },
+    {
+      "criterio": "docs/js/nav.js esiste e contiene la funzione setActiveNav()",
+      "soddisfatto": true,
+      "dettaglio": "nav.js esiste e contiene funzione setActiveNav() definita alle righe 14-42"
+    },
+    {
+      "criterio": "setActiveNav() confronta window.location.pathname con l'href di ogni .nav-tab e applica .active + aria-current='page' al tab corrispondente",
+      "soddisfatto": true,
+      "dettaglio": "nav.js righe 19-41: legge window.location.pathname, estrae currentFile dal path, confronta con tabFile di ogni .nav-tab, applica classList.add('active') e setAttribute('aria-current', 'page') al tab corrispondente"
+    },
+    {
+      "criterio": "docs/dashboard.html include <script src='js/nav.js' defer> nel body",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.html riga 76: <script src='js/nav.js' defer></script> presente nel body"
+    },
+    {
+      "criterio": "Il markup <nav role='tablist' class='tab-list' id='nav-tabs'> in dashboard.html contiene esattamente 5 link con role='tab'",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.html righe 32-56: nav contiene 5 link <a role='tab'>: Dashboard, Progressi, Allenamento, Dieta, Piano"
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/dashboard.html",
+      "esiste": true,
+      "note": "Contiene markup <nav role='tablist'> con 5 link role='tab', aria-label su nav e su ogni tab. Include <script src='js/nav.js' defer>. Tab Dashboard ha hardcoded class='nav-tab active' e aria-current='page' che verranno corretti dinamicamente da nav.js"
+    },
+    {
+      "path": "docs/css/layout.css",
+      "esiste": true,
+      "note": "Contiene stili completi per navigazione: .tab-list, .nav-tab, .nav-tab.active / [aria-current='page'], .nav-tab:hover, .nav-tab:focus-visible. Include media query mobile (≤375px) con padding e font-size ridotti. Include media query tablet (≥768px) e desktop (≥1280px)"
+    },
+    {
+      "path": "docs/js/nav.js",
+      "esiste": true,
+      "note": "Script standalone che implementa setActiveNav(). Legge window.location.pathname, confronta con href dei .nav-tab e applica dinamicamente .active + aria-current='page'. Eseguito al DOMContentLoaded. Non usa ES modules o fetch"
+    },
+    {
+      "path": "docs/css/variables.css",
+      "esiste": true,
+      "note": "Contiene tutte le variabili CSS usate nella navigazione: --color-accent (#ff6b35), --color-bg-secondary, --color-text-muted, --color-border, --transition-fast, --space-*, --font-size-*, --nav-height, etc."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "nav.js riga 27 rimuove 'aria-current' attribute globalmente. Sebbene funzioni correttamente (perché ri-aggiunto dopo), una pratica più esplicita sarebbe verificare se il tab è quello corrente prima di rimuoverlo",
+      "file": "docs/js/nav.js"
+    }
+  ]
+}

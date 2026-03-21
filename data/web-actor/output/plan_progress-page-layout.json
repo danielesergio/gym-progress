@@ -1,0 +1,154 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "progress-page-layout",
+    "task_title": "Struttura pagina Progressi",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "progress-page-layout",
+    "type": "layout",
+    "title": "Struttura pagina Progressi",
+    "description": "Layout della pagina Progressi con sezioni distinte per: grafico peso/composizione corporea, grafico massimali, tabella storica misurazioni. Su mobile le sezioni si impilano verticalmente.",
+    "inputs": [
+      "MainLayout",
+      "NavBar"
+    ],
+    "outputs": [
+      "ProgressPageLayout"
+    ],
+    "acceptance_criteria": [
+      "La pagina ha sezioni ben distinte per composizione corporea e massimali",
+      "La struttura è leggibile su mobile"
+    ],
+    "notes": "La pagina progress.html è il contenitore vuoto (scheletro HTML + CSS layout) da cui dipendono 4 task figli: weight-bf-chart, strength-chart, measurements-table, circumferences-chart. Il JS (progress.js) in questo task deve solo predisporre la struttura DOMContentLoaded + fetch() + renderProgress() senza ancora riempire il contenuto — oppure può già fare il fetch() e passare i dati ai placeholder, lasciando la render logic ai task figli. Approccio consigliato: creare progress.js con lo scheletro base (costanti, fetch, renderProgress vuota) così i task figli lo trovano già pronto da estendere."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/progress.html",
+        "motivo": "File da CREARE (non esiste). Pagina HTML completa con struttura: header (riusato da dashboard.html come modello), nav-tabs (tab 'Progressi' con .active), main con 4 sezioni placeholder (#section-peso-bf, #section-massimali, #section-circonferenze, #section-tabella), footer, script Chart.js CDN, script js/progress.js",
+        "esiste": false
+      },
+      {
+        "path": "docs/css/progress.css",
+        "motivo": "File da CREARE (non esiste). Stili specifici pagina Progressi: container sezioni (.progress-section), titoli sezione (.progress-section__title), container canvas Chart.js (.progress-chart-container con height fissa), layout responsive (sezioni impilate verticalmente su mobile con media query ≤ 768px), badge tipo massimale (.badge-reale, .badge-stimato).",
+        "esiste": false
+      },
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "File da CREARE (non esiste). Scheletro JS pagina Progressi: costante DATA_PATH, fetch() con try/catch su data/measurements.json, funzione renderProgress(data) vuota o con placeholder, DOMContentLoaded. I task figli estenderanno renderProgress() con le singole render function.",
+        "esiste": false
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/dashboard.html",
+        "motivo": "Modello strutturale obbligatorio — copiare lo scheletro HTML (DOCTYPE, head, header, nav, main, footer, script pattern). Adattare: title → 'Progressi — Daniele Fitness', css/dashboard.css → css/progress.css, aggiungere CDN Chart.js, nav-tab 'Progressi' riceve .active, body script → js/progress.js."
+      },
+      {
+        "path": "docs/js/nav.js",
+        "motivo": "Verificare se la gestione del tab .active è centralizzata in nav.js (in quel caso NON aggiungere .active manualmente nel markup ma lasciare che nav.js la imposti in base all'URL corrente). Dipendenza prodotta da navigation-tabs."
+      },
+      {
+        "path": "docs/css/layout.css",
+        "motivo": "Verificare le classi condivise già definite (.container, .page-header, .tab-list, .nav-tab, .page-footer) per NON ridefinirle in progress.css."
+      },
+      {
+        "path": "docs/css/variables.css",
+        "motivo": "Leggere le custom properties disponibili (colori, spaziature, breakpoint) da usare in progress.css senza hardcodare valori."
+      },
+      {
+        "path": "docs/data/measurements.json",
+        "motivo": "Struttura dati che progress.js leggerà via fetch(). Array di 6 oggetti con campi: data (YYYY-MM-DD), peso_kg (float), body_fat_pct (float), massa_magra_kg (float), ffmi_adj (float), squat_1rm (float), panca_1rm (float), stacco_1rm (float), massimali_tipo ('R'|'S'), vita_cm, fianchi_cm, petto_cm, collo_cm, braccio_dx_cm, coscia_dx_cm, bmr_kcal, tdee_kcal, note (string). Alcuni oggetti hanno campo 'id' (uuid), altri no."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS ES2022 — no bundler, no npm",
+      "grafici": {
+        "nome": "Chart.js",
+        "versione": "4.x",
+        "cdn": "https://cdn.jsdelivr.net/npm/chart.js",
+        "note": "Caricare via CDN nello <head> o prima dello script js/progress.js. Opzioni obbligatorie: responsive: true, maintainAspectRatio: false."
+      },
+      "styling": "CSS custom properties — nessun framework CSS"
+    },
+    "convenzioni": {
+      "naming_file": "progress.html / css/progress.css / js/progress.js — kebab-case, nome identico al file HTML",
+      "variabili_js": "camelCase (es. measurementData, progressCharts)",
+      "costanti_js": "UPPER_SNAKE_CASE (es. DATA_PATH = 'data/measurements.json')",
+      "classi_css": "kebab-case con prefisso pagina per stili specifici: .progress-section, .progress-chart-container, .progress-section__title, .badge-reale, .badge-stimato. Classi condivise (.container, .nav-tab, ecc.) NON vanno ridefinite.",
+      "id_html": "kebab-case: #section-peso-bf, #section-massimali, #section-circonferenze, #section-tabella",
+      "struttura_js": "(1) Costanti in cima (DATA_PATH, ecc.), (2) funzione renderProgress(data) principale, (3) DOMContentLoaded con fetch() + try/catch che chiama renderProgress(data)",
+      "fetch_pattern": "try { const res = await fetch(DATA_PATH); if (!res.ok) throw new Error(res.status); const data = await res.json(); renderProgress(data); } catch(e) { showError(container, e); }",
+      "gestione_errori": "Funzione showError(container, error) — mostra 'Dati non disponibili' nel container. No alert(). console.error() per il log.",
+      "gestione_null": "Mostrare '—' per valori null/undefined. Mai stringhe 'null' o 'undefined' visibili. Esempio: val ?? '—'",
+      "formato_date": "ISO 8601 in JSON (YYYY-MM-DD), localizzato in italiano nel DOM (es. '20 mar 2026')",
+      "massimali_tipo": "R = Reale, S = Stimato — badge colorato nel DOM",
+      "no_moduli_es": "Non usare import/export (problemi CORS con file://). Tutto in scope globale della pagina.",
+      "no_var": "Usare const/let. No var, no jQuery, no inline style.",
+      "nav_active": "Il tab .active è gestito da js/nav.js — verificare prima di duplicare la logica nel markup."
+    },
+    "pagina": {
+      "nome": "Progressi",
+      "file": "docs/progress.html",
+      "js": "docs/js/progress.js",
+      "css": ["docs/css/variables.css", "docs/css/layout.css", "docs/css/progress.css"],
+      "dati_json": ["data/measurements.json"],
+      "grafici": true,
+      "cdn_chartjs_richiesto": true
+    },
+    "layout_sezioni_progress": {
+      "sezione_1": {
+        "id": "section-peso-bf",
+        "titolo": "Composizione Corporea",
+        "contenuto_atteso": "canvas per grafico peso + BF% (task weight-bf-chart)"
+      },
+      "sezione_2": {
+        "id": "section-massimali",
+        "titolo": "Andamento Massimali Big 3",
+        "contenuto_atteso": "canvas per grafico Squat/Panca/Stacco (task strength-chart)"
+      },
+      "sezione_3": {
+        "id": "section-circonferenze",
+        "titolo": "Circonferenze Corporee",
+        "contenuto_atteso": "canvas per grafico circonferenze (task circumferences-chart)"
+      },
+      "sezione_4": {
+        "id": "section-tabella",
+        "titolo": "Storico Misurazioni",
+        "contenuto_atteso": "tabella HTML completa di tutte le misurazioni (task measurements-table)"
+      },
+      "mobile_responsive": "Le 4 sezioni si impilano verticalmente (flex-direction: column o display: block) su viewport ≤ 768px. Su desktop possono stare in layout a 1 colonna larga o 2 colonne (1 col è il default più semplice e sicuro)."
+    }
+  },
+  "criteri_accettazione": [
+    "La pagina Progressi è accessibile all'URL progress.html senza errori 404",
+    "Il tab 'Progressi' nella navbar risulta visivamente attivo (classe .active o aria-current='page') quando si è su progress.html",
+    "La pagina contiene 4 sezioni distinte con id: #section-peso-bf, #section-massimali, #section-circonferenze, #section-tabella",
+    "Le 4 sezioni hanno un titolo visibile (es. <h2> o <h3>) e sono visivamente separate tra loro",
+    "Su mobile (viewport ≤ 768px) le sezioni si impilano verticalmente senza overflow orizzontale",
+    "La pagina carica Chart.js via CDN senza errori in console",
+    "Il file docs/progress.html include correttamente: css/variables.css, css/layout.css, css/progress.css e lo script js/progress.js",
+    "Il file docs/js/progress.js contiene la costante DATA_PATH = 'data/measurements.json'",
+    "Il file docs/js/progress.js contiene la funzione renderProgress(data)",
+    "Il file docs/js/progress.js contiene un DOMContentLoaded con fetch() e try/catch",
+    "Il file docs/css/progress.css definisce .progress-section e .progress-chart-container",
+    "Nessun errore in console JavaScript al caricamento della pagina"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "navigation-tabs",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/js/nav.js",
+        "docs/dashboard.html (contiene la nav con tutti e 5 i tab)"
+      ],
+      "note": "nav.js presente in docs/js/. La struttura navbar è già implementata in dashboard.html e va replicata in progress.html con tab 'Progressi' come active. Verificare nav.js per capire se gestisce .active dinamicamente via URL."
+    }
+  ]
+}

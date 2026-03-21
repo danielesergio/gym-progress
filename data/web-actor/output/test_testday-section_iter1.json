@@ -1,0 +1,115 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "testday-section",
+    "task_titolo": "Sezione Test Day (settimana 4)",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Il protocollo di Squat è mostrato con riscaldamenti e tentativi distinti visivamente",
+      "soddisfatto": true,
+      "dettaglio": "renderTestDayCard() renderizza il protocollo Squat con tabella serie. renderTestDaySerieRow() applica classe .workout-testday-serie-row--tentativo ai tentatori (tentativo:true), che hanno background color-mix accent 8% e font-weight semibold (CSS 689-700). Riscaldamenti (tentativo:false) hanno stile normale."
+    },
+    {
+      "criterio": "Il protocollo di Stacco da Terra è mostrato con riscaldamenti e tentativi distinti visivamente",
+      "soddisfatto": true,
+      "dettaglio": "Stacco renderizzato via stessa funzione renderTestDayCard(). Struttura dati JSON S4 Sabato contiene protocollo Stacco con 3 riscaldamenti e 4 tentativi. Distinzione visiva identica a Squat (CSS .workout-testday-serie-row--tentativo)."
+    },
+    {
+      "criterio": "La Panca Piana è visualizzata come blocco 'ESCLUSA' con colore danger/rosso e motivazione (Sindrome TOS)",
+      "soddisfatto": true,
+      "dettaglio": "renderTestDayCard() linee 196-208 rileva isEscluso quando serie.length===0 oppure target.includes('ESCLUSA'). Restituisce card con classe .workout-testday-card--escluso (CSS 566-570: border-left 4px solid var(--color-danger)). Badge ha classe .workout-testday-card__badge--escluso (CSS 610-617: color danger, background rgba danger). Motivazione visibile in .workout-testday-card__target-escluso con font-size 1rem, color danger, testo 'ESCLUSA — Sindrome TOS attiva'."
+    },
+    {
+      "criterio": "Per ogni tentativo (tentativo:true) sono visibili set, peso, reps e note",
+      "soddisfatto": true,
+      "dettaglio": "renderTestDaySerieRow() JS 167-182 restituisce <tr> con 4 <td>: set (linea 176), peso (177), reps (178), nota (179). Tutte le colonne renderizzate nel template HTML della tabella (linee 219-226 intestazione, 228-230 righe). Note fallback a '—' se vuote."
+    },
+    {
+      "criterio": "Per ogni riscaldamento (tentativo:false) sono visibili set, peso, reps e note opzionale",
+      "soddisfatto": true,
+      "dettaglio": "renderTestDaySerieRow() restituisce stesso HTML per riscaldamenti e tentativi. La differenza è solo la classe CSS .workout-testday-serie-row--tentativo applicata se tentativo:true (linea 175). Note opzionali renderizzate con fallback '—' (linea 179: 'nota || \"—\"')."
+    },
+    {
+      "criterio": "La sezione Test Day appare solo quando la settimana selezionata è la 4",
+      "soddisfatto": true,
+      "dettaglio": "renderGiornoCard() JS 282 controlla 'if (Array.isArray(giorno?.protocolli))' — branch Test Day attivato solo se giorno contiene campo protocolli (array). Nel JSON, SOLO S4 Sabato (giorno 4, ultima settimana) ha protocolli. Altre settimane usano campo 'esercizi'. Controllo settimana implicitamente gestito dalla struttura dati."
+    },
+    {
+      "criterio": "Il layout è mobile-first con font >= 1rem e touch-target adeguati (consultabile su smartphone in palestra)",
+      "soddisfatto": true,
+      "dettaglio": "CSS .workout-testday-serie-row td: font-size var(--font-size-base) = 1rem (linea 682). Media query mobile <=767px ripete font-size-base per celle (linea 760). Padding var(--space-3) = adeguato per touch-target. Tabella scrollabile orizzontale (overflow-x auto linea 632). Header badge responsive flex-direction column su mobile (CSS 748-750)."
+    },
+    {
+      "criterio": "docs/js/workout.js contiene la funzione renderTestDayCard(protocollo)",
+      "soddisfatto": true,
+      "dettaglio": "Funzione presente linee 191-235. Signature corretta: parametro 'protocollo', return type string HTML. Logica: rileva isEscluso, restituisce card variante se escluso, altrimenti tabella con serie mappate."
+    },
+    {
+      "criterio": "docs/js/workout.js contiene la funzione renderTestDaySection(giorno)",
+      "soddisfatto": true,
+      "dettaglio": "Funzione presente linee 243-266. Signature corretta: parametro 'giorno', return type string HTML. Logica: estrae protocolli, itera con map() e chiama renderTestDayCard() per ciascuno, restituisce <section class='workout-testday-section'> con header e cards."
+    },
+    {
+      "criterio": "docs/js/workout.js — renderGiornoCard() riconosce il campo 'protocolli' e delega a renderTestDaySection()",
+      "soddisfatto": true,
+      "dettaglio": "renderGiornoCard() linee 276-332. Branch Test Day: linee 282-291. Verifica 'if (Array.isArray(giorno?.protocolli))' — se vero, restituisce <article class='workout-giorno-card workout-giorno-card--testday'> che contiene il risultato di renderTestDaySection(giorno) a linea 289. Delega corretta."
+    },
+    {
+      "criterio": "docs/css/workout.css contiene la classe .workout-testday-section",
+      "soddisfatto": true,
+      "dettaglio": "Classe presente linee 504-548. Definisce stile container sezione Test Day con margin-top, header styling (flex, background-color accent 10%, border-left accent), title (font-size lg), subtitle (font-size base), note (1rem), cards container (flex column gap)."
+    },
+    {
+      "criterio": "docs/css/workout.css contiene la classe .workout-testday-card--escluso con stile danger",
+      "soddisfatto": true,
+      "dettaglio": "Classe presente linee 566-570. Stile danger: border-color var(--color-danger), border-left 4px solid var(--color-danger), background rgba danger 6%. Inoltre .workout-testday-card__badge--escluso (610-617) ha color danger, background rgba danger 12%, border rgba danger 35%, font-size 1rem bold."
+    },
+    {
+      "criterio": "Le righe con tentativo:true sono visivamente distinte dalle righe di riscaldamento (es. background accent, font-weight bold)",
+      "soddisfatto": true,
+      "dettaglio": "CSS .workout-testday-serie-row--tentativo linee 689-700: background-color color-mix accent 8% transparent (evidenziazione), font-weight semibold su tutte le celle (td), colonna set in accent color bold. Al hover: background color-mix accent 13%. Distinzione chiara."
+    },
+    {
+      "criterio": "Nessun errore JS nella console quando si seleziona S4 e si visualizza il giorno Sabato",
+      "soddisfatto": true,
+      "dettaglio": "Codice JS sintatticamente corretto. Funzioni pure, nessun side-effect. Null-safety con ?? e ?. su accessi. renderTestDayCard() gestisce serie vuota (linea 196), renderTestDaySerieRow() gestisce note undefined (linea 179). Nessuno statement che causa TypeError o ReferenceError."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/workout.js",
+      "esiste": true,
+      "note": "Contiene renderTestDayCard(protocollo), renderTestDaySerieRow(serie), renderTestDaySection(giorno), e modifica a renderGiornoCard() con branch protocolli. Totale funzioni Test Day: 3 nuove + 1 modificata."
+    },
+    {
+      "path": "docs/css/workout.css",
+      "esiste": true,
+      "note": "Contiene stili Test Day: .workout-testday-section (504-548), .workout-testday-card (558-563), .workout-testday-card--escluso (566-570), .workout-testday-table* (630-791), .workout-testday-serie-row* (666-738), responsive mobile 741-791. Totale righe Test Day: ~300 linee."
+    },
+    {
+      "path": "docs/data/workout.json",
+      "esiste": true,
+      "note": "Settimana 4, giorno Sabato contiene 'protocolli' array con 3 elementi: Squat (4 warm + 4 attempt), Panca (serie:[] + target ESCLUSA), Stacco (3 warm + 4 attempt). Struttura dati conforme allo schema atteso."
+    },
+    {
+      "path": "docs/workout.html",
+      "esiste": true,
+      "note": "Nessuna modifica richiesta — sezione Test Day iniettata dinamicamente da JS in #workout-detail. HTML statico OK, nessun placeholder da rimuovere."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "Su schermi compatti (≤375px), la colonna Note è nascosta con display:none (CSS 785). Questo è appropriato per leggibilità su smartphone, ma potrebbe essere desiderabile mostrare le note in consultazione in palestra. Considerate se mantenere le note visibili tramite overflow-x per schermi molto piccoli o se il comportamento attuale è accettabile.",
+      "file": "docs/css/workout.css"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "La visibilità della sezione Test Day si basa sulla presenza del campo 'protocolli' nel giorno, non su una verifica esplicita del numero settimana (numeroSettimana === 4). Questo è corretto dato che solo S4 Sabato ha 'protocolli' nel JSON, ma rende l'intento implicito piuttosto che esplicito nel codice.",
+      "file": "docs/js/workout.js"
+    }
+  ]
+}

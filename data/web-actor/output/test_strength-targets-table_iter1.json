@@ -1,0 +1,110 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "strength-targets-table",
+    "task_titolo": "Tabella target di forza progressivi",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "La pagina plan.html mostra la tabella nella sezione #plan-targets-container (non il placeholder di caricamento)",
+      "soddisfatto": true,
+      "dettaglio": "renderStrengthTargets() è richiamata in renderPlan() alla linea 27, dopo renderTimeline(). La funzione popola il container con innerHTML della tabella HTML generata (linea 176)."
+    },
+    {
+      "criterio": "La tabella contiene una riga 'Oggi' con i valori attuali: Squat 145.8 kg, Panca 116.7 kg, Stacco 198.3 kg",
+      "soddisfatto": true,
+      "dettaglio": "Linee 161-170 di plan.js: riga con classe 'plan-targets-current-row', badge 'Oggi' e valori formattati da planData.massimali_attuali. I valori sono estratti e formattati con .toFixed(1) o mostra '—' se null."
+    },
+    {
+      "criterio": "La tabella contiene righe per tutti e 4 gli orizzonti: 3 mesi, 6 mesi, 12 mesi, Lungo termine",
+      "soddisfatto": true,
+      "dettaglio": "plan.json contiene un array 'target' con 4 elementi (linee 15-47), uno per ogni orizzonte. La funzione buildStrengthTargetRow() viene mappata per ogni elemento (linea 147)."
+    },
+    {
+      "criterio": "La riga 'Lungo termine' (200/150/250 kg) è visualmente evidenziata rispetto alle altre righe",
+      "soddisfatto": true,
+      "dettaglio": "Linea 193-194 di plan.js: il controllo isLongterm utilizza orizzonte.toLowerCase().includes('lungo termine') per identificare la riga finale e applicare la classe 'plan-targets-row-longterm'. CSS linee 251-261 (plan.css) definiscono lo stile di evidenziazione con background-color elevato, border-top 2px accent e font-weight semibold."
+    },
+    {
+      "criterio": "Ogni riga della tabella mostra una nota sintetica contestuale leggibile",
+      "soddisfatto": true,
+      "dettaglio": "Linea 204 in buildStrengthTargetRow(): ogni riga include <td class='plan-targets-note'>${note}</td>. CSS linee 264-270 (plan.css) styling con font-size xs, color text-muted, line-height normal, max-width 260px, text-align left."
+    },
+    {
+      "criterio": "La tabella è leggibile su mobile (scroll orizzontale o layout adattivo tramite CSS già presente in plan.css @media max-width: 768px)",
+      "soddisfatto": true,
+      "dettaglio": "CSS media query linee 371-378 (plan.css): .plan-targets-container ha overflow-x: auto su mobile, .plan-targets-table ha min-width: 480px per forzare il contenuto e permitere lo scroll orizzontale su device piccoli."
+    },
+    {
+      "criterio": "docs/js/plan.js contiene la funzione renderStrengthTargets(planData)",
+      "soddisfatto": true,
+      "dettaglio": "Funzione definita linee 131-177 con signature corretta: function renderStrengthTargets(planData). Accetta planData come parametro e restituisce void (popola il DOM)."
+    },
+    {
+      "criterio": "renderStrengthTargets() è chiamata dentro renderPlan() dopo renderTimeline(planData)",
+      "soddisfatto": true,
+      "dettaglio": "Linea 26-27 di renderPlan(): renderTimeline(planData) è chiamata prima di renderStrengthTargets(planData), esattamente come richiesto. Catena di dipendenza rispettata."
+    },
+    {
+      "criterio": "renderStrengthTargets() popola #plan-targets-container con innerHTML della tabella generata",
+      "soddisfatto": true,
+      "dettaglio": "Linea 132: const container = document.getElementById('plan-targets-container'). Linea 176: container.innerHTML = html. La tabella HTML è generata come template literal linee 149-174 e assegnata al container."
+    },
+    {
+      "criterio": "La funzione gestisce il caso in cui planData.target sia null, undefined o array vuoto senza lanciare eccezioni (mostra messaggio di errore tramite renderError())",
+      "soddisfatto": true,
+      "dettaglio": "Linee 138-141: if (!Array.isArray(target) || target.length === 0) { renderError('plan-targets-container', 'Dati target di forza non disponibili.'); return; }. Gestione esplicita e graziosa con messaggio di errore utente."
+    },
+    {
+      "criterio": "La funzione gestisce valori null/undefined nei singoli campi squat/panca/stacco mostrando '—'",
+      "soddisfatto": true,
+      "dettaglio": "Linee 143-145 (valori attuali): squat != null ? squat.toFixed(1) : '—'. Linee 188-190 (target): squat != null ? squat : '—'. Pattern coerente e robusto applicato a tutti e 3 i lift."
+    },
+    {
+      "criterio": "docs/css/plan.css contiene stile per la riga long-term evidenziata (es. .plan-targets-table--row-longterm o classe equivalente)",
+      "soddisfatto": true,
+      "dettaglio": "Linee 251-261 (plan.css): classe .plan-targets-row-longterm con background-color var(--color-bg-elevated), border-top 2px solid var(--color-accent), font-weight semibold. La classe viene applicata dinamicamente in buildStrengthTargetRow() linea 194."
+    },
+    {
+      "criterio": "La tabella usa attributi di accessibilità: role='table' o tag semantico <table>, <th scope='col'>, <th scope='row'>",
+      "soddisfatto": true,
+      "dettaglio": "Linea 150: <table role='table' aria-label='...'> — tag semantico HTML <table> + role attributo. Linea 153: <th scope='col'> per header colonna. Linea 162, 200: <th scope='row'> per header riga (orizzonte temporale, riga valori attuali). Completo di aria-label descrittivo."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/plan.js",
+      "esiste": true,
+      "note": "Contiene renderStrengthTargets(planData) linee 131-177 e buildStrengthTargetRow(t) linee 185-207. Chiamata corretta in renderPlan() linea 27. Gestione errori robusta con renderError(). Pattern di build separato (builder pattern) rispettato."
+    },
+    {
+      "path": "docs/css/plan.css",
+      "esiste": true,
+      "note": "Contiene tutte le classi CSS necessarie: .plan-targets-container (184-189), .plan-targets-table (192-225), .plan-targets-current-row (228-233), .plan-targets-badge-oggi (236-248), .plan-targets-row-longterm (251-261), .plan-targets-note (264-270), .plan-targets-data (273-277), .plan-targets-col-note (280-282). Media query mobile 371-378."
+    },
+    {
+      "path": "docs/plan.html",
+      "esiste": true,
+      "note": "Container #plan-targets-container esiste linea 88 con classe 'plan-targets-container'. Placeholder caricamento presente. Script plan.js viene caricato linea 121 con defer. Struttura HTML semantica corretta con section aria-label."
+    },
+    {
+      "path": "docs/data/plan.json",
+      "esiste": true,
+      "note": "Struttura dati corretta: massimali_attuali (linee 10-13) e target (linee 15-47) con 4 orizzonti. Campi: orizzonte, data, squat, panca, stacco, note. Valori reali coerenti con le specifiche del task (145.8/116.7/198.3 attuali, target finale 200/150/250)."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "I valori numerici nei target (148.1, 118.2, etc.) non sono formattati con .toFixed(1) come i valori attuali. Questo causa una visualizzazione non uniforme (decimali nel JSON vengono mostrati come-is), ma è accettabile poiché i target finali (200/150/250) sono interi e leggibili.",
+      "file": "docs/js/plan.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "La colonna delle note ha max-width: 260px che potrebbe truncare note lunghe su mobile in landscape. Tuttavia il layout è comunque leggibile e il wrapping funziona correttamente. Non è un blocco.",
+      "file": "docs/css/plan.css"
+    }
+  ]
+}

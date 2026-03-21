@@ -1,0 +1,105 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "athlete-status-card",
+    "task_titolo": "Card stato attuale atleta",
+    "iterazione": 1
+  },
+  "esito": "PARZIALE",
+  "criteri": [
+    {
+      "criterio": "La card #card-stato mostra il peso 87.2 kg con etichetta 'Peso'",
+      "soddisfatto": true,
+      "dettaglio": "Funzione renderAthleteStatusCard costruisce HTML con <span class='status-card__label'>Peso</span> e valore da last.peso_kg.toFixed(1) + unità 'kg'. Valore 87.2 presente in measurements.json (ultima entry)."
+    },
+    {
+      "criterio": "La card #card-stato mostra il BF% 17.1% con etichetta 'Body Fat' (non solo 'BF%')",
+      "soddisfatto": true,
+      "dettaglio": "HTML generato contiene <span class='status-card__label'>Body Fat</span> e body_fat_pct.toFixed(1) + '%'. Valore 17.1 in measurements.json confermato."
+    },
+    {
+      "criterio": "La card #card-stato mostra la massa magra 72.3 kg con etichetta 'Massa Magra'",
+      "soddisfatto": true,
+      "dettaglio": "HTML contiene <span class='status-card__label'>Massa Magra</span> e massa_magra_kg.toFixed(1) + 'kg'. Valore 72.3 presente in data."
+    },
+    {
+      "criterio": "La card #card-stato mostra FFMI 20.0 con etichetta 'FFMI'",
+      "soddisfatto": true,
+      "dettaglio": "HTML contiene <span class='status-card__label'>FFMI</span> e ffmi_adj.toFixed(1). Valore 20.0 da measurements.json (ultima entry, 2026-03-20)."
+    },
+    {
+      "criterio": "La card #card-stato mostra TDEE 2870 kcal con etichetta 'TDEE'",
+      "soddisfatto": true,
+      "dettaglio": "HTML contiene <span class='status-card__label'>TDEE</span> e Math.round(tdee_kcal) + 'kcal'. Valore 2870 da measurements.json confermato."
+    },
+    {
+      "criterio": "La card mostra la fase corrente del programma (es. badge con testo 'Recupero TOS — Fase 1')",
+      "soddisfatto": false,
+      "dettaglio": "Funzione gestisce plan.fasi?.find() e crea il badge HTML. Tuttavia, il file plan.json non esiste nel progetto (né in docs/data/ né in data/). Il fetch fallisce, plan rimane null, e il badge non viene renderizzato. Implementazione tecnica è corretta, ma mancano dati."
+    },
+    {
+      "criterio": "Se plan.json non è disponibile, la card mostra comunque i 5 valori corporei senza errori",
+      "soddisfatto": true,
+      "dettaglio": "Fallback implementato: se plan === null, il badge fase non viene renderizzato (linee 70-72). I 5 valori corporei utilizzano != null per fallback '—', quindi la card renderizza anche senza plan."
+    },
+    {
+      "criterio": "Nessun valore mostra la stringa 'null' o 'undefined' nel DOM",
+      "soddisfatto": true,
+      "dettaglio": "Gestione con operatore != null (non check null/undefined): toFixed(1) con fallback '—'. Le unità sono in <span class='status-card__unit'> separato, non inline. Nessuna stringa 'null' o 'undefined' visibile nel markup generato."
+    },
+    {
+      "criterio": "docs/js/dashboard.js contiene la funzione renderAthleteStatusCard(last, plan)",
+      "soddisfatto": true,
+      "dettaglio": "Funzione presente alle linee 62-107. Signature corretta: function renderAthleteStatusCard(last, plan). Costruisce e inietta HTML in #card-stato."
+    },
+    {
+      "criterio": "renderAthleteStatusCard() è chiamata dentro renderDashboard() dopo la creazione del DOM",
+      "soddisfatto": true,
+      "dettaglio": "renderDashboard() esegue container.innerHTML (linea 129-144), quindi chiama renderAthleteStatusCard(last, plan) alla linea 147. Sequenza corretta."
+    },
+    {
+      "criterio": "docs/css/dashboard.css contiene regole per .status-card__grid, .status-card__metric, .status-card__label, .status-card__value",
+      "soddisfatto": true,
+      "dettaglio": "Tutte le classi CSS presenti in dashboard.css: .status-card__grid (linee 112-116), .status-card__metric (119-123), .status-card__label (126-132), .status-card__value (135-140). Responsive su breakpoint 480px, 768px, 1280px."
+    },
+    {
+      "criterio": "La card è visivamente coerente con le altre .dashboard-card (usa le stesse variabili CSS)",
+      "soddisfatto": true,
+      "dettaglio": "CSS utilizza variabili CSS standard: --color-bg-card, --color-text-primary, --color-text-secondary, --color-accent, --space-3, --space-4, --space-6, --radius-lg, --shadow-sm. Coerente con .dashboard-card base (linee 14-22)."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/dashboard.js",
+      "esiste": true,
+      "note": "Contiene funzione renderAthleteStatusCard(last, plan) e chiamata dentro renderDashboard(). Pattern corretto: fetch → renderDashboard() → renderAthleteStatusCard()."
+    },
+    {
+      "path": "docs/css/dashboard.css",
+      "esiste": true,
+      "note": "Contiene tutte le classi CSS richieste con stili responsive. Usa variabili CSS coerenti col design system."
+    },
+    {
+      "path": "docs/dashboard.html",
+      "esiste": true,
+      "note": "HTML contiene il container #card-stato con classe .dashboard-card. Fallback no-JS implementato. JavaScript inietta il contenuto via innerHTML."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "bloccante",
+      "descrizione": "File dati non trovati nei percorsi relativi al sito. Il dashboard.js esegue fetch('data/measurements.json'), ma il file è in data/output/measurements.json (non in docs/data/). I file plan.json e workout_data.json non esistono affatto nel progetto. I fetch falliscono e measurements rimane array vuoto.",
+      "file": "docs/js/dashboard.js"
+    },
+    {
+      "gravita": "bloccante",
+      "descrizione": "Il progetto non contiene plan.json. Il criterio di accettazione richiede di mostrare 'la fase corrente del programma', ma senza plan.json, la funzione renderAthleteStatusCard non può estrarre la fase (plan rimane null). Il task fallisce su questo criterio pur avendo implementazione tecnica corretta.",
+      "file": "data/plan.json (assente)"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "La griglia .status-card__grid ha layout responsive (2 colonne mobile, 3 colonne @480px, 2 colonne @768px, 3 colonne @1280px). Per 5 metriche, la disposizione non è perfettamente simmetrica (ultima riga può avere 1-2 elementi). Valutare una griglia a 5 colonne o layout alternativo per mobile se desiderato.",
+      "file": "docs/css/dashboard.css"
+    }
+  ]
+}

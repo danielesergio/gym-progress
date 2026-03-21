@@ -1,0 +1,121 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "navigation-tabs",
+    "task_title": "Navigazione principale tra le sezioni",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "navigation-tabs",
+    "type": "navigation",
+    "title": "Navigazione principale tra le sezioni",
+    "description": "Menu di navigazione che permette di muoversi tra le sezioni del sito: Dashboard, Progressi, Allenamento, Dieta, Piano. Deve essere chiaramente visibile e indicare la sezione attiva. Su mobile può diventare un menu compatto o tab bar in basso.",
+    "inputs": ["MainLayout"],
+    "outputs": ["NavBar"],
+    "acceptance_criteria": [
+      "Tutte e 5 le sezioni sono raggiungibili dalla navigazione (Dashboard, Progressi, Allenamento, Dieta, Piano)",
+      "La sezione corrente è evidenziata visivamente (colore accent + border-bottom)",
+      "Navigazione usabile su mobile senza zoom (overflow-x scroll, padding ridotto)",
+      "Il tab attivo è corretto su ogni pagina"
+    ],
+    "notes": "Il markup del nav e gli stili base sono già presenti in dashboard.html e css/layout.css (prodotti dal task layout-root). Questo task completa la navigazione aggiungendo: (1) un file js/nav.js condiviso che imposta automaticamente il tab .active in base all'URL corrente — così ogni nuova pagina non deve farlo a mano; (2) verifica e consolidamento degli stili .nav-tab in layout.css, incluso il breakpoint mobile con tab-bar compatta. Il markup <nav> dovrà essere replicato in ogni nuova pagina HTML (progress.html, workout.html, diet.html, plan.html) dai task successivi — ma il CSS e il JS di attivazione sono di competenza di questo task."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/css/layout.css",
+        "motivo": "Verificare e completare gli stili della navigazione tab: .tab-list, .nav-tab, .nav-tab.active / [aria-current='page'], hover state, focus visible per accessibilità, media query mobile (≤480px) con padding compatto e font-size ridotto. Gli stili base esistono già — questo task li consolida e assicura la correttezza su tutti i breakpoint.",
+        "esiste": true
+      },
+      {
+        "path": "docs/dashboard.html",
+        "motivo": "Il markup nav è già presente con tutti e 5 i tab e .active su Dashboard. Verificare che il blocco <nav role='tablist'> sia completo e corretto: 5 link (dashboard.html, progress.html, workout.html, diet.html, plan.html), aria-label su nav, role='tab' su ogni <a>, aria-current='page' sul tab attivo. Nessuna modifica strutturale prevista, solo verifica.",
+        "esiste": true
+      }
+    ],
+    "da_creare": [
+      {
+        "path": "docs/js/nav.js",
+        "motivo": "Script JS condiviso che imposta automaticamente la classe .active e aria-current='page' sul tab di navigazione corrispondente alla pagina corrente, confrontando window.location.pathname con l'href di ciascun <a class='nav-tab'>. Deve essere incluso con <script src='js/nav.js' defer> in OGNI pagina HTML del sito. Questo evita di dover hardcodare .active in ogni file HTML. Funzione: setActiveNav().",
+        "esiste": false
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/dashboard.html",
+        "motivo": "Modello strutturale del markup <nav role='tablist'>: struttura esatta dei 5 tab, classi usate, aria attributes. Il developer deve replicare questo blocco identico in ogni nuova pagina HTML prodotta dai task successivi."
+      },
+      {
+        "path": "docs/css/layout.css",
+        "motivo": "Stili nav esistenti da verificare e completare: .tab-list, .nav-tab, .nav-tab.active, .nav-tab[aria-current='page'], media query mobile/tablet/desktop già presenti."
+      },
+      {
+        "path": "docs/css/variables.css",
+        "motivo": "Variabili CSS usate negli stili nav: --nav-height, --color-accent, --color-bg-secondary, --color-text-muted, --color-border, --transition-fast, --space-*, --font-size-*. Il developer deve conoscerle per aggiungere eventuali variabili mancanti."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS (ES2022)",
+      "styling": "CSS custom properties — nessun framework CSS",
+      "grafici": "Chart.js non richiesto per questo task",
+      "build": "nessuno — file scritti direttamente in docs/"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase (es. currentPage, navTabs)",
+      "classi_css": "kebab-case senza prefisso pagina per classi condivise (es. .nav-tab, .tab-list, .active)",
+      "id_html": "kebab-case (es. #nav-tabs)",
+      "navigazione_attiva": "Ogni pagina HTML aggiunge la classe .active al tab corrispondente via JS (nav.js) usando aria-current='page'. In alternativa accettabile: hardcoded nel singolo HTML.",
+      "pattern_js": "Script standalone senza fetch(). Eseguito al DOMContentLoaded. Funzione setActiveNav() che legge window.location.pathname, trova il tab corrispondente e applica .active + aria-current='page'.",
+      "no_modules": "Non usare ES modules (import/export) — file JS incluso con <script src='js/nav.js' defer> in ogni HTML.",
+      "accessibilita": "role='tablist' sul <nav>, role='tab' su ogni <a>, aria-current='page' sul tab attivo, aria-label='Navigazione sezioni' sul <nav>.",
+      "mobile": "Tab bar orizzontale con overflow-x: auto e scrollbar nascosta. Su mobile (≤480px): padding-inline ridotto, font-size xs. Non si trasforma in hamburger menu — rimane tab bar orizzontale scrollabile.",
+      "focus_visible": "Aggiungere .nav-tab:focus-visible con outline visibile per accessibilità tastiera."
+    },
+    "struttura_nav_html": {
+      "pattern": "<nav role='tablist' class='tab-list' id='nav-tabs' aria-label='Navigazione sezioni'><div class='container'><a href='dashboard.html' role='tab' class='nav-tab' aria-label='Dashboard atleta'>Dashboard</a>...<a href='plan.html' role='tab' class='nav-tab' aria-label='Piano annuale e obiettivi'>Piano</a></div></nav>",
+      "sezioni": [
+        { "label": "Dashboard", "href": "dashboard.html", "aria-label": "Dashboard atleta" },
+        { "label": "Progressi", "href": "progress.html", "aria-label": "Progressi nel tempo" },
+        { "label": "Allenamento", "href": "workout.html", "aria-label": "Scheda allenamento" },
+        { "label": "Dieta", "href": "diet.html", "aria-label": "Piano dieta" },
+        { "label": "Piano", "href": "plan.html", "aria-label": "Piano annuale e obiettivi" }
+      ],
+      "nota": "Il tab attivo nella pagina dashboard.html ha già class='nav-tab active' e aria-current='page' hardcoded. Con js/nav.js questi attributi possono essere rimossi dall'HTML e gestiti dinamicamente."
+    },
+    "variabili_css_usate": [
+      "--nav-height", "--color-accent", "--color-bg-secondary", "--color-bg-elevated",
+      "--color-text-muted", "--color-text", "--color-border", "--transition-fast",
+      "--space-4", "--space-5", "--space-6", "--font-size-xs", "--font-size-sm",
+      "--font-size-base", "--font-weight-medium", "--font-weight-semibold"
+    ]
+  },
+  "criteri_accettazione": [
+    "Tutte e 5 le sezioni sono raggiungibili dalla navigazione: Dashboard, Progressi, Allenamento, Dieta, Piano",
+    "La sezione corrente è evidenziata visivamente con colore accent e border-bottom-color accent",
+    "Navigazione usabile su mobile senza zoom (overflow-x scroll, no layout rotto)",
+    "docs/css/layout.css contiene le regole .tab-list, .nav-tab, .nav-tab.active, .nav-tab[aria-current='page']",
+    "docs/css/layout.css contiene media query per mobile (≤480px o ≤375px) con .nav-tab a padding ridotto",
+    "docs/css/layout.css contiene .nav-tab:focus-visible con outline per accessibilità tastiera",
+    "docs/js/nav.js esiste e contiene la funzione setActiveNav()",
+    "setActiveNav() confronta window.location.pathname con l'href di ogni .nav-tab e applica .active + aria-current='page' al tab corrispondente",
+    "docs/dashboard.html include <script src='js/nav.js' defer> nel body",
+    "Il markup <nav role='tablist' class='tab-list' id='nav-tabs'> in dashboard.html contiene esattamente 5 link con role='tab'"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "layout-root",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/index.html",
+        "docs/dashboard.html",
+        "docs/css/variables.css",
+        "docs/css/layout.css"
+      ],
+      "note": "Tutti i file prodotti da layout-root sono presenti in docs/. Il markup <nav> con i 5 tab è già in dashboard.html. Gli stili base .tab-list e .nav-tab sono già in layout.css. Il task navigation-tabs consolida e completa quanto iniziato da layout-root."
+    }
+  ]
+}

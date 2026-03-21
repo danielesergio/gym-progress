@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Allenamento — Daniele Fitness</title>
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/workout.css">
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════
+       HEADER — nome atleta + tagline
+  ══════════════════════════════════════════ -->
+  <header class="page-header" id="main-header" role="banner">
+    <div class="container">
+      <div class="header-brand">
+        <span class="header-athlete-name">Daniele</span>
+        <span class="header-tagline">Fitness &amp; Powerlifting</span>
+      </div>
+      <div class="header-meta" aria-label="Periodo scheda">
+        <span class="header-meta-label">Periodo:</span>
+        <span class="header-meta-value" id="header-workout-period">—</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════
+       NAV TAB — 5 sezioni, 'Allenamento' attivo
+  ══════════════════════════════════════════ -->
+  <nav role="tablist" class="tab-list" id="nav-tabs" aria-label="Navigazione sezioni">
+    <div class="container">
+      <a href="dashboard.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Dashboard atleta">Dashboard</a>
+      <a href="progress.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Progressi nel tempo">Progressi</a>
+      <a href="workout.html"
+         role="tab"
+         class="nav-tab active"
+         aria-current="page"
+         aria-label="Scheda allenamento">Allenamento</a>
+      <a href="diet.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Piano dieta">Dieta</a>
+      <a href="plan.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Piano annuale e obiettivi">Piano</a>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════
+       MAIN — contenuto pagina allenamento
+  ══════════════════════════════════════════ -->
+  <main id="page-content" aria-label="Contenuto principale">
+
+    <!-- ══════════════════════════════════════════
+         BANNER AVVISO INFORTUNIO TOS
+    ══════════════════════════════════════════ -->
+    <div id="tos-alert-banner"
+         class="workout-tos-banner"
+         role="note"
+         aria-label="Avviso infortunio TOS — leggere prima di allenarsi">
+      <div class="workout-tos-banner__inner">
+        <span class="workout-tos-banner__icon" aria-hidden="true">⚠</span>
+        <div class="workout-tos-banner__body">
+          <p class="workout-tos-banner__title">Protocollo TOS — Esercizi vietati</p>
+          <ul class="workout-tos-banner__list">
+            <li>Panca piana (qualsiasi variante)</li>
+            <li>Dip</li>
+            <li>Military press / Overhead press</li>
+            <li>Trazioni (qualsiasi variante)</li>
+            <li>Fly / Cable crossover</li>
+            <li>Rematore con bilanciere</li>
+          </ul>
+          <p class="workout-tos-banner__safety">
+            <strong>Stop immediato</strong> se dolore a petto, spalla o braccio durante qualsiasi esercizio.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <!-- Messaggio errore globale -->
+      <div id="workout-error" class="workout-error" role="alert" aria-live="polite" hidden></div>
+
+      <!-- ── HEADER SCHEDA: titolo + obiettivo mesociclo ── -->
+      <section id="workout-header" class="workout-header" aria-labelledby="workout-scheda-title">
+        <div class="workout-header__inner">
+          <h1 class="workout-header__title" id="workout-scheda-title">
+            <span class="workout-header__label">Scheda</span>
+            <span id="workout-scheda-nome">Caricamento…</span>
+          </h1>
+          <p class="workout-header__obiettivo" id="workout-mesociclo-obiettivo">—</p>
+        </div>
+      </section>
+
+      <!-- ── SELETTORE SETTIMANE (S1–S4) ── -->
+      <nav id="week-selector" class="week-selector" aria-label="Seleziona settimana di allenamento">
+        <button
+          type="button"
+          class="week-btn"
+          id="week-btn-1"
+          data-week="1"
+          aria-pressed="false">S1</button>
+        <button
+          type="button"
+          class="week-btn"
+          id="week-btn-2"
+          data-week="2"
+          aria-pressed="false">S2</button>
+        <button
+          type="button"
+          class="week-btn"
+          id="week-btn-3"
+          data-week="3"
+          aria-pressed="false">S3</button>
+        <button
+          type="button"
+          class="week-btn"
+          id="week-btn-4"
+          data-week="4"
+          aria-pressed="false">S4</button>
+      </nav>
+
+      <!-- ── AREA DETTAGLIO SETTIMANA SELEZIONATA ── -->
+      <div id="workout-detail" aria-label="Dettaglio settimana selezionata" aria-live="polite">
+        <p class="workout-placeholder">Caricamento dati scheda…</p>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- ══════════════════════════════════════════
+       FOOTER — minimale
+  ══════════════════════════════════════════ -->
+  <footer class="page-footer" id="main-footer" role="contentinfo">
+    <div class="container">
+      <p class="footer-text">Daniele Fitness &copy; 2026</p>
+    </div>
+  </footer>
+
+  <script src="js/nav.js" defer></script>
+  <script src="js/workout.js" defer></script>
+
+</body>
+</html>

@@ -1,0 +1,139 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "measurements-table",
+    "task_title": "Tabella storica misurazioni",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "measurements-table",
+    "type": "component",
+    "title": "Tabella storica misurazioni",
+    "description": "Tabella che mostra tutte le rilevazioni storiche in ordine cronologico. Colonne: Data, Peso, BF%, Massa Magra, FFMI, Vita, Petto, Braccio, Coscia, Squat, Panca, Stacco. Su mobile la tabella deve essere scorrevole orizzontalmente o mostrare un sottoinsieme delle colonne principali. Le note di contesto (es. 'Australia', 'Allenamento in casa') sono mostrate come tooltip o riga aggiuntiva.",
+    "inputs": ["measurements_data"],
+    "outputs": ["MeasurementsTable"],
+    "acceptance_criteria": [
+      "Tutte e 6 le rilevazioni sono presenti in ordine cronologico",
+      "Le colonne principali (data, peso, BF%, massimali) sono visibili su mobile",
+      "Le note contestuali sono accessibili senza rompere il layout"
+    ],
+    "notes": "Il file progress.js esiste già con renderProgress() che chiama renderMeasurementsTable(data) commentata (riga 512). Il task deve implementare tale funzione e decommentare la chiamata. Il file progress.html ha già il container #table-misurazioni con class progress-table-container. Il CSS progress.css ha già gli stili .measurements-table, .td-date, .td-muted, .progress-table-container (overflow-x: auto) — servono aggiunte minime per tooltip note e colonne mobile-hidden."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "Implementare la funzione renderMeasurementsTable(data) e decommentare la sua chiamata in renderProgress(). La funzione genera dinamicamente l'HTML della tabella <table class='measurements-table'> con tutte le 6 righe, gestisce note come attributo title (tooltip nativo) o riga espansa, e gestisce valori null con '—'.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/progress.css",
+        "motivo": "Aggiungere stili per: (1) badge massimale tipo R/S inline nella cella; (2) classe .col-mobile-hide per nascondere colonne secondarie su viewport < 768px; (3) classe .measurements-table__note-row per eventuale riga aggiuntiva con testo note; (4) stile .measurements-table .td-note-icon per icona tooltip note.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/measurements.json",
+        "motivo": "Struttura dati reale: array di 6 oggetti con campi data (YYYY-MM-DD), peso_kg (float), body_fat_pct (float), massa_magra_kg (float), ffmi_adj (float), vita_cm (float|int), petto_cm (float|int), braccio_dx_cm (float), coscia_dx_cm (float), squat_1rm (float), panca_1rm (float), stacco_1rm (float), massimali_tipo ('R'|'S'), squat_1rm_tipo ('R'|'S'), panca_1rm_tipo ('R'|'S'), stacco_1rm_tipo ('R'|'S'), note (string|''|null). L'ultimo record (2026-03-20) ha massimali_tipo='S' e note=''. I campi delta_* e bmr/tdee non vanno in tabella."
+      },
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "Leggere l'intero file per capire le funzioni già presenti (formatDateIT, showError, renderProgress, progressCharts), gli ID DOM usati, le convenzioni di stile e il punto esatto dove decommentare renderMeasurementsTable(data) — riga 512."
+      },
+      {
+        "path": "docs/css/progress.css",
+        "motivo": "Verificare gli stili già presenti per .measurements-table, .td-date, .td-muted, .progress-table-container e il breakpoint mobile (max-width:768px) per aggiungere solo ciò che manca senza duplicare."
+      },
+      {
+        "path": "docs/progress.html",
+        "motivo": "Verificare la struttura del container #table-misurazioni (section#section-tabella > .progress-table-container#table-misurazioni) dove verrà iniettata la tabella via innerHTML."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS ES2022 — nessun bundler, nessun framework",
+      "styling": "CSS custom properties — classi kebab-case con prefisso componente (measurements-table__*, td-*)",
+      "grafici": {
+        "nome": "Chart.js",
+        "versione": "4.x",
+        "cdn": "https://cdn.jsdelivr.net/npm/chart.js",
+        "nota": "Non usato per questa tabella — solo per i grafici della stessa pagina"
+      },
+      "dati": "fetch() su docs/data/measurements.json — array di 6 oggetti già ordinati cronologicamente"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase",
+      "classi_css": "kebab-case con prefisso pagina o componente — es. measurements-table__*, progress-table-container",
+      "gestione_null_o_empty": "Se campo null, undefined o stringa vuota, mostrare '—' nella cella",
+      "pattern_js": "Funzione renderMeasurementsTable(data) chiamata da renderProgress(data) già esistente. Usa document.getElementById('table-misurazioni').innerHTML = ... per iniettare la tabella. NON fare un altro fetch(), i dati arrivano come parametro.",
+      "tooltip_note": "Usare attributo title='...' sull'elemento <td> o su un'icona (es. ⓘ) per le note non vuote. In alternativa una riga aggiuntiva <tr class='measurements-table__note-row'> visibile solo se note non è vuota.",
+      "tipo_massimale": "Per ogni massimale (squat, panca, stacco) il tipo specifico è in squat_1rm_tipo, panca_1rm_tipo, stacco_1rm_tipo (es. 'R' o 'S'). Mostrare il badge tipo accanto al valore nella cella, es. '145.8 kg (S)'.",
+      "ordinamento": "I dati arrivano già in ordine cronologico — non serve riordinare. L'ordine è: 2022-10-22, 2023-04-10, 2024-05-25, 2024-11-29, 2025-10-02, 2026-03-20.",
+      "mobile": "Il container .progress-table-container ha già overflow-x: auto. Aggiungere classe .col-mobile-hide alle colonne meno critiche (FFMI, Petto, Coscia) da nascondere via CSS su max-width:768px. Le colonne sempre visibili su mobile: Data, Peso, BF%, Massa Magra, Squat, Panca, Stacco."
+    },
+    "pagina": {
+      "nome": "Progressi",
+      "file": "docs/progress.html",
+      "js": "docs/js/progress.js",
+      "css": "docs/css/progress.css",
+      "dati_json": ["data/measurements.json"],
+      "container_tabella": "#table-misurazioni (div.progress-table-container dentro section#section-tabella)"
+    }
+  },
+  "struttura_dati_measurements": {
+    "totale_record": 6,
+    "campi_da_mostrare_in_tabella": [
+      { "campo": "data", "label": "Data", "tipo": "YYYY-MM-DD → formatDateIT()", "mobile": "sempre visibile" },
+      { "campo": "peso_kg", "label": "Peso (kg)", "tipo": "float", "mobile": "sempre visibile" },
+      { "campo": "body_fat_pct", "label": "BF%", "tipo": "float", "mobile": "sempre visibile" },
+      { "campo": "massa_magra_kg", "label": "Massa Magra (kg)", "tipo": "float", "mobile": "sempre visibile" },
+      { "campo": "ffmi_adj", "label": "FFMI", "tipo": "float", "mobile": "col-mobile-hide" },
+      { "campo": "vita_cm", "label": "Vita (cm)", "tipo": "float|int", "mobile": "col-mobile-hide" },
+      { "campo": "petto_cm", "label": "Petto (cm)", "tipo": "float|int", "mobile": "col-mobile-hide" },
+      { "campo": "braccio_dx_cm", "label": "Braccio (cm)", "tipo": "float", "mobile": "col-mobile-hide" },
+      { "campo": "coscia_dx_cm", "label": "Coscia (cm)", "tipo": "float", "mobile": "col-mobile-hide" },
+      { "campo": "squat_1rm + squat_1rm_tipo", "label": "Squat 1RM", "tipo": "float + R/S badge", "mobile": "sempre visibile" },
+      { "campo": "panca_1rm + panca_1rm_tipo", "label": "Panca 1RM", "tipo": "float + R/S badge", "mobile": "sempre visibile" },
+      { "campo": "stacco_1rm + stacco_1rm_tipo", "label": "Stacco 1RM", "tipo": "float + R/S badge", "mobile": "sempre visibile" },
+      { "campo": "note", "label": "Note", "tipo": "string|'' → tooltip o riga aggiuntiva", "mobile": "sempre visibile (icona o '—')" }
+    ],
+    "campi_non_da_mostrare": ["delta_peso_kg", "delta_bf_pct", "delta_mm_kg", "bf_trend", "bmr_kcal", "tdee_kcal", "eta", "efficacia_workout", "fianchi_cm", "collo_cm", "massimali_tipo", "id"],
+    "note_contenuto_reale": [
+      { "data": "2022-10-22", "note": "Allenamento in casa" },
+      { "data": "2023-04-10", "note": "Allenamento in casa" },
+      { "data": "2024-05-25", "note": "Australia - allenamento discontinuo per cambio casa e per partenza dall'italia" },
+      { "data": "2024-11-29", "note": "Australia - allenamento discontinuo per cambii casa multipli" },
+      { "data": "2025-10-02", "note": "" },
+      { "data": "2026-03-20", "note": "" }
+    ]
+  },
+  "criteri_accettazione": [
+    "Tutte e 6 le rilevazioni storiche sono presenti nella tabella in ordine cronologico crescente (2022 → 2026)",
+    "Le colonne principali (Data, Peso, BF%, Massa Magra, Squat, Panca, Stacco) sono visibili su viewport mobile (≤ 768px)",
+    "Le colonne secondarie (FFMI, Vita, Petto, Braccio, Coscia) sono nascoste su mobile via classe .col-mobile-hide e CSS",
+    "La tabella è scorrevole orizzontalmente su mobile grazie a .progress-table-container con overflow-x:auto già presente",
+    "I valori null o stringa vuota sono mostrati come '—' senza errori JavaScript",
+    "Le note non vuote ('Allenamento in casa', 'Australia...') sono accessibili tramite tooltip (attributo title) o riga aggiuntiva",
+    "I massimali mostrano il tipo (R/S) accanto al valore, es. '145.8 (S)'",
+    "docs/js/progress.js contiene la funzione renderMeasurementsTable(data)",
+    "docs/js/progress.js richiama renderMeasurementsTable(data) in renderProgress() (riga 512 decommentata)",
+    "docs/css/progress.css contiene la classe .col-mobile-hide con display:none nel breakpoint @media (max-width:768px)",
+    "Non viene eseguito un secondo fetch() in renderMeasurementsTable — i dati vengono ricevuti come parametro da renderProgress()"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "progress-page-layout",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/progress.html",
+        "docs/js/progress.js",
+        "docs/css/progress.css"
+      ],
+      "note": "Tutti e 3 i file esistono in docs/. progress.html ha già il container section#section-tabella > div.progress-table-container#table-misurazioni. progress.js ha già renderProgress() con la chiamata commentata a renderMeasurementsTable(data). progress.css ha già gli stili base .measurements-table e .progress-table-container."
+    }
+  ]
+}

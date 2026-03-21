@@ -1,0 +1,125 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "meal-card",
+    "task_titolo": "Card pasto con alimenti e macros",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Funzionale: ogni card mostra nome del pasto (es. 'Colazione') e orario indicativo (es. '07:30')",
+      "soddisfatto": true,
+      "dettaglio": "Funzione renderMealCard() (riga 188-235 in diet.js) genera HTML con <h3 class='diet-meal-card__nome'>${nome}</h3> (riga 203) e <span class='diet-meal-card__orario'>${orario}</span> (riga 204). Nel JSON, ogni pasto ha 'nome' e 'orario'. Es: Colazione 07:30, Pranzo 13:00."
+    },
+    {
+      "criterio": "Funzionale: ogni card mostra la lista di tutti gli alimenti del pasto con i grammi indicati",
+      "soddisfatto": true,
+      "dettaglio": "renderAlimentiRows() (riga 167-181) costruisce <tr> per ogni alimento. Colonna grammi (riga 174): ${a.grammi != null ? a.grammi + 'g' : '—'} — mostra grammi con suffisso 'g'. Tabella inserita in renderMealCard() riga 229."
+    },
+    {
+      "criterio": "Funzionale: il totale kcal del pasto e' visibile nel header della card (formato: '634 kcal')",
+      "soddisfatto": true,
+      "dettaglio": "renderMealCard() riga 194: const kcalTot = totale.kcal != null ? Math.round(totale.kcal) : '—'. Output HTML riga 207: <span class='diet-meal-card__totale-item'>${kcalTot} kcal</span>. JSON Colazione allenamento: totale.kcal = 634. Visibile come '634 kcal'."
+    },
+    {
+      "criterio": "Funzionale: il totale macros (P, C, G) e' visibile nel header della card accanto ai kcal",
+      "soddisfatto": true,
+      "dettaglio": "renderMealCard() riga 195-197 calcola proteineTot, carboTot, grassiTot. HTML riga 207-213 mostra: ${kcalTot} kcal · ${proteineTot}g P · ${carboTot}g C · ${grassiTot}g G. Colazione allenamento: 634 kcal · 39g P · 102g C · 10g G."
+    },
+    {
+      "criterio": "Funzionale: sono presenti 5 card pasto per il giorno allenamento (Colazione, Spuntino mattina, Pranzo, Merenda, Cena)",
+      "soddisfatto": true,
+      "dettaglio": "Nel JSON (diet.json), giorni[0] con tipo='allenamento' ha pasti array di 5 elementi: [0]Colazione 07:30, [1]Spuntino mattina 10:30, [2]Pranzo 13:00, [3]Merenda 16:30, [4]Cena 20:00. renderMealsList() riga 259-264 renderizza tutti i pasti con map(p => renderMealCard(p))."
+    },
+    {
+      "criterio": "Funzionale: sono presenti 5 card pasto per il giorno riposo (stessi 5 pasti, alimenti diversi)",
+      "soddisfatto": true,
+      "dettaglio": "Nel JSON, giorni[1] con tipo='riposo' ha pasti array di 5 elementi: [0]Colazione 08:00, [1]Spuntino mattina 10:30, [2]Pranzo 13:00, [3]Merenda 16:30, [4]Cena 20:00. Alimenti diversi rispetto ad allenamento (es. uova vs whey, pasta vs riso). renderDiet() riga 325 filtra per currentDayType e renderizza il giorno corretto."
+    },
+    {
+      "criterio": "Funzionale: su mobile la card occupa tutta la larghezza disponibile",
+      "soddisfatto": true,
+      "dettaglio": "CSS diet.css riga 248-252: .diet-meals-stack { display: flex; flex-direction: column; gap: ... } — senza max-width fissa, la stack espande a piena larghezza del container. .diet-meal-card (riga 256-262) ha overflow: hidden e eredita larghezza 100%. Container #meals-list in diet.html (riga 91) è dentro .container che usa max-width con padding, quindi responsive."
+    },
+    {
+      "criterio": "Funzionale: la tabella alimenti e' leggibile su mobile (scroll orizzontale se necessario)",
+      "soddisfatto": true,
+      "dettaglio": "CSS riga 321-324: .diet-meal-table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; } — permette scroll orizzontale su mobile. .diet-meal-table (riga 326-330) width: 100% e font-size: var(--font-size-sm) per leggibilità. Colonna .diet-meal-table__nome ha min-width: 140px (riga 369) per evitare restringimento eccessivo."
+    },
+    {
+      "criterio": "Tecnico: docs/js/diet.js contiene la funzione renderMealCard(pasto) che restituisce HTML stringa",
+      "soddisfatto": true,
+      "dettaglio": "diet.js riga 188-235 — funzione renderMealCard(pasto) dichiarata e restituisce template literal (stringa HTML) con article.diet-meal-card. Accetta oggetto pasto con proprietà nome, orario, alimenti, totale."
+    },
+    {
+      "criterio": "Tecnico: docs/js/diet.js contiene la funzione renderAlimentiRows(alimenti) che costruisce le <tr> degli alimenti",
+      "soddisfatto": true,
+      "dettaglio": "diet.js riga 167-181 — funzione renderAlimentiRows(alimenti) accetta array di alimenti e restituisce stringa HTML di righe <tr> tramite map().join(''). Gestisce caso array vuoto con fallback 'Nessun alimento.' (riga 169)."
+    },
+    {
+      "criterio": "Tecnico: docs/js/diet.js contiene la funzione renderMealsList(dayData) che popola #meals-list",
+      "soddisfatto": true,
+      "dettaglio": "diet.js riga 243-265 — funzione renderMealsList(dayData) ottiene container con document.getElementById('meals-list'), estrae pasti da dayData.pasti, renderizza tutte le card con map e assegna HTML al container (riga 259)."
+    },
+    {
+      "criterio": "Tecnico: docs/diet.html contiene <section id='meals-list' class='diet-meals-list'>",
+      "soddisfatto": true,
+      "dettaglio": "diet.html riga 91 — <section id='meals-list' class='diet-meals-list' aria-label='Lista pasti del giorno' aria-live='polite'>. Attributi ARIA corretti per accessibilità."
+    },
+    {
+      "criterio": "Tecnico: docs/css/diet.css contiene la regola .diet-meal-card con background-color e border-radius",
+      "soddisfatto": true,
+      "dettaglio": "diet.css riga 256-262 — .diet-meal-card { background-color: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); }."
+    },
+    {
+      "criterio": "Tecnico: docs/css/diet.css contiene .diet-meal-table-wrapper con overflow-x: auto",
+      "soddisfatto": true,
+      "dettaglio": "diet.css riga 321-324 — .diet-meal-table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }. Anche .diet-meal-table (riga 326-330) con width: 100% e border-collapse: collapse."
+    },
+    {
+      "criterio": "Tecnico: valori null in qualsiasi campo alimento vengono visualizzati come '—' senza eccezioni JS",
+      "soddisfatto": true,
+      "dettaglio": "renderAlimentiRows() riga 173-178 gestisce null con operatore !=: a.nome ?? '—', a.grammi != null ? ... : '—', a.kcal != null ? ... : '—', etc. Anche renderMealCard() riga 189-192 usa ?? '—' e !='null' per tutti i campi totale. Nessuna stringa 'null' o 'undefined' visibile."
+    },
+    {
+      "criterio": "Tecnico: i grammi degli alimenti sono visualizzati con suffisso 'g' (es. '80g'), non come numero nudo",
+      "soddisfatto": true,
+      "dettaglio": "renderAlimentiRows() riga 174: ${a.grammi != null ? a.grammi + 'g' : '—'}. Esempio JSON: Fiocchi d'avena colazione allenamento grammi=80 → visualizzato '80g' nella tabella."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/diet.js",
+      "esiste": true,
+      "note": "Contiene renderMealCard(), renderAlimentiRows(), renderMealsList() complete e corrette. Gestione null con ?? e != null. Uso di Math.round() per numeri. Fetch DATA_PATH e renderDiet() entry point funzionanti."
+    },
+    {
+      "path": "docs/css/diet.css",
+      "esiste": true,
+      "note": "Tutte le classi .diet-meal-card*, .diet-meal-table*, .diet-meals-stack presenti. Responsivo con flex-direction: column. overflow-x: auto su .diet-meal-table-wrapper. Colori da variables.css, no hardcode oltre che per i colori macros."
+    },
+    {
+      "path": "docs/diet.html",
+      "esiste": true,
+      "note": "Container #meals-list presente con ARIA attributes (aria-label, aria-live='polite'). Script diet.js linkato in defer. HTML semantico con <section>, <main>, <article>, <table>."
+    },
+    {
+      "path": "docs/data/diet.json",
+      "esiste": true,
+      "note": "Struttura JSON corretta: giorni[2] con tipo='allenamento'|'riposo', pasti[5] per giorno, alimenti[] con grammi/kcal/macros, totale con kcal/proteine/carbo/grassi. Nessun null nei dati, valori numerici interi o float validi."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "La funzione renderMealCard() accetta pasto come parametro ma non effettua validazione esplicita. Se un pasto mancasse di campi critici (es. totale), l'output mostrerebbe '—', il che è corretto per fallback. Tuttavia, se alimenti[] fosse undefined, renderAlimentiRows() riceve null e restituisce 'Nessun alimento' anzichè eccezione. È un comportamento robusto ma non esplicitamente documentato.",
+      "file": "docs/js/diet.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "La tabella alimenti usa 6 colonne (nome, grammi, kcal, prot, carbo, grassi) come da spec. Su schermi molto stretti (<320px), la tabella potrebbe comunque essere leggibile grazie a overflow-x: auto e min-width sulla colonna nome. Test manuale su viewport ultra-stretto (240px) potrebbe rivelare difficoltà, ma rientra nei limiti di mobile first di progetto.",
+      "file": "docs/css/diet.css"
+    }
+  ]
+}

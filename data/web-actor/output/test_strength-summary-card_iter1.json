@@ -1,0 +1,95 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "strength-summary-card",
+    "task_titolo": "Card massimali attuali (Big 3)",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Squat, Panca e Stacco sono visualizzati con il valore attuale nella card #card-massimali",
+      "soddisfatto": true,
+      "dettaglio": "La funzione renderStrengthSummaryCard (linee 140-156 in dashboard.js) definisce un array exercises con tre oggetti (Squat, Panca, Stacco), ciascuno con valore squat_1rm, panca_1rm, stacco_1rm dall'oggetto 'last'. Linee 158-167 generano l'HTML con classe strength-card__value che mostra il valore formattato (toFixed(1)). Valori attuali: Squat 145.8 kg, Panca 116.7 kg, Stacco 198.3 kg."
+    },
+    {
+      "criterio": "Accanto ad ogni massimale è presente il target a 12 mesi (es. '→ 155.1 kg')",
+      "soddisfatto": true,
+      "dettaglio": "Linea 137 del dashboard.js estrae il target a 12 mesi da plan.target cercando l'orizzonte '12 mesi'. Linee 144, 149, 154 assegnano target12.squat/panca/stacco ad ogni esercizio. Linea 160 genera la stringa targetStr con formato '→ {valore} kg'. Target a 12 mesi dal plan.json: Squat 155.1, Panca 122.6, Stacco 213.7."
+    },
+    {
+      "criterio": "Il tipo di massimale (Stimato / Reale) è indicato tramite badge testuale",
+      "soddisfatto": true,
+      "dettaglio": "Linee 129-134 del dashboard.js gestiscono il badge tipo: estrae massimali_tipo dall'oggetto 'last', determina tipoLabel ('Stimato' o 'Reale'), assegna la classe CSS (--stimato o --reale), e genera tipoBadgeHtml con <span class='strength-card__tipo-badge'>. Questo HTML viene inserito nel container a linea 171."
+    },
+    {
+      "criterio": "Il badge mostra 'Stimato' quando massimali_tipo === 'S', 'Reale' quando === 'R'",
+      "soddisfatto": true,
+      "dettaglio": "Linea 130 del dashboard.js: tipoLabel = tipoRaw === 'S' ? 'Stimato' : tipoRaw === 'R' ? 'Reale' : null. Dati attuali (measurements.json, ultima voce): massimali_tipo = 'S' → mostra 'Stimato'. Logica è corretta e gestisce il fallback null."
+    },
+    {
+      "criterio": "I valori null in squat_1rm / panca_1rm / stacco_1rm non causano eccezioni — viene mostrato '—'",
+      "soddisfatto": true,
+      "dettaglio": "Linee 143-155: valore (ex.valore) è assegnato condizionalmente: last?.squat_1rm != null ? last.squat_1rm : null. Linea 159: valoreStr = ex.valore != null ? ... : '—'. Gestione esplicita con fallback '—' per valori null/undefined. Nessuna chiamata a toFixed() se valore è null."
+    },
+    {
+      "criterio": "Il target a 12 mesi non causa eccezioni se plan.target non contiene l'orizzonte '12 mesi' — viene mostrato '—'",
+      "soddisfatto": true,
+      "dettaglio": "Linea 137: target12 = (plan?.target ?? []).find(t => t.orizzonte === '12 mesi') ?? null. Se non trovato, target12 rimane null. Linee 144, 149, 154: target è assegnato come target12?.squat (o null). Linea 160: targetStr = ex.target != null ? ... : '—'. Gestione corretta del fallback."
+    },
+    {
+      "criterio": "docs/js/dashboard.js contiene la funzione renderStrengthSummaryCard()",
+      "soddisfatto": true,
+      "dettaglio": "Funzione definita a linea 124: 'function renderStrengthSummaryCard(last, plan)'. Firma corretta, contiene logica completa (estrazione dati, formattazione HTML, innerHTML), segue il pattern di renderAthleteStatusCard()."
+    },
+    {
+      "criterio": "renderStrengthSummaryCard() viene chiamata all'interno di renderDashboard()",
+      "soddisfatto": true,
+      "dettaglio": "Linea 219 nel dashboard.js: 'renderStrengthSummaryCard(last, plan);' è chiamata all'interno della funzione renderDashboard() (linee 187-220), dopo renderAthleteStatusCard() (linea 216), come richiesto dalla nota del task."
+    },
+    {
+      "criterio": "docs/css/dashboard.css contiene gli stili per la card massimali (es. .strength-card__exercise o simile)",
+      "soddisfatto": true,
+      "dettaglio": "Stili presenti alle linee 169-246 di dashboard.css: .strength-card__tipo-badge, .strength-card__tipo-badge--stimato, .strength-card__tipo-badge--reale, .strength-card__list, .strength-card__exercise, .strength-card__name, .strength-card__value, .strength-card__unit, .strength-card__target. Copertura completa delle classi generate dal JS."
+    },
+    {
+      "criterio": "La card è visivamente coerente con card-stato: usa le stesse custom properties CSS (--color-*, --space-*, --font-size-*, --radius-*)",
+      "soddisfatto": true,
+      "dettaglio": "Stili in dashboard.css riutilizzano le custom properties: --color-warning, --color-success, --color-text, --color-text-muted, --color-text-secondary, --color-accent, --color-border, --space-1, --space-2, --space-3, --space-4, --font-size-sm, --font-size-base, --font-size-lg, --radius-sm, --font-weight-* (semibold, bold, normal). La card segue lo stesso pattern di status-card__ con naming kebab-case. La card è parte della griglia dashboard-grid con classe dashboard-card."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/dashboard.js",
+      "esiste": true,
+      "note": "Contiene renderStrengthSummaryCard() (linee 124-176), chiamata in renderDashboard() (linea 219). Gestione null robusta con fallback '—'. Logica badge tipo corretta per 'S' (Stimato) e 'R' (Reale)."
+    },
+    {
+      "path": "docs/css/dashboard.css",
+      "esiste": true,
+      "note": "Stili completamente implementati per strength-card (linee 169-246). Badge tipo con colori distinti (giallo #FFC107 stimato, verde #4CAF50 reale). Layout esercizio con grid 3 colonne (nome, valore, target). Custom properties coerenti con il design system."
+    },
+    {
+      "path": "docs/dashboard.html",
+      "esiste": true,
+      "note": "Container #card-massimali presente a linea 68 con class='dashboard-card'. Fallback placeholder corretto per no-JS."
+    },
+    {
+      "path": "docs/data/measurements.json",
+      "esiste": true,
+      "note": "Ultima voce (index -1, 2026-03-20) contiene squat_1rm (145.8), panca_1rm (116.7), stacco_1rm (198.3), massimali_tipo ('S'). Dati validi e coerenti."
+    },
+    {
+      "path": "docs/data/plan.json",
+      "esiste": true,
+      "note": "Contiene plan.target con oggetto orizzonte '12 mesi': squat 155.1, panca 122.6, stacco 213.7. Dati validi per il calcolo target."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "La logica per tipoClass a linea 131 del dashboard.js assegna sempre una classe (--stimato o --reale) anche se tipoRaw è null, ma il badge HTML non viene renderizzato in quel caso. Questo è corretto (linea 132-134 controlla tipoLabel), ma la linea 131 potrebbe essere semplificata per chiarezza (assegnare tipoClass solo se tipoRaw != null). Attualmente funziona senza errori.",
+      "file": "docs/js/dashboard.js"
+    }
+  ]
+}

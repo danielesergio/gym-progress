@@ -1,0 +1,396 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "project": "Daniele Fitness Dashboard",
+    "goal": "Prima generazione del sito web statico per monitorare progressi fitness, scheda allenamento e dieta",
+    "sommario": "Il progetto riguarda Daniele (38 anni, 188 cm, 87.2 kg), atleta intermedio focalizzato su forza (obiettivo: Squat 200 / Panca 150 / Stacco 250 kg a lungo termine). Attualmente in fase di recupero da infortunio TOS (Thoracic Outlet Syndrome). I dati disponibili includono: 6 misurazioni corporee dal 2022 al 2026 (peso, circonferenze, BF%, FFMI, massimali), una scheda allenamento dettagliata su 4 settimane con 10 fasi pianificate sull'anno, una dieta differenziata per giorno allenamento/riposo con 5 pasti e piano integratori, un piano pluriennale con target progressivi. Il sito deve essere facilmente aggiornabile nel tempo al variare dei dati. Non esiste ancora alcun sito. Non ci sono report di review precedenti.",
+    "features_totali": 6,
+    "tasks_totali": 21
+  },
+  "features": [
+    {
+      "name": "Layout e Navigazione",
+      "priority": 1,
+      "description": "Struttura fondante del sito: layout globale responsive, palette visiva coerente con il tema fitness/forza e navigazione tra le sezioni principali. Da questa feature dipendono tutte le pagine.",
+      "tasks": [
+        {
+          "id": "layout-root",
+          "type": "layout",
+          "title": "Layout principale responsive con header e footer",
+          "description": "Struttura contenitore globale che tutte le pagine condividono. Include header con nome atleta e data ultima misurazione, area contenuto centrale, footer minimale. Il design deve trasmettere serietà e concretezza (tema fitness/powerlifting), con palette scura o neutra ad alto contrasto. Il layout deve adattarsi correttamente a mobile, tablet e desktop.",
+          "inputs": ["branding", "athlete_profile"],
+          "outputs": ["MainLayout"],
+          "acceptance_criteria": [
+            "Header visibile su ogni pagina con nome atleta e data ultima misurazione",
+            "Layout responsive: non si rompe su mobile 375px, tablet 768px, desktop 1280px",
+            "Footer presente con informazioni minimali"
+          ],
+          "dependencies": []
+        },
+        {
+          "id": "navigation-tabs",
+          "type": "navigation",
+          "title": "Navigazione principale tra le sezioni",
+          "description": "Menu di navigazione che permette di muoversi tra le sezioni del sito: Dashboard, Progressi, Allenamento, Dieta. Deve essere chiaramente visibile e indicare la sezione attiva. Su mobile può diventare un menu compatto o tab bar in basso.",
+          "inputs": ["MainLayout"],
+          "outputs": ["NavBar"],
+          "acceptance_criteria": [
+            "Tutte e 4 le sezioni sono raggiungibili dalla navigazione",
+            "La sezione corrente è evidenziata visivamente",
+            "Navigazione usabile su mobile senza zoom"
+          ],
+          "dependencies": ["layout-root"]
+        }
+      ]
+    },
+    {
+      "name": "Dashboard — Riepilogo Atleta",
+      "priority": 2,
+      "description": "Pagina principale del sito. Fornisce un colpo d'occhio immediato sullo stato attuale dell'atleta: dati corporei correnti, massimali attuali, fase del programma in corso e avanzamento verso i target. È la prima cosa che l'atleta vede.",
+      "tasks": [
+        {
+          "id": "dashboard-layout",
+          "type": "layout",
+          "title": "Struttura griglia della Dashboard",
+          "description": "Griglia che organizza i widget della dashboard in modo coerente. Su desktop può essere a 2-3 colonne, su mobile a colonna singola. I widget sono: stato attuale atleta, massimali correnti, fase corrente del programma, prossimi target.",
+          "inputs": ["MainLayout", "NavBar"],
+          "outputs": ["DashboardLayout"],
+          "acceptance_criteria": [
+            "I widget della dashboard sono organizzati in una griglia leggibile",
+            "Su mobile i widget si impilano in colonna singola senza overflow"
+          ],
+          "dependencies": ["navigation-tabs"]
+        },
+        {
+          "id": "athlete-status-card",
+          "type": "component",
+          "title": "Card stato attuale atleta",
+          "description": "Card che mostra i dati corporei dell'ultima misurazione (2026-03-20): peso 87.2 kg, BF 17.1%, massa magra 72.3 kg, FFMI 20.0, TDEE 2870 kcal. Include anche un breve stato testuale sulla fase corrente (es. 'Recupero TOS — Fase 1'). I valori devono essere chiaramente leggibili con etichette descrittive.",
+          "inputs": ["measurements_data"],
+          "outputs": ["AthleteStatusCard"],
+          "acceptance_criteria": [
+            "Mostra peso, BF%, massa magra, FFMI e TDEE dell'ultima misurazione",
+            "Mostra la fase corrente del programma",
+            "I valori hanno etichette comprensibili (non solo sigla)"
+          ],
+          "dependencies": ["dashboard-layout"]
+        },
+        {
+          "id": "strength-summary-card",
+          "type": "component",
+          "title": "Card massimali attuali (Big 3)",
+          "description": "Card compatta che mostra i massimali correnti stimati di Squat (145.8 kg), Panca (116.7 kg) e Stacco (198.3 kg). Per ogni esercizio mostra anche il target a 12 mesi per dare contesto all'avanzamento. Indica che i massimali dell'ultima rilevazione sono di tipo 'S' (stimato) vs 'R' (reale).",
+          "inputs": ["measurements_data", "plan_data"],
+          "outputs": ["StrengthSummaryCard"],
+          "acceptance_criteria": [
+            "Squat, Panca e Stacco sono visualizzati con il valore attuale",
+            "Accanto ad ogni massimale è presente il target a 12 mesi",
+            "Il tipo di massimale (Stimato / Reale) è indicato"
+          ],
+          "dependencies": ["dashboard-layout"]
+        },
+        {
+          "id": "program-phase-card",
+          "type": "component",
+          "title": "Card fase corrente del programma",
+          "description": "Card che mostra la fase attiva del piano annuale. Attualmente: Fase 1 — Ripresa Graduale (2026-04 / 2026-05, 4 settimane). Include nome della fase, periodo, obiettivo sintetico e un indicatore di avanzamento visivo (es. barra progressione) che mostra in quale settimana si trova l'atleta sul totale delle 52 settimane pianificate.",
+          "inputs": ["plan_data"],
+          "outputs": ["ProgramPhaseCard"],
+          "acceptance_criteria": [
+            "Mostra il nome e il numero della fase corrente",
+            "Mostra il periodo e la durata della fase",
+            "Mostra l'obiettivo della fase in forma sintetica",
+            "Una barra o indicatore mostra la progressione sull'anno (settimana X di 52)"
+          ],
+          "dependencies": ["dashboard-layout"]
+        },
+        {
+          "id": "targets-card",
+          "type": "component",
+          "title": "Card target progressivi di forza",
+          "description": "Card che mostra i target futuri di Squat, Panca e Stacco a 3, 6 e 12 mesi e lungo termine (2-5 anni). Presentati in forma tabellare o a colonne temporali. Serve a dare motivazione e prospettiva. Nota: i target a lungo termine sono Squat 200 / Panca 150 / Stacco 250 kg.",
+          "inputs": ["plan_data"],
+          "outputs": ["TargetsCard"],
+          "acceptance_criteria": [
+            "I target a 3, 6, 12 mesi sono visibili per tutti e 3 gli esercizi",
+            "Il target a lungo termine è evidenziato come obiettivo finale",
+            "La presentazione è leggibile anche su mobile"
+          ],
+          "dependencies": ["dashboard-layout"]
+        }
+      ]
+    },
+    {
+      "name": "Sezione Progressi",
+      "priority": 3,
+      "description": "Pagina dedicata all'andamento storico delle misurazioni corporee e dei massimali nel tempo. I dati coprono 6 rilevazioni dal 2022 al 2026. Permette all'atleta di visualizzare concretamente i progressi raggiunti.",
+      "tasks": [
+        {
+          "id": "progress-page-layout",
+          "type": "layout",
+          "title": "Struttura pagina Progressi",
+          "description": "Layout della pagina Progressi con sezioni distinte per: grafico peso/composizione corporea, grafico massimali, tabella storica misurazioni. Su mobile le sezioni si impilano verticalmente.",
+          "inputs": ["MainLayout", "NavBar"],
+          "outputs": ["ProgressPageLayout"],
+          "acceptance_criteria": [
+            "La pagina ha sezioni ben distinte per composizione corporea e massimali",
+            "La struttura è leggibile su mobile"
+          ],
+          "dependencies": ["navigation-tabs"]
+        },
+        {
+          "id": "weight-bf-chart",
+          "type": "component",
+          "title": "Grafico andamento peso e body fat",
+          "description": "Grafico a linee con doppio asse Y che mostra l'andamento di peso (kg) e BF% nel tempo. I dati coprono 6 punti dal 2022-10 al 2026-03, con frequenza irregolare (a volte molti mesi tra una misurazione e l'altra). L'asse X sono le date, l'asse Y sinistro il peso in kg, il destro il BF%. Deve gestire l'irregolarità degli intervalli senza interruzioni visive. Opzionale: linea separata per la massa magra.",
+          "inputs": ["measurements_data"],
+          "outputs": ["WeightBFChart"],
+          "acceptance_criteria": [
+            "Il grafico mostra tutti e 6 i punti di misurazione",
+            "Peso e BF% sono distinguibili (colori o assi diversi)",
+            "Le etichette delle date sono leggibili senza sovrapposizioni",
+            "L'asse Y del peso non parte da 0 (range sensato, es. 70-95 kg)"
+          ],
+          "dependencies": ["progress-page-layout"]
+        },
+        {
+          "id": "strength-chart",
+          "type": "component",
+          "title": "Grafico andamento massimali Big 3",
+          "description": "Grafico a linee che mostra l'evoluzione storica di Squat, Panca e Stacco 1RM nel tempo. 6 punti di dati dal 2022 al 2026. I tre esercizi devono essere distinguibili (colori diversi). Deve essere indicato il tipo di massimale (R=reale, S=stimato) su ogni punto, poiché l'ultima rilevazione è di tipo S. I valori target futuri (linea tratteggiata o punto) possono essere mostrati come estensione.",
+          "inputs": ["measurements_data", "plan_data"],
+          "outputs": ["StrengthChart"],
+          "acceptance_criteria": [
+            "Squat, Panca e Stacco hanno linee distinte con colori diversi",
+            "L'ultimo punto (stimato) è visivamente differenziato dai punti reali",
+            "I valori numerici sono leggibili al passaggio del mouse o al tap su mobile",
+            "La legenda identifica i 3 esercizi"
+          ],
+          "dependencies": ["progress-page-layout"]
+        },
+        {
+          "id": "measurements-table",
+          "type": "component",
+          "title": "Tabella storica misurazioni",
+          "description": "Tabella che mostra tutte le rilevazioni storiche in ordine cronologico. Colonne: Data, Peso, BF%, Massa Magra, FFMI, Vita, Petto, Braccio, Coscia, Squat, Panca, Stacco. Su mobile la tabella deve essere scorrevole orizzontalmente o mostrare un sottoinsieme delle colonne principali. Le note di contesto (es. 'Australia', 'Allenamento in casa') sono mostrate come tooltip o riga aggiuntiva.",
+          "inputs": ["measurements_data"],
+          "outputs": ["MeasurementsTable"],
+          "acceptance_criteria": [
+            "Tutte e 6 le rilevazioni sono presenti in ordine cronologico",
+            "Le colonne principali (data, peso, BF%, massimali) sono visibili su mobile",
+            "Le note contestuali sono accessibili senza rompere il layout"
+          ],
+          "dependencies": ["progress-page-layout"]
+        },
+        {
+          "id": "circumferences-chart",
+          "type": "component",
+          "title": "Grafico andamento circonferenze corporee",
+          "description": "Grafico che mostra l'evoluzione delle circonferenze (vita, fianchi, petto, braccio, coscia, collo) nel tempo. Poiché le linee sarebbero molte, è preferibile mostrarne 2-3 chiave (vita e braccio come proxy di grasso e massa). Alternativa: un grafico a ragnatela (radar) con i valori attuali vs prima misurazione.",
+          "inputs": ["measurements_data"],
+          "outputs": ["CircumferencesChart"],
+          "acceptance_criteria": [
+            "Almeno vita e braccio sono mostrati nel tempo",
+            "Il grafico è leggibile senza sovraffollamento di linee",
+            "La differenza tra prima e ultima misurazione è percepibile"
+          ],
+          "dependencies": ["progress-page-layout"]
+        }
+      ]
+    },
+    {
+      "name": "Sezione Allenamento",
+      "priority": 4,
+      "description": "Pagina che visualizza la scheda di allenamento corrente (Fase 1 — Ripresa Graduale, 4 settimane, aprile-maggio 2026). Include la struttura settimanale, gli esercizi per sessione, note importanti sull'infortunio TOS e il protocollo del Test Day finale.",
+      "tasks": [
+        {
+          "id": "workout-page-layout",
+          "type": "layout",
+          "title": "Struttura pagina Allenamento",
+          "description": "Layout della pagina allenamento con header che mostra nome e obiettivo della scheda corrente, navigazione tra le settimane (1-4) e area di dettaglio della settimana selezionata. Su mobile è ottimizzata per essere consultata in palestra.",
+          "inputs": ["MainLayout", "NavBar"],
+          "outputs": ["WorkoutPageLayout"],
+          "acceptance_criteria": [
+            "Il nome e l'obiettivo della scheda corrente sono visibili in cima",
+            "Si può navigare tra le 4 settimane",
+            "Il layout è leggibile su mobile (testo grande, contrasto alto)"
+          ],
+          "dependencies": ["navigation-tabs"]
+        },
+        {
+          "id": "workout-week-navigator",
+          "type": "component",
+          "title": "Selettore settimana allenamento",
+          "description": "Componente che permette di selezionare la settimana corrente (1-4) e mostra l'intensità target e le note della settimana selezionata. Può essere una tab bar numerica o un dropdown. L'indicazione visiva dell'intensità target (es. '50-60% 1RM') è mostrata sotto il selettore.",
+          "inputs": ["workout_data"],
+          "outputs": ["WeekNavigator"],
+          "acceptance_criteria": [
+            "Le 4 settimane sono selezionabili",
+            "Quando si cambia settimana, le sessioni si aggiornano",
+            "L'intensità target della settimana è visibile"
+          ],
+          "dependencies": ["workout-page-layout"]
+        },
+        {
+          "id": "workout-session-card",
+          "type": "component",
+          "title": "Card sessione di allenamento",
+          "description": "Card che mostra una singola sessione di allenamento (es. Lunedì — Lower A). Include: nome del giorno, tipo di sessione, nota sessione e lista esercizi. Per ogni esercizio: nome, serie x reps, peso indicativo, recupero, gruppo muscolare. Gli esercizi principali sono distinguibili dagli accessori. Su mobile la card è verticale e a piena larghezza.",
+          "inputs": ["workout_data"],
+          "outputs": ["SessionCard"],
+          "acceptance_criteria": [
+            "Nome sessione e tipo sono chiari in cima alla card",
+            "Ogni esercizio mostra serie, reps, peso e recupero",
+            "Gli esercizi principali (principale: true) sono visivamente distinti",
+            "La nota sessione è leggibile ma non invadente"
+          ],
+          "dependencies": ["workout-page-layout", "workout-week-navigator"]
+        },
+        {
+          "id": "workout-tos-alert",
+          "type": "ux",
+          "title": "Banner avviso infortunio TOS",
+          "description": "Banner persistente in cima alla pagina allenamento che ricorda all'atleta i vincoli dell'infortunio TOS: esercizi vietati (panca, dip, overhead, trazioni grip stretto, fly) e il protocollo di sicurezza (stop immediato se dolore). Il banner deve essere visibile ma non oscurare la scheda. Include icona di attenzione.",
+          "inputs": ["workout_data"],
+          "outputs": ["TOSAlertBanner"],
+          "acceptance_criteria": [
+            "Il banner è visibile senza scorrere la pagina",
+            "Elenca almeno 4-5 esercizi vietati",
+            "Non occupa più di 1/4 dell'altezza dello schermo"
+          ],
+          "dependencies": ["workout-page-layout"]
+        },
+        {
+          "id": "testday-section",
+          "type": "component",
+          "title": "Sezione Test Day (settimana 4)",
+          "description": "Presentazione dedicata al Test Day submassimale della settimana 4 (Sabato). Mostra il protocollo di riscaldamento progressivo e i tentativi per Squat e Stacco (la Panca è esclusa per TOS). Per ogni tentativo: peso target, reps, note. Evidenzia chiaramente che la Panca è categoricamente esclusa. Il formato deve essere consultabile in palestra durante il test.",
+          "inputs": ["workout_data"],
+          "outputs": ["TestDaySection"],
+          "acceptance_criteria": [
+            "Il protocollo di Squat e Stacco è mostrato con tutti i tentativi",
+            "Per ogni tentativo sono visibili peso e note",
+            "La Panca è visibilmente indicata come esclusa (con motivazione)",
+            "Il formato è consultabile su mobile in palestra"
+          ],
+          "dependencies": ["workout-session-card"]
+        }
+      ]
+    },
+    {
+      "name": "Sezione Dieta",
+      "priority": 5,
+      "description": "Pagina che visualizza il piano alimentare corrente. La dieta è differenziata tra giorno allenamento (2875 kcal) e giorno riposo (2601 kcal), con 5 pasti ciascuno. Include piano integratori. L'obiettivo nutrizionale attuale è il mantenimento calorico durante la fase di recupero TOS.",
+      "tasks": [
+        {
+          "id": "diet-page-layout",
+          "type": "layout",
+          "title": "Struttura pagina Dieta",
+          "description": "Layout della pagina dieta con un selettore per alternare tra giorno allenamento e giorno riposo, una sezione macros giornalieri totali, la lista pasti e la sezione integratori. La pagina deve essere leggibile come un piano da consultare al momento dei pasti.",
+          "inputs": ["MainLayout", "NavBar"],
+          "outputs": ["DietPageLayout"],
+          "acceptance_criteria": [
+            "Si può selezionare il tipo di giorno (allenamento / riposo)",
+            "I macros totali del giorno sono visibili in cima",
+            "La sezione integratori è presente e separata"
+          ],
+          "dependencies": ["navigation-tabs"]
+        },
+        {
+          "id": "macros-summary-bar",
+          "type": "component",
+          "title": "Riepilogo macros giornalieri",
+          "description": "Barra o card compatta che mostra i macros totali del giorno selezionato: kcal, proteine (g), carboidrati (g), grassi (g). Può includere una rappresentazione visiva delle proporzioni (barra a segmenti colorati). Mostra anche la strategia nutrizionale sintetica (es. 'Mantenimento calorico — recupero TOS').",
+          "inputs": ["diet_data"],
+          "outputs": ["MacrosSummaryBar"],
+          "acceptance_criteria": [
+            "Kcal, proteine, carbo e grassi sono mostrati per il giorno selezionato",
+            "I valori cambiano quando si cambia tipo di giorno",
+            "La strategia nutrizionale è visibile in forma sintetica"
+          ],
+          "dependencies": ["diet-page-layout"]
+        },
+        {
+          "id": "meal-card",
+          "type": "component",
+          "title": "Card pasto con alimenti e macros",
+          "description": "Card per ciascuno dei 5 pasti giornalieri. Mostra: nome del pasto, orario indicativo, lista alimenti con grammi e kcal, totale pasto (kcal, proteine, carbo, grassi). Gli alimenti sono elencati in modo compatto ma leggibile. Su mobile la card è a piena larghezza.",
+          "inputs": ["diet_data"],
+          "outputs": ["MealCard"],
+          "acceptance_criteria": [
+            "Ogni pasto mostra nome, orario, lista alimenti e totale macros",
+            "I grammi di ogni alimento sono indicati",
+            "Il totale kcal del pasto è immediatamente visibile",
+            "I 5 pasti sono tutti presenti per entrambi i tipi di giorno"
+          ],
+          "dependencies": ["diet-page-layout", "macros-summary-bar"]
+        },
+        {
+          "id": "supplements-section",
+          "type": "component",
+          "title": "Sezione piano integratori",
+          "description": "Lista degli integratori consigliati con dose, timing e note. Integratori presenti: Creatina monoidrato (5g), Vitamina D3 (2000 UI), Omega-3 (2-3g EPA+DHA), Whey protein (60g/die). Ogni integratore ha una breve nota sul perché è importante nella fase corrente (es. Omega-3 per effetto antinfiammatorio TOS).",
+          "inputs": ["diet_data"],
+          "outputs": ["SupplementsSection"],
+          "acceptance_criteria": [
+            "Tutti e 4 gli integratori sono elencati con dose e timing",
+            "Il motivo dell'assunzione è visibile per ogni integratore",
+            "La sezione è visivamente separata dai pasti"
+          ],
+          "dependencies": ["diet-page-layout"]
+        }
+      ]
+    },
+    {
+      "name": "Piano Annuale e Obiettivi",
+      "priority": 6,
+      "description": "Pagina o sezione che visualizza il piano pluriennale a fasi (10 fasi, 52 settimane), i target di forza nel tempo e la strategia generale. Dà all'atleta la visione d'insieme del percorso intrapreso.",
+      "tasks": [
+        {
+          "id": "plan-page-layout",
+          "type": "layout",
+          "title": "Struttura pagina Piano e Obiettivi",
+          "description": "Layout della pagina con una timeline delle 10 fasi annuali, una sezione target di forza progressivi e una sezione strategia nutrizionale per fase. La timeline deve rendere immediatamente chiaro dove si trova l'atleta oggi rispetto al percorso totale.",
+          "inputs": ["MainLayout", "NavBar"],
+          "outputs": ["PlanPageLayout"],
+          "acceptance_criteria": [
+            "La pagina mostra la timeline delle fasi in modo visivo",
+            "La fase corrente è evidenziata sulla timeline",
+            "La pagina è navigabile su mobile"
+          ],
+          "dependencies": ["navigation-tabs"]
+        },
+        {
+          "id": "phases-timeline",
+          "type": "component",
+          "title": "Timeline visiva delle fasi del programma",
+          "description": "Componente visivo che rappresenta le 10 fasi del programma su un asse temporale (52 settimane totali, marzo 2026 — marzo 2027). Ogni fase mostra: numero, nome, durata, periodo indicativo. La fase corrente (Fase 1) è evidenziata. Le fasi passate (Fase 0) sono marcate come completate. Il componente deve gestire bene la lettura su mobile (possibile scrolling orizzontale o layout verticale alternativo).",
+          "inputs": ["plan_data"],
+          "outputs": ["PhasesTimeline"],
+          "acceptance_criteria": [
+            "Tutte le 10 fasi sono visibili con nome e durata",
+            "La fase corrente è chiaramente evidenziata",
+            "Il periodo temporale di ogni fase è indicato",
+            "Su mobile il componente è leggibile (scroll o layout verticale)"
+          ],
+          "dependencies": ["plan-page-layout"]
+        },
+        {
+          "id": "strength-targets-table",
+          "type": "component",
+          "title": "Tabella target di forza progressivi",
+          "description": "Tabella che mostra i target di Squat, Panca e Stacco a 3 mesi (giugno 2026), 6 mesi (settembre 2026), 12 mesi (marzo 2027) e lungo termine (2028-2031). Include i valori attuali come punto di partenza. Ogni target ha una nota sintetica sul contesto (es. 'Infortunio in recupero, progressione conservativa').",
+          "inputs": ["plan_data", "measurements_data"],
+          "outputs": ["StrengthTargetsTable"],
+          "acceptance_criteria": [
+            "I valori attuali e tutti e 4 gli orizzonti temporali sono presenti",
+            "Squat, Panca e Stacco sono separati per riga o colonna",
+            "Il target finale (200/150/250 kg) è evidenziato come obiettivo di lungo termine",
+            "La tabella è leggibile su mobile"
+          ],
+          "dependencies": ["plan-page-layout"]
+        }
+      ]
+    }
+  ]
+}

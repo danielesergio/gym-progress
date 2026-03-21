@@ -1,0 +1,392 @@
+/* ============================================================
+   plan.css — Stili pagina Piano e Obiettivi
+   Daniele Fitness | Timeline fasi + Target forza + Nutrizione
+   ============================================================ */
+
+/* ── Sezioni pagina ── */
+.plan-section {
+  margin-bottom: var(--space-12);
+}
+
+.plan-section:last-child {
+  margin-bottom: 0;
+}
+
+.plan-section-header {
+  margin-bottom: var(--space-6);
+}
+
+.plan-section-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--space-1);
+}
+
+.plan-section-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* ── Placeholder loading state ── */
+.plan-placeholder {
+  color: var(--color-text-faint);
+  font-size: var(--font-size-sm);
+  padding: var(--space-6);
+  text-align: center;
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--color-border);
+}
+
+/* ══════════════════════════════════════════
+   TIMELINE FASI — scrollabile orizzontale su desktop
+   ══════════════════════════════════════════ */
+.plan-timeline-scroll {
+  overflow-x: auto;
+  overflow-y: visible;
+  /* scrollbar visibile ma stilizzata */
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+  padding-bottom: var(--space-3);
+}
+
+.plan-timeline-scroll::-webkit-scrollbar {
+  height: 4px;
+}
+
+.plan-timeline-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.plan-timeline-scroll::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: var(--radius-full);
+}
+
+/* Cards contenitore — row su desktop */
+.plan-phase-cards {
+  display: flex;
+  flex-direction: row;
+  gap: var(--space-3);
+  /* larghezza minima per garantire scroll su desktop */
+  min-width: max-content;
+  padding-block: var(--space-2);
+}
+
+/* Singola card fase */
+.plan-phase-card {
+  flex: 0 0 auto;
+  width: 180px;
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.plan-phase-card:hover {
+  border-color: var(--color-border-light);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Card fase corrente — evidenziata */
+.plan-phase-card--current {
+  border-color: var(--color-accent);
+  background-color: var(--color-bg-elevated);
+  box-shadow: 0 0 0 1px var(--color-accent), var(--shadow-md);
+}
+
+.plan-phase-card--current:hover {
+  border-color: var(--color-accent-hover);
+  box-shadow: 0 0 0 1px var(--color-accent-hover), var(--shadow-md);
+}
+
+/* Card fase completata — opacità ridotta, bordo neutro-verde */
+.plan-phase-card--completed {
+  opacity: 0.65;
+  border-color: var(--color-success, #4caf81);
+  background-color: var(--color-bg-card);
+}
+
+.plan-phase-card--completed:hover {
+  opacity: 0.85;
+  border-color: var(--color-success, #4caf81);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Numero fase */
+.plan-phase-number {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.plan-phase-card--current .plan-phase-number {
+  color: var(--color-accent);
+}
+
+/* Nome fase */
+.plan-phase-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  line-height: var(--line-height-tight);
+}
+
+/* Periodo indicativo */
+.plan-phase-period {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-family: var(--font-mono);
+}
+
+/* Durata settimane */
+.plan-phase-duration {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-faint);
+}
+
+/* Badge fasi — base comune */
+.plan-phase-badge {
+  display: inline-block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-sm);
+  padding: 2px var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-top: var(--space-1);
+  align-self: flex-start;
+}
+
+/* Badge "CORRENTE" */
+.plan-phase-badge--current {
+  color: var(--color-bg);
+  background-color: var(--color-accent);
+}
+
+/* Badge "COMPLETATA" — verde tenue */
+.plan-phase-badge--completed {
+  color: var(--color-success-text, #1a4731);
+  background-color: var(--color-success-bg, #d1f0e0);
+}
+
+/* ══════════════════════════════════════════
+   TARGET DI FORZA — container
+   ══════════════════════════════════════════ */
+.plan-targets-container {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* Tabella target forza (usata dai task figli) */
+.plan-targets-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.plan-targets-table th,
+.plan-targets-table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: right;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.plan-targets-table th:first-child,
+.plan-targets-table td:first-child {
+  text-align: left;
+}
+
+.plan-targets-table thead th {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.plan-targets-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.plan-targets-table tbody tr:hover td {
+  background-color: var(--color-bg-elevated);
+}
+
+/* Riga "Oggi" — valori attuali con sfondo tenue */
+.plan-targets-current-row th,
+.plan-targets-current-row td {
+  background-color: var(--color-bg-secondary);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+/* Badge "Oggi" inline nella riga valori attuali */
+.plan-targets-badge-oggi {
+  display: inline-block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  background-color: var(--color-accent);
+  color: var(--color-bg);
+  border-radius: var(--radius-sm);
+  padding: 2px var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-right: var(--space-2);
+  vertical-align: middle;
+}
+
+/* Riga "Lungo termine" — evidenziata come obiettivo finale */
+.plan-targets-row-longterm th,
+.plan-targets-row-longterm td {
+  background-color: var(--color-bg-elevated);
+  border-top: 2px solid var(--color-accent);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+.plan-targets-row-longterm th {
+  color: var(--color-accent);
+}
+
+/* Nota sintetica contestuale — testo muted, dimensione ridotta */
+.plan-targets-note {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-normal);
+  text-align: left;
+  max-width: 260px;
+}
+
+/* Data orizzonte — badge grigio inline */
+.plan-targets-data {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-faint);
+  font-family: var(--font-mono);
+}
+
+/* Colonna note — larghezza flessibile, non troppo stretta */
+.plan-targets-col-note {
+  min-width: 180px;
+}
+
+/* ══════════════════════════════════════════
+   STRATEGIA NUTRIZIONALE — container
+   ══════════════════════════════════════════ */
+.plan-nutrition-container {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* Card nutrizione per fase (usata dai task figli) */
+.plan-nutrition-card {
+  padding: var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.plan-nutrition-card:last-child {
+  border-bottom: none;
+}
+
+.plan-nutrition-card-title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-accent);
+  margin-bottom: var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.plan-nutrition-card-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-loose);
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE — Mobile (max-width: 768px)
+   ══════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  /* Titoli sezione più piccoli */
+  .plan-section-title {
+    font-size: var(--font-size-lg);
+  }
+
+  /* Timeline: layout verticale su mobile */
+  .plan-timeline-scroll {
+    overflow-x: visible;
+    overflow-y: visible;
+  }
+
+  .plan-phase-cards {
+    flex-direction: column;
+    min-width: 0;
+    gap: var(--space-2);
+  }
+
+  /* Card verticali a larghezza piena */
+  .plan-phase-card {
+    width: 100%;
+    flex-direction: row;
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: var(--space-2) var(--space-4);
+  }
+
+  .plan-phase-number {
+    flex: 0 0 100%;
+  }
+
+  .plan-phase-name {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .plan-phase-period {
+    flex: 0 0 auto;
+  }
+
+  .plan-phase-duration {
+    flex: 0 0 auto;
+  }
+
+  .plan-phase-badge {
+    margin-top: 0;
+  }
+
+  /* Tabella target: scroll orizzontale su mobile */
+  .plan-targets-container {
+    overflow-x: auto;
+  }
+
+  .plan-targets-table {
+    min-width: 480px;
+  }
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE — Mobile piccolo (max-width: 375px)
+   ══════════════════════════════════════════ */
+@media (max-width: 375px) {
+  .plan-section {
+    margin-bottom: var(--space-8);
+  }
+
+  .plan-section-title {
+    font-size: var(--font-size-md);
+  }
+}

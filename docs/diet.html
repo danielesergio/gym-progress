@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dieta — Daniele Fitness</title>
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/diet.css">
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════
+       HEADER — nome atleta + tagline
+  ══════════════════════════════════════════ -->
+  <header class="page-header" id="main-header" role="banner">
+    <div class="container">
+      <div class="header-brand">
+        <span class="header-athlete-name">Daniele</span>
+        <span class="header-tagline">Fitness &amp; Powerlifting</span>
+      </div>
+      <div class="header-meta" aria-label="Fase dieta">
+        <span class="header-meta-label">Fase:</span>
+        <span class="header-meta-value" id="header-diet-fase">—</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════
+       NAV TAB — 5 sezioni, 'Dieta' attivo
+  ══════════════════════════════════════════ -->
+  <nav role="tablist" class="tab-list" id="nav-tabs" aria-label="Navigazione sezioni">
+    <div class="container">
+      <a href="dashboard.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Dashboard atleta">Dashboard</a>
+      <a href="progress.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Progressi nel tempo">Progressi</a>
+      <a href="workout.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Scheda allenamento">Allenamento</a>
+      <a href="diet.html"
+         role="tab"
+         class="nav-tab active"
+         aria-current="page"
+         aria-label="Piano dieta">Dieta</a>
+      <a href="plan.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Piano annuale e obiettivi">Piano</a>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════
+       MAIN — contenuto pagina dieta
+  ══════════════════════════════════════════ -->
+  <main id="page-content" aria-label="Contenuto principale">
+    <div class="container">
+
+      <!-- Messaggio errore globale -->
+      <div id="diet-error" class="diet-error" role="alert" aria-live="polite" hidden></div>
+
+      <!-- ── TOGGLE TIPO GIORNO ── -->
+      <section class="diet-day-toggle" id="day-toggle" aria-label="Seleziona tipo di giorno">
+        <button
+          type="button"
+          class="diet-toggle-btn active"
+          data-day-type="allenamento"
+          aria-pressed="true">
+          🏋️ Allenamento
+        </button>
+        <button
+          type="button"
+          class="diet-toggle-btn"
+          data-day-type="riposo"
+          aria-pressed="false">
+          😴 Riposo
+        </button>
+      </section>
+
+      <!-- ── RIEPILOGO MACROS ── -->
+      <section id="macros-summary" class="diet-macros-summary" aria-label="Riepilogo macros giornalieri" aria-live="polite">
+        <p class="diet-loading-placeholder">Caricamento macros…</p>
+      </section>
+
+      <!-- ── LISTA PASTI ── -->
+      <section id="meals-list" class="diet-meals-list" aria-label="Lista pasti del giorno" aria-live="polite">
+        <p class="diet-loading-placeholder">Caricamento pasti…</p>
+      </section>
+
+      <!-- ── INTEGRATORI ── -->
+      <section id="supplements-section" class="diet-supplements" aria-label="Integratori">
+        <div class="diet-supplements__header">
+          <h2 class="diet-supplements__title">Integratori</h2>
+          <p class="diet-supplements__subtitle">Assunzione quotidiana — ogni giorno senza interruzioni</p>
+        </div>
+        <div id="supplements-list" class="diet-supplements__list">
+          <p class="diet-loading-placeholder">Caricamento integratori…</p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ══════════════════════════════════════════
+       FOOTER — minimale
+  ══════════════════════════════════════════ -->
+  <footer class="page-footer" id="main-footer" role="contentinfo">
+    <div class="container">
+      <p class="footer-text">Daniele Fitness &copy; 2026</p>
+    </div>
+  </footer>
+
+  <script src="js/nav.js" defer></script>
+  <script src="js/diet.js" defer></script>
+
+</body>
+</html>

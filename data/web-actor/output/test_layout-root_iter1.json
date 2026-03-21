@@ -1,0 +1,136 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "layout-root",
+    "task_titolo": "Layout principale responsive con header e footer",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Header visibile su ogni pagina con nome atleta e data ultima misurazione",
+      "soddisfatto": true,
+      "dettaglio": "Header presente in dashboard.html (righe 16-27) con classe 'page-header' id='main-header'. Contiene .header-brand con span.header-athlete-name='Daniele' (riga 19) e .header-meta con label 'Ultima misurazione:' (riga 23) e span#header-last-date che sarà riempito via JS da dashboard.js (riga 24, iniziale '—'). Funzione renderHeaderDate() in dashboard.js (righe 47-52) legge l'ultimo elemento di measurements e formatta la data in italiano via formatDateIt()."
+    },
+    {
+      "criterio": "Layout responsive: non si rompe su mobile 375px, tablet 768px, desktop 1280px",
+      "soddisfatto": true,
+      "dettaglio": "layout.css contiene media query a righe 183-240. Mobile (max-width: 375px): riduce header-height a 56px, nav-height a 44px, nascondi header-tagline e header-meta-label, riduce font-size tab. Tablet (min-width: 768px): aumenta padding container, font-size atleta a 2xl, tab font a base. Desktop (min-width: 1280px): ulteriore padding container e page-content padding. .container usa max-width: var(--container-max-width) = 1280px (variables.css riga 84) e margin-inline: auto (layout.css riga 34) per responsive. Body con flexbox (layout.css righe 26-28) e #page-content flex:1 (riga 154) per layout colonna rettangolare."
+    },
+    {
+      "criterio": "Footer presente con informazioni minimali",
+      "soddisfatto": true,
+      "dettaglio": "Footer presente in dashboard.html (righe 70-74) con classe 'page-footer' id='main-footer', role='contentinfo'. Contiene testo 'Daniele Fitness © 2026' (riga 72). layout.css righe 162-180 definiscono .page-footer con background, border-top, padding e .footer-text con font-size-xs, colore text-faint, centrato."
+    },
+    {
+      "criterio": "docs/index.html esiste e contiene un redirect a dashboard.html (meta refresh o JS)",
+      "soddisfatto": true,
+      "dettaglio": "index.html esiste (verificato via glob). Contiene sia meta refresh (riga 8: '<meta http-equiv=\"refresh\" content=\"0; url=dashboard.html\">') che JS fallback (righe 12-14: 'window.location.replace(dashboard.html)'). Entry point corretto per GitHub Pages."
+    },
+    {
+      "criterio": "docs/dashboard.html esiste con struttura semantica: <header>, <nav role='tablist'>, <main>, <footer>",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.html esiste e contiene: <header class='page-header' id='main-header' role='banner'> (riga 16), <nav role='tablist' class='tab-list' id='nav-tabs' aria-label='...'> (riga 32), <main id='page-content' aria-label='...'> (riga 61), <footer class='page-footer' id='main-footer' role='contentinfo'> (riga 70). Struttura semantica completa con ARIA labels."
+    },
+    {
+      "criterio": "docs/dashboard.html include i link a css/variables.css, css/layout.css, css/dashboard.css",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.html righe 7-9 contengono tre <link rel='stylesheet'> verso: css/variables.css (riga 7), css/layout.css (riga 8), css/dashboard.css (riga 9). Tutti i file sono stati verificati come presenti nel filesystem."
+    },
+    {
+      "criterio": "docs/dashboard.html include <script src='js/dashboard.js' defer>",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.html riga 76 contiene '<script src=\"js/dashboard.js\" defer></script>'. Flag defer presente per esecuzione non-bloccante."
+    },
+    {
+      "criterio": "docs/css/variables.css esiste e definisce almeno: colori (--color-bg, --color-text, --color-accent), tipografia (--font-base), spaziature (--space-*), breakpoint",
+      "soddisfatto": true,
+      "dettaglio": "variables.css esiste. Definisce colori: --color-bg (riga 8), --color-text (riga 13), --color-accent (riga 17), e molti altri. Tipografia: --font-base (riga 29), --font-size-* (righe 33-40). Spaziature: --space-1 a --space-16 (righe 52-61). Breakpoint commentati (righe 80-83): 375px mobile, 768px tablet, 1280px desktop. Aggiunto --container-max-width e --header-height, --nav-height."
+    },
+    {
+      "criterio": "docs/css/layout.css esiste e contiene stili per .page-header, .tab-list (nav), .container, .page-footer con media query per 375px e 768px",
+      "soddisfatto": true,
+      "dettaglio": "layout.css esiste. .page-header (righe 39-49), .tab-list (righe 103-150), .container (righe 31-36), .page-footer (righe 163-180). Media query: @media (max-width: 375px) riga 183, @media (min-width: 768px) riga 216, @media (min-width: 1280px) riga 232. Tutte le breakpoint richieste sono presenti."
+    },
+    {
+      "criterio": "La data ultima misurazione nell'header è formattata in italiano ('20 mar 2026'), non ISO",
+      "soddisfatto": true,
+      "dettaglio": "Funzione formatDateIt() in dashboard.js (righe 18-27) converte ISO (YYYY-MM-DD) in italiano usando toLocaleDateString('it-IT', {...}). Restituisce '—' se null/invalido. renderHeaderDate() (righe 47-52) usa formatDateIt() per popolare #header-last-date. Pattern conforme a architettura."
+    },
+    {
+      "criterio": "Nessun valore 'null' o 'undefined' visibile nel DOM se measurements.json non è disponibile — viene mostrato '—'",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js riga 51: el.textContent = last?.data ? formatDateIt(last.data) : '—'; - usa optional chaining e fallback '—'. formatDateIt() riga 19-21: if (!isoString) return '—'; se null/undefined. DOMContentLoaded catch-block (righe 129-134) mostra fallback '—' e chiama showError() che scrive 'Dati non disponibili' nel DOM, no alert()."
+    },
+    {
+      "criterio": "Il markup dei 5 tab di navigazione è presente in dashboard.html con href corretti verso le 5 pagine",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.html righe 34-55 contengono 5 <a> con role='tab' dentro <nav role='tablist'>: Dashboard (href='dashboard.html'), Progressi (href='progress.html'), Allenamento (href='workout.html'), Dieta (href='diet.html'), Piano (href='plan.html'). Href corretti per tutte e 5 le pagine."
+    },
+    {
+      "criterio": "La classe .active è applicata al tab 'Dashboard' in dashboard.html",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.html riga 36: primo <a> contiene class='nav-tab active' + aria-current='page'. layout.css righe 145-150 definiscono .nav-tab.active con color: var(--color-accent) e border-bottom-color: var(--color-accent) per stile attivo."
+    },
+    {
+      "criterio": "Nessun uso di jQuery, var, inline style o document.write()",
+      "soddisfatto": true,
+      "dettaglio": "Verifica globale dei file: HTML non contiene <script> jQuery CDN, zero inline style (attributo style), zero document.write(). dashboard.js usa const (non var), vanilla JS con async/await, fetch API, querySelector. layout.css e variables.css sono CSS puro senza inline style. Conforme a architettura 'plain HTML/JS'."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/index.html",
+      "esiste": true,
+      "note": "Entry point con meta refresh + JS redirect verso dashboard.html. Struttura corretta, fallback funzionante."
+    },
+    {
+      "path": "docs/dashboard.html",
+      "esiste": true,
+      "note": "Shell HTML principale: header, nav tablist (5 tab), main#page-content, footer. Include CSS variables/layout/dashboard e script defer. Semantica corretta."
+    },
+    {
+      "path": "docs/css/variables.css",
+      "esiste": true,
+      "note": "Design tokens completi: 20+ variabili CSS per colori, tipografia (font-size xs-3xl, font-weight), spaziature (space-1 a space-16), border-radius, ombre, transizioni, breakpoint reference."
+    },
+    {
+      "path": "docs/css/layout.css",
+      "esiste": true,
+      "note": "Stili strutturali: reset box-sizing, body flexbox, header sticky con border accent, nav tab con hover/active states, main flex:1, footer minimale. Media query complete per 375/768/1280px."
+    },
+    {
+      "path": "docs/css/dashboard.css",
+      "esiste": true,
+      "note": "Stili dashboard-specifici: #dashboard-grid con CSS Grid (1 col mobile, 2 col tablet/desktop), .dashboard-card base styles. Placeholder per card da completare nel task successivo."
+    },
+    {
+      "path": "docs/js/dashboard.js",
+      "esiste": true,
+      "note": "Logica dashboard: costanti (DATA_PATH_*), utility formatDateIt() e showError(), renderHeaderDate() per data misurazione, renderDashboard() con placeholder card, DOMContentLoaded con fetch parallelo 3 JSON + error handling."
+    },
+    {
+      "path": "docs/data/measurements.json",
+      "esiste": false,
+      "note": "File generato dallo script Python, non presente in locale. Code è pronto per fetch; fallback '—' applica. File atteso al deploy: array con 6 elementi, ultimo: {data:'2026-03-20', peso_kg:87.2, ...}"
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "dashboard.js fetcha 3 file (measurements, plan, workout_data) in parallelo con Promise.all(), ma solo measurements è critico per l'header. plan e workout non sono ancora usati nella render — saranno completati nei task successivi. Logica corretta, ma file non presenti localmente durante sviluppo. Fallback a array vuoto e null sono adeguati.",
+      "file": "docs/js/dashboard.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "HTML semantico include aria-label e role attribute correttamente (role='tablist', role='tab', role='banner', role='contentinfo'). A11y baseline solida.",
+      "file": "docs/dashboard.html"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "layout.css nasconde .header-tagline e .header-meta-label su mobile (<= 375px) per spazio, mantenendo solo nome atleta. UX mobile appropriata per header compatto.",
+      "file": "docs/css/layout.css"
+    }
+  ],
+  "sommario_esecuzione": "Verifica completata con successo. Tutti i 13 criteri di accettazione sono soddisfatti. I 7 file implementati (index.html, dashboard.html, variables.css, layout.css, dashboard.css, dashboard.js, + 1 esterno non presente) rispettano l'architettura, le convenzioni naming, il pattern fetch() con fallback, la responsività (375/768/1280px) e il design tema powerlifting (scuro, alto contrasto, accent arancione). Anomalie segnalate sono solo informative (fetch parallelo files futuri, a11y, mobile UX). Nessun blocco critico, nessun null visibile nel DOM, nessun uso di jQuery/var/inline-style/document.write()."
+}

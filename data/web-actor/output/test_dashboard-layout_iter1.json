@@ -1,0 +1,90 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "dashboard-layout",
+    "task_titolo": "Struttura griglia della Dashboard",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "I widget della dashboard sono organizzati in una griglia leggibile (2 colonne su tablet/desktop, 1 colonna su mobile)",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.css definisce #dashboard-grid con display: grid, grid-template-columns: 1fr (mobile), @media (min-width: 768px) con repeat(2, 1fr), @media (min-width: 1280px) con repeat(2, 1fr) e gap: var(--space-8). Layout responsive corretto."
+    },
+    {
+      "criterio": "Su mobile (viewport ≤ 375px) i widget si impilano in colonna singola senza overflow orizzontale",
+      "soddisfatto": true,
+      "dettaglio": ".dashboard-card ha min-width: 0 (linea 21 dashboard.css) per evitare overflow nei grid item. Gap: var(--space-6) è responsive via variables.css. .container ha padding-inline responsive in layout.css."
+    },
+    {
+      "criterio": "docs/dashboard.html contiene header[role='banner'], nav[role='tablist'] con 5 link .nav-tab, main#page-content, footer[role='contentinfo']",
+      "soddisfatto": true,
+      "dettaglio": "Header con role='banner' presente (linea 16). Nav con role='tablist' classe tab-list presente (linea 32). 5 link .nav-tab: Dashboard, Progressi, Allenamento, Dieta, Piano (linee 34-54). Main#page-content presente (linea 61). Footer con role='contentinfo' presente (linea 84)."
+    },
+    {
+      "criterio": "docs/css/dashboard.css definisce `#dashboard-grid` con `display: grid` e `grid-template-columns: 1fr` come default mobile-first",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.css linee 7-11 definisce #dashboard-grid con display: grid; grid-template-columns: 1fr; gap: var(--space-6). Mobile-first corretto."
+    },
+    {
+      "criterio": "docs/css/dashboard.css definisce `@media (min-width: 768px)` che porta la griglia a 2 colonne",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.css linee 72-76 definisce @media (min-width: 768px) con #dashboard-grid { grid-template-columns: repeat(2, 1fr); }. Breakpoint corretto."
+    },
+    {
+      "criterio": "docs/js/dashboard.js contiene la funzione `renderDashboard(measurements, plan, workout)`",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js linee 63-90 contiene funzione renderDashboard(measurements, plan, workout) con firma corretta e JSDoc. Chiama renderHeaderDate() e inietta HTML nel DOM."
+    },
+    {
+      "criterio": "docs/js/dashboard.js inietta nel DOM i 4 id: `#card-stato`, `#card-massimali`, `#card-fase`, `#card-target` all'interno di `#dashboard-grid`",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js linee 75-88 inietta template HTML con <div id='card-stato'>, <div id='card-massimali'>, <div id='card-fase'>, <div id='card-target'> dentro #dashboard-grid. Fallback statico in dashboard.html linee 64-77 con stessi id."
+    },
+    {
+      "criterio": "docs/js/dashboard.js gestisce array `measurements` vuoto senza lanciare eccezioni",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.js linea 106 inizializza measurements = []. Linee 107-111 controllano resMeasurements.ok prima di assegnare. Linea 47-52 renderHeaderDate() usa optional chaining measurements?.[last] ?? '—'. Linea 69 last = measurements?.[measurements.length - 1]. Safe handling."
+    },
+    {
+      "criterio": "docs/dashboard.html include `<script src='js/nav.js' defer>` e `<script src='js/dashboard.js' defer>` — NON include Chart.js",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.html linea 90: <script src='js/nav.js' defer>, linea 91: <script src='js/dashboard.js' defer>. Nessun <script> per Chart.js. Conforme."
+    },
+    {
+      "criterio": "Ogni `.dashboard-card` ha un attributo `aria-label` descrittivo",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.html linee 65, 68, 71, 74 hanno aria-label: 'Stato attuale atleta', 'Massimali Big 3', 'Fase corrente programma', 'Target progressivi'. dashboard.js linee 76, 79, 82, 85 mantengono gli stessi aria-label nel rendering."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/dashboard.html",
+      "esiste": true,
+      "note": "Struttura HTML completa con header, nav, main, footer e fallback statico della griglia. Contiene tutti gli id attesi: #dashboard-grid, #card-stato, #card-massimali, #card-fase, #card-target. Script nav.js e dashboard.js inclusi con defer."
+    },
+    {
+      "path": "docs/css/dashboard.css",
+      "esiste": true,
+      "note": "Griglia responsive definita correttamente. #dashboard-grid 1fr (mobile) → repeat(2, 1fr) (tablet/desktop). .dashboard-card con min-width: 0, padding, border, shadow da variables.css. Stati .dashboard-card--loading e .dashboard-card--error preimplementati per task successivi."
+    },
+    {
+      "path": "docs/js/dashboard.js",
+      "esiste": true,
+      "note": "Script con pattern corretto: costanti DATA_PATH_*, funzioni utility formatDateIt() e showError(), render renderHeaderDate() e renderDashboard(), DOMContentLoaded con Promise.all(). Gestione safe di measurements vuoto e fetch falliti. HTML template con 4 card id."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "In dashboard.js linee 32-55, sono definiti gli stati .dashboard-card--loading e .dashboard-card--error con animazioni (shimmer per loading). Non sono ancora applicati da renderDashboard(), ma sono pronti per i task successivi (task description linea 3 in dashboard.css lo conferma).",
+      "file": "docs/css/dashboard.css"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "In dashboard.js linee 113-125, se il fetch di plan.json o workout_data.json fallisce, le variabili rimangono null. renderDashboard() non le usa attualmente, ma potrebbe essere rilevante per task successivi che accedono a questi dati.",
+      "file": "docs/js/dashboard.js"
+    }
+  ]
+}

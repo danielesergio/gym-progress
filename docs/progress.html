@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Progressi — Daniele Fitness</title>
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/progress.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════
+       HEADER — nome atleta + data ultima mis.
+  ══════════════════════════════════════════ -->
+  <header class="page-header" id="main-header" role="banner">
+    <div class="container">
+      <div class="header-brand">
+        <span class="header-athlete-name">Daniele</span>
+        <span class="header-tagline">Fitness &amp; Powerlifting</span>
+      </div>
+      <div class="header-meta" aria-label="Ultima misurazione">
+        <span class="header-meta-label">Ultima misurazione:</span>
+        <span class="header-meta-value" id="header-last-date">—</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════
+       NAV TAB — 5 sezioni (active gestita da nav.js)
+  ══════════════════════════════════════════ -->
+  <nav role="tablist" class="tab-list" id="nav-tabs" aria-label="Navigazione sezioni">
+    <div class="container">
+      <a href="dashboard.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Dashboard atleta">Dashboard</a>
+      <a href="progress.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Progressi nel tempo">Progressi</a>
+      <a href="workout.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Scheda allenamento">Allenamento</a>
+      <a href="diet.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Piano dieta">Dieta</a>
+      <a href="plan.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Piano annuale e obiettivi">Piano</a>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════
+       MAIN — 4 sezioni progressi
+  ══════════════════════════════════════════ -->
+  <main id="page-content" aria-label="Contenuto principale">
+    <div class="container">
+
+      <!-- Messaggio errore globale (mostrato da showError se fetch fallisce) -->
+      <div id="progress-error" class="progress-error" role="alert" aria-live="polite" hidden></div>
+
+      <!-- ── SEZIONE 1: Composizione Corporea ── -->
+      <section id="section-peso-bf" class="progress-section" aria-labelledby="title-peso-bf">
+        <h2 class="progress-section__title" id="title-peso-bf">Composizione Corporea</h2>
+        <div class="progress-chart-container" aria-label="Grafico andamento peso e percentuale grasso corporeo">
+          <canvas id="chart-peso-bf" role="img" aria-label="Grafico composizione corporea"></canvas>
+        </div>
+      </section>
+
+      <!-- ── SEZIONE 2: Andamento Massimali Big 3 ── -->
+      <section id="section-massimali" class="progress-section" aria-labelledby="title-massimali">
+        <h2 class="progress-section__title" id="title-massimali">Andamento Massimali Big 3</h2>
+        <div class="progress-section__legend" aria-label="Legenda tipo massimale">
+          <span class="badge-reale">R = Reale</span>
+          <span class="badge-stimato">S = Stimato</span>
+        </div>
+        <div class="progress-chart-container" aria-label="Grafico andamento Squat, Panca e Stacco">
+          <canvas id="chart-massimali" role="img" aria-label="Grafico massimali Big 3"></canvas>
+        </div>
+      </section>
+
+      <!-- ── SEZIONE 3: Circonferenze Corporee ── -->
+      <section id="section-circonferenze" class="progress-section" aria-labelledby="title-circonferenze">
+        <h2 class="progress-section__title" id="title-circonferenze">Circonferenze Corporee</h2>
+        <div class="progress-chart-container" aria-label="Grafico andamento circonferenze corporee">
+          <canvas id="chart-circonferenze" role="img" aria-label="Grafico circonferenze corporee"></canvas>
+        </div>
+      </section>
+
+      <!-- ── SEZIONE 4: Storico Misurazioni ── -->
+      <section id="section-tabella" class="progress-section" aria-labelledby="title-tabella">
+        <h2 class="progress-section__title" id="title-tabella">Storico Misurazioni</h2>
+        <div class="progress-table-container" id="table-misurazioni" aria-label="Tabella storico misurazioni">
+          <p class="progress-placeholder">Caricamento dati…</p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ══════════════════════════════════════════
+       FOOTER — minimale
+  ══════════════════════════════════════════ -->
+  <footer class="page-footer" id="main-footer" role="contentinfo">
+    <div class="container">
+      <p class="footer-text">Daniele Fitness &copy; 2026</p>
+    </div>
+  </footer>
+
+  <script src="js/nav.js" defer></script>
+  <script src="js/progress.js" defer></script>
+
+</body>
+</html>

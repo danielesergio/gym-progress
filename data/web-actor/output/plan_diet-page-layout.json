@@ -1,0 +1,153 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "diet-page-layout",
+    "task_title": "Struttura pagina Dieta",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "diet-page-layout",
+    "type": "layout",
+    "title": "Struttura pagina Dieta",
+    "description": "Layout della pagina dieta con un selettore per alternare tra giorno allenamento e giorno riposo, una sezione macros giornalieri totali, la lista pasti e la sezione integratori. La pagina deve essere leggibile come un piano da consultare al momento dei pasti.",
+    "inputs": ["MainLayout", "NavBar"],
+    "outputs": ["DietPageLayout"],
+    "acceptance_criteria": [
+      "Si può selezionare il tipo di giorno (allenamento / riposo)",
+      "I macros totali del giorno sono visibili in cima",
+      "La sezione integratori è presente e separata"
+    ],
+    "notes": "Questo è un task di tipo layout: crea la struttura scheletro della pagina (HTML + CSS + JS base) con i placeholder per i componenti figli (macros-summary-bar, meal-card, supplements-section). Il JS deve già gestire il toggle allenamento/riposo e fare fetch() di diet.json, perché i componenti figli si innestano nella logica di questo file. La pagina è una reference consultabile al momento dei pasti: priorità a leggibilità e scansione visiva rapida."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/diet.html",
+        "motivo": "Creare la pagina completa: DOCTYPE, head con CSS, header, nav con tab 'Dieta' attivo, main con sezione toggle giorno (button allenamento / button riposo), sezione placeholder macros (#macros-summary), sezione placeholder pasti (#meals-list), sezione integratori (#supplements-section), script defer js/diet.js",
+        "esiste": false
+      },
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "Creare il file JS: costanti DATA_PATH, stato currentDayType ('allenamento'|'riposo'), funzione renderDiet(data) che gestisce il toggle e popola i placeholder con contenuto scheletro, DOMContentLoaded con fetch() + try/catch + showError()",
+        "esiste": false
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Creare il file CSS specifico della pagina diet: stili per il toggle giorno (due bottoni pill con stato .active), layout sezione macros (grid 4 colonne: kcal, proteine, carbo, grassi), layout lista pasti (stack verticale di card placeholder), sezione integratori separata visivamente",
+        "esiste": false
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/diet.json",
+        "motivo": "Struttura dati reale: oggetto con meta (kcal_allenamento, kcal_riposo, proteine_g, carboidrati_g, grassi_g, note_strategia), array giorni (tipo='allenamento'|'riposo', kcal, macros{proteine,carboidrati,grassi}, pasti[{nome,orario,alimenti[],totale{kcal,proteine,carbo,grassi}}]), array integratori[{nome,dose,timing,note}]. Il toggle deve filtrare giorni per tipo."
+      },
+      {
+        "path": "docs/workout.html",
+        "motivo": "Modello strutturale di pagina esistente — stesso header, stessa nav con tab attivo, stesso pattern main/container. Usare come riferimento diretto per replicare la struttura HTML e il pattern di navigazione."
+      },
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "Modello del pattern JS per pagina con stato interattivo (selettore settimana → toggle giorno). Verificare come gestisce lo stato corrente e il re-render parziale della pagina."
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Modello CSS per stili di pagina con selettore interattivo. Verificare come sono stilizzati i bottoni/tab di selezione settimana per replicare pattern analogo nel toggle giorno."
+      },
+      {
+        "path": "data/web-actor/output/web_architecture.json",
+        "motivo": "Architettura: stack (HTML/CSS/JS vanilla, no build), convenzioni naming, struttura JS per pagina, fetch pattern, gestione errori, HTML struttura base."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS ES2022 — no build step",
+      "grafici": null,
+      "css": "CSS custom properties — variabili in css/variables.css, stili pagina in css/diet.css",
+      "dati": "fetch() su docs/data/diet.json — file generato da script Python, non modificare"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase (es. dietData, currentDayType, dayData)",
+      "costanti_js": "UPPER_SNAKE_CASE (es. DATA_PATH = 'data/diet.json')",
+      "classi_css": "kebab-case con prefisso 'diet-' per classi specifiche (es. .diet-toggle, .diet-macros-bar, .diet-meal-card, .diet-supplements), senza prefisso per classi condivise (es. .nav-tab, .container, .page-header)",
+      "id_html": "kebab-case (es. #day-toggle, #macros-summary, #meals-list, #supplements-section)",
+      "data_attributes": "kebab-case (es. data-day-type='allenamento')",
+      "gestione_null": "Usare operatore ?? per fallback: valore ?? '—'. Mai mostrare 'null' o 'undefined'.",
+      "valori_null_display": "Trattino — nel DOM",
+      "arrotondamento": "Interi per kcal (2875 kcal), interi per grammi macros (205g proteine)",
+      "pattern_js": "DOMContentLoaded → fetch(DATA_PATH) con async/await → try/catch → renderDiet(data). Funzione renderDiet(data) riceve l'intero diet.json e gestisce il toggle interno.",
+      "fetch_pattern": "try { const res = await fetch(DATA_PATH); if (!res.ok) throw new Error(res.status); const data = await res.json(); renderDiet(data); } catch(e) { showError(container, e); }",
+      "gestione_errori": "showError(container, error): mostra 'Dati non disponibili' nel container, console.error(). No alert().",
+      "no_moduli_es": "No import/export — scope globale di pagina per evitare CORS con file://",
+      "navigazione_attiva": "Tab 'Dieta' deve avere class='nav-tab active' e aria-current='page'"
+    },
+    "struttura_js": {
+      "costanti": "const DATA_PATH = 'data/diet.json';",
+      "stato": "let currentDayType = 'allenamento'; (default: giorno allenamento)",
+      "funzione_principale": "function renderDiet(data) — riceve intero diet.json, filtra giorni per currentDayType, aggiorna macros summary e meals list, renderizza integratori",
+      "toggle": "I bottoni toggle aggiornano currentDayType e chiamano renderDiet(dietData) con i dati già in memoria (no refetch)",
+      "variabile_dati": "let dietData = null; — salvata globalmente per il re-render al toggle"
+    },
+    "struttura_html_sezioni": {
+      "toggle": "<section class='diet-day-toggle'> con due <button> per allenamento/riposo, attributi data-day-type, classe .active sul corrente",
+      "macros_summary": "<section id='macros-summary' class='diet-macros-summary'> — placeholder per componente macros-summary-bar",
+      "meals_list": "<section id='meals-list' class='diet-meals-list'> — placeholder per componente meal-card (5 pasti)",
+      "supplements": "<section id='supplements-section' class='diet-supplements'> — separata visivamente con <h2> o separatore, sempre visibile indipendentemente dal toggle giorno"
+    },
+    "dati_diet_json": {
+      "meta_fields": ["fase", "kcal_allenamento", "kcal_riposo", "proteine_g", "carboidrati_g", "grassi_g", "note_strategia"],
+      "giorni_fields": ["nome", "tipo ('allenamento'|'riposo')", "kcal", "macros{proteine,carboidrati,grassi}", "pasti[]"],
+      "pasto_fields": ["nome", "orario", "alimenti[{nome,grammi,kcal,proteine,carbo,grassi}]", "totale{kcal,proteine,carbo,grassi}"],
+      "integratori_fields": ["nome", "dose", "timing", "note"],
+      "nota": "integratori è array diretto in root dell'oggetto (non dentro giorni). giorni[0].tipo='allenamento', giorni[1].tipo='riposo'."
+    },
+    "pagina": {
+      "nome": "Dieta",
+      "html": "docs/diet.html",
+      "js": "docs/js/diet.js",
+      "css": "docs/css/diet.css",
+      "css_condivisi": ["docs/css/variables.css", "docs/css/layout.css"],
+      "dati_json": ["data/diet.json"],
+      "usa_chartjs": false,
+      "title_pattern": "Dieta — Daniele Fitness"
+    }
+  },
+  "criteri_accettazione": [
+    "Si può selezionare il tipo di giorno (allenamento / riposo) tramite i bottoni toggle",
+    "I macros totali del giorno selezionato sono visibili in cima alla pagina",
+    "La sezione integratori è presente, separata visivamente dagli altri contenuti, e sempre visibile",
+    "docs/diet.html esiste ed è una pagina HTML valida con DOCTYPE, lang='it', charset UTF-8, viewport",
+    "docs/diet.html include <link> a css/variables.css, css/layout.css, css/diet.css",
+    "docs/diet.html include <script src='js/diet.js' defer>",
+    "docs/diet.html contiene <nav role='tablist'> con il tab 'Dieta' avente class='nav-tab active' e aria-current='page'",
+    "docs/diet.html contiene una sezione toggle con due bottoni, attributi data-day-type='allenamento' e data-day-type='riposo'",
+    "docs/diet.html contiene <section id='macros-summary'> per il riepilogo macros",
+    "docs/diet.html contiene <section id='meals-list'> per la lista pasti",
+    "docs/diet.html contiene <section id='supplements-section'> per gli integratori",
+    "docs/js/diet.js esiste e contiene la costante DATA_PATH = 'data/diet.json'",
+    "docs/js/diet.js contiene la funzione renderDiet(data)",
+    "docs/js/diet.js contiene la variabile di stato currentDayType con default 'allenamento'",
+    "docs/js/diet.js gestisce il toggle: al click sui bottoni aggiorna currentDayType e ri-renderizza senza refetch",
+    "docs/js/diet.js utilizza fetch() con try/catch e chiama showError() in caso di errore",
+    "docs/css/diet.css esiste e contiene stili per .diet-day-toggle, .diet-macros-summary, .diet-meals-list, .diet-supplements",
+    "Il bottone del tipo giorno corrente ha classe .active visivamente distinta",
+    "La pagina non usa var, jQuery, lodash, framework non previsti, inline style"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "navigation-tabs",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/workout.html",
+        "docs/dashboard.html",
+        "docs/progress.html",
+        "docs/js/nav.js",
+        "docs/css/layout.css"
+      ],
+      "note": "La navigazione a tab è implementata: workout.html contiene la nav con tutti e 5 i tab (Dashboard, Progressi, Allenamento, Dieta, Piano). Il developer deve replicare identica struttura nav in diet.html impostando 'Dieta' come tab attivo. docs/js/nav.js è presente per logica navigazione condivisa."
+    }
+  ]
+}

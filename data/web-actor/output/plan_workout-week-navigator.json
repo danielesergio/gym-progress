@@ -1,0 +1,192 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "workout-week-navigator",
+    "task_title": "Selettore settimana allenamento",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "workout-week-navigator",
+    "type": "component",
+    "title": "Selettore settimana allenamento",
+    "description": "Componente che permette di selezionare la settimana corrente (1-4) e mostra l'intensità target e le note della settimana selezionata. Può essere una tab bar numerica o un dropdown. L'indicazione visiva dell'intensità target (es. '50-60% 1RM') è mostrata sotto il selettore.",
+    "inputs": ["workout_data"],
+    "outputs": ["WeekNavigator"],
+    "acceptance_criteria": [
+      "Le 4 settimane sono selezionabili",
+      "Quando si cambia settimana, le sessioni si aggiornano",
+      "L'intensità target della settimana è visibile"
+    ],
+    "notes": "ATTENZIONE: il task workout-page-layout ha già implementato la struttura base del WeekNavigator. Il markup HTML (#week-selector, bottoni week-btn-1..4), la funzione renderWeekSelector(), renderWorkoutDetail() e i relativi stili CSS (.week-btn, .week-btn.active, .workout-week-summary) sono già presenti e funzionanti. Questo task deve COMPLETARE il componente: (1) migliorare renderGiornoCard() che è ancora un placeholder che mostra solo il conteggio esercizi invece del dettaglio completo, (2) verificare e rafforzare la copertura dei casi edge (settimana non trovata, dati null), (3) assicurarsi che l'intensità target sia visivamente prominente."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "La funzione renderGiornoCard() è un placeholder: mostra solo il conteggio esercizi ma non il dettaglio (serie, reps, peso, recupero, gruppo). Deve essere completata per mostrare la tabella esercizi completa. Le funzioni renderWeekSelector() e renderWorkoutDetail() esistono già e funzionano.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Aggiungere stili per la tabella esercizi all'interno della card sessione: .workout-esercizi-table, .workout-esercizio-row, badge .workout-esercizio-principale. Gli stili del selettore (.week-btn, .workout-week-summary) esistono già.",
+        "esiste": true
+      },
+      {
+        "path": "docs/workout.html",
+        "motivo": "Il markup del selettore (#week-selector con bottoni week-btn-1..4) e l'area #workout-detail esistono già. Verificare che la struttura sia completa e semanticamente corretta. Nessuna modifica strutturale attesa.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/workout.json",
+        "motivo": "Struttura dati da leggere in dettaglio: settimane[].numero (int 1-4), settimane[].intensita_target (string), settimane[].note_settimana (string|null), settimane[].giorni[].giorno (string nome giorno), settimane[].giorni[].tipo (string), settimane[].giorni[].note_sessione (string|null), settimane[].giorni[].esercizi[].nome, .serie (int), .reps (string), .peso (string), .recupero (string), .gruppo (string), .principale (bool)"
+      },
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "File da modificare — leggere per capire le funzioni esistenti: renderWorkoutHeader(), renderWeekSelector(), renderWorkoutDetail(), renderGiornoCard() (placeholder da completare), renderWorkout(), entry point DOMContentLoaded"
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "File da modificare — verificare le classi esistenti prima di aggiungere nuovi stili: .week-btn, .week-btn.active, .workout-week-summary, .workout-giorno-card, .workout-giorni. Evitare duplicazioni."
+      },
+      {
+        "path": "docs/workout.html",
+        "motivo": "File da modificare — verificare la struttura HTML esistente: #week-selector, bottoni #week-btn-1..4 con data-week, #workout-detail con aria-live='polite'"
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS ES2022 — nessun bundler, nessun framework",
+      "styling": "CSS custom properties (variabili in css/variables.css)",
+      "grafici": null,
+      "dati": "fetch() su docs/data/workout.json (file statico generato da script Python — non modificare mai)"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase (es. settimanaAttiva, workoutData, renderWeekSelector)",
+      "classi_css": "kebab-case con prefisso pagina workout- (es. .workout-giorno-card, .workout-week-summary__label)",
+      "pattern_js": "funzione renderWorkout() già dichiarata — aggiungere funzioni render* specifiche chiamate da renderWorkoutDetail(); nessuna funzione anonima inline di grandi dimensioni",
+      "gestione_null": "usare optional chaining (?.) e fallback con ?? '—' per tutti i campi; non lanciare mai eccezioni su dati mancanti",
+      "entry_point": "DOMContentLoaded con fetch() asincrona già implementato — non duplicare; aggiungere solo la logica di rendering mancante",
+      "stato": "variabile modulo let settimanaAttiva già presente — usarla come unica fonte di verità per la settimana selezionata",
+      "aria": "bottoni selettore usano aria-pressed='true'/'false'; #workout-detail usa aria-live='polite' — mantenere questi attributi",
+      "prefisso_id": "IDs esistenti: #week-selector, #week-btn-1..4, #workout-detail, #workout-error — non rinominare"
+    },
+    "pagina": {
+      "nome": "Workout",
+      "file_html": "docs/workout.html",
+      "file_js": "docs/js/workout.js",
+      "file_css": "docs/css/workout.css",
+      "dati_json": ["data/workout.json"]
+    },
+    "css_variabili_rilevanti": [
+      "--color-accent (arancio #ff6b35 — usato per badge tipo e stato active)",
+      "--color-accent-dim (sfondo dimmed per stato active)",
+      "--color-bg-card, --color-bg-secondary (sfondi card e riepilogo)",
+      "--color-text, --color-text-muted, --color-text-faint (testi con gerarchia visiva)",
+      "--color-border, --color-border-light (bordi card)",
+      "--font-mono (font monospace per dati numerici serie/reps/peso)",
+      "--space-1..8 (spaziature)",
+      "--radius-md, --radius-lg, --radius-full (bordi arrotondati)",
+      "--font-size-xs, --font-size-sm, --font-size-base, --font-size-lg (tipografia)"
+    ]
+  },
+  "implementazione": {
+    "cosa_gia_funziona": {
+      "html": [
+        "nav#week-selector con 4 bottoni .week-btn (data-week='1..4', id='week-btn-1..4')",
+        "#workout-detail con aria-live='polite' che si aggiorna al cambio settimana"
+      ],
+      "js": [
+        "renderWeekSelector(n) — aggiorna classe active e aria-pressed sui 4 bottoni",
+        "renderWorkoutDetail(data, n) — scrive intensita_target, note_settimana e le giorno-card in #workout-detail",
+        "renderWorkout(data) — funzione principale, collegamento event listener bottoni",
+        "Entry point DOMContentLoaded con fetch() e gestione errori"
+      ],
+      "css": [
+        ".week-btn, .week-btn.active — stili selettore con hover e focus-visible",
+        ".workout-week-summary, .workout-week-summary__intensita, .workout-week-summary__label, .workout-week-summary__value — riepilogo intensità",
+        ".workout-giorno-card, .workout-giorno-card__header, .workout-giorno-card__giorno, .workout-giorno-card__tipo, .workout-giorno-card__note — card sessione base"
+      ]
+    },
+    "cosa_manca": {
+      "js": [
+        "renderGiornoCard() è un placeholder: mostra solo il conteggio esercizi (es. '5 esercizi'). Deve essere completata per mostrare la tabella completa degli esercizi con colonne nome, serie, reps, peso, recupero, gruppo; badge visivo per esercizi principali (.principale === true); gestione note_sessione già presente ma da verificare"
+      ],
+      "css": [
+        "Stili per la tabella esercizi dentro la card: .workout-esercizi-table (tabella responsive), .workout-esercizio-row, .workout-esercizio-principale (badge o evidenziazione per esercizi compound principali), colonne allineate per dati numerici (usa --font-mono)"
+      ]
+    },
+    "dettaglio_renderGiornoCard": {
+      "input": "oggetto giorno da workout.json con campi: giorno (string), tipo (string), note_sessione (string|null), esercizi (array)",
+      "struttura_esercizio": {
+        "nome": "string",
+        "serie": "number",
+        "reps": "string (es. '8-10', '45 sec', '8 per lato')",
+        "peso": "string (es. '90 kg (62% 1RM)', 'BW', '120 kg')",
+        "recupero": "string (es. '2 min', '90 sec', '60 sec')",
+        "gruppo": "string (es. 'Quadricipiti / Glutei', 'Core')",
+        "principale": "boolean"
+      },
+      "output_atteso": "HTML con: header (giorno + badge tipo), note sessione opzionale, tabella esercizi con colonne [Nome | Serie | Reps | Peso | Recupero], badge visivo per esercizi .principale === true",
+      "note": "Il campo 'gruppo' può essere usato come label secondaria o raggruppamento visivo. Evitare tabelle con troppe colonne su mobile: considera layout a lista con label/valore su schermi piccoli."
+    }
+  },
+  "struttura_dati_workout_json": {
+    "settimane_count": 4,
+    "esempio_settimana_1": {
+      "numero": 1,
+      "intensita_target": "50-60% 1RM sui compound principali",
+      "note_settimana": "Prima settimana di ripresa strutturata post-Fase 0. Carichi molto conservativi...",
+      "giorni_count": 3,
+      "esempio_giorno": {
+        "giorno": "Lunedi",
+        "tipo": "Lower A — Squat focus + Core",
+        "note_sessione": "Sessione di apertura settimana...",
+        "esercizi_count": 5,
+        "esempio_esercizio": {
+          "nome": "Squat con Bilanciere",
+          "serie": 4,
+          "reps": "8-10",
+          "peso": "90 kg (62% 1RM)",
+          "recupero": "2 min",
+          "gruppo": "Quadricipiti / Glutei",
+          "principale": true
+        }
+      }
+    },
+    "note_campo_reps": "Il campo reps è sempre una stringa — può contenere range (es. '8-10'), tempo (es. '45 sec'), o unilaterale (es. '8 per lato'). Non fare parseInt su questo campo.",
+    "note_campo_peso": "Il campo peso è sempre una stringa — può contenere 'BW' (bodyweight). Non fare parseFloat senza controllo.",
+    "settimane_con_4_giorni": "Settimane 3 e 4 hanno 4 giorni (aggiunta sessione Upper sicura il Martedì). Settimane 1-2 hanno 3 giorni (solo Lower)."
+  },
+  "criteri_accettazione": [
+    "I 4 bottoni settimana (S1, S2, S3, S4) sono visibili e cliccabili nella pagina workout.html",
+    "Cliccando un bottone, solo quel bottone riceve la classe 'active' e aria-pressed='true'",
+    "Dopo il click, #workout-detail si aggiorna mostrando le sessioni della settimana selezionata",
+    "L'intensità target della settimana selezionata è visibile (es. '50-60% 1RM sui compound principali')",
+    "Le note della settimana sono mostrate sotto l'intensità target quando presenti",
+    "Le card sessione mostrano il dettaglio completo degli esercizi (nome, serie, reps, peso, recupero)",
+    "Gli esercizi con principale === true sono visivamente distinti dagli altri (badge, bordo, colore accent)",
+    "I valori null o mancanti in qualsiasi campo esercizio non causano errori JS (uso di ?. e ?? '—')",
+    "Il campo reps con valori come '45 sec' o '8 per lato' è mostrato correttamente senza modifiche",
+    "Su mobile (< 768px) la tabella esercizi è leggibile senza scroll orizzontale",
+    "docs/js/workout.js contiene la funzione renderGiornoCard() con logica esercizi completa",
+    "docs/css/workout.css contiene stili per .workout-esercizi-table o equivalente lista esercizi",
+    "Il selettore inizializza sulla settimana 1 al caricamento della pagina (settimanaAttiva = 1)"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "workout-page-layout",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/workout.html",
+        "docs/js/workout.js",
+        "docs/css/workout.css"
+      ],
+      "note": "Tutti e tre i file esistono in docs/. Il layout-page ha già implementato la struttura base del WeekNavigator (selettore bottoni, renderWeekSelector, renderWorkoutDetail, stili CSS). Il componente è parzialmente funzionante: manca solo il completamento di renderGiornoCard() con la tabella esercizi."
+    }
+  ]
+}

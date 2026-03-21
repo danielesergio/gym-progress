@@ -1,0 +1,161 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "strength-targets-table",
+    "task_title": "Tabella target di forza progressivi",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "strength-targets-table",
+    "type": "component",
+    "title": "Tabella target di forza progressivi",
+    "description": "Tabella che mostra i target di Squat, Panca e Stacco a 3 mesi (giugno 2026), 6 mesi (settembre 2026), 12 mesi (marzo 2027) e lungo termine (2028-2031). Include i valori attuali come punto di partenza. Ogni target ha una nota sintetica sul contesto (es. 'Infortunio in recupero, progressione conservativa').",
+    "inputs": [
+      "plan_data",
+      "measurements_data"
+    ],
+    "outputs": [
+      "StrengthTargetsTable"
+    ],
+    "acceptance_criteria": [
+      "I valori attuali e tutti e 4 gli orizzonti temporali sono presenti",
+      "Squat, Panca e Stacco sono separati per riga o colonna",
+      "Il target finale (200/150/250 kg) è evidenziato come obiettivo di lungo termine",
+      "La tabella è leggibile su mobile"
+    ],
+    "notes": "Il container HTML #plan-targets-container esiste già in plan.html con un placeholder. plan.js ha già la chiamata a renderStrengthTargets(planData) commentata come TODO nella funzione renderPlan(). Il CSS ha già le regole base per .plan-targets-table e .plan-targets-container. I dati da plan.json hanno 4 orizzonti: 3 mesi, 6 mesi, 12 mesi, Lungo termine (2-5 anni). I valori attuali vanno presi da plan.json.massimali_attuali (squat: 145.8, panca: 116.7, stacco: 198.3 kg — tipo S, stimati). I target long-term sono 200/150/250 kg."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/plan.js",
+        "motivo": "Aggiungere la funzione renderStrengthTargets(planData) e richiamarla in renderPlan() dopo renderTimeline(). La funzione popola #plan-targets-container con la tabella HTML generata dinamicamente da plan.json.massimali_attuali e plan.json.target.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/plan.css",
+        "motivo": "Aggiungere stili mancanti per la tabella: classe .plan-targets-table--long-term per evidenziare la riga dell'obiettivo finale, classe .plan-targets-note per le note sintetiche inline, classe .plan-targets-current-row per la riga dei valori attuali (con badge 'Oggi').",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/plan.json",
+        "motivo": "Struttura dati: massimali_attuali (squat, panca, stacco come float), target (array di 4 oggetti con campi: orizzonte, data, squat, panca, stacco, note). Il campo 'orizzonte' contiene stringhe come '3 mesi', '6 mesi', '12 mesi', 'Lungo termine (2-5 anni)'. Il campo 'data' contiene '2026-06', '2026-09', '2027-03', '2028-2031'."
+      },
+      {
+        "path": "docs/js/plan.js",
+        "motivo": "Capire il pattern esistente di renderPlan() e renderTimeline() per integrare renderStrengthTargets() in modo coerente. La funzione renderPlan() chiama già fetch('data/plan.json') — il developer deve aggiungere la chiamata a renderStrengthTargets(planData) nella catena esistente, non fare una seconda fetch."
+      },
+      {
+        "path": "docs/css/plan.css",
+        "motivo": "Verificare le classi esistenti (.plan-targets-table, .plan-targets-container, .plan-targets-table th/td) per aggiungere solo le classi mancanti senza duplicare regole già presenti."
+      },
+      {
+        "path": "docs/plan.html",
+        "motivo": "Confermare la struttura del container target: <div id='plan-targets-container' class='plan-targets-container'>. La funzione JS deve sostituire il placeholder interno con la tabella renderizzata."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS — ES2022, nessun build step",
+      "grafici": {
+        "nome": "Chart.js",
+        "versione": "4.x",
+        "cdn": "https://cdn.jsdelivr.net/npm/chart.js",
+        "nota": "Non usato per questo component — è una tabella HTML, non un grafico"
+      },
+      "styling": "CSS custom properties (variabili in css/variables.css). Nessun framework CSS."
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase",
+      "funzioni_js": "camelCase, prefisso 'render' per le funzioni di rendering (es. renderStrengthTargets)",
+      "classi_css": "kebab-case con prefisso pagina: 'plan-targets-*'",
+      "gestione_null": "Verificare che massimali_attuali e target non siano null/undefined prima di accedere ai campi. Mostrare '—' se un valore manca.",
+      "pattern_js": "Funzione async renderPlan() già esistente, fa fetch() una sola volta su plan.json e chiama le sotto-funzioni passando planData. Aggiungere renderStrengthTargets(planData) dentro renderPlan() dopo renderTimeline(planData). Non aggiungere una seconda fetch().",
+      "pattern_html_generato": "innerHTML con template literal. Usare il pattern buildPhaseCard() come modello: funzione di build separata che ritorna stringa HTML, poi container.innerHTML = risultato.",
+      "errori": "Usare la funzione renderError(containerId, message) già presente in plan.js per mostrare errori nel container.",
+      "accessibilita": "Aggiungere role='table' e aria-label alla tabella. Usare <thead> con <th scope='col'> e <th scope='row'> per la prima colonna."
+    },
+    "pagina": {
+      "nome": "Piano e Obiettivi",
+      "file": "docs/plan.html",
+      "js": "docs/js/plan.js",
+      "css": "docs/css/plan.css",
+      "dati_json": ["data/plan.json"],
+      "container_target": "#plan-targets-container"
+    },
+    "dati_reali": {
+      "massimali_attuali": {
+        "squat": 145.8,
+        "panca": 116.7,
+        "stacco": 198.3,
+        "tipo": "S (stimati)"
+      },
+      "target": [
+        {
+          "orizzonte": "3 mesi",
+          "data": "2026-06",
+          "squat": 148.1,
+          "panca": 118.2,
+          "stacco": 202.2,
+          "note": "Proiezione conservativa: rate corretto * 0.25 anno. Limitato dall'infortunio TOS e dalla fase di ripresa."
+        },
+        {
+          "orizzonte": "6 mesi",
+          "data": "2026-09",
+          "squat": 150.5,
+          "panca": 119.7,
+          "stacco": 206.0,
+          "note": "Proiezione a rate corretto pieno * 0.5 anno. Infortunio risolto, forza in ripresa regolare."
+        },
+        {
+          "orizzonte": "12 mesi",
+          "data": "2027-03",
+          "squat": 155.1,
+          "panca": 122.6,
+          "stacco": 213.7,
+          "note": "Proiezione a rate corretto * 1 anno. Target ambizioso ma realistico con continuità di allenamento."
+        },
+        {
+          "orizzonte": "Lungo termine (2-5 anni)",
+          "data": "2028-2031",
+          "squat": 200,
+          "panca": 150,
+          "stacco": 250,
+          "note": "Target dichiarati dall'atleta. Squat 200 e Stacco 250 in 2-3 anni. Panca 150 richiede 3-5 anni."
+        }
+      ]
+    }
+  },
+  "criteri_accettazione": [
+    "La pagina plan.html mostra la tabella nella sezione #plan-targets-container (non il placeholder di caricamento)",
+    "La tabella contiene una riga 'Oggi' con i valori attuali: Squat 145.8 kg, Panca 116.7 kg, Stacco 198.3 kg",
+    "La tabella contiene righe per tutti e 4 gli orizzonti: 3 mesi, 6 mesi, 12 mesi, Lungo termine",
+    "La riga 'Lungo termine' (200/150/250 kg) è visivamente evidenziata rispetto alle altre righe",
+    "Ogni riga della tabella mostra una nota sintetica contestuale leggibile",
+    "La tabella è leggibile su mobile (scroll orizzontale o layout adattivo tramite CSS già presente in plan.css @media max-width: 768px)",
+    "docs/js/plan.js contiene la funzione renderStrengthTargets(planData)",
+    "renderStrengthTargets() è chiamata dentro renderPlan() dopo renderTimeline(planData)",
+    "renderStrengthTargets() popola #plan-targets-container con innerHTML della tabella generata",
+    "La funzione gestisce il caso in cui planData.target sia null, undefined o array vuoto senza lanciare eccezioni (mostra messaggio di errore tramite renderError())",
+    "La funzione gestisce valori null/undefined nei singoli campi squat/panca/stacco mostrando '—'",
+    "docs/css/plan.css contiene stile per la riga long-term evidenziata (es. .plan-targets-table--row-longterm o classe equivalente)",
+    "La tabella usa attributi di accessibilità: role='table' o tag semantico <table>, <th scope='col'>, <th scope='row'>"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "plan-page-layout",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/plan.html",
+        "docs/js/plan.js",
+        "docs/css/plan.css"
+      ],
+      "note": "Tutti i file sono presenti in docs/. plan.html contiene il container #plan-targets-container con placeholder. plan.js ha la funzione renderPlan() che fa fetch di plan.json e chiama renderTimeline(). plan.css ha già le classi base .plan-targets-table e .plan-targets-container."
+    }
+  ]
+}

@@ -1,0 +1,137 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "workout-page-layout",
+    "task_title": "Struttura pagina Allenamento",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "workout-page-layout",
+    "type": "layout",
+    "title": "Struttura pagina Allenamento",
+    "description": "Layout della pagina allenamento con header che mostra nome e obiettivo della scheda corrente, navigazione tra le settimane (1-4) e area di dettaglio della settimana selezionata. Su mobile è ottimizzata per essere consultata in palestra.",
+    "inputs": [
+      "MainLayout",
+      "NavBar"
+    ],
+    "outputs": [
+      "WorkoutPageLayout"
+    ],
+    "acceptance_criteria": [
+      "Il nome e l'obiettivo della scheda corrente sono visibili in cima",
+      "Si può navigare tra le 4 settimane",
+      "Il layout è leggibile su mobile (testo grande, contrasto alto)"
+    ],
+    "notes": "La pagina workout.html non esiste ancora: va creata ex novo seguendo il pattern strutturale di dashboard.html e progress.html già esistenti. Non usa Chart.js (nessun grafico). Legge esclusivamente docs/data/workout.json. Header mostra titolo scheda (meta.titolo) e obiettivo mesociclo (mesociclo.obiettivo). Il selettore settimane (1-4) è un componente placeholder in questo task — il comportamento interattivo sarà completato dal task workout-week-navigator."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/workout.html",
+        "motivo": "File non esiste: va creato. Struttura HTML completa della pagina Allenamento con header scheda (titolo + obiettivo), nav-tab con 'Allenamento' attivo, section#workout-header per nome/obiettivo scheda, nav#week-selector con 4 bottoni settimana (1-4), div#workout-detail come area contenuto della settimana selezionata.",
+        "esiste": false
+      },
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "File non esiste: va creato. Logica JS: fetch('data/workout.json'), popola l'header scheda con meta.titolo e mesociclo.obiettivo, inizializza il selettore settimane (settimana corrente di default), espone funzione renderWorkout() chiamata al DOMContentLoaded.",
+        "esiste": false
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "File non esiste: va creato. Stili pagina workout: workout-header (nome scheda, obiettivo, testo grande per leggibilità mobile), week-selector (bottoni settimana con stato attivo), workout-detail (area contenuto), classi ottimizzate mobile-first (font-size >= 1rem, contrasto WCAG AA).",
+        "esiste": false
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/workout.json",
+        "motivo": "Struttura dati: oggetto con meta (titolo, obiettivo, periodo, durata_settimane), mesociclo (nome, obiettivo, metodologia, frequenza, logica[]), riscaldamento[], defaticamento[], note_generali[], settimane[] (array con numero, intensita_target, note_settimana, giorni[]). Il layout deve mostrare meta.titolo e mesociclo.obiettivo nell'header; settimane[].numero per i bottoni del selettore (1-4)."
+      },
+      {
+        "path": "docs/dashboard.html",
+        "motivo": "Modello strutturale: stesso pattern di header (.page-header > .container > .header-brand + .header-meta), nav-tab (.tab-list > .container > .nav-tab), main#page-content > .container. Riprodurre la stessa struttura shell con tab 'Allenamento' attivo."
+      },
+      {
+        "path": "docs/progress.html",
+        "motivo": "Secondo esempio strutturale: conferma che ogni pagina ha identico header/nav, solo il main cambia. Verifica naming classi CSS condivise (page-header, tab-list, nav-tab, container)."
+      },
+      {
+        "path": "docs/css/layout.css",
+        "motivo": "Classi condivise già definite (page-header, container, tab-list, nav-tab, nav-tab.active) — il developer non le ridefinisce in workout.css ma le usa direttamente."
+      },
+      {
+        "path": "docs/css/variables.css",
+        "motivo": "Custom properties disponibili: palette colori, tipografia, spaziature, breakpoint. Usarle nelle regole CSS di workout.css per coerenza del design system."
+      },
+      {
+        "path": "docs/js/dashboard.js",
+        "motivo": "Modello pattern JS: fetch() + DOMContentLoaded + funzione renderNomePagina(). Riprodurre lo stesso pattern in workout.js con fetch('data/workout.json') e funzione renderWorkout()."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS ES2022 — nessun bundler, nessuna dipendenza",
+      "grafici": "NON applicabile (workout.html non usa Chart.js)",
+      "dati": "fetch() su docs/data/workout.json — file JSON generato da script Python, il developer non lo tocca"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase",
+      "classi_css": "kebab-case con prefisso pagina (workout-*)",
+      "pattern_js": "funzione renderWorkout() chiamata al DOMContentLoaded dopo fetch('data/workout.json')",
+      "gestione_null": "non applicabile per questo task di layout (dati di struttura sempre presenti)",
+      "naming_file": "workout.html / css/workout.css / js/workout.js — coerente con pattern dashboard/progress",
+      "struttura_html": "<!DOCTYPE html> > <head> (meta, viewport, title, CSS links) > <body> (header.page-header + nav.tab-list + main#page-content) > <script src='js/workout.js' defer>",
+      "tab_attivo": "nav-tab 'Allenamento' deve avere classe 'active' e attributo aria-current='page'",
+      "mobile_first": "font-size minimo 1rem su corpo testo, 1.25rem su titoli sezione; contrasto WCAG AA (4.5:1)"
+    },
+    "pagina": {
+      "nome": "Workout",
+      "file_html": "docs/workout.html",
+      "file_js": "docs/js/workout.js",
+      "file_css": "docs/css/workout.css",
+      "dati_json": ["data/workout.json"]
+    },
+    "struttura_workout_json": {
+      "meta_titolo": "meta.titolo — stringa (es. 'Scheda Ripresa Graduale — Fase 1')",
+      "meta_periodo": "meta.periodo — stringa (es. '2026-04 / 2026-05')",
+      "meta_durata_settimane": "meta.durata_settimane — number (4)",
+      "mesociclo_nome": "mesociclo.nome — stringa",
+      "mesociclo_obiettivo": "mesociclo.obiettivo — stringa lunga, mostrare nell'header scheda",
+      "settimane": "settimane[] — array di 4 oggetti con numero (1-4), intensita_target, note_settimana, giorni[]",
+      "giorni_esercizi": "settimane[].giorni[].esercizi[] con campi: nome, serie, reps, peso, recupero, gruppo, principale (bool)"
+    }
+  },
+  "criteri_accettazione": [
+    "Il nome della scheda corrente (meta.titolo) è visibile in cima alla pagina nell'area workout-header",
+    "L'obiettivo del mesociclo (mesociclo.obiettivo) è visibile sotto il titolo scheda",
+    "Sono presenti 4 bottoni/tab di navigazione settimana (S1, S2, S3, S4) nel selettore settimane",
+    "Il layout è leggibile su mobile: font-size >= 1rem su testo normale, >= 1.25rem su titoli sezione",
+    "Il contrasto testo/sfondo rispetta WCAG AA (almeno 4.5:1 su testo normale)",
+    "Il tab 'Allenamento' nella navbar principale ha classe 'active' e aria-current='page'",
+    "docs/workout.html esiste ed è un file HTML valido con DOCTYPE, charset UTF-8 e meta viewport",
+    "docs/workout.html include <link rel='stylesheet' href='css/variables.css'>, 'css/layout.css' e 'css/workout.css'",
+    "docs/workout.html include <script src='js/workout.js' defer>",
+    "docs/workout.html contiene <section id='workout-header'> o equivalente per titolo e obiettivo scheda",
+    "docs/workout.html contiene <nav id='week-selector'> o equivalente con 4 elementi bottone settimana",
+    "docs/workout.html contiene <div id='workout-detail'> o equivalente come area di dettaglio settimana",
+    "docs/js/workout.js contiene la funzione renderWorkout()",
+    "docs/js/workout.js esegue fetch('data/workout.json') e gestisce l'errore di rete senza bloccare la UI",
+    "docs/css/workout.css importa o usa le custom properties di variables.css (var(--*))"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "navigation-tabs",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/dashboard.html",
+        "docs/progress.html",
+        "docs/css/layout.css",
+        "docs/js/nav.js"
+      ],
+      "note": "La struttura nav-tab (.tab-list, .nav-tab, .nav-tab.active) è già definita in layout.css e usata in dashboard.html e progress.html. Il developer può riusarla direttamente in workout.html senza ridefinirla."
+    }
+  ]
+}

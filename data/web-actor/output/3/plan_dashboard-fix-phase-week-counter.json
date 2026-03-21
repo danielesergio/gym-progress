@@ -1,0 +1,110 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "dashboard-fix-phase-week-counter",
+    "task_title": "Calcola dinamicamente il contatore settimane nella card Fase Corrente",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "dashboard-fix-phase-week-counter",
+    "type": "bugfix",
+    "title": "Calcola dinamicamente il contatore settimane nella card Fase Corrente",
+    "description": "La card 'Fase Corrente' mostra una barra di progressione con testo 'Settimana X di Y'. Attualmente X è calcolato come giorni trascorsi dal 1 marzo 2026 (data hardcoded) e Y è sempre 52 (hardcoded). Questo è sbagliato: Y deve essere la somma delle durata_settimane di tutte le fasi nel piano (al momento 10 fasi per ~52 settimane totali, ma se cambiano le fasi il numero deve aggiornare automaticamente). X deve dipendere da quando è iniziata la fase corrente: se il piano ha una data di inizio per la fase corrente, usarla; altrimenti calcolarla sommando le settimane delle fasi precedenti a partire da una data di inizio del programma letta dai dati del piano (es. meta.data_aggiornamento o primo inizio fase). Il calcolo deve aggiornare automaticamente ogni volta che i dati cambiano.",
+    "inputs": ["plan_data"],
+    "outputs": ["ProgramPhaseCard"],
+    "acceptance_criteria": [
+      "Il numero totale 'Y' di settimane corrisponde alla somma delle durata_settimane di tutte le fasi nel piano.json",
+      "Se nel piano.json si aggiunge o rimuove una fase, Y cambia automaticamente senza modifiche al codice",
+      "La settimana corrente X è calcolata in modo dinamico rispetto ai dati, non rispetto a una data hardcoded nel codice",
+      "La barra di progressione si aggiorna coerentemente con X/Y",
+      "Se i dati della fase corrente cambiano, la card si aggiorna alla prossima visita"
+    ],
+    "notes": "Il task modifica esclusivamente la funzione renderProgramPhaseCard() in docs/js/dashboard.js (righe 199-242). Nessuna modifica a dashboard.html o dashboard.css è richiesta: il markup HTML generato dalla funzione rimane invariato nella struttura, cambia solo il calcolo di settCorrente e TOTALE_SETTIMANE. Non toccare renderDashboard(), renderAthleteStatusCard(), renderStrengthSummaryCard(), renderTargetsCard() né il pattern DOMContentLoaded."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/dashboard.js",
+        "motivo": "Sostituire il calcolo hardcoded di PROGRAM_START (new Date('2026-03-01')) e TOTALE_SETTIMANE (52) nella funzione renderProgramPhaseCard() con calcoli dinamici derivati dai dati di plan.json",
+        "esiste": true,
+        "sezione_target": "Funzione renderProgramPhaseCard() — righe 199-242. In particolare: riga 223 (PROGRAM_START hardcoded), riga 225 (calcolo settCorrente), riga 226 (TOTALE_SETTIMANE hardcoded), riga 227 (percentuale)."
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/plan.json",
+        "motivo": "Struttura dati reale: oggetto con meta.data_aggiornamento (YYYY-MM-DD), fasi[] con campi numero (int), nome (string), durata_settimane (int), stato ('corrente'|'futura'|'completata'). Struttura critica per capire come calcolare Y (somma durata_settimane) e X (settimane trascorse dalla data inizio fase corrente). NON contiene data_inizio per singola fase — la data di inizio deve essere derivata."
+      },
+      {
+        "path": "docs/js/dashboard.js",
+        "motivo": "File da modificare — leggere per capire il codice attuale da sostituire, la struttura esistente di renderProgramPhaseCard(), e il pattern di accesso ai dati plan passato come argomento (plan?.fasi, plan?.meta)"
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS vanilla ES2022",
+      "build": "nessuno — modifica diretta dei file in docs/"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase (es. totaleSettimane, settCorrente, startProgramma, settimanePreFase)",
+      "costanti_js": "SCREAMING_SNAKE_CASE solo per DATA_PATH_* in cima al file — le variabili locali di calcolo rimangono const locali nella funzione",
+      "gestione_null": "Usare optional chaining (?.) e nullish coalescing (??) — es. f.durata_settimane ?? 0 per evitare NaN nella somma",
+      "struttura_js": "Modifica solo la funzione renderProgramPhaseCard(plan). Pattern fisso del file da rispettare: (1) costanti DATA_PATH_*, (2) utility, (3) funzioni render per componente, (4) initDashboard/DOMContentLoaded. Non aggiungere costanti globali per la data di inizio.",
+      "no": "No var, no inline style, no document.write(), no jQuery"
+    },
+    "pagina": {
+      "nome": "Dashboard",
+      "file": "docs/dashboard.html",
+      "js": "docs/js/dashboard.js",
+      "dati_json": ["data/measurements.json", "data/plan.json", "data/workout.json"]
+    }
+  },
+  "logica_calcolo_suggerita": {
+    "descrizione": "Strategia raccomandata per il calcolo dinamico di X e Y basata sulla struttura reale di plan.json",
+    "Y_totale_settimane": {
+      "formula": "fasi.reduce((acc, f) => acc + (f.durata_settimane ?? 0), 0)",
+      "note": "Somma tutte le durata_settimane dell'array fasi[]. Con i dati attuali (10 fasi: 2+4+8+6+8+6+4+2+8+4) il totale è 52. Se le fasi cambiano, Y si aggiorna automaticamente."
+    },
+    "X_settimana_corrente": {
+      "strategia": "Calcolare la data di inizio del programma completo a partire da meta.data_aggiornamento, sottraendo le settimane delle fasi già completate e le settimane trascorse nella fase corrente. Poi: X = floor((oggi - dataInizioProgramma) / 7giorni) + 1, clampato [1, Y].",
+      "step_1": "Leggere data_aggiornamento = plan.meta?.data_aggiornamento. Se assente, fallback a oggi (new Date()).",
+      "step_2": "Identificare la fase corrente: fasi.find(f => f.stato === 'corrente') ?? fasi.find(f => f.stato !== 'completata') ?? fasi[0].",
+      "step_3": "Calcolare settimanePreFase = somma di durata_settimane delle fasi con stato === 'completata' (o con numero < faseCorrente.numero se non ci sono stati 'completata').",
+      "step_4": "Calcolare dataInizioProgramma = new Date(data_aggiornamento + 'T00:00:00') - settimanePreFase * 7 * 24 * 3600 * 1000.",
+      "step_5": "X = Math.max(1, Math.ceil((oggi - dataInizioProgramma) / (7 * 24 * 3600 * 1000))). Clamp a [1, totaleSettimane].",
+      "note_alternativa": "Alternativa più semplice se meta.data_aggiornamento riflette la settimana corrente: assumere che data_aggiornamento sia la data di inizio della fase corrente. In tal caso X = floor((oggi - data_aggiornamento) / 7) + 1. Con i dati attuali (data_aggiornamento: 2026-03-21, fase 0 'Recupero TOS' appena iniziata) questa alternativa è equivalente e più robusta al cambio dati.",
+      "approccio_raccomandato": "Usare meta.data_aggiornamento come data di inizio del programma completo. Calcolare settimanePreFase sommando durata_settimane delle fasi con indice < indice della fase corrente nell'array. Calcolare dataInizioFaseCorrente = dataInizioProgramma + settimanePreFase * 7 * 86400000. X = giorni trascorsi da dataInizioFaseCorrente / 7, arrotondato per eccesso, clampato [1, faseCorrente.durata_settimane]."
+    },
+    "barra_progressione": {
+      "formula": "percentuale = Math.min(100, Math.round(settCorrente / totaleSettimane * 100))",
+      "note": "Invariata rispetto al codice attuale — cambia solo che settCorrente e totaleSettimane sono ora dinamici."
+    },
+    "struttura_plan_json": {
+      "meta_data_aggiornamento": "2026-03-21 (YYYY-MM-DD)",
+      "fasi_count": 10,
+      "fasi_numeri": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9],
+      "fasi_durata_settimane": [2, 4, 8, 6, 8, 6, 4, 2, 8, 4],
+      "somma_durata_settimane": 52,
+      "fase_corrente": {"numero": 0, "nome": "Recupero TOS", "stato": "corrente", "durata_settimane": 2},
+      "fasi_precedenti_alla_corrente": "nessuna (fase 0 è la prima — settimanePreFase = 0)"
+    }
+  },
+  "criteri_accettazione": [
+    "Y (totale settimane) corrisponde alla somma delle durata_settimane di tutte le fasi nel plan.json — attualmente 52",
+    "Se nel plan.json si aggiunge una fase con durata_settimane: 6, Y diventa 58 senza modifiche al codice JS",
+    "X (settimana corrente) non contiene la data hardcoded '2026-03-01' nel codice",
+    "X è calcolato usando plan.meta.data_aggiornamento o una data derivata dai dati, non una costante letterale",
+    "La barra di progressione (.phase-card__progress-fill) aggiorna il suo width% coerentemente con X/Y",
+    "Il testo 'Settimana X di Y' (.phase-card__progress-label) mostra valori coerenti con i dati",
+    "Se plan.fasi ha una sola fase, X e Y sono calcolati correttamente senza errori",
+    "Se plan.meta.data_aggiornamento è assente o non parsabile, il codice non lancia eccezioni (fallback a today o '—')",
+    "docs/js/dashboard.js NON contiene la stringa letterale '2026-03-01' nel codice",
+    "docs/js/dashboard.js NON contiene 'TOTALE_SETTIMANE = 52' come costante hardcoded",
+    "docs/js/dashboard.js contiene almeno una chiamata a .reduce() o equivalente per sommare durata_settimane",
+    "La funzione renderProgramPhaseCard(plan) riceve solo plan come argomento — la firma non cambia"
+  ],
+  "dipendenze": []
+}

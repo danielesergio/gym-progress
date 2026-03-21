@@ -27,7 +27,7 @@
   </header>
 
   <!-- ══════════════════════════════════════════
-       NAV TAB — 5 sezioni, 'Allenamento' attivo
+       NAV TAB — 6 sezioni, 'Allenamento' attivo
   ══════════════════════════════════════════ -->
   <nav role="tablist" class="tab-list" id="nav-tabs" aria-label="Navigazione sezioni">
     <div class="container">
@@ -52,6 +52,10 @@
          role="tab"
          class="nav-tab"
          aria-label="Piano annuale e obiettivi">Piano</a>
+      <a href="volume.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Volume di allenamento">Volume</a>
     </div>
   </nav>
 
@@ -66,22 +70,14 @@
     <div id="tos-alert-banner"
          class="workout-tos-banner"
          role="note"
-         aria-label="Avviso infortunio TOS — leggere prima di allenarsi">
+         aria-label="Avviso infortunio — leggere prima di allenarsi"
+         hidden>
       <div class="workout-tos-banner__inner">
         <span class="workout-tos-banner__icon" aria-hidden="true">⚠</span>
         <div class="workout-tos-banner__body">
-          <p class="workout-tos-banner__title">Protocollo TOS — Esercizi vietati</p>
-          <ul class="workout-tos-banner__list">
-            <li>Panca piana (qualsiasi variante)</li>
-            <li>Dip</li>
-            <li>Military press / Overhead press</li>
-            <li>Trazioni (qualsiasi variante)</li>
-            <li>Fly / Cable crossover</li>
-            <li>Rematore con bilanciere</li>
-          </ul>
-          <p class="workout-tos-banner__safety">
-            <strong>Stop immediato</strong> se dolore a petto, spalla o braccio durante qualsiasi esercizio.
-          </p>
+          <p class="workout-tos-banner__title"></p>
+          <ul class="workout-tos-banner__list"></ul>
+          <p class="workout-tos-banner__safety"></p>
         </div>
       </div>
     </div>
@@ -90,6 +86,13 @@
 
       <!-- Messaggio errore globale -->
       <div id="workout-error" class="workout-error" role="alert" aria-live="polite" hidden></div>
+
+      <!-- ── SELETTORE SCHEDA / FASE ── -->
+      <nav id="schema-selector"
+           class="workout-schema-selector"
+           aria-label="Seleziona scheda di allenamento per fase">
+        <!-- Popolato da workout.js → renderSchemaSelector() -->
+      </nav>
 
       <!-- ── HEADER SCHEDA: titolo + obiettivo mesociclo ── -->
       <section id="workout-header" class="workout-header" aria-labelledby="workout-scheda-title">
@@ -102,32 +105,16 @@
         </div>
       </section>
 
-      <!-- ── SELETTORE SETTIMANE (S1–S4) ── -->
+      <!-- ── SELETTORE SETTIMANE ── -->
       <nav id="week-selector" class="week-selector" aria-label="Seleziona settimana di allenamento">
-        <button
-          type="button"
-          class="week-btn"
-          id="week-btn-1"
-          data-week="1"
-          aria-pressed="false">S1</button>
-        <button
-          type="button"
-          class="week-btn"
-          id="week-btn-2"
-          data-week="2"
-          aria-pressed="false">S2</button>
-        <button
-          type="button"
-          class="week-btn"
-          id="week-btn-3"
-          data-week="3"
-          aria-pressed="false">S3</button>
-        <button
-          type="button"
-          class="week-btn"
-          id="week-btn-4"
-          data-week="4"
-          aria-pressed="false">S4</button>
+        <!-- Popolato da workout.js → renderWeekSelector() -->
+      </nav>
+
+      <!-- ── SELETTORE GIORNI (generato dinamicamente da JS) ── -->
+      <nav id="day-selector"
+           class="day-selector"
+           aria-label="Seleziona giorno di allenamento">
+        <!-- Popolato da workout.js → renderDaySelector() -->
       </nav>
 
       <!-- ── AREA DETTAGLIO SETTIMANA SELEZIONATA ── -->

@@ -1,0 +1,155 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "project": "Daniele Fitness — Dashboard Powerlifting",
+    "goal": "Miglioramento del sito esistente: correzione bug, regression fix, miglioramenti UX e dinamicità dei dati",
+    "sommario": "Il sito è composto da 6 pagine statiche (Dashboard, Progressi, Allenamento, Dieta, Piano, Volume) con dati caricati via fetch da JSON. L'analisi dei goal ha identificato 6 aree di intervento: 1 regression sulla card Target di Forza, 2 bug (contatore settimane hardcoded, legenda errata), 1 intervento di stile (rimozione colonna Note), 1 feature UX (vista giorno singolo in Allenamento), 1 requisito trasversale di dinamicità per rendere il sito resiliente ai cambiamenti dei dati. Tutti i task operano su componenti già esistenti — non è necessario creare nuove pagine.",
+    "features_totali": 5,
+    "tasks_totali": 8
+  },
+  "features": [
+    {
+      "name": "Dashboard — Fix Card Target di Forza",
+      "priority": 1,
+      "description": "Regression: la card 'Target di Forza' non evidenzia correttamente la colonna degli obiettivi a lungo termine. Nella versione precedente l'ultima colonna (obiettivo pluriennale) era visivamente distinta con badge e stile dedicato. Il dato nel piano usa orizzonte '5 anni' ma il componente cerca un orizzonte con stringa diversa, quindi l'evidenziazione non scatta.",
+      "tasks": [
+        {
+          "id": "dashboard-fix-target-longterm",
+          "type": "bugfix",
+          "title": "Ripristina evidenziazione colonna obiettivo a lungo termine nella card Target di Forza",
+          "description": "La card 'Target di Forza' mostra una tabella con colonne per 3 mesi, 6 mesi, 12 mesi e obiettivo a lungo termine. Quest'ultima colonna deve essere visivamente evidenziata (badge 'Obiettivo', stile distinto) rispetto alle colonne intermedie. Attualmente l'evidenziazione non viene applicata perché il componente si basa su una stringa di orizzonte hardcoded che non corrisponde al valore presente nei dati del piano (il piano usa '5 anni', non 'Lungo termine (2-5 anni)'). La logica di evidenziazione deve essere robusta: identificare l'ultima colonna (o la colonna con orizzonte di durata maggiore) anziché cercare una stringa esatta. Se i dati cambiano e l'orizzonte viene rinominato, l'evidenziazione deve continuare a funzionare.",
+          "inputs": ["plan_data"],
+          "outputs": ["TargetForceCard"],
+          "acceptance_criteria": [
+            "L'ultima colonna della tabella Target di Forza è visivamente distinta dalle colonne intermedie (stile differente e/o badge)",
+            "Il badge 'Obiettivo' (o equivalente) è visibile sulla colonna a lungo termine",
+            "Se i dati del piano contengono 4 orizzonti, tutte e 4 le colonne sono mostrate e la più lontana è evidenziata",
+            "Le colonne a 3, 6, 12 mesi NON ricevono lo stile di evidenziazione"
+          ],
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "name": "Dashboard — Fix Card Fase Corrente",
+      "priority": 2,
+      "description": "Bug: il contatore 'Settimana X di Y' nella card Fase Corrente usa valori hardcoded (inizio programma fisso e totale di 52 settimane) anziché dipendere dai dati. Il totale settimane deve essere calcolato sommando le durate di tutte le fasi del piano. La settimana corrente deve essere calcolata a partire dalla data di inizio della fase corrente, ricavandola dalla struttura dati del piano.",
+      "tasks": [
+        {
+          "id": "dashboard-fix-phase-week-counter",
+          "type": "bugfix",
+          "title": "Calcola dinamicamente il contatore settimane nella card Fase Corrente",
+          "description": "La card 'Fase Corrente' mostra una barra di progressione con testo 'Settimana X di Y'. Attualmente X è calcolato come giorni trascorsi dal 1 marzo 2026 (data hardcoded) e Y è sempre 52 (hardcoded). Questo è sbagliato: Y deve essere la somma delle durata_settimane di tutte le fasi nel piano (al momento 10 fasi per ~52 settimane totali, ma se cambiano le fasi il numero deve aggiornare automaticamente). X deve dipendere da quando è iniziata la fase corrente: se il piano ha una data di inizio per la fase corrente, usarla; altrimenti calcolarla sommando le settimane delle fasi precedenti a partire da una data di inizio del programma letta dai dati del piano (es. meta.data_aggiornamento o primo inizio fase). Il calcolo deve aggiornare automaticamente ogni volta che i dati cambiano.",
+          "inputs": ["plan_data"],
+          "outputs": ["ProgramPhaseCard"],
+          "acceptance_criteria": [
+            "Il numero totale 'Y' di settimane corrisponde alla somma delle durata_settimane di tutte le fasi nel piano.json",
+            "Se nel piano.json si aggiunge o rimuove una fase, Y cambia automaticamente senza modifiche al codice",
+            "La settimana corrente X è calcolata in modo dinamico rispetto ai dati, non rispetto a una data hardcoded nel codice",
+            "La barra di progressione si aggiorna coerentemente con X/Y",
+            "Se i dati della fase corrente cambiano, la card si aggiorna alla prossima visita"
+          ],
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "name": "Progressi — Fix Tabella Storico Misurazioni",
+      "priority": 3,
+      "description": "Due problemi distinti nella sezione 'Storico Misurazioni' della pagina Progressi: (a) la legenda che spiega i simboli reale/stimato mostra simboli grafici (cerchio/quadrato) con testo errato — deve mostrare 'R = Reale' e 'S = Stimato'; (b) la colonna 'Note' appesantisce la tabella e deve essere rimossa, dato che le note sono già espandibili come riga aggiuntiva sotto ogni misurazione.",
+      "tasks": [
+        {
+          "id": "progress-fix-legend-labels",
+          "type": "bugfix",
+          "title": "Correggi le etichette della legenda Reale/Stimato nella tabella Storico Misurazioni",
+          "description": "Sopra la tabella Storico Misurazioni è presente una legenda con due voci. Attualmente la legenda mostra un cerchio (●) con testo 'Reale' e un quadrato (■) con testo 'Stimato'. Questa legenda è errata: deve mostrare 'R = Reale' e 'S = Stimato', coerentemente con i badge che compaiono nelle celle della tabella (che mostrano la lettera R o S). La stessa legenda è presente anche sopra la sezione 'Andamento Massimali Big 3' — verificare se anche quella va aggiornata con la stessa logica.",
+          "inputs": ["measurements_data"],
+          "outputs": ["MeasurementsTableLegend"],
+          "acceptance_criteria": [
+            "La legenda sopra la tabella Storico Misurazioni mostra 'R = Reale' e 'S = Stimato'",
+            "I badge nella tabella (celle dei massimali) mostrano R o S coerentemente con la legenda",
+            "La legenda sopra 'Andamento Massimali Big 3' è coerente (stessa convenzione simbolo/testo)"
+          ],
+          "dependencies": []
+        },
+        {
+          "id": "progress-remove-note-column",
+          "type": "bugfix",
+          "title": "Rimuovi la colonna Note dalla tabella Storico Misurazioni",
+          "description": "La tabella Storico Misurazioni ha 13 colonne, l'ultima delle quali è 'Note'. Questa colonna deve essere rimossa. Le note sono già presenti come riga espandibile sotto la riga principale quando il campo note non è vuoto — questa visualizzazione alternativa rimane invariata. Rimuovendo la colonna bisogna aggiornare il colspan della riga-nota da 13 a 12.",
+          "inputs": ["measurements_data"],
+          "outputs": ["MeasurementsTable"],
+          "acceptance_criteria": [
+            "La tabella non ha la colonna 'Note' nell'intestazione",
+            "Le righe dati non hanno una cella corrispondente alla colonna Note",
+            "Le note non scompaiono: continuano a essere mostrate come riga secondaria sotto la misurazione principale (quando presenti)",
+            "La tabella rimane correttamente formattata su desktop e mobile"
+          ],
+          "dependencies": ["progress-fix-legend-labels"]
+        }
+      ]
+    },
+    {
+      "name": "Allenamento — Vista Giorno Singolo con Navigazione",
+      "priority": 4,
+      "description": "Feature: la pagina Allenamento mostra tutti i giorni della settimana selezionata contemporaneamente (es. Lunedì + Mercoledì + Venerdì in una sola schermata). Deve essere modificata per mostrare un solo giorno per volta, con controlli per passare da un giorno all'altro. Il numero di giorni è variabile e dipende dai dati della settimana selezionata.",
+      "tasks": [
+        {
+          "id": "workout-single-day-view",
+          "type": "component",
+          "title": "Vista giorno singolo con selettore giorno nella pagina Allenamento",
+          "description": "Nella pagina Allenamento, dopo aver selezionato una settimana (es. S1), vengono mostrate tutte le sessioni dei giorni in quella settimana. Il nuovo comportamento: mostrare sempre e solo una sessione giornaliera per volta. Se la settimana ha più giorni (es. 3 giorni: Lunedì, Mercoledì, Venerdì), aggiungere un selettore che permette di navigare tra i giorni. Il selettore deve essere generato dinamicamente in base al numero di giorni presenti nella settimana attiva nei dati — se domani la scheda cambiasse da 3 a 4 giorni, il selettore mostrerebbe 4 opzioni automaticamente. Il giorno mostrato di default è il primo della settimana. Se la settimana ha un solo giorno, non mostrare il selettore. La struttura del selettore giorni è coerente con il selettore settimane già esistente (bottoni con etichetta giorno, bottone attivo evidenziato).",
+          "inputs": ["workout_data"],
+          "outputs": ["WorkoutDaySelector", "WorkoutDayDetail"],
+          "acceptance_criteria": [
+            "All'apertura della pagina viene mostrata la sessione del primo giorno della settimana attiva",
+            "Se la settimana ha più di un giorno, è visibile un selettore con un bottone per ciascun giorno",
+            "Cliccando un giorno nel selettore, la sessione visualizzata cambia al giorno selezionato",
+            "Il selettore mostra tanti bottoni quanti sono i giorni nell'array della settimana corrente nel JSON",
+            "Se la settimana ha un solo giorno, il selettore non è mostrato",
+            "Cambiando settimana (dal selettore settimane), il selettore giorni si aggiorna al primo giorno della nuova settimana",
+            "Il comportamento è identico per le settimane S1 e S2 (o quante settimane ci sono)"
+          ],
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "name": "Dinamicità Trasversale — Dati come Unica Fonte di Verità",
+      "priority": 5,
+      "description": "Requisito trasversale: il sito deve continuare a funzionare correttamente quando i dati cambiano mantenendo la stessa struttura. Sono stati identificati tre comportamenti che dipendono da valori hardcoded anziché dai dati: (a) il selettore settimane in Allenamento mostra sempre 4 bottoni fissi invece di generarli dall'array settimane; (b) il banner TOS in Allenamento è sempre visibile con esercizi vietati scritti nel markup HTML, anche se l'atleta non fosse infortunato; (c) alcune tabelle usano colspan o conteggi di colonne fissi.",
+      "tasks": [
+        {
+          "id": "workout-dynamic-week-buttons",
+          "type": "bugfix",
+          "title": "Genera dinamicamente i bottoni settimana dal numero reale di settimane nel JSON",
+          "description": "Il selettore settimane nella pagina Allenamento mostra 4 bottoni fissi (S1, S2, S3, S4) nell'HTML statico. La visibilità viene gestita via JavaScript nascondendo i bottoni eccedenti. Questo approccio è fragile: se la scheda ha 6 settimane, i bottoni S5 e S6 non esistono nel markup. I bottoni settimana devono essere generati completamente da JavaScript leggendo l'array `settimane` del JSON: se ci sono 2 settimane si generano 2 bottoni, se ce ne sono 6 si generano 6 bottoni. L'HTML statico non deve contenere bottoni settimana hardcoded.",
+          "inputs": ["workout_data"],
+          "outputs": ["WorkoutWeekSelector"],
+          "acceptance_criteria": [
+            "Se workout.json ha 2 settimane, il selettore mostra 2 bottoni",
+            "Se workout.json ha 5 settimane, il selettore mostra 5 bottoni senza modifiche al markup HTML",
+            "I bottoni mostrano le etichette corrette (es. S1, S2, … Sn) in base ai numeri nell'array",
+            "Il markup HTML della pagina allenamento non contiene bottoni settimana hardcoded"
+          ],
+          "dependencies": ["workout-single-day-view"]
+        },
+        {
+          "id": "workout-dynamic-tos-banner",
+          "type": "bugfix",
+          "title": "Mostra il banner infortunio solo se i dati indicano un infortunio attivo, con contenuto dinamico",
+          "description": "Il banner TOS in cima alla pagina Allenamento è sempre visibile e contiene una lista hardcoded di esercizi vietati (Panca piana, Dip, Military press, ecc.) scritta nel markup HTML. Questo è sbagliato per due motivi: 1) se l'atleta non è infortunato, il banner non deve essere mostrato; 2) se l'infortunio fosse diverso dalla TOS, il banner dovrebbe riflettere le restrizioni specifiche di quell'infortunio. Il contenuto del banner deve provenire dai dati della scheda workout.json: se il JSON non segnala alcun infortunio/restrizione, il banner non deve essere mostrato. Se il JSON contiene informazioni su restrizioni (es. lista esercizi vietati, note di sicurezza), queste devono popolare dinamicamente il banner. La struttura attuale delle `note_generali` della scheda contiene già le informazioni rilevanti.",
+          "inputs": ["workout_data"],
+          "outputs": ["WorkoutInjuryBanner"],
+          "acceptance_criteria": [
+            "Se i dati della scheda non indicano restrizioni/infortuni, il banner non è visibile",
+            "Se i dati indicano un infortunio, il banner è visibile con il contenuto proveniente dal JSON (non hardcoded nel markup)",
+            "Il markup HTML iniziale non contiene testo hardcoded degli esercizi vietati",
+            "Cambiando scheda (se ci sono più schede), il banner si aggiorna in base alla nuova scheda"
+          ],
+          "dependencies": ["workout-single-day-view"]
+        }
+      ]
+    }
+  ]
+}

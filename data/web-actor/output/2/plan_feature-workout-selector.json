@@ -1,0 +1,118 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "feature-workout-selector",
+    "task_title": "Selettore scheda di allenamento per fase",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "feature-workout-selector",
+    "type": "component",
+    "title": "Selettore scheda di allenamento per fase",
+    "description": "Aggiungere alla pagina Allenamento un meccanismo che permetta di visualizzare una sola scheda per volta e di cambiare tra le schede disponibili. Attualmente esiste solo 'Scheda Ripresa Graduale — Fase 1' (periodo 2026-04/2026-05). In futuro ci saranno schede per ogni fase del programma. Il selettore deve mostrare il nome e il periodo di ogni scheda disponibile e permettere di selezionarne una. La scheda attiva (quella con periodo corrente o più recente) deve essere pre-selezionata al caricamento. L'header della pagina deve aggiornare il periodo mostrato in base alla scheda selezionata.",
+    "inputs": ["workout_data"],
+    "outputs": ["WorkoutSchemaSelector", "WorkoutDetailView"],
+    "acceptance_criteria": [
+      "È visibile un selettore (dropdown, pulsanti o tab) con le schede disponibili",
+      "Selezionando una scheda il contenuto (settimane, esercizi, obiettivo) si aggiorna",
+      "La scheda attiva/corrente è pre-selezionata al caricamento della pagina",
+      "L'header mostra il periodo della scheda selezionata",
+      "Se è disponibile una sola scheda il selettore è comunque presente ma non crea confusione"
+    ],
+    "notes": "workout.json contiene UNA sola scheda (oggetto singolo, non array). Per supportare più schede future, il selettore deve trattare il JSON come array: se il dato radice è un oggetto singolo, wrapparlo in array di 1 elemento. Così il codice è pronto per quando Python genererà un array di schede. Il selettore deve essere implementato come pulsanti (stile coerente con .week-btn esistenti) posizionati SOPRA l'header della scheda, tra il banner TOS e la sezione .workout-header. Con una sola scheda, i pulsanti devono essere presenti ma visivamente non invasivi (un solo bottone attivo, non confonde l'utente). La logica di pre-selezione identifica la scheda 'attiva' come quella con periodo più recente rispetto alla data odierna, o la prima se nessuna corrisponde."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/workout.html",
+        "motivo": "Aggiungere il blocco HTML del selettore schede (#schema-selector) tra il banner TOS (.workout-tos-banner) e la sezione header scheda (#workout-header), dentro .container. Aggiungere anche div#workout-error già presente — verificare che sia posizionato correttamente.",
+        "esiste": true
+      },
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "Aggiungere: (1) stato schemaAttivoIndex; (2) funzione renderSchemaSelector(schede, indiceAttivo) che popola #schema-selector; (3) funzione selectSchema(schede, indice) che aggiorna l'header, il selettore settimane e il dettaglio; (4) logica di normalizzazione dati (wrap oggetto singolo in array); (5) funzione detectSchedaAttiva(schede) che trova l'indice della scheda con periodo più recente; (6) aggiornare renderWorkout() e il DOMContentLoaded per usare il nuovo flusso multi-scheda.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Aggiungere stili per il selettore schede: .schema-selector (container flex, margin-bottom), .schema-btn (stile analogo a .week-btn ma con testo su due righe — nome scheda + periodo), .schema-btn.active / .schema-btn[aria-pressed='true'] (stato attivo con accent), .schema-btn:focus-visible. Aggiungere responsive breakpoints coerenti con il selettore settimane esistente.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/workout.json",
+        "motivo": "Struttura dati reale: oggetto singolo con campi meta (titolo, periodo, tipo_fase, durata_settimane), mesociclo (nome, obiettivo), settimane[]. Il developer deve wrappare in array [workout] se il JSON è un oggetto. Campi chiave: meta.titolo (nome scheda da mostrare nel bottone), meta.periodo (periodo da mostrare nel bottone e nell'header), mesociclo.obiettivo (da aggiornare nell'header al cambio scheda)."
+      },
+      {
+        "path": "docs/workout.html",
+        "motivo": "File da modificare — capire la struttura DOM esistente: posizione di #workout-header, #week-selector, #workout-detail, #workout-error, .workout-tos-banner. Il nuovo #schema-selector va inserito dentro .container, dopo #workout-error e prima di #workout-header."
+      },
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "File da modificare — capire il flusso esistente: costanti DATA_PATH_WORKOUT, stato settimanaAttiva, funzioni renderWorkoutHeader(), renderWeekSelector(), renderWorkoutDetail(), renderWorkout(), DOMContentLoaded. Il selettore schede si innesta nel flusso di renderWorkout() e DOMContentLoaded."
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "File da modificare — verificare variabili CSS esistenti usate da .week-btn (var(--color-accent), var(--color-accent-dim), var(--color-border), var(--color-bg-card), var(--transition-fast), var(--radius-md), var(--font-size-*), var(--space-*)) per replicarle nel nuovo .schema-btn con coerenza visiva."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS ES2022 — nessun import/export, nessun build step",
+      "styling": "CSS custom properties (variables.css) + workout.css specifico pagina",
+      "grafici": "Non applicabile — questa pagina non usa Chart.js",
+      "dati": "fetch() sincrono su 'data/workout.json' (percorso relativo senza slash iniziale)"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase — es. schemeAttiveIndex, schedeData, schedaAttiva",
+      "costanti_js": "UPPER_SNAKE_CASE — es. DATA_PATH_WORKOUT già esistente",
+      "classi_css": "kebab-case con prefisso pagina workout- — es. .workout-schema-selector, .workout-schema-btn",
+      "id_html": "kebab-case — es. #schema-selector, #workout-scheda-nome (esistente), #header-workout-period (esistente)",
+      "pattern_js": "Tutte le funzioni nello scope globale del file. Pattern: costanti → stato → utility → render → DOMContentLoaded. Ogni render controlla if (!container) return; prima di scrivere nel DOM.",
+      "gestione_null": "Optional chaining (?.) per accedere ai campi. Fallback '—' per stringhe mancanti.",
+      "gestione_errori": "try/catch attorno al fetch. showWorkoutError() già esistente per mostrare errori nel div#workout-error con role='alert'.",
+      "aria": "Bottoni selettore con role implicito button, aria-pressed='true'/'false', aria-label descrittivo con nome scheda e periodo."
+    },
+    "pagina": {
+      "nome": "Allenamento",
+      "file": "docs/workout.html",
+      "js": "docs/js/workout.js",
+      "css": "docs/css/workout.css",
+      "dati_json": ["data/workout.json"]
+    },
+    "struttura_html_target": {
+      "nota": "Struttura DOM dopo il task. Il nuovo #schema-selector va inserito dentro .container, DOPO #workout-error e PRIMA di #workout-header.",
+      "ordine_elementi_in_container": [
+        "#workout-error (già esistente — div role=alert, hidden)",
+        "#schema-selector (NUOVO — nav con aria-label, contiene i .workout-schema-btn)",
+        "#workout-header (già esistente — section con titolo scheda + obiettivo mesociclo)",
+        "#week-selector (già esistente — nav con i bottoni S1-S4)",
+        "#workout-detail (già esistente — div con dettaglio settimana)"
+      ]
+    },
+    "logica_selezione_scheda_attiva": {
+      "descrizione": "La funzione detectSchedaAttiva(schede) riceve l'array di schede e restituisce l'indice della scheda da pre-selezionare.",
+      "algoritmo": "Parsare meta.periodo di ogni scheda (formato 'YYYY-MM / YYYY-MM'). La scheda attiva è quella il cui periodo include la data odierna (2026-03-21). Se nessuna include la data corrente, selezionare quella con il periodo più recente (ultimo end date). Se il formato è diverso o il parse fallisce, selezionare la prima scheda (indice 0). Usare fallback sicuro senza lanciare eccezioni.",
+      "nota_formato_periodo": "Il campo meta.periodo nel JSON corrente è '2026-03 / 2026-04' (YYYY-MM / YYYY-MM). Parsare come: inizio = primo token, fine = secondo token. Confrontare con new Date() usando solo anno e mese."
+    }
+  },
+  "criteri_accettazione": [
+    "È visibile un selettore (#schema-selector) con almeno un bottone scheda sopra l'header della scheda",
+    "Selezionando un bottone scheda diverso, il contenuto (titolo, obiettivo, settimane, esercizi) si aggiorna senza ricaricare la pagina",
+    "La scheda con periodo corrente (o più recente) è pre-selezionata al caricamento — il suo bottone ha classe 'active' e aria-pressed='true'",
+    "L'elemento #header-workout-period nell'header della pagina mostra il periodo della scheda selezionata",
+    "Con una sola scheda disponibile, il selettore è presente (1 bottone) e non genera confusione visiva — il bottone è attivo ma non invita al click inutile",
+    "docs/workout.html contiene un elemento con id='schema-selector' posizionato dentro .container prima di #workout-header",
+    "docs/js/workout.js contiene la funzione renderSchemaSelector(schede, indiceAttivo)",
+    "docs/js/workout.js contiene la funzione detectSchedaAttiva(schede) che gestisce l'array di schede",
+    "docs/js/workout.js normalizza il JSON in array: se workout.json è un oggetto (non array), viene wrappato in [data] prima di usarlo",
+    "docs/css/workout.css contiene la classe .workout-schema-btn con stili coerenti con .week-btn",
+    "Il cambio di scheda aggiorna anche il selettore settimane mostrando le settimane della scheda selezionata (non quelle della precedente)",
+    "Nessun errore JS in console durante il caricamento della pagina con una sola scheda"
+  ],
+  "dipendenze": []
+}

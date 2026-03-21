@@ -1,0 +1,125 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "bugfix-composizione-corporea-yaxis",
+    "task_title": "Correggi asse Y del grafico Composizione Corporea",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "bugfix-composizione-corporea-yaxis",
+    "type": "bugfix",
+    "title": "Correggi asse Y del grafico Composizione Corporea",
+    "description": "Nel grafico 'Composizione Corporea' l'asse Y sinistro (kg) calcola min/max basandosi SOLO sui valori di peso_kg, ignorando i valori di massa_magra_kg che pure appartengono allo stesso asse 'y'. Il min corrente è Math.floor(78.3 - 2) = 76, ma la massa magra minima è 68.9 kg (2022-10-22) e quella attuale è 72.3 kg. Risultato: la linea verde (Massa magra) è completamente invisibile perché tutti i suoi punti cadono sotto il limite inferiore dell'asse. Fix: il calcolo di minPeso/maxPeso deve includere anche i valori di massa_magra_kg, oppure l'asse deve calcolare il range combinato di tutte le serie assegnate ad esso (peso + massa magra).",
+    "inputs": [
+      "measurements_data"
+    ],
+    "outputs": [
+      "ComposizioneCorporeaChart"
+    ],
+    "acceptance_criteria": [
+      "La linea della massa magra è visibile per tutti i 6 punti disponibili",
+      "Il valore minimo dell'asse Y è inferiore al valore più basso di massa magra (68.9 kg)",
+      "Le linee di peso e massa magra non si sovrappongono sull'asse e sono distinguibili"
+    ],
+    "note": "Il bug è localizzato nella funzione renderWeightBfChart() in docs/js/progress.js, righe 91-93: il calcolo di pesoValues non include massaMagraDataset. Il dataset 'Massa magra' ha yAxisID:'y' (stesso asse del peso), ma il range dell'asse considera solo pesoValues. Nessuna modifica a progress.html o progress.css è necessaria — il bug è puramente nella logica JS."
+  },
+  "analisi_bug": {
+    "file": "docs/js/progress.js",
+    "funzione": "renderWeightBfChart()",
+    "righe_interessate": "91-93 (calcolo range asse Y) e 218-219 (configurazione min/max asse y)",
+    "causa_radice": "Il calcolo del range dell'asse Y sinistro usa solo pesoValues (peso_kg), ma massaMagraDataset è assegnato allo stesso asse (yAxisID: 'y'). I valori massa magra [68.9, 70.2, 70.9, 70.2, 73.5, 72.3] cadono tutti sotto min=76.",
+    "codice_attuale": "const pesoValues = pesoDataset.map(...).filter(...);\nconst minPeso = Math.min(...pesoValues);  // → 78.3\n// Math.floor(78.3 - 2) = 76 → massa magra 68.9–73.5 è sotto il minimo",
+    "fix_richiesto": "Includere anche i valori di massaMagraDataset nel calcolo di minPeso/maxPeso, oppure calcolare il range unificato di tutte le serie sull'asse Y sinistro.",
+    "valori_dati": {
+      "peso_kg": [78.3, 81.4, 82.1, 85.4, 89.4, 87.2],
+      "massa_magra_kg": [68.9, 70.2, 70.9, 70.2, 73.5, 72.3],
+      "range_asse_attuale": "min=76, max=92",
+      "range_asse_corretto": "min=65 (floor(68.9-2)=66 → arrotondato giù a multiplo comodo), max=92"
+    }
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "Correggere il calcolo del range dell'asse Y sinistro nella funzione renderWeightBfChart(): includere i valori di massa_magra_kg nel calcolo di minPeso/maxPeso, così che il min dell'asse copra anche il valore minimo della massa magra (68.9 kg).",
+        "esiste": true,
+        "sezione": "Righe 91-93 (calcolo pesoValues/minPeso/maxPeso) e righe 218-219 (min/max asse y nella config Chart.js)"
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "File da correggere — leggere per intero prima di modificare. Il bug è nella funzione renderWeightBfChart() (righe 54-258). Prestare attenzione al calcolo di pesoValues (riga 91) e alla configurazione dell'asse y (riga 215-233)."
+      },
+      {
+        "path": "docs/data/measurements.json",
+        "motivo": "Struttura dati reale. Campi rilevanti per il fix: peso_kg (float, range 78.3–89.4), massa_magra_kg (float, range 68.9–73.5), body_fat_pct (float, range 12.0–17.8). 6 record dal 2022-10-22 al 2026-03-21. Verificare il valore minimo di massa_magra_kg = 68.9 che deve essere visibile nel grafico."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "grafici": {
+        "nome": "Chart.js",
+        "versione": "4.x",
+        "cdn": "https://cdn.jsdelivr.net/npm/chart.js",
+        "note": "Già caricato in progress.html con attributo defer"
+      }
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase (pesoValues, massaMagraValues, minPeso, maxPeso)",
+      "gestione_null": "Filtrare i null con .filter(v => v !== null) prima di Math.min/Math.max",
+      "pattern_chart_destroy": "progressCharts['pesoBf']?.destroy() prima di creare nuova istanza",
+      "spanGaps": "true su tutti i dataset per gestire eventuali gap nei dati",
+      "asse_doppio": "yAxisID:'y' per peso e massa magra (asse sinistro kg), yAxisID:'y1' per BF% (asse destro %)"
+    },
+    "pagina": {
+      "nome": "Progressi",
+      "file": "docs/progress.html",
+      "js": "docs/js/progress.js",
+      "css": "docs/css/progress.css",
+      "canvas_id": "chart-peso-bf",
+      "dati_json": ["data/measurements.json"]
+    }
+  },
+  "istruzioni_fix": {
+    "approccio": "Unificare il calcolo del range dell'asse Y sinistro includendo sia peso_kg che massa_magra_kg nella stessa lista di valori prima di calcolare min/max.",
+    "modifica_specifica": {
+      "dove": "Nella funzione renderWeightBfChart(), subito dopo la creazione dei dataset e prima della configurazione del Chart",
+      "cosa_rimuovere": "Il calcolo separato pesoValues che usa solo pesoDataset",
+      "cosa_aggiungere": "Un calcolo unificato che combina i valori di pesoDataset e massaMagraDataset per determinare il range dell'asse Y sinistro",
+      "esempio_logica": "Calcolare yLeftValues = [tutti i valori non-null di peso_kg] + [tutti i valori non-null di massa_magra_kg], poi minYLeft = Math.min(...yLeftValues) e maxYLeft = Math.max(...yLeftValues). Usare Math.floor(minYLeft - 2) e Math.ceil(maxYLeft + 2) per il range dell'asse.",
+      "variabili_da_usare_in_scales": "min: Math.floor(minYLeft - 2), max: Math.ceil(maxYLeft + 2)"
+    },
+    "verifica_numerica": {
+      "peso_min": 78.3,
+      "massa_magra_min": 68.9,
+      "yLeft_min_combinato": 68.9,
+      "asse_min_atteso": "Math.floor(68.9 - 2) = 66",
+      "peso_max": 89.4,
+      "massa_magra_max": 73.5,
+      "yLeft_max_combinato": 89.4,
+      "asse_max_atteso": "Math.ceil(89.4 + 2) = 92"
+    }
+  },
+  "criteri_accettazione": [
+    "La linea verde 'Massa magra (kg)' è visibile per tutti i 6 punti nel grafico Composizione Corporea",
+    "Il valore minimo dell'asse Y sinistro è ≤ 66 (cioè inferiore al valore più basso di massa magra: 68.9 kg)",
+    "Il punto di massa magra del 2022-10-22 (68.9 kg) è visualizzato nel grafico senza essere tagliato",
+    "Il punto di massa magra del 2026-03-21 (72.3 kg) è visibile e distinguibile dalla linea peso",
+    "Le linee peso (arancio) e massa magra (verde) sono entrambe visibili e non sovrapposte sull'asse",
+    "La linea BF% (asse destro, giallo) non è influenzata dalla modifica",
+    "docs/js/progress.js contiene il calcolo del range asse Y che include sia peso_kg che massa_magra_kg",
+    "Il valore null in massa_magra_kg (se presente) non causa errori — usare .filter(v => v !== null)"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "data-measurements-new-fields",
+      "stato": "completato",
+      "file_prodotti": ["docs/data/measurements.json"],
+      "note": "Il file measurements.json contiene già i campi per-esercizio squat_1rm_tipo, panca_1rm_tipo, stacco_1rm_tipo e il campo massa_magra_kg con tutti i 6 valori validi. Dipendenza soddisfatta."
+    }
+  ]
+}

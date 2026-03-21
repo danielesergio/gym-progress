@@ -1,0 +1,155 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "data-workout-history",
+    "task_title": "Integra workout_history.json nella visualizzazione progressi",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "data-workout-history",
+    "type": "data",
+    "title": "Integra workout_history.json nella visualizzazione progressi",
+    "description": "È stato introdotto un nuovo file workout_history.json (in docs/data/) che contiene gli intervalli tra misurazioni consecutive con: id intervallo, start/end (id delle misurazioni), delta_squat_kg / delta_panca_kg / delta_stacco_kg, delta_weight_kg, duration_days, delta_bf_pct, delta_mm_kg, fase_teorica (bulk/mantenimento/cut), efficacia_workout (numero 1-10 o null), note. L'ultimo record ha end=null (periodo corrente, ancora aperto). Questi dati aggiungono contesto ai progressi: mostrano quale fase (bulk/cut/mantenimento) ha prodotto i migliori guadagni di forza. Il sito deve essere in grado di accedere a questo file per arricchire le visualizzazioni nella pagina Progressi o nella pagina Piano.",
+    "inputs": [
+      "workout_history_data",
+      "measurements_data"
+    ],
+    "outputs": [
+      "WorkoutHistoryDataLayer"
+    ],
+    "acceptance_criteria": [
+      "Il file workout_history.json viene caricato correttamente senza errori",
+      "I dati degli intervalli sono accessibili per collegare ogni misurazione alla precedente",
+      "Il record con end=null non causa errori di visualizzazione",
+      "I dati di fase_teorica sono utilizzabili per etichettare i periodi nella pagina Progressi"
+    ],
+    "dependencies": [
+      "data-measurements-new-fields"
+    ],
+    "notes": "Questo task è esclusivamente un task di integrazione dati: il developer aggiunge il fetch di workout_history.json a progress.js e rende i dati disponibili alle funzioni di rendering esistenti. Non introduce nuove sezioni HTML né nuovi grafici — quelli sono responsabilità di task successivi. Il file workout_history.json è già presente in docs/data/ (generato dagli script Python). L'ultimo record ha tutti i campi delta a null e end=null: la logica JS deve gestirlo esplicitamente con optional chaining. Il collegamento tra misurazioni e intervalli avviene tramite il campo start/end che contiene l'id della misurazione corrispondente in measurements.json."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "Aggiungere la costante DATA_PATH_WORKOUT_HISTORY, estendere il fetch con Promise.all([measurements, workout_history]), passare workoutHistoryData come parametro a renderProgress(), creare la funzione utility buildPhaseMap(historyData) che costruisce una mappa id_misurazione → fase_teorica, e rendere workoutHistoryData disponibile alle future funzioni render tramite un parametro o una variabile di modulo.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/workout_history.json",
+        "motivo": "Struttura dati reale: array di 6 record. Campi: id (string), start (id misurazione stringa), end (id misurazione stringa | null — null nell'ultimo record), delta_squat_kg (number | null), delta_panca_kg (number | null), delta_stacco_kg (number | null), delta_totale_kg (null in tutti i record attuali), delta_weight_kg (number | null), duration_days (number | null), delta_bf_pct (number | null), delta_mm_kg (number | null), fase_teorica ('bulk' | 'mantenimento' | 'cut' | null), efficacia_workout (number 1-10 | null), note (string). L'ultimo record (id='8dabc4c5') ha end=null e tutti i campi delta a null — è il periodo corrente ancora aperto."
+      },
+      {
+        "path": "docs/data/measurements.json",
+        "motivo": "Struttura di riferimento: ogni record ha un campo id (string corta, es. 'f2b9186b'). Il campo id di measurements.json corrisponde al campo start/end di workout_history.json — questo è il collegamento tra i due dataset."
+      },
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "File da modificare. Capire la struttura attuale: costante DATA_PATH, fetch singolo in DOMContentLoaded, firma di renderProgress(data). La modifica estende il fetch da singolo a Promise.all e aggiunge workoutHistoryData come secondo parametro di renderProgress."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "grafici": {
+        "nome": "Chart.js",
+        "versione": "4.x",
+        "cdn": "https://cdn.jsdelivr.net/npm/chart.js",
+        "note": "Già caricato in progress.html. Questo task non crea nuovi grafici — non è necessario modificare l'HTML."
+      },
+      "dati": {
+        "formato": "JSON statici in docs/data/",
+        "fetch": "async/await con try/catch. Percorso relativo senza slash iniziale: 'data/workout_history.json'",
+        "fetch_multiplo": "Promise.all([fetch(measurements), fetch(workout_history)]) per caricare entrambi i file in parallelo. Pattern già noto da dashboard.js."
+      }
+    },
+    "convenzioni": {
+      "costanti_js": "UPPER_SNAKE_CASE: DATA_PATH_MEASUREMENTS = 'data/measurements.json', DATA_PATH_WORKOUT_HISTORY = 'data/workout_history.json'. Rinominare la costante esistente DATA_PATH in DATA_PATH_MEASUREMENTS per chiarezza.",
+      "variabili_js": "camelCase: workoutHistoryData, phaseMap, currentInterval",
+      "gestione_null": "Optional chaining (?.) su tutti i campi dell'ultimo record (end, delta_*, fase_teorica, duration_days). Mai la stringa 'null' o 'undefined'. Usare fallback esplicito: fase_teorica ?? '—'.",
+      "valori_null_display": "Mostrare '—' (trattino em) per ogni campo null. Il record con end=null è il periodo corrente — può essere etichettato come 'In corso' nella UI.",
+      "pattern_js": "1) Costanti DATA_PATH → 2) Riferimenti DOM → 3) Funzioni utility → 4) Funzioni render → 5) DOMContentLoaded con fetch + try/catch. Struttura invariata, solo estensione del fetch e aggiunta utility buildPhaseMap.",
+      "gestione_errori": "try/catch attorno al Promise.all. Se workout_history.json non disponibile: loggare in console.error con prefisso '[progress.js]', passare array vuoto [] come fallback a renderProgress. Questo garantisce che la pagina funzioni anche senza i dati storici."
+    },
+    "pagina": {
+      "nome": "Progressi",
+      "file": "docs/progress.html",
+      "js": "docs/js/progress.js",
+      "dati_json": ["data/measurements.json", "data/workout_history.json"],
+      "note": "progress.html NON va modificato in questo task: non si aggiungono nuovi contenitori HTML. I dati di workout_history.json sono caricati in JS e resi disponibili per task futuri che aggiungeranno le sezioni HTML corrispondenti."
+    }
+  },
+  "struttura_dati_workout_history": {
+    "descrizione": "Array di 6 record (5 intervalli chiusi + 1 aperto). Ogni record rappresenta il periodo tra due misurazioni consecutive.",
+    "campi": {
+      "id": "string — identificativo univoco dell'intervallo (es. 'aab49981')",
+      "start": "string — id della misurazione iniziale dell'intervallo (corrisponde a measurements[n].id)",
+      "end": "string | null — id della misurazione finale. null nell'ultimo record (periodo aperto/corrente)",
+      "delta_squat_kg": "number | null — variazione 1RM squat tra start e end",
+      "delta_panca_kg": "number | null — variazione 1RM panca tra start e end",
+      "delta_stacco_kg": "number | null — variazione 1RM stacco tra start e end",
+      "delta_totale_kg": "null in tutti i record attuali — campo riservato",
+      "delta_weight_kg": "number | null — variazione peso corporeo",
+      "duration_days": "number | null — durata dell'intervallo in giorni",
+      "delta_bf_pct": "number | null — variazione body fat %",
+      "delta_mm_kg": "number | null — variazione massa magra kg",
+      "fase_teorica": "'bulk' | 'mantenimento' | 'cut' | null — classificazione del periodo",
+      "efficacia_workout": "number 1-10 | null — valutazione soggettiva efficacia",
+      "note": "string — annotazioni testuali (può essere stringa vuota '')"
+    },
+    "record_aperto": {
+      "id": "8dabc4c5",
+      "start": "3a6a7aad",
+      "end": null,
+      "nota_implementazione": "Tutti i campi delta sono null. Il codice deve gestire questo caso senza errori. Nella UI può essere presentato come 'Periodo corrente (in corso)'."
+    },
+    "collegamento_measurements": "workout_history[n].start === measurements[m].id per collegare ogni intervallo alla misurazione di partenza. workout_history[n].end === measurements[m+1].id per la misurazione di arrivo (null se periodo ancora aperto)."
+  },
+  "implementazione_suggerita": {
+    "buildPhaseMap": {
+      "descrizione": "Funzione utility che costruisce una mappa id_misurazione_start → fase_teorica per usarla nelle funzioni render. Permette di colorare o etichettare i punti del grafico in base alla fase del periodo in cui ricadono.",
+      "firma": "function buildPhaseMap(historyData)",
+      "logica": "Itera su historyData, per ogni record con fase_teorica non null crea la voce phaseMap[record.start] = record.fase_teorica. Ritorna l'oggetto mappa. Record con fase_teorica null (es. il record aperto) vengono ignorati.",
+      "uso_futuro": "Le funzioni renderStrengthChart e renderWeightBfChart potranno chiamare phaseMap[record.id] per etichettare i punti o colorare lo sfondo per fase."
+    },
+    "modifiche_domcontentloaded": {
+      "prima": "const res = await fetch(DATA_PATH); ... renderProgress(data);",
+      "dopo": "const [resM, resH] = await Promise.all([fetch(DATA_PATH_MEASUREMENTS), fetch(DATA_PATH_WORKOUT_HISTORY)]); ... renderProgress(measurementsData, workoutHistoryData);",
+      "gestione_errore_parziale": "Se solo workout_history.json fallisce (404 o errore rete), usare try/catch separato per il secondo fetch e passare [] come fallback, così measurements rimane funzionante."
+    },
+    "firma_renderProgress": {
+      "prima": "function renderProgress(data)",
+      "dopo": "function renderProgress(data, historyData = [])",
+      "note": "Il parametro historyData ha default [] per retrocompatibilità e robustezza. Le funzioni render esistenti (renderWeightBfChart, renderStrengthChart, ecc.) non ricevono ancora historyData — verranno aggiornate nei task successivi."
+    }
+  },
+  "criteri_accettazione": [
+    "Il file workout_history.json viene caricato correttamente senza errori",
+    "I dati degli intervalli sono accessibili per collegare ogni misurazione alla precedente",
+    "Il record con end=null non causa errori di visualizzazione",
+    "I dati di fase_teorica sono utilizzabili per etichettare i periodi nella pagina Progressi",
+    "docs/js/progress.js contiene la costante DATA_PATH_WORKOUT_HISTORY con valore 'data/workout_history.json'",
+    "docs/js/progress.js usa Promise.all per caricare measurements.json e workout_history.json in parallelo",
+    "La funzione renderProgress accetta un secondo parametro historyData (default [])",
+    "docs/js/progress.js contiene la funzione utility buildPhaseMap(historyData) che ritorna un oggetto mappa id_misurazione → fase_teorica",
+    "Se workout_history.json non è disponibile (fetch fallisce), la pagina Progressi continua a funzionare correttamente con i soli dati di measurements.json",
+    "Il record con end=null e tutti i campi delta null non genera errori in console",
+    "La funzione buildPhaseMap gestisce correttamente i record con fase_teorica=null (li ignora senza errori)",
+    "docs/progress.html NON viene modificato in questo task"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "data-measurements-new-fields",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/js/progress.js",
+        "docs/js/dashboard.js"
+      ],
+      "note": "Piano di lavoro presente in data/web-actor/output/plan_data-measurements-new-fields.json. Il file progress.js è già aggiornato con i tre indici separati squatStimatoIdx / pancaStimatoIdx / staccoStimatoIdx e il tooltip per-esercizio. Il collegamento start/end → id di measurements.json è coerente con la struttura id già gestita da data-measurements-new-fields."
+    }
+  ]
+}

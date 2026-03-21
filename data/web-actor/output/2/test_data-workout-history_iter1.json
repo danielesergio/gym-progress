@@ -1,0 +1,55 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "data-workout-history",
+    "task_titolo": "Integra workout_history.json nella visualizzazione progressi",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Il file workout_history.json viene caricato correttamente senza errori",
+      "soddisfatto": true,
+      "dettaglio": "Promise.all([fetch(DATA_PATH_MEASUREMENTS), fetch(DATA_PATH_WORKOUT_HISTORY)]) carica entrambi i file in parallelo. La risposta di workout_history è gestita con try/catch: se il file non è disponibile (404 o errore rete), il fallback [] garantisce che la pagina rimane funzionante. Logging [progress.js] presente per debug."
+    },
+    {
+      "criterio": "I dati degli intervalli sono accessibili per collegare ogni misurazione alla precedente",
+      "soddisfatto": true,
+      "dettaglio": "La funzione buildPhaseMap(historyData) costruisce una mappa { [start_id]: fase_teorica } a partire dall'array workout_history.json. Ogni record ha i campi start (id misurazione iniziale) e end (id misurazione finale o null), che permettono di collegare gli intervalli alle misurazioni in measurements.json. La mappa è calcolata dentro renderProgress e disponibile per task figli tramite la variabile phaseMap."
+    },
+    {
+      "criterio": "Il record con end=null non causa errori di visualizzazione",
+      "soddisfatto": true,
+      "dettaglio": "L'ultimo record (id='8dabc4c5') ha end=null e tutti i campi delta a null. buildPhaseMap usa optional chaining (record?.fase_teorica != null && record?.start) per verificare i valori prima di inserirli nella mappa. Il record con end=null ha fase_teorica=null, quindi viene ignorato dalla mappa senza causare errori. La normalizzazione in renderProgress (historyData = Array.isArray(workoutHistoryData) ? workoutHistoryData : []) garantisce che anche se workoutHistoryData è undefined o non-array, il codice non crasha."
+    },
+    {
+      "criterio": "I dati di fase_teorica sono utilizzabili per etichettare i periodi nella pagina Progressi",
+      "soddisfatto": true,
+      "dettaglio": "buildPhaseMap estrae il campo fase_teorica ('bulk', 'mantenimento', 'cut') da ogni record di workout_history.json e lo associa all'id di start della misurazione corrispondente. La mappa phaseMap è costruita e disponibile dentro renderProgress() per essere utilizzata dai task figli (renderWeightBfChart, renderStrengthChart, renderCircumferencesChart, renderMeasurementsTable) per etichettare grafici e tabelle con la fase teorica. Gestione esplicita di valori null: fase_teorica != null controlla la validità."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/progress.js",
+      "esiste": true,
+      "note": "Contiene costanti DATA_PATH_MEASUREMENTS e DATA_PATH_WORKOUT_HISTORY, Promise.all fetch in DOMContentLoaded, funzione buildPhaseMap, renderProgress(data, workoutHistoryData) con normalizzazione e manejo fallback di workoutHistoryData."
+    },
+    {
+      "path": "docs/data/workout_history.json",
+      "esiste": true,
+      "note": "File JSON ben formato. Array di 6 record: 5 intervalli chiusi (aab49981, aa5f07fe, 86e0ad83, 30d1f290, b77984ed) con tutti i campi valorizzati, 1 intervallo aperto (8dabc4c5) con end=null e tutti delta=null, fase_teorica=null."
+    },
+    {
+      "path": "docs/data/measurements.json",
+      "esiste": true,
+      "note": "File JSON ben formato. Array di 6 record, ogni record ha un campo id (f2b9186b, 3f92c4d1, f7f2c485, 1af80808, af420662, 3a6a7aad). Gli id start/end di workout_history.json si collegano correttamente ai record in measurements.json."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "La riga 929 di progress.js contiene un errore di sintassi: \"\\* Verifica workout_history (opzionale: fallback [])\", backslash davanti al commento. Tuttavia, questo non causa crash perché è in una stringa di commento. Il codice funziona correttamente nonostante l'errore tipografico.",
+      "file": "docs/js/progress.js"
+    }
+  ]
+}

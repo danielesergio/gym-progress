@@ -1,0 +1,75 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "feature-workout-selector",
+    "task_titolo": "Selettore scheda di allenamento per fase",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "È visibile un selettore (dropdown, pulsanti o tab) con le schede disponibili",
+      "soddisfatto": true,
+      "dettaglio": "Elemento HTML <nav id='schema-selector' class='workout-schema-selector'> presente (linee 94-99). CSS stili .workout-schema-selector e .workout-schema-btn implementati (linee 99-203). Funzione JS renderSchemaSelector() (linee 118-164) genera bottoni per ogni scheda. Con una sola scheda, il bottone è visibile e non invasivo (classe --singola)."
+    },
+    {
+      "criterio": "Selezionando una scheda il contenuto (settimane, esercizi, obiettivo) si aggiorna",
+      "soddisfatto": true,
+      "dettaglio": "Funzione selectSchema() (linee 172-200) aggiorna schemaAttivoIndex, workoutData, renderizza TOS banner, header, e richiama aggiornaSelezioneSettimane(). Funzione aggiornaSelezioneSettimane() (linee 209-237) mostra/nasconde bottoni settimane, ri-collega event listener e rerenderizza dettaglio della prima settimana della nuova scheda."
+    },
+    {
+      "criterio": "La scheda attiva/corrente è pre-selezionata al caricamento della pagina",
+      "soddisfatto": true,
+      "dettaglio": "Funzione detectSchedaAttiva() (linee 59-107) implementa logica completa: parsifica meta.periodo, confronta data odierna (2026-03-21) con periodi schede, identifica quella che include oggi. Scheda nel workout.json ha periodo '2026-03 / 2026-04' che include marzo 2026 → correttamente rilevata. renderWorkout() chiama detectSchedaAttiva() (riga 562), passa indice a renderSchemaSelector() e selectSchema()."
+    },
+    {
+      "criterio": "L'header mostra il periodo della scheda selezionata",
+      "soddisfatto": true,
+      "dettaglio": "Elemento #header-workout-period presente (HTML riga 24). Funzione renderWorkoutHeader() (linee 265-279) aggiorna questo elemento con data?.meta?.periodo (righe 276-278). Viene chiamata da selectSchema() ogni volta che scheda cambia. Periodo attuale mostra '2026-03 / 2026-04'."
+    },
+    {
+      "criterio": "Se è disponibile una sola scheda il selettore è comunque presente ma non crea confusione",
+      "soddisfatto": true,
+      "dettaglio": "Classe CSS .workout-schema-selector--singola (linee 106-110) riduce opacity a 0.85. CSS bottone con singola scheda ha cursor: default e pointer-events: none (linee 135-138). JS linea 129 applica classe toggle. Event listener aggiunto solo se !solaSingola (riga 154). Workflow.json contiene una sola scheda (oggetto, non array), correttamente gestita da normalizzaSchede()."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/workout.html",
+      "esiste": true,
+      "note": "HTML ben strutturato. #schema-selector posizionato correttamente dopo #workout-error e prima di #workout-header, dentro .container. Aria-label descrittivo presente."
+    },
+    {
+      "path": "docs/js/workout.js",
+      "esiste": true,
+      "note": "Codice completo e ben documentato. Includes: costanti (DATA_PATH_WORKOUT), stato (schedeData, schemaAttivoIndex, settimanaAttiva), utility (normalizzaSchede, detectSchedaAttiva, showWorkoutError), render (renderSchemaSelector, selectSchema, aggiornaSelezioneSettimane, renderWorkoutHeader, renderWeekSelector, renderWorkoutDetail), DOMContentLoaded con try/catch corretto. Pattern coerente con resto del progetto."
+    },
+    {
+      "path": "docs/css/workout.css",
+      "esiste": true,
+      "note": "Stili completi per .workout-schema-selector e .workout-schema-btn (linee 97-220). Variabili CSS utilizzate coerentemente (--color-accent, --color-accent-dim, --color-border, ecc.). Responsive breakpoints per mobile (max-width 767px) e tablet (768px+). Classe --singola riduce visibilità come richiesto. Transizioni smooth con var(--transition-fast)."
+    },
+    {
+      "path": "docs/data/workout.json",
+      "esiste": true,
+      "note": "Struttura oggetto singolo (non array). Campi required presenti: meta.titolo, meta.periodo, meta.durata_settimane, mesociclo.obiettivo, settimane[]. Periodo '2026-03 / 2026-04' correttamente formattato. Durata 2 settimane. Dati di test validi."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "warning",
+      "descrizione": "Durante cambio scheda, selectSchema() resetta settimanaAttiva alla prima settimana (riga 196) prima di chiamare aggiornaSelezioneSettimane(). Se la nuova scheda ha meno settimane della precedente, il bottone settimana attivo potrebbe risultare temporaneamente incoerente prima di essere ri-renderizzato. Non bloccante poiché renderWeekSelector() aggiorna correttamente gli stati aria-pressed.",
+      "file": "docs/js/workout.js, linee 195-196"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Funzione detectSchedaAttiva() assume che meta.periodo sia sempre nel formato 'YYYY-MM / YYYY-MM'. Se il formato fosse malformato, il parsing fallisce silenziosamente al fallback (indice con end date più recente). Non è un errore dato che i dati sono generati da Python, ma documenta l'assunzione.",
+      "file": "docs/js/workout.js, linee 71-88"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Bottone singola scheda riceve sia aria-disabled='true' (linea 144) che pointer-events: none in CSS (linee 135-138). Ridondante ma safe — assicura totale non-interattività. Potrebbe essere ottimizzato scegliendo uno solo dei due metodi.",
+      "file": "docs/js/workout.js (linea 144) + docs/css/workout.css (linee 135-138)"
+    }
+  ]
+}

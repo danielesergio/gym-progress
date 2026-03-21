@@ -28,7 +28,7 @@
   </header>
 
   <!-- ══════════════════════════════════════════
-       NAV TAB — 5 sezioni (active gestita da nav.js)
+       NAV TAB — 6 sezioni (active gestita da nav.js)
   ══════════════════════════════════════════ -->
   <nav role="tablist" class="tab-list" id="nav-tabs" aria-label="Navigazione sezioni">
     <div class="container">
@@ -52,6 +52,10 @@
          role="tab"
          class="nav-tab"
          aria-label="Piano annuale e obiettivi">Piano</a>
+      <a href="volume.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Volume di allenamento">Volume</a>
     </div>
   </nav>
 
@@ -95,6 +99,10 @@
       <!-- ── SEZIONE 4: Storico Misurazioni ── -->
       <section id="section-tabella" class="progress-section" aria-labelledby="title-tabella">
         <h2 class="progress-section__title" id="title-tabella">Storico Misurazioni</h2>
+        <div class="progress-section__legend" aria-label="Legenda tipo massimale">
+          <span class="badge-reale">R = Reale</span>
+          <span class="badge-stimato">S = Stimato</span>
+        </div>
         <div class="progress-table-container" id="table-misurazioni" aria-label="Tabella storico misurazioni">
           <p class="progress-placeholder">Caricamento dati…</p>
         </div>

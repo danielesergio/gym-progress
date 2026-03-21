@@ -1,0 +1,112 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "workout-dynamic-week-buttons",
+    "task_title": "Genera dinamicamente i bottoni settimana dal numero reale di settimane nel JSON",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "workout-dynamic-week-buttons",
+    "type": "bugfix",
+    "title": "Genera dinamicamente i bottoni settimana dal numero reale di settimane nel JSON",
+    "description": "Il selettore settimane nella pagina Allenamento mostra 4 bottoni fissi (S1, S2, S3, S4) nell'HTML statico. La visibilità viene gestita via JavaScript nascondendo i bottoni eccedenti. Questo approccio è fragile: se la scheda ha 6 settimane, i bottoni S5 e S6 non esistono nel markup. I bottoni settimana devono essere generati completamente da JavaScript leggendo l'array `settimane` del JSON: se ci sono 2 settimane si generano 2 bottoni, se ce ne sono 6 si generano 6 bottoni. L'HTML statico non deve contenere bottoni settimana hardcoded.",
+    "inputs": ["workout_data"],
+    "outputs": ["WorkoutWeekSelector"],
+    "acceptance_criteria": [
+      "Se workout.json ha 2 settimane, il selettore mostra 2 bottoni",
+      "Se workout.json ha 5 settimane, il selettore mostra 5 bottoni senza modifiche al markup HTML",
+      "I bottoni mostrano le etichette corrette (es. S1, S2, … Sn) in base ai numeri nell'array",
+      "Il markup HTML della pagina allenamento non contiene bottoni settimana hardcoded"
+    ],
+    "notes": "La dipendenza workout-single-day-view è già completata: workout.js contiene già renderDaySelector(), renderGiornoSingolo() e la variabile giornoAttivoIndex. Il task richiede di: (1) rimuovere i 4 bottoni hardcoded da workout.html, (2) riscrivere renderWeekSelector() per generare i bottoni da JS, (3) aggiornare aggiornaSelezioneSettimane() eliminando i loop fissi 1..4 e sostituendoli con iterazione sull'array settimane reale."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/workout.html",
+        "motivo": "Rimuovere i 4 bottoni week-btn-1..4 hardcoded dentro #week-selector (righe 118-142). Il container <nav id='week-selector'> deve restare vuoto — verrà popolato da workout.js.",
+        "esiste": true
+      },
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "Tre interventi: (1) Riscrivere renderWeekSelector() per generare i bottoni con innerHTML invece di iterare su getElementById('week-btn-N'). (2) Riscrivere aggiornaSelezioneSettimane() eliminando i loop for i=1..4 hardcoded: usare settimane.length per iterare e generare i bottoni dinamicamente. (3) Aggiornare selectSchema() per chiamare la nuova versione di aggiornaSelezioneSettimane() senza assumere 4 bottoni fissi.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/workout.json",
+        "motivo": "Struttura dati: campo settimane[] con sotto-campo numero (int) per generare le etichette Sn. Campo meta.durata_settimane usato in aggiornaSelezioneSettimane(). Verificare che settimane[].numero sia il campo corretto da usare nelle etichette (es. S1, S2). Il JSON attuale ha 2 settimane con numeri 1 e 2."
+      },
+      {
+        "path": "docs/workout.html",
+        "motivo": "Identificare con precisione il blocco HTML da rimuovere (i 4 bottoni week-btn-1..4 dentro #week-selector, righe 117-142) e verificare che il container <nav id='week-selector'> sia correttamente identificato prima e dopo la modifica."
+      },
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "Analizzare le funzioni da riscrivere: renderWeekSelector() (righe 305-313, itera for 1..4 su getElementById), aggiornaSelezioneSettimane() (righe 210-253, nasconde bottoni con btn.hidden e ri-collega listener con for 1..4). Capire le dipendenze con selectSchema() e renderDaySelector() per non rompere la catena di rendering."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS — ES2022, nessun build step",
+      "styling": "CSS custom properties, prefisso BEM workout-*"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase — es. settimanaAttiva, giornoAttivoIndex",
+      "id_html": "kebab-case — es. #week-selector, #week-btn-N (da eliminare)",
+      "classi_css": "kebab-case con prefisso pagina — es. .week-btn, .week-btn.active",
+      "dom_manipulation": "innerHTML per render di liste/bottoni generati dinamicamente. Mai usare document.write(). Usare cloneNode(true) per rimuovere event listener precedenti.",
+      "event_listeners": "addEventListener() — mai onclick inline. Usare event delegation sul container #week-selector dopo aver resettato i listener via cloneNode.",
+      "no": "No var, no bottoni hardcoded nell'HTML, no loop fissi 1..4 nel JS"
+    },
+    "pagina": {
+      "nome": "Allenamento",
+      "file": "docs/workout.html",
+      "js": "docs/js/workout.js",
+      "css": "docs/css/workout.css",
+      "dati_json": ["data/workout.json"]
+    },
+    "pattern_rendering_bottoni": "Analogo a renderSchemaSelector() e renderDaySelector() già presenti in workout.js: costruire array di stringhe HTML con .map(), joinare con innerHTML, poi aggiungere event delegation sul container clonato.",
+    "struttura_workout_json": {
+      "settimane": "Array. Ogni elemento ha: numero (int, da usare per etichetta 'Sn'), intensita_target, note_settimana, giorni[].",
+      "meta.durata_settimane": "int — numero totale di settimane nella scheda (attualmente 2). Usato anche in aggiornaSelezioneSettimane() come fallback.",
+      "nota": "settimane[].numero è il campo da usare per l'etichetta: 'S' + settimana.numero. Non usare l'indice dell'array per l'etichetta."
+    }
+  },
+  "criteri_accettazione": [
+    "Se workout.json ha 2 settimane, il selettore #week-selector mostra 2 bottoni .week-btn",
+    "Se workout.json ha 5 settimane, il selettore #week-selector mostra 5 bottoni senza modifiche al markup HTML",
+    "I bottoni mostrano le etichette 'S' + settimana.numero (es. S1, S2, …Sn) lette dall'array settimane[]",
+    "Il file docs/workout.html NON contiene bottoni week-btn-1, week-btn-2, week-btn-3, week-btn-4 nell'HTML statico",
+    "Il container <nav id='week-selector' class='week-selector'> è presente ma vuoto nell'HTML statico",
+    "La funzione renderWeekSelector() in docs/js/workout.js genera i bottoni via innerHTML leggendo settimane[]",
+    "La funzione aggiornaSelezioneSettimane() non usa loop for i=1..4 hardcoded ma itera su settimane.length",
+    "La funzione aggiornaSelezioneSettimane() non usa document.getElementById('week-btn-N') con N fisso",
+    "Cambiando settimana, il selettore giorni si aggiorna correttamente al primo giorno della nuova settimana (comportamento preesistente preservato)",
+    "I bottoni settimana hanno gli attributi aria-pressed, data-week e class='week-btn' corretti",
+    "Il bottone della settimana attiva ha classe 'active' e aria-pressed='true'"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "workout-single-day-view",
+      "stato": "completato",
+      "file_prodotti": ["docs/workout.html", "docs/js/workout.js"],
+      "note": "Completato: workout.js contiene già renderDaySelector(), renderGiornoSingolo(), giornoAttivoIndex, e la logica di cambio giorno con event delegation. Il selettore giorni (#day-selector) è già generato dinamicamente da JS. Il container è vuoto nell'HTML (commento 'Popolato da workout.js → renderDaySelector()'). La funzione selectSchema() chiama aggiornaSelezioneSettimane() che a sua volta chiama renderDaySelector() e renderGiornoSingolo()."
+    }
+  ],
+  "analisi_codice_attuale": {
+    "problema_html": "docs/workout.html righe 117-142: il container <nav id='week-selector'> contiene 4 bottoni hardcoded week-btn-1..4 con data-week='1'..'4'. Questi vanno rimossi, lasciando il container vuoto con solo il commento.",
+    "problema_renderWeekSelector": "docs/js/workout.js righe 305-313: la funzione renderWeekSelector(numeroSettimana) itera for i=1..4, recupera ogni bottone con getElementById('week-btn-'+i) e aggiorna classe/aria-pressed. Questo smette di funzionare se ci sono più di 4 settimane (i bottoni S5+ non esistono nel DOM) o lavora su bottoni non più presenti dopo la rigenerazione.",
+    "problema_aggiornaSelezioneSettimane": "docs/js/workout.js righe 210-253: usa due loop for i=1..4 — uno per nascondere i bottoni eccedenti (btn.hidden), uno per ri-collegare i listener. Questo è il cuore del bug: con 6 settimane, il primo loop non crea i bottoni mancanti e il secondo non li collega.",
+    "soluzione": {
+      "workout_html": "Rimuovere i 4 elementi <button> hardcoded da #week-selector. Lasciare solo il container <nav> con eventuale commento '<!-- Popolato da workout.js → renderWeekSelector() -->'.",
+      "renderWeekSelector_nuovo": "Accetta (settimane, numeroSettimana) invece di solo (numeroSettimana). Genera i bottoni con innerHTML usando settimane.map(). Ogni bottone ha: class='week-btn', id='week-btn-'+settimana.numero, data-week=settimana.numero, aria-pressed, testo 'S'+settimana.numero. Aggiunge la classe 'active' al bottone della settimana corrente.",
+      "aggiornaSelezioneSettimane_nuovo": "Riceve (data) come prima. Recupera settimane dall'array data.settimane. Chiama renderWeekSelector(settimane, settimanaAttiva) per generare i bottoni. Reset giornoAttivoIndex=0. Usa event delegation su #week-selector (cloneNode) per gestire i click su tutti i bottoni generati, analogamente a renderDaySelector(). Non usa più loop for i=1..4.",
+      "selectSchema_invariato": "selectSchema() chiama già aggiornaSelezioneSettimane(workoutData) — nessuna modifica necessaria alla firma o alla chiamata, solo al corpo di aggiornaSelezioneSettimane."
+    }
+  }
+}

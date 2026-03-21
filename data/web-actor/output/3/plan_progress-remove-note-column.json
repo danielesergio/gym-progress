@@ -1,0 +1,132 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "progress-remove-note-column",
+    "task_title": "Rimuovi la colonna Note dalla tabella Storico Misurazioni",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "progress-remove-note-column",
+    "type": "bugfix",
+    "title": "Rimuovi la colonna Note dalla tabella Storico Misurazioni",
+    "description": "La tabella Storico Misurazioni ha 13 colonne, l'ultima delle quali è 'Note'. Questa colonna deve essere rimossa. Le note sono già presenti come riga espandibile sotto la riga principale quando il campo note non è vuoto — questa visualizzazione alternativa rimane invariata. Rimuovendo la colonna bisogna aggiornare il colspan della riga-nota da 13 a 12.",
+    "inputs": ["measurements_data"],
+    "outputs": ["MeasurementsTable"],
+    "acceptance_criteria": [
+      "La tabella non ha la colonna 'Note' nell'intestazione",
+      "Le righe dati non hanno una cella corrispondente alla colonna Note",
+      "Le note non scompaiono: continuano a essere mostrate come riga secondaria sotto la misurazione principale (quando presenti)",
+      "La tabella rimane correttamente formattata su desktop e mobile"
+    ],
+    "notes": "Il task opera esclusivamente su docs/js/progress.js, dentro la funzione renderMeasurementsTable(). Il file progress.html non contiene markup della tabella (viene generato dinamicamente via innerHTML da JS). Il file progress.css non richiede modifiche salvo l'eventuale presenza di stili dedicati alla colonna Note (da verificare). Il colspan della riga nota deve scendere da 13 a 12."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "Rimuovere la riga '<th scope=\"col\">Note</th>' dall'intestazione tabella (riga 586). Rimuovere il blocco che genera la <td> della colonna Note nella riga principale (righe 635-644). Aggiornare il colspan della .measurements-table__note-row da 13 a 12 (riga 652). Aggiornare il commento della funzione alla riga 525-526 rimuovendo 'Note.' dalla lista colonne visibili.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "File da modificare — contiene la funzione renderMeasurementsTable() con l'intestazione tabella (riga 586: <th>Note</th>), il blocco <td> nota nella riga principale (righe 635-644), e il colspan=13 della riga secondaria nota (riga 652)"
+      },
+      {
+        "path": "docs/data/measurements.json",
+        "motivo": "Struttura dati di riferimento: array di oggetti con campo 'note' (string|null). Verificare valori reali del campo per capire come il codice li gestisce già (es. 'Allenamento in casa'). Il campo note rimane nei dati — va solo rimosso dalla colonna della tabella, non dal codice di lettura."
+      },
+      {
+        "path": "docs/css/progress.css",
+        "motivo": "Verificare se esistono stili dedicati a .td-note-icon o alla colonna Note. Se sì, valutare se rimuoverli o mantenerli (la classe .td-note-icon non sarà più usata dopo la rimozione)."
+      },
+      {
+        "path": "docs/progress.html",
+        "motivo": "Conferma che la tabella è interamente generata via JS (innerHTML nel container #table-misurazioni) e che non vi è markup statico da modificare nell'HTML."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS ES2022",
+      "grafici": null,
+      "dati": {
+        "formato": "JSON statici in docs/data/ — il developer NON li modifica",
+        "fonte": "fetch() al DOMContentLoaded in progress.js"
+      }
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase (es. nota, hasNota, html)",
+      "classi_css": "kebab-case con prefisso pagina BEM-like (es. .measurements-table, .measurements-table__note-row, .td-note-icon)",
+      "gestione_null": "campo note: se null o undefined → stringa vuota → hasNota = false → riga secondaria non emessa. Usare optional chaining e nullish coalescing.",
+      "dom_manipulation": "innerHTML per generazione tabella intera — accettabile perché dati da JSON interno, non da input utente",
+      "struttura_js": "Funzione renderMeasurementsTable(data) già esistente — il task modifica solo questa funzione, non crea nuove funzioni"
+    },
+    "pagina": {
+      "nome": "Progressi",
+      "file": "docs/progress.html",
+      "js": "docs/js/progress.js",
+      "css": "docs/css/progress.css",
+      "dati_json": ["data/measurements.json"]
+    }
+  },
+  "dettaglio_modifiche": {
+    "file": "docs/js/progress.js",
+    "modifiche": [
+      {
+        "tipo": "rimozione",
+        "riga_riferimento": 586,
+        "descrizione": "Rimuovere la riga: html += '<th scope=\"col\">Note</th>';",
+        "effetto": "La tabella passa da 13 a 12 colonne nell'intestazione"
+      },
+      {
+        "tipo": "rimozione",
+        "righe_riferimento": "635-644",
+        "descrizione": "Rimuovere l'intero blocco che genera la <td> corrispondente alla colonna Note nella riga principale (il blocco if/else che produce o <td><span class=\"td-note-icon\"...> o <td class=\"td-muted\">—</td>)",
+        "effetto": "Le righe dati passano da 13 a 12 celle, coerenti con l'intestazione"
+      },
+      {
+        "tipo": "aggiornamento",
+        "riga_riferimento": 652,
+        "descrizione": "Aggiornare il colspan della riga nota da 13 a 12: '<td colspan=\"12\">' + nota + '</td>'",
+        "effetto": "La riga secondaria .measurements-table__note-row occupa correttamente tutte le 12 colonne"
+      },
+      {
+        "tipo": "aggiornamento_commento",
+        "righe_riferimento": "525-526",
+        "descrizione": "Aggiornare il commento JSDoc della funzione: rimuovere 'Note.' dalla lista colonne sempre visibili, aggiornare il totale colonne da 13 a 12",
+        "effetto": "Documentazione interna allineata all'implementazione"
+      }
+    ],
+    "cosa_NON_modificare": [
+      "La logica di lettura del campo d.note dai dati (rimane invariata — serve per la riga secondaria)",
+      "La variabile nota e la variabile hasNota (restano necessarie per la riga secondaria)",
+      "Il blocco che emette la riga <tr class='measurements-table__note-row'> (questo rimane — è la visualizzazione alternativa richiesta)",
+      "Il file docs/progress.html (la tabella è 100% generata via JS)",
+      "I file docs/data/measurements.json e qualsiasi altro JSON (read-only)",
+      "La funzione renderProgress() e le altre render function (non coinvolte)"
+    ]
+  },
+  "criteri_accettazione": [
+    "La tabella Storico Misurazioni NON ha la colonna 'Note' nell'intestazione (<th>)",
+    "Le righe dati hanno 12 celle, non 13 — la cella della colonna Note è stata rimossa",
+    "Le note non vuote continuano a essere mostrate come riga secondaria <tr class='measurements-table__note-row'> sotto la riga principale",
+    "Il colspan della riga .measurements-table__note-row è 12 (non 13)",
+    "Le misurazioni senza note (hasNota = false) non mostrano righe secondarie — comportamento invariato",
+    "La tabella rimane correttamente formattata su desktop e mobile (le 4 colonne .col-mobile-hide restano tali)",
+    "docs/js/progress.js non contiene più 'Note</th>' nel blocco dell'intestazione tabella",
+    "docs/js/progress.js non contiene più 'td-note-icon' nel corpo della riga principale",
+    "docs/js/progress.js contiene 'colspan=\"12\"' nella riga nota (non più 13)"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "progress-fix-legend-labels",
+      "stato": "completato",
+      "file_prodotti": ["docs/js/progress.js", "docs/progress.html", "docs/css/progress.css"],
+      "note": "Piano trovato in data/web-actor/output/plan_progress-fix-legend-labels.json. I file docs/js/progress.js, docs/progress.html e docs/css/progress.css esistono in docs/. La dipendenza è soddisfatta: il task corrente opera sugli stessi file modificati dal task precedente."
+    }
+  ]
+}

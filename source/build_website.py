@@ -32,6 +32,7 @@ Uso:
 
 import argparse
 import json
+import shutil
 import subprocess
 import sys
 from datetime import datetime
@@ -47,6 +48,27 @@ OUTPUT_DIR   = DATA_DIR / "output"
 ACTOR_DIR    = DATA_DIR / "web-actor" / "output"
 
 DATE_STR = datetime.now().strftime("%Y-%m-%d")
+
+
+# ---------------------------------------------------------------------------
+# Archivio iterazioni
+# ---------------------------------------------------------------------------
+
+def archive_output(actor_dir: Path) -> Path:
+    """Sposta i file di output in una sottocartella numerata (1, 2, 3, ...).
+    Ritorna il path della cartella di archivio creata."""
+    existing = sorted(
+        [d for d in actor_dir.iterdir() if d.is_dir() and d.name.isdigit()],
+        key=lambda d: int(d.name),
+    )
+    next_num = int(existing[-1].name) + 1 if existing else 1
+    archive_dir = actor_dir / str(next_num)
+    archive_dir.mkdir()
+    for f in actor_dir.iterdir():
+        if f.is_file():
+            shutil.move(str(f), str(archive_dir / f.name))
+    return archive_dir
+
 
 # ---------------------------------------------------------------------------
 # Logging
@@ -74,6 +96,29 @@ def separator(title: str = "") -> None:
         print(f"\n{line}\n  {title}\n{line}")
     else:
         print(line)
+
+
+# ---------------------------------------------------------------------------
+# Script helpers
+# ---------------------------------------------------------------------------
+
+
+def run_generate_data(web_dir: Path, dry_run: bool = False) -> bool:
+    """Esegue scripts/generate_data.py per aggiornare i JSON in docs/data/."""
+    if dry_run:
+        log("SKIP", "dry-run: generate_data.py non eseguito")
+        return True
+    out_dir = web_dir / "data"
+    cmd = [sys.executable, "scripts/generate_data.py", "--outdir", str(out_dir.relative_to(PROJECT_ROOT))]
+    log("ACTION", f"Eseguo: {' '.join(cmd)}")
+    result = subprocess.run(cmd, cwd=PROJECT_ROOT, capture_output=True, text=True, encoding="utf-8")
+    if result.stdout:
+        for line in result.stdout.strip().splitlines():
+            log("INFO", line)
+    if result.returncode != 0:
+        log("ERROR", f"generate_data.py fallito (rc={result.returncode}): {result.stderr[:300]}")
+        return False
+    return True
 
 
 # ---------------------------------------------------------------------------
@@ -250,7 +295,7 @@ Sito esistente:
 Report di review precedenti:
 {optional_review}
 
-  - data/feedback_atleta.md
+  - data/feedback_atleta.yaml
   - data/athlete.md
 
 ## Output
@@ -512,7 +557,7 @@ def main() -> None:
         log_context("gym-web-analyst", [
             (DATA_DIR   / "web-site-goal",        "obbligatorio"),
             (OUTPUT_DIR / "measurements.json",    "obbligatorio"),
-            (DATA_DIR   / "feedback_atleta.md",   "obbligatorio"),
+            (DATA_DIR   / "feedback_atleta.yaml",   "obbligatorio"),
             (DATA_DIR   / "athlete.md",           "discrezione"),
             *([(f, "discrezione") for f in site_html[:5]]),
             *([(f, "discrezione") for f in review_files[:3]]),
@@ -566,6 +611,12 @@ def main() -> None:
         if not arch_path.exists() and not args.dry_run:
             log("ERROR", f"L'architect non ha prodotto {arch_path.name} — impossibile continuare")
             sys.exit(1)
+
+    # =========================================================================
+    # FASE 3.5 — Genera dati JSON per il sito (docs/data/)
+    # =========================================================================
+    separator("FASE 3.5 — Generazione dati JSON")
+    run_generate_data(web_dir, args.dry_run)
 
     # =========================================================================
     # FASE 4 — Per ogni task: plan → developer → tester loop
@@ -721,6 +772,13 @@ def main() -> None:
 
     if fail_count > 0:
         sys.exit(1)
+
+    # Aggiorna i dati JSON finali dopo tutte le implementazioni
+    separator("Aggiornamento dati JSON finale")
+    run_generate_data(web_dir, args.dry_run)
+
+    archive_dir = archive_output(actor_dir)
+    log("INFO", f"Output archiviato in {archive_dir.relative_to(PROJECT_ROOT)}")
 
 
 if __name__ == "__main__":

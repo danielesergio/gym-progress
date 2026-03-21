@@ -1,0 +1,84 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "workout-dynamic-week-buttons",
+    "task_titolo": "Genera dinamicamente i bottoni settimana dal numero reale di settimane nel JSON",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Se workout.json ha 2 settimane, il selettore #week-selector mostra 2 bottoni .week-btn",
+      "soddisfatto": true,
+      "dettaglio": "workout.json contiene array settimane[] con 2 elementi (numero 1 e 2). renderWeekSelector() itera su tutti gli elementi via .map() e genera innerHTML con bottoni .week-btn. Con 2 settimane nel JSON, si generano esattamente 2 bottoni."
+    },
+    {
+      "criterio": "Se workout.json ha 5 settimane, il selettore #week-selector mostra 5 bottoni senza modifiche al markup HTML",
+      "soddisfatto": true,
+      "dettaglio": "La logica di renderWeekSelector() è completamente dinamica: non ha hardcoded alcun numero di settimane. L'HTML statico in workout.html non contiene bottoni. Se il JSON avesse 5 settimane, il .map() itererebbe su 5 elementi e genererebbe 5 bottoni via innerHTML. Non richiede modifiche al markup."
+    },
+    {
+      "criterio": "I bottoni mostrano le etichette 'S' + settimana.numero (es. S1, S2, …Sn) lette dall'array settimane[]",
+      "soddisfatto": true,
+      "dettaglio": "renderWeekSelector() riga 323-331 genera l'etichetta con template string: `S${num}` dove num = settimana?.numero. Accede direttamente a settimana.numero da ogni elemento dell'array settimane[]."
+    },
+    {
+      "criterio": "Il file docs/workout.html NON contiene bottoni week-btn-1, week-btn-2, week-btn-3, week-btn-4 nell'HTML statico",
+      "soddisfatto": true,
+      "dettaglio": "workout.html righe 117-119 mostra il container <nav id='week-selector'> vuoto con solo commento 'Popolato da workout.js → renderWeekSelector()'. Nessun bottone hardcoded presente nel markup. I 4 bottoni originali sono stati rimossi."
+    },
+    {
+      "criterio": "Il container <nav id='week-selector' class='week-selector'> è presente ma vuoto nell'HTML statico",
+      "soddisfatto": true,
+      "dettaglio": "workout.html riga 117-119 contiene il container <nav id='week-selector' class='week-selector' aria-label='Seleziona settimana di allenamento'> con solo il commento di placeholder. Container è correttamente identificato e vuoto."
+    },
+    {
+      "criterio": "La funzione renderWeekSelector() in docs/js/workout.js genera i bottoni via innerHTML leggendo settimane[]",
+      "soddisfatto": true,
+      "dettaglio": "workout.js righe 314-335: renderWeekSelector(settimane, numeroSettimana) accetta array settimane, itera con .map() e costruisce string HTML di bottoni, poi assegna con container.innerHTML = bttns.join(''). Legge completamente settimane[] dall'argomento."
+    },
+    {
+      "criterio": "La funzione aggiornaSelezioneSettimane() non usa loop for i=1..4 hardcoded ma itera su settimane.length",
+      "soddisfatto": true,
+      "dettaglio": "workout.js righe 211-260: aggiornaSelezioneSettimane(data) estrae const settimane = data?.settimane ?? [] (riga 212) e passa a renderWeekSelector(settimane, settimanaAttiva) riga 218. Non contiene alcun loop for i=1..4. Itera dinamicamente su settimane.length tramite il .map() inside renderWeekSelector()."
+    },
+    {
+      "criterio": "La funzione aggiornaSelezioneSettimane() non usa document.getElementById('week-btn-N') con N fisso",
+      "soddisfatto": true,
+      "dettaglio": "workout.js aggiornaSelezioneSettimane() non contiene alcuna chiamata a getElementById('week-btn-N'). Usa invece event delegation con .closest('.week-btn') riga 237 e legge data-week attribute per determinare il numero della settimana. Nessun hardcoding di ID."
+    },
+    {
+      "criterio": "Cambiando settimana, il selettore giorni si aggiorna correttamente al primo giorno della nuova settimana (comportamento preesistente preservato)",
+      "soddisfatto": true,
+      "dettaglio": "workout.js riga 243 setta giornoAttivoIndex = 0 quando una nuova settimana è selezionata. Riga 257 chiama renderDaySelector(giorniTarget, data, settimanaAttiva) che popola il selettore giorni con il primo giorno (indice 0) della nuova settimana. Behavior preservato da task dipendente workout-single-day-view."
+    },
+    {
+      "criterio": "I bottoni settimana hanno gli attributi aria-pressed, data-week e class='week-btn' corretti",
+      "soddisfatto": true,
+      "dettaglio": "renderWeekSelector() riga 326-331 genera bottoni con: class='week-btn' + 'active' condizionale, id='week-btn-${num}', data-week='${num}', aria-pressed='true|false' condizionale. Tutti gli attributi richiesti sono presenti."
+    },
+    {
+      "criterio": "Il bottone della settimana attiva ha classe 'active' e aria-pressed='true'",
+      "soddisfatto": true,
+      "dettaglio": "renderWeekSelector() riga 325 verifica const isActive = num === numeroSettimana e applica condizionalmente: class='week-btn' + ` active` se isActive, aria-pressed='true' se isActive, altrimenti 'false'. Logic è corretta."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/workout.html",
+      "esiste": true,
+      "note": "Container week-selector è vuoto e pronto per il populate da JS. Nessun bottone hardcoded. Markup corretto."
+    },
+    {
+      "path": "docs/js/workout.js",
+      "esiste": true,
+      "note": "Funzioni renderWeekSelector() e aggiornaSelezioneSettimane() completamente riscritte per generazione dinamica. Event delegation implementata correttamente con cloneNode e .closest(). Nessun loop hardcoded 1..4."
+    },
+    {
+      "path": "docs/data/workout.json",
+      "esiste": true,
+      "note": "JSON contiene array settimane[] con elementi numero 1 e 2. Struttura conforme: ogni settimana ha campo numero, intensita_target, note_settimana, giorni[]."
+    }
+  ],
+  "anomalie": []
+}

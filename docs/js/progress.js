@@ -1,13 +1,14 @@
 /* ============================================================
    progress.js — Scheletro pagina Progressi
-   Daniele Fitness | fetch measurements.json + renderProgress()
+   Daniele Fitness | fetch measurements.json + workout_history.json
    I task figli (weight-bf-chart, strength-chart,
    circumferences-chart, measurements-table) estenderanno
    renderProgress() con le singole render function.
    ============================================================ */
 
 /* ── Costanti ── */
-const DATA_PATH = 'data/measurements.json';
+const DATA_PATH_MEASUREMENTS    = 'data/measurements.json';
+const DATA_PATH_WORKOUT_HISTORY = 'data/workout_history.json';
 
 /* ── Riferimenti DOM ── */
 const progressErrorContainer = document.getElementById('progress-error');
@@ -86,10 +87,12 @@ function renderWeightBfChart(data) {
     return { x: timestamps[i], y: d.massa_magra_kg ?? null };
   });
 
-  /* Range asse peso con padding */
-  const pesoValues = pesoDataset.map(function (p) { return p.y; }).filter(function (v) { return v !== null; });
-  const minPeso = pesoValues.length ? Math.min.apply(null, pesoValues) : 70;
-  const maxPeso = pesoValues.length ? Math.max.apply(null, pesoValues) : 95;
+  /* Range asse Y sinistro (kg): combina peso_kg + massa_magra_kg (entrambi su yAxisID:'y') */
+  const pesoValues       = pesoDataset.map(function (p) { return p.y; }).filter(function (v) { return v !== null; });
+  const massaMagraValues = massaMagraDataset.map(function (p) { return p.y; }).filter(function (v) { return v !== null; });
+  const yLeftValues = pesoValues.concat(massaMagraValues);
+  const minPeso = yLeftValues.length ? Math.min.apply(null, yLeftValues) : 65;
+  const maxPeso = yLeftValues.length ? Math.max.apply(null, yLeftValues) : 95;
 
   /* Range asse BF% con padding */
   const bfValues = bfDataset.map(function (p) { return p.y; }).filter(function (v) { return v !== null; });
@@ -260,8 +263,10 @@ function renderWeightBfChart(data) {
    renderStrengthChart(data)
    Grafico a linee: evoluzione storica Squat, Panca e Stacco 1RM.
    Asse X lineare con timestamp. 3 colori distinti per esercizio.
-   L'ultimo punto (massimali_tipo='S') è differenziato visivamente
-   con pointStyle 'rectRot' (rombo) vs 'circle' per i punti reali.
+   Il punto stimato (squat_1rm_tipo/panca_1rm_tipo/stacco_1rm_tipo='S')
+   è differenziato visivamente per esercizio con pointStyle 'rect'
+   (quadrato) vs 'circle' per i punti reali. Ogni esercizio ha il proprio
+   indice stimato indipendente per supportare tipi misti.
    ============================================================ */
 function renderStrengthChart(data) {
   const canvas = document.getElementById('chart-massimali');
@@ -284,7 +289,7 @@ function renderStrengthChart(data) {
     return new Date(d.data).getTime();
   });
 
-  /* Indice dell'ultimo record stimato (massimali_tipo='S') */
+  /* Indice dell'ultimo record — usato come fallback se nessun record stimato trovato */
   const lastIdx = records.length - 1;
 
   /* Colori dal design system */
@@ -299,10 +304,10 @@ function renderStrengthChart(data) {
   const COLOR_PANCA_STIMATO  = 'rgba(79,195,247,0.4)';
   const COLOR_STACCO_STIMATO = 'rgba(206,147,216,0.4)';
 
-  /* Helper: costruisce array di pointStyle (circle per reali, rectRot per stimato) */
+  /* Helper: costruisce array di pointStyle (circle per reali, rect per stimato) */
   function buildPointStyles(len, stimatoIdx) {
     return records.map(function (d, i) {
-      return i === stimatoIdx ? 'rectRot' : 'circle';
+      return i === stimatoIdx ? 'rect' : 'circle';
     });
   }
 
@@ -320,9 +325,31 @@ function renderStrengthChart(data) {
     });
   }
 
-  /* Determina l'indice stimato: cerca il record con massimali_tipo='S' */
-  const stimatoIdx = records.findIndex(function (d) { return d.massimali_tipo === 'S'; });
-  const effectiveStimato = stimatoIdx !== -1 ? stimatoIdx : lastIdx;
+  /* Determina l'indice stimato per-esercizio: legge il campo specifico xxx_1rm_tipo.
+     Fallback su massimali_tipo (legacy) se tutti e tre i campi per-esercizio sono assenti.
+     Se findIndex ritorna -1 (nessun record stimato) si usa lastIdx come fallback. */
+  const hasPerEsercizioTipo = records.some(function (d) {
+    return d.squat_1rm_tipo || d.panca_1rm_tipo || d.stacco_1rm_tipo;
+  });
+
+  let squatStimatoIdx, pancaStimatoIdx, staccoStimatoIdx;
+
+  if (hasPerEsercizioTipo) {
+    squatStimatoIdx  = records.findIndex(function (d) { return d.squat_1rm_tipo  === 'S'; });
+    pancaStimatoIdx  = records.findIndex(function (d) { return d.panca_1rm_tipo  === 'S'; });
+    staccoStimatoIdx = records.findIndex(function (d) { return d.stacco_1rm_tipo === 'S'; });
+    /* -1 = nessun record stimato → fallback lastIdx */
+    if (squatStimatoIdx  === -1) squatStimatoIdx  = lastIdx;
+    if (pancaStimatoIdx  === -1) pancaStimatoIdx  = lastIdx;
+    if (staccoStimatoIdx === -1) staccoStimatoIdx = lastIdx;
+  } else {
+    /* Record legacy senza campi per-esercizio: usa massimali_tipo globale */
+    const legacyIdx = records.findIndex(function (d) { return d.massimali_tipo === 'S'; });
+    const effectiveLegacy = legacyIdx !== -1 ? legacyIdx : lastIdx;
+    squatStimatoIdx  = effectiveLegacy;
+    pancaStimatoIdx  = effectiveLegacy;
+    staccoStimatoIdx = effectiveLegacy;
+  }
 
   /* Dataset Squat */
   const squatDataset = records.map(function (d, i) {
@@ -351,12 +378,12 @@ function renderStrengthChart(data) {
           data: squatDataset,
           borderColor: COLOR_SQUAT,
           backgroundColor: 'rgba(255,107,53,0.10)',
-          pointBackgroundColor: buildPointColors(COLOR_SQUAT, COLOR_SQUAT_STIMATO, records.length, effectiveStimato),
-          pointBorderColor: buildPointColors(COLOR_SQUAT, COLOR_SQUAT, records.length, effectiveStimato),
-          pointBorderWidth: buildPointRadius(records.length, effectiveStimato, 1, 2),
-          pointStyle: buildPointStyles(records.length, effectiveStimato),
-          pointRadius: buildPointRadius(records.length, effectiveStimato, 5, 8),
-          pointHoverRadius: buildPointRadius(records.length, effectiveStimato, 7, 10),
+          pointBackgroundColor: buildPointColors(COLOR_SQUAT, COLOR_SQUAT_STIMATO, records.length, squatStimatoIdx),
+          pointBorderColor: buildPointColors(COLOR_SQUAT, COLOR_SQUAT, records.length, squatStimatoIdx),
+          pointBorderWidth: buildPointRadius(records.length, squatStimatoIdx, 1, 2),
+          pointStyle: buildPointStyles(records.length, squatStimatoIdx),
+          pointRadius: buildPointRadius(records.length, squatStimatoIdx, 5, 8),
+          pointHoverRadius: buildPointRadius(records.length, squatStimatoIdx, 7, 10),
           borderWidth: 2,
           fill: false,
           tension: 0.3,
@@ -367,12 +394,12 @@ function renderStrengthChart(data) {
           data: pancaDataset,
           borderColor: COLOR_PANCA,
           backgroundColor: 'rgba(79,195,247,0.10)',
-          pointBackgroundColor: buildPointColors(COLOR_PANCA, COLOR_PANCA_STIMATO, records.length, effectiveStimato),
-          pointBorderColor: buildPointColors(COLOR_PANCA, COLOR_PANCA, records.length, effectiveStimato),
-          pointBorderWidth: buildPointRadius(records.length, effectiveStimato, 1, 2),
-          pointStyle: buildPointStyles(records.length, effectiveStimato),
-          pointRadius: buildPointRadius(records.length, effectiveStimato, 5, 8),
-          pointHoverRadius: buildPointRadius(records.length, effectiveStimato, 7, 10),
+          pointBackgroundColor: buildPointColors(COLOR_PANCA, COLOR_PANCA_STIMATO, records.length, pancaStimatoIdx),
+          pointBorderColor: buildPointColors(COLOR_PANCA, COLOR_PANCA, records.length, pancaStimatoIdx),
+          pointBorderWidth: buildPointRadius(records.length, pancaStimatoIdx, 1, 2),
+          pointStyle: buildPointStyles(records.length, pancaStimatoIdx),
+          pointRadius: buildPointRadius(records.length, pancaStimatoIdx, 5, 8),
+          pointHoverRadius: buildPointRadius(records.length, pancaStimatoIdx, 7, 10),
           borderWidth: 2,
           fill: false,
           tension: 0.3,
@@ -383,12 +410,12 @@ function renderStrengthChart(data) {
           data: staccoDataset,
           borderColor: COLOR_STACCO,
           backgroundColor: 'rgba(206,147,216,0.10)',
-          pointBackgroundColor: buildPointColors(COLOR_STACCO, COLOR_STACCO_STIMATO, records.length, effectiveStimato),
-          pointBorderColor: buildPointColors(COLOR_STACCO, COLOR_STACCO, records.length, effectiveStimato),
-          pointBorderWidth: buildPointRadius(records.length, effectiveStimato, 1, 2),
-          pointStyle: buildPointStyles(records.length, effectiveStimato),
-          pointRadius: buildPointRadius(records.length, effectiveStimato, 5, 8),
-          pointHoverRadius: buildPointRadius(records.length, effectiveStimato, 7, 10),
+          pointBackgroundColor: buildPointColors(COLOR_STACCO, COLOR_STACCO_STIMATO, records.length, staccoStimatoIdx),
+          pointBorderColor: buildPointColors(COLOR_STACCO, COLOR_STACCO, records.length, staccoStimatoIdx),
+          pointBorderWidth: buildPointRadius(records.length, staccoStimatoIdx, 1, 2),
+          pointStyle: buildPointStyles(records.length, staccoStimatoIdx),
+          pointRadius: buildPointRadius(records.length, staccoStimatoIdx, 5, 8),
+          pointHoverRadius: buildPointRadius(records.length, staccoStimatoIdx, 7, 10),
           borderWidth: 2,
           fill: false,
           tension: 0.3,
@@ -430,13 +457,21 @@ function renderStrengthChart(data) {
             },
             label: function (item) {
               if (item.parsed.y === null || item.parsed.y === undefined) return null;
-              /* Trova il record corrispondente tramite indice dataset */
+              /* Trova il record corrispondente tramite timestamp */
               const recIdx = records.findIndex(function (d) {
                 return new Date(d.data).getTime() === item.parsed.x;
               });
-              const tipo = recIdx !== -1 && records[recIdx].massimali_tipo
-                ? records[recIdx].massimali_tipo
-                : 'R';
+              /* Determina il campo tipo corretto per questo esercizio (per-esercizio) */
+              const labelLow = item.dataset.label.toLowerCase();
+              const tipoField = labelLow.includes('squat')
+                ? 'squat_1rm_tipo'
+                : labelLow.includes('panca')
+                  ? 'panca_1rm_tipo'
+                  : 'stacco_1rm_tipo';
+              /* Lettura campo per-esercizio con fallback su massimali_tipo (legacy) */
+              const tipo = (recIdx !== -1 && records[recIdx]?.[tipoField])
+                ? records[recIdx][tipoField]
+                : (records[recIdx]?.massimali_tipo ?? 'R');
               return ' ' + item.dataset.label + ': ' + item.parsed.y.toFixed(1) + ' kg (' + tipo + ')';
             }
           }
@@ -488,7 +523,7 @@ function renderStrengthChart(data) {
    #table-misurazioni. I dati arrivano come parametro da
    renderProgress() — nessun fetch aggiuntivo.
    Colonne sempre visibili: Data, Peso, BF%, Massa Magra,
-   Squat 1RM, Panca 1RM, Stacco 1RM, Note.
+   Squat 1RM, Panca 1RM, Stacco 1RM.
    Colonne nascoste su mobile (.col-mobile-hide):
    FFMI, Vita, Petto, Braccio, Coscia.
    Note non vuote: riga aggiuntiva .measurements-table__note-row.
@@ -548,7 +583,6 @@ function renderMeasurementsTable(data) {
   html += '<th scope="col">Squat 1RM</th>';
   html += '<th scope="col">Panca 1RM</th>';
   html += '<th scope="col">Stacco 1RM</th>';
-  html += '<th scope="col">Note</th>';
   html += '</tr></thead>';
 
   /* Righe dati */
@@ -597,24 +631,13 @@ function renderMeasurementsTable(data) {
     /* Stacco 1RM */
     html += '<td>' + cellaMassimale(d.stacco_1rm, d.stacco_1rm_tipo) + '</td>';
 
-    /* Note — icona con tooltip se presenti, altrimenti '—' */
-    if (hasNota) {
-      html += '<td><span class="td-note-icon" title="' +
-        nota.replace(/"/g, '&quot;') +
-        '" aria-label="Nota: ' +
-        nota.replace(/"/g, '&quot;') +
-        '">ⓘ</span></td>';
-    } else {
-      html += '<td class="td-muted">—</td>';
-    }
-
     html += '</tr>';
 
     /* ── Riga aggiuntiva nota (solo se presente) ── */
     if (hasNota) {
       html += '<tr class="measurements-table__note-row">';
-      /* Colspan totale colonne = 13 */
-      html += '<td colspan="13">' + nota + '</td>';
+      /* Colspan totale colonne = 12 */
+      html += '<td colspan="12">' + nota + '</td>';
       html += '</tr>';
     }
   });
@@ -811,20 +834,52 @@ function renderCircumferencesChart(data) {
 }
 
 /* ============================================================
-   renderProgress(data)
-   Funzione principale di rendering della pagina Progressi.
-   Riceve l'array di misurazioni da measurements.json.
-   I task figli aggiungono qui le chiamate alle loro render fn:
-     - renderWeightBfChart(data)     → task weight-bf-chart
-     - renderStrengthChart(data)     → task strength-chart
-     - renderCircumferencesChart(data) → task circumferences-chart
-     - renderMeasurementsTable(data) → task measurements-table
+   buildPhaseMap(historyData)
+   Costruisce una mappa id_misurazione_start → fase_teorica
+   a partire dall'array workout_history.json.
+   I record con fase_teorica null (es. il periodo aperto corrente)
+   vengono ignorati. La mappa è usata dalle funzioni render per
+   etichettare o colorare i punti del grafico in base alla fase.
+   @param {Array} historyData — array da workout_history.json (o [])
+   @returns {Object} mappa { [start_id]: fase_teorica_string }
    ============================================================ */
-function renderProgress(data) {
+function buildPhaseMap(historyData) {
+  const phaseMap = {};
+  if (!Array.isArray(historyData)) return phaseMap;
+  historyData.forEach(function (record) {
+    if (record?.fase_teorica != null && record?.start) {
+      phaseMap[record.start] = record.fase_teorica;
+    }
+  });
+  return phaseMap;
+}
+
+/* ============================================================
+   renderProgress(data, workoutHistoryData)
+   Funzione principale di rendering della pagina Progressi.
+   Riceve l'array di misurazioni da measurements.json e
+   l'array degli intervalli da workout_history.json.
+   workoutHistoryData può essere [] se il file non è disponibile:
+   la pagina funziona correttamente anche senza di esso.
+   I task figli aggiungono qui le chiamate alle loro render fn:
+     - renderWeightBfChart(data)       → task weight-bf-chart
+     - renderStrengthChart(data)       → task strength-chart
+     - renderCircumferencesChart(data) → task circumferences-chart
+     - renderMeasurementsTable(data)   → task measurements-table
+   @param {Array} data               — array misurazioni measurements.json
+   @param {Array} workoutHistoryData — array intervalli workout_history.json
+   ============================================================ */
+function renderProgress(data, workoutHistoryData) {
   if (!Array.isArray(data) || data.length === 0) {
     showError(progressErrorContainer, new Error('Array dati vuoto o non valido'));
     return;
   }
+
+  /* Normalizza workoutHistoryData: se assente o non array usa [] */
+  const historyData = Array.isArray(workoutHistoryData) ? workoutHistoryData : [];
+
+  /* Costruisce la mappa fase per le funzioni render future */
+  const phaseMap = buildPhaseMap(historyData);
 
   /* Aggiorna data ultima misurazione nell'header */
   const lastEntry = data[data.length - 1];
@@ -841,14 +896,39 @@ function renderProgress(data) {
 }
 
 /* ============================================================
-   DOMContentLoaded — fetch() + try/catch + renderProgress()
+   DOMContentLoaded — Promise.all fetch() + try/catch
+   Carica measurements.json e workout_history.json in parallelo.
+   Se workout_history.json non è disponibile (404 o errore rete)
+   si usa un fallback [] e la pagina rimane funzionante.
    ============================================================ */
 document.addEventListener('DOMContentLoaded', async function () {
   try {
-    const res = await fetch(DATA_PATH);
-    if (!res.ok) throw new Error('HTTP ' + res.status + ': ' + res.statusText);
-    const data = await res.json();
-    renderProgress(data);
+    /* Fetch measurements (critico) + workout_history (opzionale) in parallelo */
+    const [resM, resH] = await Promise.all([
+      fetch(DATA_PATH_MEASUREMENTS),
+      fetch(DATA_PATH_WORKOUT_HISTORY).catch(function (err) {
+        console.error('[progress.js] workout_history.json non disponibile (rete):', err);
+        return null;
+      })
+    ]);
+
+    /* Verifica measurements (critico: se fallisce blocca tutto) */
+    if (!resM.ok) throw new Error('HTTP ' + resM.status + ': ' + resM.statusText);
+    const measurementsData = await resM.json();
+
+    /* Verifica workout_history (opzionale: fallback []) */
+    let workoutHistoryData = [];
+    if (resH && resH.ok) {
+      try {
+        workoutHistoryData = await resH.json();
+      } catch (parseErr) {
+        console.error('[progress.js] Errore parsing workout_history.json:', parseErr);
+      }
+    } else if (resH && !resH.ok) {
+      console.error('[progress.js] workout_history.json risposta HTTP ' + resH.status + ' — uso fallback []');
+    }
+
+    renderProgress(measurementsData, workoutHistoryData);
   } catch (e) {
     showError(progressErrorContainer, e);
   }

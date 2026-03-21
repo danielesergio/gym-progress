@@ -1,0 +1,61 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "tipo": "plan",
+    "valutazione": 9,
+    "esito": "APPROVATA",
+    "numero_review": 1
+  },
+  "correzioni_applicate": [
+    {
+      "id": "C1",
+      "descrizione": "Corretto riferimento settimane Fase 8 nella strategia nutrizionale",
+      "valore_errato": "Fase 8 (settimane 37-44)",
+      "valore_corretto": "Fase 8 (settimane 41-48)",
+      "dove": "strategia_nutrizionale.fase_bulk",
+      "formula": "Somma durate Fasi 0-7: 2+4+8+6+8+6+4+2 = 40 settimane. Fase 8 inizia settimana 41, termina settimana 48 (durata 8 settimane)."
+    }
+  ],
+  "problemi_critici": [],
+  "suggerimenti": [
+    {
+      "id": "S1",
+      "descrizione": "Fase 9 troppo breve per consolidare i guadagni del bulk e testare massimali",
+      "motivazione": "4 settimane dopo 8 settimane di bulk ipertrofico non sono sufficienti per riadattare il sistema nervoso al lavoro di forza massimale e raggiungere un picco espressivo. Normalmente servono almeno 3-4 settimane di transizione forza + 2-3 settimane di peaking + test day.",
+      "proposta": "Considerare di ridurre Fase 8 (Bulk) da 8 a 6 settimane e aumentare Fase 9 (Forza Avanzata) da 4 a 6 settimane, inserendo un mini-peaking nelle ultime 2 settimane prima del test day finale. La somma rimane 52."
+    },
+    {
+      "id": "S2",
+      "descrizione": "Manca un deload esplicito tra Fase 4 (Accumulo 8 sett.) e Fase 5 (Intensificazione)",
+      "motivazione": "Il piano prevede deload ogni 6-8 settimane nei rischi, ma la transizione Fase 4 (8 settimane di lavoro pesante) -> Fase 5 (intensificazione 85-92%) non prevede scarico intermedio. Dopo 8 settimane di accumulo pesante, entrare direttamente in intensificazione aumenta il rischio di overreaching.",
+      "proposta": "Inserire una settimana di deload alla fine della Fase 4 (riducendo Fase 4 da 8 a 7 settimane + 1 settimana deload integrata), oppure specificare esplicitamente nelle note che la prima settimana della Fase 5 funziona da rampa di transizione con carichi progressivi."
+    },
+    {
+      "id": "S3",
+      "descrizione": "Fase 0 - specificare meglio le limitazioni sui rematori",
+      "motivazione": "Il rematore con busto basso e' generalmente sicuro per TOS, ma la presa e l'ampiezza del movimento vanno controllate. Una presa stretta e un ROM limitato proteggono il piccolo pettorale, mentre una presa larga e un'eccessiva retrazione potrebbe sollecitare l'area.",
+      "proposta": "Aggiungere nelle note di Fase 0: 'Rematore solo con presa stretta/neutra, ROM controllato, evitare eccessiva retrazione scapolare forzata. Se compare qualsiasi irradiazione a braccio/mano, sospendere immediatamente.'"
+    },
+    {
+      "id": "S4",
+      "descrizione": "Target 5 anni - manca stima intermedia a 2-3 anni per validare la traiettoria",
+      "motivazione": "Il salto da target 12 mesi a target 5 anni e' molto ampio. Un checkpoint intermedio a 2-3 anni aiuterebbe a validare la traiettoria e ad aggiustare il piano se necessario. Esempio: squat da 157 (12 mesi) a 200 (5 anni) richiede +43 kg in 4 anni, ovvero ~10.75 kg/anno, leggermente sotto il rate corretto attuale di 11.4 kg/anno - coerente ma non verificabile senza milestone.",
+      "proposta": "Aggiungere un target intermedio a 2 anni (2028-03) e uno a 3 anni (2029-03) con valori calcolati sui rate corretti, come checkpoint di verifica."
+    },
+    {
+      "id": "S5",
+      "descrizione": "Strategia nutrizionale - mancano indicazioni caloriche specifiche per Fasi 4-6 (surplus forza)",
+      "motivazione": "La sezione fase_mantenimento dice genericamente 'Fasi 3-7: mantenimento a ~2870 kcal, piccolo surplus +100/+200 nelle fasi di intensificazione forza', ma le Fasi 4 e 5 prevedono surplus +200/+300 nella metodologia. C'e' una lieve incoerenza tra la strategia nutrizionale centralizzata e le indicazioni nelle singole fasi.",
+      "proposta": "Allineare la sezione strategia_nutrizionale specificando: Fase 3 mantenimento 2870, Fase 4-5 surplus +200/+300 (3070-3170 kcal), Fasi 6-7 ritorno a mantenimento."
+    }
+  ],
+  "punti_di_forza": [
+    "Gestione infortunio TOS eccellente: eliminazione totale degli esercizi a rischio in Fase 0, reintroduzione condizionata al dolore zero in Fase 1, e monitoraggio continuo nelle fasi successive. Approccio conservativo e sicuro.",
+    "Decisione corretta di NON fare cut durante infortunio attivo, con spiegazione chiara delle ragioni fisiologiche (catabolismo, guarigione rallentata). Il mini-cut posticipato alla Fase 2 e' la scelta ottimale.",
+    "Target numerici perfettamente calcolati sui rate di progressione storica con fattori correttivi appropriati (-30% infortunio, -10% eta'). Nessun target ottimistico o irrealistico.",
+    "Somma delle durate fasi = 52 settimane esatte, copertura completa dell'anno.",
+    "Periodizzazione logica e ben strutturata: recupero -> ripresa -> cut controllato -> transizione forza -> accumulo -> intensificazione -> peaking -> deload -> bulk -> forza finale. La sequenza ha senso biomeccanico e fisiologico.",
+    "Sezione rischi completa e actionable con strategie preventive concrete per ogni area identificata.",
+    "Buona integrazione delle preferenze dell'atleta (metodologia ramping/MAV) nella Fase 4."
+  ]
+}

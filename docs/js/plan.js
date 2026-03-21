@@ -25,7 +25,7 @@ async function renderPlan() {
 
     renderTimeline(planData);
     renderStrengthTargets(planData);
-    // I task figli completeranno: renderNutritionStrategy(planData)
+    renderNutritionStrategy(planData);
 
   } catch (err) {
     console.error('[plan.js] Errore nel caricamento di plan.json:', err);
@@ -216,4 +216,126 @@ function renderError(containerId, message) {
   if (el) {
     el.innerHTML = `<p class="plan-placeholder">${message}</p>`;
   }
+}
+
+// ── Strategia Nutrizionale ────────────────────────────────
+
+/**
+ * Renderizza la strategia nutrizionale nel container #plan-nutrition-container.
+ * Legge planData.strategia_nutrizionale (oggetto con chiavi descrittive) e
+ * produce card per: fase corrente (ora), fasi dieta (mini-cut/mantenimento/bulk),
+ * trigger, macronutrienti, note generali.
+ * @param {Object} planData — dati completi da plan.json
+ * @returns {void}
+ */
+function renderNutritionStrategy(planData) {
+  const container = document.getElementById('plan-nutrition-container');
+  if (!container) return;
+
+  const strategia = planData?.strategia_nutrizionale;
+  if (!strategia) {
+    renderError('plan-nutrition-container', 'Strategia nutrizionale non disponibile.');
+    return;
+  }
+
+  // Determina la fase corrente per evidenziare la sezione più rilevante
+  const fasi = planData?.fasi;
+  const faseCorrente = Array.isArray(fasi) ? fasi.find(f => f.stato === 'corrente') : null;
+  const nomeF = faseCorrente ? `Fase ${faseCorrente.numero} — ${faseCorrente.nome}` : null;
+
+  // ── Sezione "Ora" / Fase corrente ──
+  const labelOra = nomeF ? `Adesso: ${nomeF}` : 'Approccio Attuale';
+  const testoOra = strategia.ora ?? '—';
+
+  // ── Fasi dieta ──
+  const fasiDieta = [
+    {
+      label: 'Fase 2 — Mini-Cut',
+      testo: strategia.fase_mini_cut ?? '—',
+    },
+    {
+      label: 'Fasi 3-7 — Mantenimento',
+      testo: strategia.fase_mantenimento ?? '—',
+    },
+    {
+      label: 'Fase 8 — Bulk',
+      testo: strategia.fase_bulk ?? '—',
+    },
+  ];
+
+  // ── Trigger ──
+  const triggerCut = strategia.trigger_cut ?? '—';
+  const triggerBulk = strategia.trigger_bulk ?? '—';
+
+  // ── Macronutrienti ──
+  const macro = strategia.macronutrienti;
+  const proteineGPerKg = macro?.proteine_g_per_kg != null ? macro.proteine_g_per_kg : '—';
+  const carboidrati = macro?.carboidrati ?? '—';
+  const grassi = macro?.grassi ?? '—';
+
+  // ── Note finali ──
+  const noteFinali = strategia.note ?? '—';
+
+  // ── Build HTML ──
+  const cardeFasiDieta = fasiDieta.map(f => `
+    <div class="plan-nutrition-card">
+      <p class="plan-nutrition-card-title">${f.label}</p>
+      <p class="plan-nutrition-card-text">${f.testo}</p>
+    </div>
+  `.trim()).join('');
+
+  const html = `
+    <div class="plan-nutrition-card plan-nutrition-card--current">
+      <p class="plan-nutrition-card-title">${labelOra}</p>
+      <p class="plan-nutrition-card-text">${testoOra}</p>
+    </div>
+
+    <div class="plan-nutrition-grid">
+      ${cardeFasiDieta}
+    </div>
+
+    <div class="plan-nutrition-triggers">
+      <div class="plan-nutrition-card">
+        <p class="plan-nutrition-card-title">⚠ Trigger Cut</p>
+        <p class="plan-nutrition-card-text">${triggerCut}</p>
+      </div>
+      <div class="plan-nutrition-card">
+        <p class="plan-nutrition-card-title">↑ Trigger Bulk</p>
+        <p class="plan-nutrition-card-text">${triggerBulk}</p>
+      </div>
+    </div>
+
+    <div class="plan-nutrition-macros">
+      <p class="plan-nutrition-card-title">Macronutrienti di riferimento</p>
+      <table class="plan-nutrition-macros-table" aria-label="Ripartizione macronutrienti">
+        <thead>
+          <tr>
+            <th scope="col">Nutriente</th>
+            <th scope="col">Target</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Proteine</th>
+            <td>${proteineGPerKg} g/kg/die</td>
+          </tr>
+          <tr>
+            <th scope="row">Carboidrati</th>
+            <td>${carboidrati}</td>
+          </tr>
+          <tr>
+            <th scope="row">Grassi</th>
+            <td>${grassi}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="plan-nutrition-note">
+      <p class="plan-nutrition-card-title">Note generali</p>
+      <p class="plan-nutrition-card-text">${noteFinali}</p>
+    </div>
+  `.trim();
+
+  container.innerHTML = html;
 }

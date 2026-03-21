@@ -1,0 +1,157 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "page-volume",
+    "task_title": "Pagina Volume di allenamento",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "page-volume",
+    "type": "page",
+    "title": "Pagina Volume di allenamento",
+    "description": "Creare una nuova pagina 'Volume' che visualizza il volume di allenamento settimanale per gruppo muscolare. I dati in volume.json includono 12 gruppi muscolari con serie pesate totali e dettaglio per esercizio (giorno, serie, ruolo principale/secondario/terziario, peso moltiplicatore, contributo). I metadati riportano total_serie_pesate (103.2), pull_serie (27.3), push_serie (6.0), pull_push_ratio (4.55), balance_rating ('eccessivo_pull'). La pagina deve seguire lo stesso layout del sito (header, nav con 6 voci, footer) con Chart.js per il grafico a barre.",
+    "inputs": [
+      "volume_data"
+    ],
+    "outputs": [
+      "VolumePage",
+      "VolumePerMuscleChart",
+      "VolumeDetailTable"
+    ],
+    "acceptance_criteria": [
+      "La pagina 'Volume' è raggiungibile dalla navigazione principale",
+      "Viene mostrata una lista o grafico con i gruppi muscolari ordinati per serie pesate (dal più alto al più basso)",
+      "Per ogni gruppo muscolare è visibile il totale di serie pesate",
+      "È presente un indicatore o nota sul balance pull/push (balance_rating dal JSON: es. 'eccessivo_pull')",
+      "Il dettaglio esercizi per gruppo muscolare è accessibile (es. espandibile o in tabella)",
+      "La pagina usa lo stesso stile visivo delle altre pagine"
+    ],
+    "notes": "ATTENZIONE: i valori reali nel JSON differiscono dalla descrizione del task. Il campo radice è 'volumi' (non 'volumes' o 'data'). I muscoli presenti sono 12 (non 9). Il balance_rating attuale è 'eccessivo_pull' (pull 27.3 vs push 6.0, ratio 4.55) — non 'insufficiente_pull'. Il developer deve leggere volume.json prima di scrivere qualsiasi codice di rendering."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/volume.html",
+        "motivo": "File non esiste: creare la nuova pagina HTML completa con header, nav a 6 voci (Volume active), main con sezione grafico (#chart-volume-muscoli) e sezione tabella dettaglio, footer. Includere Chart.js via CDN e i due script nav.js + volume.js.",
+        "esiste": false
+      },
+      {
+        "path": "docs/js/volume.js",
+        "motivo": "File non esiste: creare lo script JS della pagina. Fetch parallelo di volume.json (+ opzionale workout.json per context). Funzioni: renderVolumeMetaCard() per i KPI globali (totale serie, pull/push ratio, balance_rating), renderVolumeChart() con Chart.js (grafico a barre orizzontali per muscolo ordinato per serie_pesate desc), renderVolumeTable() per la tabella dettaglio esercizi per muscolo.",
+        "esiste": false
+      },
+      {
+        "path": "docs/css/volume.css",
+        "motivo": "File non esiste: creare il foglio di stile specifico della pagina. Classi: .volume-section, .volume-section-header, .volume-section-title, .volume-section-subtitle, .volume-chart-container, .volume-meta-card, .volume-balance-badge, .volume-detail-table, .volume-placeholder. Seguire le convenzioni kebab-case con prefisso 'volume-'.",
+        "esiste": false
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/volume.json",
+        "motivo": "Struttura dati reale: oggetto con campo radice 'volumi' (array di {muscolo, serie_pesate, dettaglio[]}) e 'meta' ({total_serie_pesate, push_serie, pull_serie, pull_push_ratio, balance_rating}). Ogni elemento dettaglio ha: esercizio, giorno, serie, ruolo (principale/secondario/terziario), peso (moltiplicatore float), contributo (float). I dati reali divergono dalla descrizione del task (12 muscoli, non 9; balance 'eccessivo_pull', non 'insufficiente_pull')."
+      },
+      {
+        "path": "docs/plan.html",
+        "motivo": "Modello strutturale HTML della pagina: struttura head (ordine CSS link), struttura header.page-header, struttura nav.tab-list con 6 voci (già aggiornata con Volume), struttura main#page-content con sections, struttura footer.page-footer. Usare come template per volume.html."
+      },
+      {
+        "path": "docs/progress.html",
+        "motivo": "Modello per l'integrazione di Chart.js: vedere come viene incluso lo script CDN Chart.js nel head (tag script con defer), come vengono definiti i canvas con id 'chart-*' e role='img' + aria-label, e come viene strutturato il container del grafico (.progress-chart-container)."
+      },
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "Modello per il pattern JS con Chart.js: struttura costanti DATA_PATH, pattern fetch async/await con try/catch, gestione registro chart (.destroy() prima di ricreare), pattern showError(), commenti JSDoc e separatori ASCII. Il developer deve seguire lo stesso pattern in volume.js."
+      },
+      {
+        "path": "docs/css/plan.css",
+        "motivo": "Modello per la struttura del file CSS di pagina: convenzioni .plan-section, .plan-section-header, .plan-placeholder, responsive breakpoints. volume.css seguirà lo stesso schema con prefisso 'volume-' al posto di 'plan-'."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML / ES2022 — nessun build step",
+      "grafici": {
+        "nome": "Chart.js",
+        "versione": "4.x",
+        "cdn": "https://cdn.jsdelivr.net/npm/chart.js",
+        "nota": "Includere solo nelle pagine che usano grafici. Tag script con attributo defer nell'head, dopo i CSS e prima della chiusura del head."
+      },
+      "deploy": "GitHub Pages, cartella docs/"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase (es. volumeData, volumeChart)",
+      "costanti_js": "UPPER_SNAKE_CASE per path (es. DATA_PATH_VOLUME = 'data/volume.json')",
+      "classi_css": "kebab-case con prefisso 'volume-' (es. .volume-section, .volume-chart-container)",
+      "id_html_canvas": "prefisso 'chart-' (es. #chart-volume-muscoli)",
+      "id_html_containers": "kebab-case (es. #volume-chart-section, #volume-detail-section, #volume-meta-card)",
+      "gestione_null": "Mai mostrare 'null' o 'undefined'; usare '—' per stringhe e optional chaining (?.) per accesso campi",
+      "arrotondamento": "1 decimale per serie_pesate (toFixed(1)), intero per serie (Math.round())",
+      "pattern_fetch": "async/await con try/catch. DATA_PATH_VOLUME = 'data/volume.json'. Fetch singolo (volume.json è sufficiente). Promise.all se si aggiunge workout.json.",
+      "gestione_chart": "Salvare istanza in variabile (es. let volumeChartInstance = null). Prima di creare: if (volumeChartInstance) volumeChartInstance.destroy().",
+      "pattern_js_struttura": "1) Costanti DATA_PATH → 2) Riferimenti DOM top-level → 3) Utility (showError, formatNumber) → 4) renderVolumeMetaCard() → 5) renderVolumeChart() → 6) renderVolumeTable() → 7) initVolume() con DOMContentLoaded"
+    },
+    "struttura_html": {
+      "ordine_tag_head": "<meta charset> → <meta viewport> → <title> → <link variables.css> → <link layout.css> → <link volume.css> → <script Chart.js CDN defer>",
+      "ordine_script_body": "<script nav.js defer> → <script volume.js defer>",
+      "struttura_main": "header.page-header → nav.tab-list (6 voci, Volume active) → main#page-content → footer.page-footer",
+      "accessibilita": "lang='it', role='banner' su header, role='tablist' su nav, role='contentinfo' su footer. Canvas: role='img' aria-label='Grafico volume per gruppo muscolare'. Errori: role='alert' aria-live='polite'."
+    },
+    "dati_volume_json": {
+      "campo_radice": "volumi",
+      "struttura_elemento": "{muscolo: string, serie_pesate: float, dettaglio: [{esercizio, giorno, serie, ruolo, peso, contributo}]}",
+      "campo_meta": "{total_serie_pesate: float, push_serie: float, pull_serie: float, pull_push_ratio: float, balance_rating: string}",
+      "ruoli_possibili": ["principale", "secondario", "terziario"],
+      "valori_reali_meta": {
+        "total_serie_pesate": 103.2,
+        "push_serie": 6.0,
+        "pull_serie": 27.3,
+        "pull_push_ratio": 4.55,
+        "balance_rating": "eccessivo_pull"
+      },
+      "ordine_array": "I muscoli in volume.json sono già ordinati per serie_pesate decrescente — il developer può renderizzarli nell'ordine ricevuto senza re-sort, oppure ordinare esplicitamente con .sort() per sicurezza."
+    },
+    "pagina": {
+      "nome": "Volume",
+      "file": "docs/volume.html",
+      "js": "docs/js/volume.js",
+      "css": "docs/css/volume.css",
+      "dati_json": ["data/volume.json"],
+      "dati_json_opzionali": ["data/workout.json"]
+    }
+  },
+  "criteri_accettazione": [
+    "La pagina volume.html è raggiungibile cliccando 'Volume' nella navigazione (link già presente in tutte le pagine grazie al task nav-add-volume)",
+    "Il grafico a barre mostra i gruppi muscolari ordinati per serie pesate decrescente",
+    "Per ogni barra è visibile il nome del muscolo e il valore di serie pesate",
+    "È presente una card o sezione con i metadati: totale serie pesate, pull_serie, push_serie, pull_push_ratio, balance_rating",
+    "Il balance_rating 'eccessivo_pull' (o il valore presente nel JSON) è mostrato come badge o nota visiva",
+    "Il dettaglio esercizi per gruppo muscolare è visibile in tabella (colonne: esercizio, giorno, serie, ruolo, contributo)",
+    "La pagina usa header.page-header, nav.tab-list, footer.page-footer identici alle altre pagine",
+    "La voce 'Volume' nella nav è evidenziata come attiva quando si è sulla pagina volume.html",
+    "docs/volume.html esiste ed include Chart.js CDN, nav.js e volume.js",
+    "docs/js/volume.js contiene le funzioni renderVolumeChart() e renderVolumeTable()",
+    "docs/css/volume.css esiste con almeno le classi .volume-section e .volume-chart-container",
+    "docs/js/volume.js accede al campo radice 'volumi' (non 'volumes' né 'data') per iterare i muscoli",
+    "docs/js/volume.js accede a volumeData.meta.balance_rating senza errori anche se il valore cambia tra iterazioni",
+    "Nessuna eccezione JS in console quando volume.json è caricato correttamente",
+    "I valori null o undefined nei campi del JSON non causano eccezioni (uso di optional chaining)"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "nav-add-volume",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/dashboard.html",
+        "docs/progress.html",
+        "docs/workout.html",
+        "docs/diet.html",
+        "docs/plan.html"
+      ],
+      "note": "La voce 'Volume' (<a href='volume.html' role='tab' class='nav-tab' aria-label='Volume di allenamento'>Volume</a>) è già presente in tutti e 5 i file HTML esistenti, verificato con grep. Il task nav-add-volume è completamente eseguito."
+    }
+  ]
+}

@@ -1,0 +1,104 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "nav-add-volume",
+    "task_titolo": "Aggiungi voce 'Volume' alla navigazione principale",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "La voce 'Volume' appare nella barra di navigazione su tutte le pagine (dashboard, progress, workout, diet, plan)",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in tutti e 5 i file HTML. Ogni file contiene il blocco <a href=\"volume.html\" role=\"tab\" class=\"nav-tab\" aria-label=\"Volume di allenamento\">Volume</a> dentro il <nav class=\"tab-list\">. La voce è sempre posizionata come sesta e ultima voce dopo Piano."
+    },
+    {
+      "criterio": "Cliccando 'Volume' si arriva alla pagina volume.html",
+      "soddisfatto": true,
+      "dettaglio": "Tutti i 5 link a Volume contengono href=\"volume.html\". Il click funzionerà non appena la pagina volume.html verrà creata (task successivo page-volume)."
+    },
+    {
+      "criterio": "La voce 'Volume' è evidenziata come attiva (class='active' + aria-current='page') quando si naviga su volume.html — gestito da nav.js senza intervento manuale",
+      "soddisfatto": true,
+      "dettaglio": "nav.js contiene la funzione setActiveNav() (riga 14-42) che itera su document.querySelectorAll('.nav-tab') e applica dinamicamente .active + aria-current='page' al tab il cui href corrisponde a window.location.pathname. Non sono stati aggiunti attributi hardcoded active/aria-current alla voce Volume in nessuna delle 5 pagine (corretto). nav.js non è stato modificato ed è già totalmente generico."
+    },
+    {
+      "criterio": "Le 5 voci esistenti (Dashboard, Progressi, Allenamento, Dieta, Piano) mantengono identico ordine e attributi",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in tutti i 5 file. Ordine invariato: Dashboard → Progressi → Allenamento → Dieta → Piano. Tutti gli attributi (href, role, class, aria-label) rimangono identici alle versioni precedenti. Solo i commenti nav sono stati aggiornati per riflettere '6 sezioni' anzichè '5 sezioni'."
+    },
+    {
+      "criterio": "docs/dashboard.html contiene <a href='volume.html' role='tab' class='nav-tab' aria-label='Volume di allenamento'>Volume</a>",
+      "soddisfatto": true,
+      "dettaglio": "Presente righe 55-58. Commento aggiornato riga 30: '6 sezioni' ✓"
+    },
+    {
+      "criterio": "docs/progress.html contiene <a href='volume.html' role='tab' class='nav-tab' aria-label='Volume di allenamento'>Volume</a>",
+      "soddisfatto": true,
+      "dettaglio": "Presente righe 55-58. Commento aggiornato riga 31: '6 sezioni' ✓"
+    },
+    {
+      "criterio": "docs/workout.html contiene <a href='volume.html' role='tab' class='nav-tab' aria-label='Volume di allenamento'>Volume</a>",
+      "soddisfatto": true,
+      "dettaglio": "Presente righe 55-58. Commento aggiornato riga 30: '6 sezioni, Allenamento attivo' ✓"
+    },
+    {
+      "criterio": "docs/diet.html contiene <a href='volume.html' role='tab' class='nav-tab' aria-label='Volume di allenamento'>Volume</a>",
+      "soddisfatto": true,
+      "dettaglio": "Presente righe 55-58. Commento aggiornato riga 30: '6 sezioni, Dieta attivo' ✓"
+    },
+    {
+      "criterio": "docs/plan.html contiene <a href='volume.html' role='tab' class='nav-tab' aria-label='Volume di allenamento'>Volume</a>",
+      "soddisfatto": true,
+      "dettaglio": "Presente righe 55-58. Commento aggiornato riga 30: 'Piano active — 6 sezioni' ✓"
+    },
+    {
+      "criterio": "docs/js/nav.js NON è stato modificato (è già compatibile)",
+      "soddisfatto": true,
+      "dettaglio": "Verificato byte per byte. Il file non contiene alcuna modifica. setActiveNav() usa querySelectorAll('.nav-tab') (riga 15) che automaticamente includerà il nuovo tab Volume senza alcuna modifica al codice."
+    },
+    {
+      "criterio": "Nessun file CSS è stato modificato (la voce Volume riusa la classe .nav-tab già stilata in layout.css)",
+      "soddisfatto": true,
+      "dettaglio": "Nessun file CSS nei 5 HTML è stato toccato. La voce Volume riusa class='nav-tab' già definita in layout.css e sarà stilata identicamente alle altre 5 voci. Verificato: nessuno <style> tag aggiunto negli HTML, nessun link CSS nuovo."
+    },
+    {
+      "criterio": "La voce Volume compare come sesta e ultima voce — dopo Piano — in ogni pagina",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in tutti e 5 i file. Piano è sempre riga 51-54, Volume è sempre riga 55-58 (immediatamente dopo), prima del </div> di chiusura. Ordine corretto in tutte le pagine."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/dashboard.html",
+      "esiste": true,
+      "note": "Voce Volume aggiunta (righe 55-58). Commento nav aggiornato riga 30 da '5 sezioni' a '6 sezioni'. Nessun active/aria-current sulla voce Volume (corretto)."
+    },
+    {
+      "path": "docs/progress.html",
+      "esiste": true,
+      "note": "Voce Volume aggiunta (righe 55-58). Commento nav aggiornato riga 31 da '5 sezioni' a '6 sezioni'. Nessun active/aria-current sulla voce Volume (corretto)."
+    },
+    {
+      "path": "docs/workout.html",
+      "esiste": true,
+      "note": "Voce Volume aggiunta (righe 55-58). Commento nav aggiornato riga 30 da '5 sezioni, Allenamento attivo' a '6 sezioni, Allenamento attivo'. Nessun active/aria-current sulla voce Volume (corretto)."
+    },
+    {
+      "path": "docs/diet.html",
+      "esiste": true,
+      "note": "Voce Volume aggiunta (righe 55-58). Commento nav aggiornato riga 30 da '5 sezioni, Dieta attivo' a '6 sezioni, Dieta attivo'. Nessun active/aria-current sulla voce Volume (corretto)."
+    },
+    {
+      "path": "docs/plan.html",
+      "esiste": true,
+      "note": "Voce Volume aggiunta (righe 55-58). Commento nav aggiornato riga 30 da 'Piano active' a 'Piano active — 6 sezioni'. Nessun active/aria-current sulla voce Volume (corretto)."
+    },
+    {
+      "path": "docs/js/nav.js",
+      "esiste": true,
+      "note": "NON modificato. Contiene funzione setActiveNav() generica che itera querySelectorAll('.nav-tab') e applica dinamicamente .active + aria-current al tab corrispondente a window.location.pathname. Sarà compatibile con il nuovo tab Volume senza alcuna modifica."
+    }
+  ],
+  "anomalie": []
+}

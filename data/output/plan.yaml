@@ -1,199 +1,136 @@
 meta:
-  data_aggiornamento: "2026-03-20"
+  data_aggiornamento: "2026-03-21"
   atleta: "Daniele"
 
 situazione:
-  infortunio: "Sindrome TOS (Thoracic Outlet Syndrome) da infiammazione/contrattura del piccolo pettorale — fermo da 3 settimane, attualmente in via di guarigione"
+  infortunio: "Sindrome TOS (Thoracic Outlet Syndrome) da probabile infiammazione/contrattura del piccolo pettorale. Fermo 3 settimane, in via di guarigione. Dolore a trazioni, panca piana, military press e movimenti che coinvolgono pettorale/spalla in abduzione."
   note: |
-    Prima iterazione del programma strutturato. L'atleta ha un background solido (4 anni palestra + 30 anni sport)
-    e massimali discreti per il livello intermedio. L'infortunio TOS impone prudenza assoluta nelle prime fasi:
-    vietati tutti gli esercizi che coinvolgono pettorale, spalle overhead e trazioni con grip stretto.
-    Sulla questione cut: con peso 87.2 kg e vita 89 cm si stima un BF intorno al 15-17%.
-    Il target di 95 kg a BF <=13% richiede un aumento netto di massa magra (~+10 kg) e una riduzione del grasso.
-    Un cut aggressivo durante la guarigione comprometterebbe il recupero muscolare e i progressi di forza.
-    Strategia consigliata: mantenimento calorico/lieve deficit durante recupero TOS (fasi 0-1),
-    poi recomposizione/lieve surplus nelle fasi successive puntando a qualita' del peso piuttosto che a un cut dedicato.
-    Cut formale solo se BF supera il 17% o se l'atleta lo richiede esplicitamente dopo rivalutazione.
+    Atleta 38 anni, livello intermedio, 4 anni palestra + 30 anni sport (calcio/pallavolo).
+    BF attuale 17.1% - sopra target (<=13%). Peso 87.2 kg, target 95 kg con BF<=13%.
+    L'atleta chiede se fare cut prima di riprendere il bulk: considerata la situazione
+    (infortunio attivo, BF 17.1% non critico, necessita' di recuperare forza post-stop),
+    si raccomanda di NON fare un cut aggressivo adesso. Meglio mantenimento calorico durante
+    la fase di recupero (preserva massa muscolare e favorisce guarigione), poi un mini-cut
+    controllato di 8 settimane a partire dalla Fase 2, e infine riprendere il bulk con
+    l'intensificazione della forza. Il cut in deficit calorico profondo mentre si e'
+    infortunati rallenta la guarigione e accelera la perdita di massa magra.
 
 massimali_attuali:
   squat: 145.8
   panca: 116.7
   stacco: 198.3
 
-# Rate corretti (infortunio -30%, eta' -10%): Squat 9.3 kg/anno, Panca 5.9 kg/anno, Stacco 15.4 kg/anno
 target:
   - orizzonte: "3 mesi"
     data: "2026-06"
-    squat: 148.1
-    panca: 118.2
-    stacco: 202.2
-    note: "Proiezione conservativa: rate corretto * 0.25 anno. Limitato dall'infortunio TOS e dalla fase di ripresa."
-
+    squat: 149
+    panca: 118
+    stacco: 203
+    note: "Rate corretti: squat 11.4/anno, panca 6.8/anno, stacco 19.9/anno. Fattore infortunio -30% e eta' -10% gia' inclusi. Target conservativo data la fase di recupero."
   - orizzonte: "6 mesi"
     data: "2026-09"
-    squat: 150.5
-    panca: 119.7
-    stacco: 206.0
-    note: "Proiezione a rate corretto pieno * 0.5 anno. Infortunio risolto, forza in ripresa regolare."
-
+    squat: 152
+    panca: 120
+    stacco: 208
+    note: "Progressione lineare sui rate corretti. Entro questa data si prevede piena ripresa da TOS e ripristino volume di allenamento."
   - orizzonte: "12 mesi"
     data: "2027-03"
-    squat: 155.1
-    panca: 122.6
-    stacco: 213.7
-    note: "Proiezione a rate corretto * 1 anno. Target ambizioso ma realistico con continuita' di allenamento."
-
-  - orizzonte: "Lungo termine (2-5 anni)"
-    data: "2028-2031"
+    squat: 157
+    panca: 124
+    stacco: 218
+    note: "Proiezione a 12 mesi con rate annuali corretti. Target finale annuale. Squat 157 vs obiettivo 200 (a lungo termine 2-5 anni), panca 124 vs obiettivo 150, stacco 218 vs obiettivo 250."
+  - orizzonte: "5 anni"
+    data: "2031-03"
     squat: 200
     panca: 150
     stacco: 250
-    note: |
-      Target dichiarati dall'atleta. Con progressione costante e senza infortuni maggiori,
-      Squat 200 kg e Stacco 250 kg sono raggiungibili in 2-3 anni.
-      Panca 150 kg richiede 3-5 anni dato il rate piu' lento storico (5.9 kg/anno corretti).
-      Peso corporeo 95 kg a BF <=13%: da raggiungere tramite cicli alternati di lean bulk e recomp,
-      non con un unico cut prolungato che comprometterebbe i progressi di forza.
+    note: "Target atleta a lungo termine. Raggiungibile con progressione costante e senza infortuni maggiori. Richiede mantenimento rate storico."
 
-# TOTALE SETTIMANE: 2 + 4 + 8 + 2 + 8 + 6 + 2 + 8 + 8 + 4 = 52
 fasi:
   - numero: 0
     nome: "Recupero TOS"
     durata_settimane: 2
-    periodo_indicativo: "2026-03 / 2026-04 (settimane 1-2)"
-    obiettivo: "Riprendere a muoversi senza sollecitare il piccolo pettorale e le strutture TOS"
-    metodologia: "Sessioni brevi (45-60 min), 3x/settimana. Focus su gambe, schiena bassa, core e mobilita'. Zero esercizi overhead, zero panca, zero trazioni, zero dip."
-    esercizi_vietati:
-      - "Panca piana (qualsiasi variante)"
-      - "Dip"
-      - "Military Press / Overhead Press"
-      - "Trazioni e lat machine con grip stretto"
-      - "Fly / Cable crossover"
-      - "Rematore con bilanciere (angolo potenzialmente problematico)"
-    esercizi_consentiti:
-      - "Squat (se non aggrava)"
-      - "Romanian Deadlift (RDL)"
-      - "Leg press / Leg curl / Leg extension"
-      - "Core: plank, dead bug, pallof press"
-      - "Mobilita': stretching piccolo pettorale, capsule spalla, scaleni"
-    note: "Priorita' assoluta alla guarigione. Non forzare nulla. Valutare quotidianamente il dolore."
-
+    obiettivo: "Riprendere il movimento senza sollecitare il piccolo pettorale. Mantenere forza generale su lower body e schiena neutrale."
+    metodologia: "Allenamento adattato: ZERO esercizi che coinvolgono pettorale/spalla in adduzione o abduzione. Focus su lower body (squat, stacco leggero, leg press), core, e schiena (rematore con busto basso, facepull con elastico). Carichi al 60-65% 1RM, RPE massimo 7. 3 sessioni/settimana."
+    note: "Priorita' assoluta alla guarigione. Se compare dolore, fermarsi immediatamente. Nessuna panca, nessuna trazione, nessun overhead. Consultare fisioterapista se i sintomi non migliorano."
   - numero: 1
     nome: "Ripresa Graduale"
     durata_settimane: 4
-    periodo_indicativo: "2026-04 / 2026-05 (settimane 3-6)"
-    obiettivo: "Reintrodurre progressivamente i pattern motori fondamentali con carichi ridotti (50-60% 1RM)"
-    metodologia: "3-4 sessioni/settimana, split Lower + Full body leggero. Rep range 8-10, intensita' 50-65% 1RM. Priorita' tecnica e sensazione muscolare. Reintroduzione rematore con presa neutra (se tollerato), lat machine presa larga, squat e stacco progressivo."
-    note: "Panca piana e overhead ancora vietati. Reintrodurre solo in assenza totale di dolore. Aumentare carichi solo se TOS completamente risolto."
-
+    obiettivo: "Reintrodurre progressivamente gli esercizi upper body, testare la risposta del pettorale/spalla. Ricostruire il pattern motorio dei compound."
+    metodologia: "Reintroduzione graduale: rematore, lat machine presa larga, tirate al petto (non alle spalle). Panca inclinata leggera con manubri solo se ZERO dolore. Squat e stacco progressione normale. 3-4 sessioni/settimana, RPE massimo 7-8."
+    note: "Aumentare carichi solo se assenza totale di sintomi TOS. Monitorare attentamente qualsiasi fastidio a spalla/petto/collo."
   - numero: 2
-    nome: "Forza Base — Ricostruzione post-infortunio"
+    nome: "Mini-Cut + Ipertrofia Moderata"
     durata_settimane: 8
-    periodo_indicativo: "2026-05 / 2026-07 (settimane 7-14)"
-    obiettivo: "Riportare i massimali al livello pre-infortunio e costruire base solida con progressione lineare"
-    metodologia: "4 sessioni/settimana (Upper/Lower). Intensita' 65-80% 1RM, rep basse (3-6), progressione lineare settimanale tipo 5x5. Reintroduzione graduale panca e overhead SOLO se TOS completamente risolto."
-    note: "Alimentazione: mantenimento calorico o lieve surplus (+100-150 kcal/die) per supportare il recupero muscolare. Evitare deficit significativo in questa fase."
-
+    obiettivo: "Ridurre BF dal 17.1% verso 14-15% mantenendo o incrementando leggermente la massa magra. Consolidare tecnica compound."
+    metodologia: "Deficit calorico moderato (-300/-400 kcal/die, mai sotto 2400 kcal). Allenamento ipertrofia con volume medio-alto: 3-4x8-12 sui principali, accessori 3x10-15. Frequenza 4 sessioni/settimana (Upper/Lower split). Progressione doppia progressione (aggiungi reps, poi aggiungi peso). Reintroduzione panca piana solo se pettorale completamente guarito."
+    note: "Il cut aggressivo e' sconsigliato durante il recupero. Un mini-cut controllato di 8 settimane con deficit moderato permette di abbassare il BF senza compromettere la guarigione ne' la forza. Target BF fine fase: 14-15%."
   - numero: 3
-    nome: "Transizione e Rivalutazione"
-    durata_settimane: 2
-    periodo_indicativo: "2026-07 (settimane 15-16)"
-    obiettivo: "Deload attivo + test massimali + rivalutazione BF e composizione corporea"
-    metodologia: "Settimana 1: deload attivo (volume -40%, intensita' -20%). Settimana 2: test 1RM Squat, Panca, Stacco. Misurazioni complete."
-    note: "Decisione critica: in base al BF misurato, si decide se proseguire in surplus (lean bulk) o iniziare fase di cut controllato (solo se BF > 17%)."
-
-  - numero: 4
-    nome: "Ipertrofia Funzionale — Estate"
-    durata_settimane: 8
-    periodo_indicativo: "2026-07 / 2026-09 (settimane 17-24)"
-    obiettivo: "Aumento massa magra con metodologie miste (ipertrofia + mantenimento forza). Target +1-1.5 kg massa magra."
-    metodologia: "4 sessioni/settimana, split Upper/Lower. Rep range 6-12, tecniche: ramping, MAV 3, rest-pause sugli accessori. Volume alto (16-20 serie/gruppo/settimana). Surplus controllato +200-300 kcal/die."
-    note: "Se BF > 17% a fine fase 3, applicare deficit moderato (-300 kcal) invece del surplus. Monitorare vita ogni 4 settimane."
-
-  - numero: 5
-    nome: "Forza Intensiva — Autunno"
+    nome: "Transizione Forza Base"
     durata_settimane: 6
-    periodo_indicativo: "2026-09 / 2026-10 (settimane 25-30)"
-    obiettivo: "Massimizzare espressione di forza sui big 3 con lavoro ad alta intensita' (80-90% 1RM)"
-    metodologia: "4 sessioni/settimana. Intensita' crescente settimana su settimana. Set principali 1-5 reps con progressione wave-loading o 5/3/1 Wendler. Accessori ridotti: qualita' sopra quantita'."
-    note: "Alimentazione: surplus moderato (+150-200 kcal) per supportare intensita' elevata."
-
+    obiettivo: "Passare da ipertrofia a forza, riallineare i carichi ai massimali aggiornati post-recupero. Consolidare i pattern di forza."
+    metodologia: "Progressione 5x5 classico su squat, panca, stacco. Intensita' 70-80% 1RM. Ramping sets per trovare il carico di lavoro ottimale. Frequenza 4 sessioni/settimana. Calorie a mantenimento o leggerissimo surplus (+100/+200 kcal)."
+    note: "Fine cut. Ripristino calorico graduale. Monitorare risposta pettorale su panca piana."
+  - numero: 4
+    nome: "Forza Base - Accumulo"
+    durata_settimane: 8
+    obiettivo: "Costruire solida base di forza assoluta. Aumentare densita' e frequenza del lavoro pesante sui 3 big lifts."
+    metodologia: "Texas Method o 5/3/1 Wendler. Volume day + Intensity day per settimana. Squat 3x/settimana (alto volume, medio, pesante). Panca 2x/settimana. Stacco 1-2x/settimana. Reps basse (3-6), ramping sets per i massimali settimanali. Surplus calorico moderato (+200/+300 kcal). Frequenza 4 sessioni/settimana."
+    note: "Fase core del programma. Metodologia ramping preferita dall'atleta (MAV 3 o ramping). Priorita' ai big 4: squat, panca, stacco, trazioni."
+  - numero: 5
+    nome: "Intensificazione Forza"
+    durata_settimane: 6
+    obiettivo: "Aumentare l'intensita' relativa, ridurre il volume, avvicinarsi ai massimali. Preparare il peaking."
+    metodologia: "Riduzione volume (-20%), aumento intensita' (85-92% 1RM). Cluster sets, heavy singles/doubles/triples. Frequenza 4 sessioni/settimana. Surplus moderato (+200 kcal). Focus tecnico massimo sui compound."
+    note: "Monitorare fatica accumulata. Se segnali di overreaching (sonno, forza stagnante, umore), inserire mini-deload di 3-4 giorni."
   - numero: 6
-    nome: "Deload + Test Autunnale"
-    durata_settimane: 2
-    periodo_indicativo: "2026-11 (settimane 31-32)"
-    obiettivo: "Recupero, supercompensazione, test massimali aggiornati"
-    metodologia: "Settimana 1: deload attivo (volume -50%). Settimana 2: test 1RM completo sui big 3. Misurazioni corporee complete."
-    note: "Confronto con target a 6 mesi. Aggiustamento piano se necessario."
-
-  - numero: 7
-    nome: "Ipertrofia Invernale"
-    durata_settimane: 8
-    periodo_indicativo: "2026-11 / 2027-01 (settimane 33-40)"
-    obiettivo: "Lean bulk strutturato: +1.5-2 kg massa magra con minimo accumulo di grasso"
-    metodologia: "4-5 sessioni/settimana. Split PPL o Upper/Lower alta frequenza. Rep range variabile 5-15. Tecniche: MAV 3, ramping, superset accessori, drop set finali. Surplus +250-300 kcal/die."
-    note: "Monitorare vita mensile. Se vita supera 93 cm, ridurre surplus di 150 kcal. Proteine 2.2 g/kg/die costanti."
-
-  - numero: 8
-    nome: "Forza Avanzata — Pre-Peaking"
-    durata_settimane: 8
-    periodo_indicativo: "2027-01 / 2027-03 (settimane 41-48)"
-    obiettivo: "Portare i massimali al massimo potenziale annuale. Preparazione al test finale."
-    metodologia: "4 sessioni/settimana. Periodizzazione ondulata DUP (Daily Undulating Periodization). Alternanza: giornate forza (1-3 reps, 88-95% 1RM) e ipertrofia (6-10 reps, 70-80%). Tecniche: cluster set sui compound, ramping progressivo."
-    note: "Fase piu' impegnativa dell'anno. Monitorare recupero e qualita' del sonno. Non saltare il riposo."
-
-  - numero: 9
-    nome: "Peaking + Test Finale Annuale"
+    nome: "Peaking e Test Massimali"
     durata_settimane: 4
-    periodo_indicativo: "2027-03 (settimane 49-52)"
-    obiettivo: "Picco di forza espressiva. Test massimali finali di fine anno."
-    metodologia: "Settimane 1-2: peaking (volume basso, intensita' 90-97% 1RM, poche serie multiple). Settimana 3: deload (50% volume, 60% intensita'). Settimana 4: Test Day completo Squat/Panca/Stacco."
-    note: "Target minimo: Squat 155 kg, Panca 123 kg, Stacco 214 kg. Target ambizioso: Squat 160+, Panca 126+, Stacco 220+."
+    obiettivo: "Raggiungere il picco di forza espressiva. Testare nuovi massimali su squat, panca e stacco."
+    metodologia: "Settimane 1-2: intensita' 90-95%, volume basso (2-3x2-3). Settimana 3: deload leggero (60-70%, volume dimezzato). Settimana 4: Test Day - protocollo massimali su tutti e 3 i big lifts. Frequenza 3-4 sessioni/settimana."
+    note: "Il test day e' obbligatorio. Riposo 48h prima. Nessun allenamento il giorno precedente i tentativi massimali."
+  - numero: 7
+    nome: "Deload e Recupero Attivo"
+    durata_settimane: 2
+    obiettivo: "Recupero completo fisico e mentale dopo il peaking. Preparare il corpo per la fase di bulk."
+    metodologia: "Carichi al 50-60% 1RM, volume dimezzato, nessun esercizio portato vicino al cedimento. Lavoro tecnico, mobilita', stretching. Frequenza 2-3 sessioni/settimana."
+    note: "Non saltare il deload. E' parte integrante della periodizzazione e massimizza i guadagni del ciclo successivo."
+  - numero: 8
+    nome: "Bulk Ipertrofia"
+    durata_settimane: 8
+    obiettivo: "Massimizzare la crescita muscolare con surplus calorico controllato. Target peso 90-91 kg mantenendo BF <15%."
+    metodologia: "Surplus calorico controllato (+300/+400 kcal/die). Volume alto: 4x8-12 compound, 3x12-15 accessori. Upper/Lower 4 sessioni/settimana. Progressione doppia progressione. Mantenere i compound pesanti (3x5 a inizio sessione) per non perdere adattamenti neurali di forza."
+    note: "Monitorare BF settimanalmente. Se BF supera 16%, ridurre surplus a +150 kcal. Proteine: minimo 2g/kg/die."
+  - numero: 9
+    nome: "Forza Avanzata - Chiusura Anno"
+    durata_settimane: 4
+    obiettivo: "Consolidare i guadagni del bulk in forza assoluta. Chiudere il primo anno con test massimali finali."
+    metodologia: "Ritorno al lavoro di forza (5x5 e ramping). Intensita' 80-87% 1RM. Frequenza 4 sessioni/settimana. Caloricamente a mantenimento. Ultimo test massimali dell'anno nella settimana finale."
+    note: "Verifica il raggiungimento dei target a 12 mesi (squat 157, panca 124, stacco 218). Pianifica il secondo anno in base ai risultati."
 
 strategia_nutrizionale:
-  fase_recupero: "Mantenimento calorico stimato ~2800-2900 kcal (87.2 kg, attivita' moderata + 10-12k passi). Proteine 2.2 g/kg = ~192 g/die."
-  fase_forza_base: "Lieve surplus +100-200 kcal per supportare sintesi proteica e recupero muscolare."
-  fase_ipertrofia: "Surplus controllato +200-300 kcal. Preferire lean bulk con monitoraggio mensile della vita."
-  fase_forza_intensiva: "Surplus moderato +150 kcal per sostenere intensita' elevata."
-  raccomandazione_cut: |
-    PARERE DEL COACH: il cut non e' consigliato in questa fase iniziale.
-    Motivi: (1) l'infortunio TOS richiede calorie adeguate per la guarigione;
-    (2) il deficit calorico rallenta i progressi di forza in modo sproporzionato rispetto alla perdita di grasso;
-    (3) con 10-12k passi/die il deficit passivo e' gia' significativo.
-    Approccio raccomandato: lean bulk con monitoraggio. Se a luglio 2026 BF > 17% misurato,
-    valutare cut di 8 settimane con -400 kcal/die prima della fase ipertrofia estiva.
-  trigger_cut: "BF misurato > 17% o vita > 93 cm"
-  trigger_bulk: "BF misurato < 14% e vita < 87 cm"
-  macro_target:
-    proteine_g_per_kg: 2.2
-    carboidrati_g_per_kg: 3.5
-    grassi_g_per_kg: 1.0
-  integratori_consigliati:
-    - "Creatina monoidrato: 5 g/die (sempre, anche durante recupero)"
-    - "Vitamina D3: 2000-4000 UI/die (importante per guarigione muscolare e ossea)"
-    - "Omega-3: 2-3 g EPA+DHA/die (effetto antinfiammatorio utile per TOS)"
-    - "Proteina whey: a integrazione se difficolta' a raggiungere target proteico giornaliero"
+  ora: "Mantenimento calorico durante recupero TOS (TDEE ~2870 kcal). NON fare cut aggressivo durante la fase di infortunio: rallenta la guarigione e aumenta catabolismo muscolare."
+  fase_mini_cut: "Fase 2 (settimane 7-14): deficit moderato -300/-400 kcal/die (target 2450-2550 kcal). Proteine minimo 200g/die (2.3g/kg) per preservare massa magra."
+  fase_mantenimento: "Fasi 3-7: mantenimento a ~2870 kcal, piccolo surplus +100/+200 nelle fasi di intensificazione forza."
+  fase_bulk: "Fase 8 (settimane 41-48): surplus controllato +300/+400 kcal/die (3150-3270 kcal). Bulk pulito, no junk."
+  trigger_cut: "BF > 16% durante le fasi di bulk -> ridurre surplus immediatamente"
+  trigger_bulk: "BF <= 13% e forza stagnante -> aumentare surplus a +400 kcal"
+  macronutrienti:
+    proteine_g_per_kg: 2.3
+    carboidrati: "50-55% delle calorie totali, priorita' pre/post workout"
+    grassi: "25-30% delle calorie totali, focus omega-3 per ridurre infiammazione TOS"
+  note: "Mantenere proteine alte in tutte le fasi (minimo 2g/kg). Omega-3 (2-3g EPA+DHA/die) per effetto anti-infiammatorio durante la guarigione TOS. Creatina monoidrato 5g/die consigliata dalla Fase 1 in poi."
 
 rischi:
-  - area: "TOS piccolo pettorale (CRITICO)"
+  - area: "TOS piccolo pettorale (spalla destra/sinistra)"
     livello: "alto"
-    azione: |
-      Evitare categoricamente: panca piana, dip, military press, trazioni grip stretto, fly.
-      Stretching specifico piccolo pettorale 2x/die. Consultare fisioterapista se il dolore persiste oltre la fase 1.
-      Reintroduzione esercizi petto SOLO dopo completa assenza di sintomi per almeno 2 settimane consecutive.
-
+    azione: "Fase 0: eliminare completamente panca piana, dip, trazioni, military press, cualsiasi overhead press. Fase 1: reintroduzione solo se ZERO dolore con protocollo progressivo. Non tornare mai ad allenarsi con dolore - aggrava l'infiammazione."
   - area: "Lombare"
     livello: "medio"
-    azione: "Monitorare tecnica stacco. Includere rinforzo core ogni sessione (plank, dead bug, pallof press). Evitare stacco con iperestensione lombare."
-
-  - area: "Overtraining"
+    azione: "Monitorare tecnica stacco (mantenere lordosi neutra). Includere rinforzo core progressivo (plank, ab wheel, good morning leggero). Non caricare stacco prima di avere tecnica stabile."
+  - area: "Overreaching / sovrallenamento"
     livello: "medio"
-    azione: "Rispettare i deload programmati (fasi 3 e 6). Non saltare le settimane di scarico. Monitorare qualita' del sonno e dolori articolari."
-
-  - area: "Stallo forza (plateau)"
+    azione: "Programmare deload ogni 6-8 settimane. Monitorare qualita' del sonno, libido, forza stagnante come marker di overreaching. Massimo 5 sessioni/settimana anche nei periodi di alto volume."
+  - area: "Rebound weight post-cut"
     livello: "basso"
-    azione: "Se progresso si blocca per 3+ settimane, cambiare metodo di progressione (da lineare a ondulata) o inserire micro-ciclo di intensificazione con volume ridotto."
-
-  - area: "Composizione corporea fuori controllo"
-    livello: "basso"
-    azione: "Misurare vita mensilmente. Se supera 93 cm, ridurre apporto calorico di 200-300 kcal. Non ossessionarsi con peso scala durante bulk: monitorare invece la vita e le performance."
+    azione: "Ripristinare le calorie gradualmente dopo il mini-cut (+100 kcal ogni 1-2 settimane). Evitare abbuffate nella fase di transizione cut->mantenimento."

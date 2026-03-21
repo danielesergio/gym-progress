@@ -385,6 +385,12 @@ def enrich_measurements(measurements: list) -> list:
             m_copy["delta_mm_kg"] = 0
             m_copy["bf_trend"] = "baseline"
 
+        # Totale massimali
+        s = m_copy.get("squat_1rm")
+        p = m_copy.get("panca_1rm")
+        st = m_copy.get("stacco_1rm")
+        m_copy["totale_1rm"] = round(s + p + st, 1) if (s is not None and p is not None and st is not None) else None
+
         # Aggiungi tipo massimale (R=Reale, S=Stimato) se non presente
         # Assume che se il campo massimali_tipo non esiste, tutti sono "R" (reali)
         default_massimale_tipo = m_copy.get("massimali_tipo", "R")
@@ -521,6 +527,13 @@ def main():
     measurements = enrich_measurements(measurements)
     write_json(os.path.join(out, "measurements.json"), measurements)
 
+    # --- workout_history ---
+    wh_path = os.path.join(DATA_OUT, "workout_history.json")
+    if os.path.exists(wh_path):
+        write_json(os.path.join(out, "workout_history.json"), read_json(wh_path))
+    else:
+        print("  ! workout_history non trovato")
+
     # --- workout ---
     workout_path = latest_file("workout_data", [".yaml"]) or latest_file("workout_data", [".json"])
     workout_data = None
@@ -560,16 +573,16 @@ def main():
 
     # --- feedback ---
     fb_coach_md = latest_file("feedback_coach", [".md"])
-    fb_atleta_md = latest_file("feedback_atleta", [".md"])
+    fb_atleta_md = latest_file("feedback_atleta", [".yaml"])
     fb_html = latest_file("feedback", [".html"])
     if fb_coach_md or fb_atleta_md:
-        coach_text = read_text(fb_coach_md) if fb_coach_md else None
-        atleta_text = read_text(fb_atleta_md) if fb_atleta_md else None
+        coach_text  = read_text(fb_coach_md) if fb_coach_md else None
+        atleta_data = read_yaml(fb_atleta_md) if fb_atleta_md else None
         write_json(os.path.join(out, "feedback.json"), {
             "coach_sections": parse_coach_md(coach_text) if coach_text else [],
-            "coach_html": md_to_html(coach_text) if coach_text else None,
-            "atleta": parse_atleta_md(atleta_text) if atleta_text else {},
-            "atleta_html": md_to_html(atleta_text) if atleta_text else None,
+            "coach_html":     md_to_html(coach_text) if coach_text else None,
+            "atleta":         atleta_data or {},
+            "atleta_html":    None,
         })
     elif fb_html:
         write_json(os.path.join(out, "feedback.json"), {

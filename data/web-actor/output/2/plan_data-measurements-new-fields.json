@@ -1,0 +1,140 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "data-measurements-new-fields",
+    "task_title": "Gestisci nuova struttura measurements.json con campi aggiuntivi",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "data-measurements-new-fields",
+    "type": "data",
+    "title": "Gestisci nuova struttura measurements.json con campi aggiuntivi",
+    "description": "Il file measurements.json nel sito (docs/data/measurements.json) è stato arricchito rispetto alla versione precedente. Ogni record ora include: id (identificativo univoco), squat_1rm_tipo / panca_1rm_tipo / stacco_1rm_tipo (tipo per singolo massimale, 'R' o 'S'), delta_peso_kg / delta_bf_pct / delta_mm_kg (variazioni rispetto alla misurazione precedente), bf_trend (baseline/peggiorante/stabile/migliorante), totale_1rm (somma dei tre massimali). La logica di visualizzazione nei grafici e nella tabella deve utilizzare i campi xxx_tipo specifici per esercizio invece del campo generico massimali_tipo, consentendo che futuri record possano avere tipo misto. I campi delta_* e bf_trend sono disponibili per arricchire la tabella Storico Misurazioni.",
+    "inputs": ["measurements_data"],
+    "outputs": ["MeasurementsDataLayer"],
+    "acceptance_criteria": [
+      "I marker Reale/Stimato dei grafici leggono squat_1rm_tipo, panca_1rm_tipo, stacco_1rm_tipo invece di massimali_tipo",
+      "La tabella Storico Misurazioni può mostrare i valori delta (variazioni) se disponibili",
+      "Il campo totale_1rm è utilizzabile per i grafici del totale Big 3",
+      "Nessun errore visivo o console su record che hanno id e nessun errore su record che non lo hanno (retrocompatibilità)"
+    ],
+    "dependencies": [],
+    "notes": "Non crea pagine nuove. Modifica esclusivamente logica JS esistente. La tabella renderMeasurementsTable in progress.js usa già correttamente i campi per-esercizio (squat_1rm_tipo, panca_1rm_tipo, stacco_1rm_tipo) — quella parte NON va modificata. Il problema principale è in renderStrengthChart: usa un singolo stimatoIdx globale derivato da massimali_tipo, che non funzionerà quando i tre esercizi avranno tipi diversi. Ogni dataset (Squat, Panca, Stacco) deve calcolare il proprio indice stimato leggendo il campo specifico. Il campo massimali_tipo rimane nel JSON come legacy e può essere lasciato nella card Dashboard per ora (badge globale di sintesi), ma deve essere sostituito nei grafici della pagina Progressi. I campi delta_* e totale_1rm non sono ancora usati — il task deve rendere il codice pronto a leggerli senza errori (retrocompatibilità tramite optional chaining)."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "Funzione renderStrengthChart: sostituire il singolo stimatoIdx basato su massimali_tipo con tre indici separati (squatStimatoIdx, pancaStimatoIdx, staccoStimatoIdx) letti dai campi squat_1rm_tipo, panca_1rm_tipo, stacco_1rm_tipo. Aggiornare anche il callback tooltip label che legge massimali_tipo per mostrare il tipo corretto per-esercizio. Aggiornare i commenti JSDoc nelle righe 263 e 287.",
+        "esiste": true,
+        "righe_coinvolte": [
+          "263 (commento JSDoc — citazione di massimali_tipo='S')",
+          "287 (commento — stessa citazione)",
+          "323-325 (calcolo stimatoIdx con findIndex su massimali_tipo)",
+          "354-396 (passi buildPointColors/buildPointStyles/buildPointRadius usano effectiveStimato unico per tutti e tre i dataset)",
+          "437-439 (tooltip label legge records[recIdx].massimali_tipo)"
+        ]
+      },
+      {
+        "path": "docs/js/dashboard.js",
+        "motivo": "Funzione renderStrengthSummaryCard: il badge tipo globale alla riga 129 legge last?.massimali_tipo. Per retrocompatibilità piena con la nuova struttura, il badge deve preferire i campi specifici per-esercizio. Strategia: mostrare 'Stimato' se almeno uno dei tre campi xxx_tipo è 'S', 'Reale' se tutti sono 'R', badge assente se tutti i campi sono assenti (fallback su massimali_tipo per record legacy senza i nuovi campi).",
+        "esiste": true,
+        "righe_coinvolte": [
+          "128-131 (lettura massimali_tipo e costruzione tipoRaw/tipoLabel/tipoClass)"
+        ]
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/measurements.json",
+        "motivo": "Struttura dati reale con i nuovi campi. Array di 6 record. Campi nuovi presenti: id (string), squat_1rm_tipo (R|S), panca_1rm_tipo (R|S), stacco_1rm_tipo (R|S), delta_peso_kg (float, 0 per baseline), delta_bf_pct (float), delta_mm_kg (float), bf_trend (string: baseline|peggiorante|stabile|migliorante), totale_1rm (float). Campo legacy massimali_tipo ancora presente in tutti i record. Tutti i record attuali hanno i tre campi tipo allineati (tutti R o tutti S nello stesso record), ma il codice deve supportare il caso in cui divergano in futuro."
+      },
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "File principale da modificare. Leggere per identificare le esatte righe di renderStrengthChart e renderMeasurementsTable. La tabella usa già i campi per-esercizio (righe 592-598) — non toccarla. Il grafico massimali (righe 266-483) usa massimali_tipo in 4 punti."
+      },
+      {
+        "path": "docs/js/dashboard.js",
+        "motivo": "File secondario da modificare. Leggere la funzione renderStrengthSummaryCard (da riga ~118) per capire come sostituire la lettura di massimali_tipo con logica per-esercizio."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "grafici": {
+        "nome": "Chart.js",
+        "versione": "4.x",
+        "cdn": "https://cdn.jsdelivr.net/npm/chart.js",
+        "note": "Già caricato in progress.html con defer. Non aggiungere in altre pagine."
+      }
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase — es. squatStimatoIdx, pancaStimatoIdx, staccoStimatoIdx",
+      "gestione_null": "Optional chaining (?.) per campi potenzialmente assenti. Mai la stringa 'null' o 'undefined'. Fallback 'R' per tipo massimale mancante (retrocompatibilità record legacy senza campi xxx_tipo).",
+      "pattern_js": "Nessun modulo ES. Tutte le funzioni nello scope globale del file JS di pagina. Commenti JSDoc-style per ogni funzione. Sezioni separate da commenti ASCII (// ── Nome sezione ────).",
+      "gestione_chart": "Istanza Chart.js salvata in progressCharts[id]. Chiamare .destroy() prima di creare una nuova istanza.",
+      "tipo_massimale": "Valori 'R' (Reale) o 'S' (Stimato). Nei grafici: pointStyle 'circle' per R, 'rectRot' per S. Nel tooltip: mostrare il tipo accanto al valore. La lettura deve usare il campo specifico per-esercizio (squat_1rm_tipo, panca_1rm_tipo, stacco_1rm_tipo) invece del campo globale legacy (massimali_tipo)."
+    },
+    "pagine_coinvolte": [
+      {
+        "nome": "Progressi",
+        "file": "docs/progress.html",
+        "js": "docs/js/progress.js",
+        "dati_json": ["data/measurements.json"],
+        "funzioni_da_modificare": ["renderStrengthChart"]
+      },
+      {
+        "nome": "Dashboard",
+        "file": "docs/dashboard.html",
+        "js": "docs/js/dashboard.js",
+        "dati_json": ["data/measurements.json", "data/plan.json", "data/workout.json"],
+        "funzioni_da_modificare": ["renderStrengthSummaryCard"]
+      }
+    ]
+  },
+  "analisi_codice_esistente": {
+    "progress_js_renderStrengthChart": {
+      "problema": "Riga 324: calcola un unico stimatoIdx con findIndex su d.massimali_tipo === 'S'. Questo indice viene usato come effectiveStimato per tutti e tre i dataset (Squat, Panca, Stacco), alle righe 354-396. Se in futuro Squat ha tipo 'R' e Panca ha tipo 'S', il marker visivo sarebbe sbagliato per entrambi.",
+      "soluzione": "Sostituire stimatoIdx con tre indici separati: squatStimatoIdx = records.findIndex(d => d.squat_1rm_tipo === 'S'), pancaStimatoIdx = records.findIndex(d => d.panca_1rm_tipo === 'S'), staccoStimatoIdx = records.findIndex(d => d.stacco_1rm_tipo === 'S'). Usare lastIdx come fallback se findIndex ritorna -1. Passare l'indice corretto a buildPointStyles/buildPointColors/buildPointRadius per ciascun dataset.",
+      "nota_retrocompatibilita": "I record legacy senza campi xxx_tipo hanno massimali_tipo ma non squat_1rm_tipo ecc. Il findIndex su squat_1rm_tipo ritornerà -1 per quei record, il che è corretto (nessun punto stimato marcato). Opzionalmente: fallback su massimali_tipo se tutti e tre i campi xxx_tipo sono assenti."
+    },
+    "progress_js_tooltip": {
+      "problema": "Riga 437-439: nel callback label del tooltip, legge records[recIdx].massimali_tipo per mostrare il tipo accanto al valore. Questo mostra lo stesso tipo per tutti e tre gli esercizi nello stesso tooltip.",
+      "soluzione": "Determinare il campo tipo corretto in base al dataset: se item.dataset.label contiene 'Squat' leggere squat_1rm_tipo, se 'Panca' leggere panca_1rm_tipo, se 'Stacco' leggere stacco_1rm_tipo. Fallback su massimali_tipo se il campo specifico è assente (retrocompatibilità).",
+      "pattern": "const labelLow = item.dataset.label.toLowerCase(); const tipoField = labelLow.includes('squat') ? 'squat_1rm_tipo' : labelLow.includes('panca') ? 'panca_1rm_tipo' : 'stacco_1rm_tipo'; const tipo = (recIdx !== -1 && records[recIdx][tipoField]) ? records[recIdx][tipoField] : (records[recIdx]?.massimali_tipo ?? 'R');"
+    },
+    "dashboard_js_badge": {
+      "problema": "Riga 129: legge last?.massimali_tipo per il badge globale nella card Massimali Big 3. Con la nuova struttura, i campi per-esercizio sono più accurati.",
+      "soluzione": "Logica di fallback a cascata: 1) se almeno uno tra squat_1rm_tipo, panca_1rm_tipo, stacco_1rm_tipo è 'S' → badge 'Stimato'; 2) se tutti e tre sono 'R' → badge 'Reale'; 3) se tutti e tre sono assenti → fallback su massimali_tipo (retrocompatibilità record legacy); 4) se massimali_tipo è assente → nessun badge.",
+      "nota": "Il badge Dashboard è un indicatore di sintesi — non è necessario mostrare tre badge separati."
+    },
+    "tabella_misurazioni": {
+      "stato": "GIA CORRETTO — non modificare",
+      "dettaglio": "renderMeasurementsTable (righe 592-598) usa già d.squat_1rm_tipo, d.panca_1rm_tipo, d.stacco_1rm_tipo tramite la funzione cellaMassimale(val, tipo). I campi delta_* e bf_trend non sono ancora visualizzati ma il codice li legge come campi normali (d.delta_peso_kg ecc.) — nessun errore poiché JS ignora i campi non letti."
+    },
+    "campi_non_ancora_usati": {
+      "totale_1rm": "Non usato in nessun file JS. Il task deve solo garantire che il codice non generi errori su record che lo contengono (già garantito — JS ignora campi non letti). Il campo è disponibile per un futuro grafico Totale Big 3.",
+      "delta_peso_kg": "Non usato. Stessa situazione.",
+      "delta_bf_pct": "Non usato. Stessa situazione.",
+      "delta_mm_kg": "Non usato. Stessa situazione.",
+      "bf_trend": "Non usato. Stessa situazione.",
+      "id": "Non usato attivamente, ma presente. Nessun errore possibile."
+    }
+  },
+  "criteri_accettazione": [
+    "I marker Reale/Stimato dei grafici leggono squat_1rm_tipo, panca_1rm_tipo, stacco_1rm_tipo invece di massimali_tipo",
+    "La tabella Storico Misurazioni può mostrare i valori delta (variazioni) se disponibili",
+    "Il campo totale_1rm è utilizzabile per i grafici del totale Big 3",
+    "Nessun errore visivo o console su record che hanno id e nessun errore su record che non lo hanno (retrocompatibilità)",
+    "docs/js/progress.js NON contiene più d.massimali_tipo === 'S' nella logica di calcolo degli indici stimato",
+    "docs/js/progress.js contiene tre variabili separate: squatStimatoIdx (o equivalente), pancaStimatoIdx, staccoStimatoIdx (o naming equivalente per-esercizio)",
+    "Il callback tooltip label in renderStrengthChart legge il campo tipo specifico per-esercizio in base al dataset.label",
+    "docs/js/dashboard.js non causa errori su record che hanno solo massimali_tipo (legacy) né su record che hanno solo i campi xxx_tipo",
+    "La tabella renderMeasurementsTable NON viene modificata (usa già i campi corretti)",
+    "La pagina Progressi non mostra errori in console su nessuno dei 6 record attuali di measurements.json",
+    "Il grafico massimali mostra il marker rombo (rectRot) correttamente per il record del 2026-03-21 (squat_1rm_tipo='S', panca_1rm_tipo='S', stacco_1rm_tipo='S')"
+  ],
+  "dipendenze": []
+}

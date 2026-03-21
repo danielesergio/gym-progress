@@ -1,0 +1,69 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "progress-fix-legend-labels",
+    "task_titolo": "Correggi le etichette della legenda Reale/Stimato nella tabella Storico Misurazioni",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "La legenda sopra 'Andamento Massimali Big 3' mostra badge verde con testo 'R = Reale' e badge giallo con testo 'S = Stimato'",
+      "soddisfatto": true,
+      "dettaglio": "Righe 82-85 di progress.html: <span class='badge-reale'>R = Reale</span> / <span class='badge-stimato'>S = Stimato</span> — markup corretto con badge-reale (verde) e badge-stimato (giallo) secondo progress.css"
+    },
+    {
+      "criterio": "La legenda sopra 'Storico Misurazioni' mostra badge verde con testo 'R = Reale' e badge giallo con testo 'S = Stimato'",
+      "soddisfatto": true,
+      "dettaglio": "Righe 102-105 di progress.html: identica struttura, <span class='badge-reale'>R = Reale</span> / <span class='badge-stimato'>S = Stimato</span> — markup corretto"
+    },
+    {
+      "criterio": "I badge R/S nelle celle della tabella (generati da badgeTipo() in progress.js) rimangono invariati e mostrano 'R' o 'S'",
+      "soddisfatto": true,
+      "dettaglio": "Funzione badgeTipo() a righe 554-560 di progress.js — non modificata. Genera correttamente '<span class=\"td-badge td-badge--reale\">R</span>' per tipo='R' e '<span class=\"td-badge td-badge--stimato\">S</span>' per tipo='S'. Utilizzata da cellaMassimale() a riga 566 per le celle massimali nella tabella."
+    },
+    {
+      "criterio": "Il file docs/progress.html NON contiene più il carattere ● né ■ nei blocchi .progress-section__legend",
+      "soddisfatto": true,
+      "dettaglio": "Ricerca nel file HTML: nessuna occorrenza di ● (U+25CF) o ■ (U+25A0) nei blocchi .progress-section__legend. I vecchi simboli decorativi .badge-symbol sono stati rimossi. Le righe 82-105 mostrano solo gli span con classi badge-reale e badge-stimato, senza elementi .badge-symbol."
+    },
+    {
+      "criterio": "Il file docs/progress.html contiene la stringa 'R = Reale' in entrambi i blocchi .progress-section__legend (sezione massimali e sezione tabella)",
+      "soddisfatto": true,
+      "dettaglio": "Sezione massimali (riga 83): 'R = Reale'. Sezione tabella (riga 103): 'R = Reale'. Entrambi i blocchi contengono la stringa attesa."
+    },
+    {
+      "criterio": "Il file docs/progress.html contiene la stringa 'S = Stimato' in entrambi i blocchi .progress-section__legend",
+      "soddisfatto": true,
+      "dettaglio": "Sezione massimali (riga 84): 'S = Stimato'. Sezione tabella (riga 104): 'S = Stimato'. Entrambi i blocchi contengono la stringa attesa."
+    },
+    {
+      "criterio": "docs/js/progress.js rimane invariato",
+      "soddisfatto": true,
+      "dettaglio": "File letto completo da riga 1 a 800+: nessuna modifica rispetto al baseline. Tutte le funzioni (renderWeightBfChart, renderStrengthChart, renderMeasurementsTable, badgeTipo, cellaMassimale, ecc.) rimangono inalterate."
+    },
+    {
+      "criterio": "docs/css/progress.css rimane invariato",
+      "soddisfatto": true,
+      "dettaglio": "File letto completo da riga 1 a 262: nessuna modifica. Le classi .badge-reale, .badge-stimato, .badge-symbol e .progress-section__legend mantengono i loro stili originali (righe 30-69). Nessun style inline, conforme alle convenzioni."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/progress.html",
+      "esiste": true,
+      "note": "File modificato correttamente. Sezione Andamento Massimali Big 3 (righe 80-89) e sezione Storico Misurazioni (righe 99-109) contengono entrambe la legenda corretta con badge R=Reale e S=Stimato. Nessun riferimento ai vecchi simboli ● e ■ nei blocchi legend."
+    },
+    {
+      "path": "docs/css/progress.css",
+      "esiste": true,
+      "note": "File non modificato (come richiesto). Contiene le classi .badge-reale (righe 53-57, sfondo verde), .badge-stimato (righe 59-63, sfondo giallo), .badge-symbol (righe 65-69, deprecato). I badge funzionano correttamente nel nuovo markup HTML."
+    },
+    {
+      "path": "docs/js/progress.js",
+      "esiste": true,
+      "note": "File non modificato (come richiesto). La funzione badgeTipo() (righe 554-560) rimane invariata e continua a generare badge 'R' e 'S' corretti per la tabella. Nessuna modifica necessaria ai rendering delle celle."
+    }
+  ],
+  "anomalie": []
+}

@@ -1,0 +1,125 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "page-volume",
+    "task_titolo": "Pagina Volume di allenamento",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "La pagina volume.html è raggiungibile cliccando 'Volume' nella navigazione (link già presente in tutte le pagine grazie al task nav-add-volume)",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in docs/volume.html riga 55-59: <a href='volume.html' role='tab' class='nav-tab active' aria-current='page' aria-label='Volume di allenamento'>Volume</a>. Link presente e classe active impostata correttamente. La pagina è autoconsistente e linkabile."
+    },
+    {
+      "criterio": "Il grafico a barre mostra i gruppi muscolari ordinati per serie pesate decrescente",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in docs/js/volume.js riga 138-139: const sorted = [...volumi].sort((a, b) => (b.serie_pesate ?? 0) - (a.serie_pesate ?? 0)). Le barre sono ordinate per serie_pesate decrescente. Il JSON contiene 12 muscoli ordinati già (glutei 18.0, femorali 15.0, ..., avambracci 0.9)."
+    },
+    {
+      "criterio": "Per ogni barra è visibile il nome del muscolo e il valore di serie pesate",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in docs/js/volume.js riga 141-142: const labels = sorted.map(v => v.muscolo ?? '—'); const values = sorted.map(v => v.serie_pesate ?? 0). I labels contengono i nomi dei muscoli, i values contengono le serie pesate. La configurazione Chart.js (riga 156-214) include tooltip con valore formattato (riga 180-182: val.toFixed(1))."
+    },
+    {
+      "criterio": "È presente una card o sezione con i metadati: totale serie pesate, pull_serie, push_serie, pull_push_ratio, balance_rating",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in docs/js/volume.js riga 71-116 (funzione renderVolumeMetaCard). Accede correttamente a meta.total_serie_pesate (riga 79), meta.pull_serie (riga 80), meta.push_serie (riga 81), meta.pull_push_ratio (riga 82), meta.balance_rating (riga 83). HTML renderizzato include 5 item KPI (riga 92-115). Nel JSON: total_serie_pesate=103.2, pull_serie=27.3, push_serie=6.0, pull_push_ratio=4.55, balance_rating='eccessivo_pull'."
+    },
+    {
+      "criterio": "Il balance_rating 'eccessivo_pull' (o il valore presente nel JSON) è mostrato come badge o nota visiva",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in docs/js/volume.js riga 84-85 (formatBalance e getBalanceClass). Il badge è renderizzato a riga 112: <span class='volume-balance-badge ${ratingClass}'>${ratingLabel}</span>. La funzione getBalanceClass (riga 55-61) restituisce 'volume-balance-badge--warning' per 'eccessivo_pull'. Nel CSS (volume.css riga 120-124) il badge--warning ha background arancione e border accentati."
+    },
+    {
+      "criterio": "Il dettaglio esercizi per gruppo muscolare è visibile in tabella (colonne: esercizio, giorno, serie, ruolo, contributo)",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in docs/js/volume.js riga 226-294 (funzione renderVolumeTable). Crea blocchi per ogni muscolo con tabella interna. Colonne verificate: esercizio (riga 256), giorno (riga 257), serie (riga 258), ruolo (riga 259), contributo (riga 260). Ogni riga include un badge per il ruolo (P/S/T). HTML contiene <th scope='col'> per accessibilità."
+    },
+    {
+      "criterio": "La pagina usa header.page-header, nav.tab-list, footer.page-footer identici alle altre pagine",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in docs/volume.html: header.page-header (riga 17-28) con classe identica, nav.tab-list (riga 33-61) con 6 voci e role='tablist', footer.page-footer (riga 123-127) con role='contentinfo'. Struttura identica a docs/plan.html e docs/progress.html, confermato da lettura di riferimento."
+    },
+    {
+      "criterio": "La voce 'Volume' nella nav è evidenziata come attiva quando si è sulla pagina volume.html",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in docs/volume.html riga 55-59: il link Volume ha class='nav-tab active' e aria-current='page'. La nav è gestita da nav.js che setta la classe active sul tab corrispondente all'URL corrente."
+    },
+    {
+      "criterio": "docs/volume.html esiste ed include Chart.js CDN, nav.js e volume.js",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: volume.html esiste. Include Chart.js CDN (riga 10: <script src='https://cdn.jsdelivr.net/npm/chart.js' defer></script>). Include nav.js (riga 129: <script src='js/nav.js' defer></script>). Include volume.js (riga 130: <script src='js/volume.js' defer></script>). Ordine dei tag corretto e defer presente."
+    },
+    {
+      "criterio": "docs/js/volume.js contiene le funzioni renderVolumeChart() e renderVolumeTable()",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: volume.js esiste e contiene renderVolumeChart (definita riga 127-215) e renderVolumeTable (definita riga 226-294). Entrambe le funzioni sono complete e correttamente strutturate."
+    },
+    {
+      "criterio": "docs/css/volume.css esiste con almeno le classi .volume-section e .volume-chart-container",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: volume.css esiste. Contiene .volume-section (riga 7-13), .volume-chart-container (riga 141-149). Inoltre contiene tutte le classi richieste dal task: .volume-section-header, .volume-section-title, .volume-meta-card, .volume-balance-badge, .volume-detail-table, .volume-placeholder (riga 33-41), e molti altri per styling completo."
+    },
+    {
+      "criterio": "docs/js/volume.js accede al campo radice 'volumi' (non 'volumes' né 'data') per iterare i muscoli",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in docs/js/volume.js riga 310-311: const volumi = data?.volumi; const meta = data?.meta;. Accede esplicitamente al campo 'volumi' (non 'volumes'). Verifica campo array (riga 314-316). JSON volume.json ha campo radice 'volumi' (confermato da lettura dati)."
+    },
+    {
+      "criterio": "docs/js/volume.js accede a volumeData.meta.balance_rating senza errori anche se il valore cambia tra iterazioni",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in docs/js/volume.js riga 83 (meta.balance_rating ?? '—'). Usa optional chaining e fallback a '—'. La funzione getBalanceClass (riga 55-61) gestisce molteplici valori possibili (eccessivo_pull, eccessivo_push, ottimale) con .includes() per robustezza."
+    },
+    {
+      "criterio": "Nessuna eccezione JS in console quando volume.json è caricato correttamente",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in docs/js/volume.js: pattern async/await con try/catch (riga 302-332). Response check (riga 305-307). Dati parsing con optional chaining (riga 311-312). Validazione array (riga 314-316). Tutti gli accessi a campi potenzialmente null usano null coalescing (?? e ?.). Il JSON è ben-formato (confermato da lettura)."
+    },
+    {
+      "criterio": "I valori null o undefined nei campi del JSON non causano eccezioni (uso di optional chaining)",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in multiple locazioni: renderVolumeMetaCard riga 79-82 (v.muscolo ?? '—'), renderVolumeChart riga 141 (v.muscolo ?? '—'), renderVolumeTable riga 239-250 (ex.esercizio ?? '—', ex.contributo != null ? ..., ex.ruolo ?? '—'). Uso coerente di optional chaining e null coalescing in tutta l'applicazione."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/volume.html",
+      "esiste": true,
+      "note": "Pagina HTML completa con header, nav a 6 voci (Volume active), main con 3 sezioni (meta KPI, grafico, tabella), footer. Include Chart.js CDN con defer, nav.js e volume.js. Accessibilità corretta (lang='it', role attributi)."
+    },
+    {
+      "path": "docs/js/volume.js",
+      "esiste": true,
+      "note": "Script completo con 334 righe. Contiene: costanti (DATA_PATH_VOLUME, RUOLO_LABEL), funzioni utility (showError, formatBalance, getBalanceClass), renderVolumeMetaCard (71-116), renderVolumeChart (127-215), renderVolumeTable (226-294), initVolume (302-332). Pattern async/await con try/catch, Chart.js destroy/create pattern, null handling robusto."
+    },
+    {
+      "path": "docs/css/volume.css",
+      "esiste": true,
+      "note": "Foglio di stile completo con 337 righe. Contiene tutte le classi richieste: .volume-section, .volume-section-header, .volume-section-title, .volume-meta-card, .volume-balance-badge, .volume-detail-table, .volume-placeholder, .volume-chart-container, .volume-meta-grid, .volume-ruolo-badge. Include responsive breakpoints (tablet 1024px, mobile 768px, mobile-small 375px). Usa variabili CSS (--color-*, --space-*, --font-*)."
+    },
+    {
+      "path": "docs/data/volume.json",
+      "esiste": true,
+      "note": "JSON ben-formato con 467 righe. Struttura: campo radice 'volumi' (array di 12 muscoli ordinati per serie_pesate decrescente) + campo 'meta'. Muscoli: glutei (18.0), femorali (15.0), quadricipiti (13.5), core (12.9), erettori spinali (9.6), dorsali (9.3), trapezi (9.0), deltoidi posteriori (6.0), bicipiti (3.0), cuffia dei rotatori (3.0), polpacci (3.0), avambracci (0.9). Total_serie_pesate=103.2, pull_serie=27.3, push_serie=6.0, pull_push_ratio=4.55, balance_rating='eccessivo_pull'."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "Il grafico a barre orizzontali ha altezza fissa (520px per desktop, 460px tablet, 400px mobile-small). Con 12 muscoli e altezza 520px, lo spazio per barra è ~43px. Con font size e padding, l'etichetta può risultare stretta su mobile. Considerare altezza dinamica in base a volumi.length (es. height = Math.max(400, volumi.length * 40) + 'px').",
+      "file": "docs/css/volume.css"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "La griglia KPI (.volume-meta-grid) utilizza grid-template-columns: repeat(5, 1fr) sul desktop. Con 5 item KPI e spazio limitato, il testo potrebbe risultare compresso su schermi 1024px-1200px. Il media query tablet (max-width: 1024px) passa a repeat(3, 1fr), saltando i 1024px-1200px intermedi. Considerare media query aggiuntivo a 1200px.",
+      "file": "docs/css/volume.css"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Il canvas Chart.js (#chart-volume-muscoli) non ha aria-label descrittivo del suo contenuto reale (i nomi esatti dei muscoli e i valori). Attualmente ha aria-label='Grafico a barre orizzontali del volume per gruppo muscolare'. Per massima accessibilità screen reader, considerare inserire una descrizione testuale alternativa sotto il grafico (nascosta da .sr-only) con la lista dati.",
+      "file": "docs/volume.html"
+    }
+  ]
+}

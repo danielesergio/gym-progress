@@ -1,0 +1,146 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "dashboard-fix-target-longterm",
+    "task_title": "Ripristina evidenziazione colonna obiettivo a lungo termine nella card Target di Forza",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "dashboard-fix-target-longterm",
+    "type": "bugfix",
+    "title": "Ripristina evidenziazione colonna obiettivo a lungo termine nella card Target di Forza",
+    "description": "La card 'Target di Forza' mostra una tabella con colonne per 3 mesi, 6 mesi, 12 mesi e obiettivo a lungo termine. Quest'ultima colonna deve essere visivamente evidenziata (badge 'Obiettivo', stile distinto) rispetto alle colonne intermedie. Il bug è in renderTargetsCard() in dashboard.js: la variabile isLongterm è calcolata confrontando t.orizzonte con la stringa hardcoded 'Lungo termine (2-5 anni)', ma il JSON usa 'orizzonte': '5 anni' — la stringa non corrisponde mai e il blocco stile/badge non viene mai attivato. Il fix consiste nel determinare isLongterm per posizione (ultima voce dell'array targets), non per confronto di stringa. Il CSS è già corretto e non richiede modifiche.",
+    "inputs": ["plan_data"],
+    "outputs": ["TargetForceCard"],
+    "acceptance_criteria": [
+      "L'ultima colonna della tabella Target di Forza è visivamente distinta dalle colonne intermedie (stile differente e/o badge)",
+      "Il badge 'Obiettivo' (o equivalente) è visibile sulla colonna a lungo termine",
+      "Se i dati del piano contengono 4 orizzonti, tutte e 4 le colonne sono mostrate e la più lontana è evidenziata",
+      "Le colonne a 3, 6, 12 mesi NON ricevono lo stile di evidenziazione"
+    ],
+    "notes": "Il bug ha radice in due posizioni simmetriche dentro renderTargetsCard(): (1) la mappa degli header (headCellsHtml) e (2) la mappa delle celle corpo (bodyRowsHtml). Entrambe usano t.orizzonte === 'Lungo termine (2-5 anni)' come condizione per isLongterm. La correzione sostituisce il confronto stringa con un check basato sull'indice: index === targets.length - 1. In questo modo la logica è robusta a qualsiasi rinomina futura dell'orizzonte nel JSON. Il CSS (dashboard.css) ha già gli stili .targets-card__th--longterm, .targets-card__td--longterm e .targets-card__goal-badge correttamente definiti — nessuna modifica CSS necessaria. Il file dashboard.html non va toccato perché il DOM della card è interamente generato via innerHTML da dashboard.js."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/dashboard.js",
+        "motivo": "Correggere renderTargetsCard(): sostituire il confronto stringa 'Lungo termine (2-5 anni)' con un check posizionale (index === targets.length - 1) in ENTRAMBE le mappe — headCellsHtml (riga ~265-271) e bodyRowsHtml (riga ~280-292). Anche il rendering del valore con toFixed(1) vs intero nella cella longterm può restare invariato o essere allineato: i valori 5 anni (200, 150, 250) sono già interi, ma la logica di formattazione non dipende dall'orizzonte e può essere unificata senza rischio.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/js/dashboard.js",
+        "motivo": "File da modificare: contenuto completo già letto. Punti esatti da correggere — funzione renderTargetsCard(), righe ~265-317. Variabile isLongterm appare in due posti: nella costruzione degli header (headCellsHtml) e nella costruzione delle celle corpo (bodyRowsHtml)."
+      },
+      {
+        "path": "docs/data/plan.json",
+        "motivo": "Struttura dati verificata: il campo target è un array di 4 oggetti con orizzonte: '3 mesi', '6 mesi', '12 mesi', '5 anni'. L'ultimo elemento (index 3) è quello a lungo termine. Conferma che la stringa '5 anni' NON corrisponde alla stringa hardcoded 'Lungo termine (2-5 anni)' nel codice attuale."
+      },
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "Verifica che gli stili .targets-card__th--longterm, .targets-card__td--longterm e .targets-card__goal-badge siano già presenti e correttamente definiti (confermato: righe 356-437). Nessuna modifica CSS richiesta."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "analisi_bug": {
+    "file_buggy": "docs/js/dashboard.js",
+    "funzione": "renderTargetsCard()",
+    "occorrenza_1": {
+      "linea_circa": 266,
+      "codice_attuale": "const isLongterm = t.orizzonte === 'Lungo termine (2-5 anni)';",
+      "contesto": "Mappa headCellsHtml — genera le intestazioni <th> della tabella",
+      "problema": "La stringa 'Lungo termine (2-5 anni)' non corrisponde mai a '5 anni' presente nel JSON. isLongterm è sempre false.",
+      "fix": "const isLongterm = idx === targets.length - 1;",
+      "nota_fix": "Aggiungere il parametro indice alla callback .map(): targets.map((t, idx) => { ... })"
+    },
+    "occorrenza_2": {
+      "linea_circa": 282,
+      "codice_attuale": "const isLongterm = t.orizzonte === 'Lungo termine (2-5 anni)';",
+      "contesto": "Mappa interna a bodyRowsHtml — genera le celle <td> per ogni esercizio",
+      "problema": "Stesso bug: isLongterm sempre false, nessuna cella riceve la classe --longterm né il valore viene formattato come intero.",
+      "fix": "const isLongterm = tidx === targets.length - 1;",
+      "nota_fix": "Aggiungere il parametro indice alla callback .map() delle celle: targets.map((t, tidx) => { ... })"
+    },
+    "effetto_bug": "Nessuna colonna riceve le classi CSS targets-card__th--longterm / targets-card__td--longterm. Il badge '🎯 Obiettivo' non viene mai renderizzato. Tutte le 4 colonne appaiono identiche visivamente.",
+    "effetto_dopo_fix": "L'ultima colonna (index 3, orizzonte '5 anni') riceve le classi --longterm, mostra il badge '🎯 Obiettivo', sfondo accent-dim, colore accent. Le prime 3 colonne rimangono invariate."
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS vanilla ES2022",
+      "styling": "CSS custom properties — design token in variables.css",
+      "grafici": null
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase (es. isLongterm, headCellsHtml, targets)",
+      "classi_css": "kebab-case con prefisso pagina BEM-like: .targets-card__th--longterm, .targets-card__td--longterm",
+      "gestione_null": "Usare optional chaining (?.) e nullish coalescing (??). Mostrare '—' per valori null/undefined.",
+      "dom_manipulation": "innerHTML per render di tabelle dinamiche — accettabile perché i dati provengono da JSON interni, non da input utente",
+      "no": "No var, no jQuery, no inline style, no confronti stringa hardcoded per identificare colonne"
+    },
+    "pagina": {
+      "nome": "Dashboard",
+      "file": "docs/dashboard.html",
+      "js": "docs/js/dashboard.js",
+      "css": "docs/css/dashboard.css",
+      "dati_json": ["data/measurements.json", "data/plan.json", "data/workout.json"]
+    },
+    "pattern_js": "Un file JS per pagina. Struttura: (1) Costanti DATA_PATH_* in cima, (2) funzioni utility, (3) funzioni render per componente, (4) renderDashboard() + DOMContentLoaded entry point. La funzione renderTargetsCard(plan) è già presente e completa — il fix è chirurgico: solo le due variabili isLongterm nelle due callback .map()."
+  },
+  "istruzioni_developer": {
+    "sommario": "Modifica SOLO docs/js/dashboard.js. Il fix è chirurgico: 2 righe da cambiare nella funzione renderTargetsCard(). Non toccare dashboard.html, dashboard.css, plan.json.",
+    "passi": [
+      {
+        "passo": 1,
+        "descrizione": "Individua la funzione renderTargetsCard() in dashboard.js (circa riga 252)."
+      },
+      {
+        "passo": 2,
+        "descrizione": "Nella mappa headCellsHtml, aggiungi il parametro indice alla callback di .map():",
+        "prima": "const headCellsHtml = targets.map(t => {",
+        "dopo": "const headCellsHtml = targets.map((t, idx) => {"
+      },
+      {
+        "passo": 3,
+        "descrizione": "Nella stessa callback headCellsHtml, sostituisci il confronto stringa con il check posizionale:",
+        "prima": "const isLongterm = t.orizzonte === 'Lungo termine (2-5 anni)';",
+        "dopo": "const isLongterm = idx === targets.length - 1;"
+      },
+      {
+        "passo": 4,
+        "descrizione": "Nella mappa bodyRowsHtml, individua la mappa interna delle celle. Aggiungi il parametro indice alla callback di .map() delle celle:",
+        "prima": "const cellsHtml = targets.map(t => {",
+        "dopo": "const cellsHtml = targets.map((t, tidx) => {"
+      },
+      {
+        "passo": 5,
+        "descrizione": "Nella stessa callback cellsHtml, sostituisci il confronto stringa con il check posizionale:",
+        "prima": "const isLongterm = t.orizzonte === 'Lungo termine (2-5 anni)';",
+        "dopo": "const isLongterm = tidx === targets.length - 1;"
+      },
+      {
+        "passo": 6,
+        "descrizione": "Verifica che il resto della logica nelle due callback (uso di isLongterm per classi CSS e badge) sia rimasto invariato. Nessun'altra modifica è necessaria."
+      }
+    ],
+    "non_fare": [
+      "Non modificare dashboard.html — il DOM della card è generato interamente da JS",
+      "Non modificare dashboard.css — gli stili --longterm sono già presenti e corretti",
+      "Non modificare plan.json — è generato da script Python e non va mai toccato dal developer",
+      "Non aggiungere nuove costanti o funzioni — il fix è di 2 righe"
+    ]
+  },
+  "criteri_accettazione": [
+    "L'ultima colonna della tabella Target di Forza è visivamente distinta dalle altre (sfondo accent-dim, testo accent)",
+    "Il badge '🎯 Obiettivo' è visibile nell'intestazione dell'ultima colonna",
+    "Le colonne a 3, 6, 12 mesi NON ricevono classi CSS --longterm né il badge",
+    "Se i dati del piano contengono 4 orizzonti, tutte e 4 le colonne sono mostrate e la più lontana (index 3) è evidenziata",
+    "docs/js/dashboard.js non contiene più la stringa 'Lungo termine (2-5 anni)'",
+    "La funzione renderTargetsCard() usa targets.map((t, idx) => ...) per headCellsHtml e targets.map((t, tidx) => ...) per cellsHtml",
+    "La variabile isLongterm è calcolata come idx === targets.length - 1 (o tidx === targets.length - 1) in entrambe le mappe",
+    "Il comportamento è robusto: se l'orizzonte viene rinominato in plan.json, l'evidenziazione continua a funzionare senza modifiche al codice"
+  ],
+  "dipendenze": []
+}

@@ -1,1 +1,4 @@
-Considera che i dati cambieranno nel tempo e il sito web deve essere aggiornato facilmente per rispecchiare queste modiche.
+Implementa solo i seguenti miglioramenti/fix:
+1 - Bug - pagina progressi, la leggenda andamento massimali big 3 ha R = reale,  S = Stimanto invece di pallino = Reale, quadrato = Stimato. Importate la leggenda del grafico storico misurazioni non deve cambiare. Deve rimanere R = Reale, S = Stimato. Quindi due leggende diverse!
+2 -
+

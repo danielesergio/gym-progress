@@ -1,109 +1,109 @@
 {
   "meta": {
-    "titolo": "Scheda Ripresa Graduale — Fase 1",
-    "data": "2026-03-20",
-    "tipo_fase": "Recupero / Reintroduzione",
-    "periodo": "2026-04 / 2026-05",
-    "durata_settimane": 4,
-    "frequenza_settimanale": 4,
-    "obiettivo": "Reintrodurre progressivamente i pattern motori fondamentali con carichi crescenti (50-68% 1RM). Settimane 1-2: focus esclusivo su gambe e core (3 sessioni/settimana). Settimane 3-4: aggiunta sessione Upper sicura con lat machine presa larga e rematore al cavo presa neutra (4 sessioni/settimana), SOLO in assenza totale di sintomi TOS. Panca piana e overhead categoricamente esclusi per tutta la fase.\n"
+    "titolo": "Scheda di Allenamento — Fase 0: Recupero TOS",
+    "data": "2026-03-21",
+    "tipo_fase": "Recupero / Ripresa Graduale",
+    "periodo": "2026-03 / 2026-04",
+    "durata_settimane": 2,
+    "frequenza_settimanale": 3,
+    "obiettivo": "Riprendere il movimento dopo 3 settimane di stop da Sindrome TOS. Mantenere forza su lower body e schiena neutra. ZERO sollecitazione del piccolo pettorale, spalla e movimenti overhead."
   },
   "mesociclo": {
-    "nome": "Ripresa Graduale — Fase 1",
-    "durata": "4 settimane",
-    "metodologia": "Settimane 1-2: 3 sessioni/settimana (Lower A + Lower B + Lower C), intensita' 50-65% 1RM, rep range 8-12, progressione lineare +5 kg/settimana sui compound. Settimane 3-4: 4 sessioni/settimana con aggiunta di sessione Upper sicura (Martedi), intensita' 65-68% 1RM. Ultimo giorno (S4 Sabato): Test Day submassimale Squat e Stacco.\n",
-    "frequenza": "3-4 sessioni/settimana",
-    "obiettivo": "Riprendere la progressione normale su Squat e Stacco. Reintrodurre selettivamente i muscoli della schiena con esercizi a presa neutra/larga sicuri per TOS. Zero stimoli al piccolo pettorale per tutta la fase.\n",
+    "nome": "Recupero TOS — Fase 0",
+    "durata": "2 settimane",
+    "metodologia": "Allenamento adattato full lower + schiena neutra. Carichi al 60-65% 1RM, RPE massimo 7. Nessun esercizio che coinvolge pettorale, spalla in adduzione/abduzione, overhead o trazioni.",
+    "frequenza": "3 sessioni/settimana",
+    "obiettivo": "Riprendere il pattern motorio dei compound lower body, mantenere la forza neurale, proteggere la guarigione della TOS.",
     "logica": [
-      "INFORTUNIO TOS — PRIORITA' ASSOLUTA: vietati panca piana (qualsiasi variante), dip, overhead press, trazioni grip stretto, fly/cable crossover, rematore con bilanciere. Qualsiasi dolore a petto, spalla o braccio durante un esercizio = STOP IMMEDIATO dell'esercizio.",
-      "Settimane 1-2 (3 sessioni): Lower body + Core esclusivamente. Intensita' 50-65% 1RM. Progressione +5 kg/settimana sui compound. Condizione: TOS completamente silente dalla Fase 0.",
-      "Settimane 3-4 (4 sessioni): aggiunta sessione Upper sicura il Martedi. Lat Machine presa LARGA e Rematore al cavo presa neutra introdotti a carichi molto bassi (50-55% della capacita' normale) e aumentati solo in assenza di sintomi.",
-      "Rep range 8-12 per tutta la fase: costruisce volume e automatismo tecnico senza stress neurale massimale. Priorita' alla qualita' del movimento.",
-      "Progressione condizionata: se compare dolore TOS in qualsiasi sessione, torna ai carichi della settimana precedente e valuta con il fisioterapista prima di riprendere.",
-      "Test Day (S4 Sabato): valutazione submassimale Squat e Stacco (~88-90% 1RM stimato). NON e' un test 1RM massimale: obiettivo e' verificare il ritorno della forza in sicurezza. Panca ESCLUSA per TOS.",
-      "NUTRIZIONE: mantenimento calorico ~2800-2900 kcal, proteine 2.2 g/kg (~192 g/die). No deficit per le prossime 4 settimane."
+      "FASE DI RECUPERO: la priorita' assoluta e' la guarigione del piccolo pettorale. Qualsiasi dolore a spalla/petto/collo = fine seduta immediata.",
+      "Lower body e schiena neutra sono completamente liberi da coinvolgimento TOS: squat, stacco, leg press, stacco rumeno, core work.",
+      "Il rematore con busto basso (non oltre 45 gradi) coinvolge la schiena senza caricare la spalla in posizioni pericolose — incluso in forma leggera.",
+      "Carichi al 60-65% per permettere il riapprendimento del pattern motorio senza stress articolare eccessivo dopo 3 settimane di inattivita'.",
+      "Nessun test massimali in questa fase: la forza verra' testata al termine della Fase 6 (Peaking), come da piano annuale.",
+      "Volume moderato: 3 serie per esercizio principale. L'obiettivo non e' stimolare adattamenti massimali ma mantenere il segnale neurale e rientrare senza infortuni.",
+      "Il rematore deve avere il busto a max 30-45 gradi: evita la posizione orizzontale che aumenta il carico sulla spalla e aggrava la TOS."
     ]
   },
   "riscaldamento": [
-    "5 min cyclette a resistenza minima (warm-up cardiovascolare leggero)",
-    "Mobilita' toracica: cat-cow 10 reps, rotazioni toraciche in quadrupedia 8 per lato",
-    "Mobilita' anche: hip flexor stretch 30 sec per lato, cerchi dell'anca 10 per lato",
-    "Mobilita' caviglie: dorsiflessione a parete 10 reps per lato",
-    "Stretching DELICATO piccolo pettorale a parete: 2x20 sec per lato (solo per sessioni Lower — nessun movimento shoulder se c'e' qualsiasi dolore TOS)",
-    "2 serie attivazione: goblet squat con manubrio 10 kg x 10 reps (pattern squat)"
+    "5 min cyclette a bassa resistenza (RPE 3-4) — nessun movimento overhead",
+    "Mobilita' anche: world lunges 10 per lato, hip circle 10 per lato",
+    "Mobilita' caviglie: ankle circles 15 per lato, dorsiflession stretch 30s per lato",
+    "Mobilita' toracica: foam roller sulla colonna toracica 60s — non pressare la spalla",
+    "Attivazione glutei: glute bridge bodyweight 2x15",
+    "2 serie leggere (40% 1RM) del primo esercizio compound della sessione"
   ],
   "defaticamento": [
-    "Stretching statico quadricipiti 30 sec per lato",
-    "Stretching ischiocrurali 30 sec per lato (supino o in piedi)",
-    "Stretching piriforme/gluteo: figura 4 supino 30 sec per lato",
-    "Stretching SPECIFICO piccolo pettorale a parete: 2x30 sec per lato (ESEGUIRE SEMPRE, anche nei giorni di riposo)",
-    "Stretching scaleni: inclinazione laterale della testa 20 sec per lato (delicato, senza trazione)",
-    "Foam rolling su quadricipiti, glutei, ischiocrurali e dorsali",
-    "5 min camminata leggera"
+    "Stretching statico 30s per gruppo muscolare allenato (quadricipiti, femorali, glutei)",
+    "Stretching pettorale piccolo: corner stretch o doorway stretch 2x30s DELICATAMENTE senza dolore",
+    "Stretching mobilita' toracica: cat-cow 10 reps, foam roller toracico 60s",
+    "Foam rolling quadricipiti e femorali 60s per lato",
+    "5 min camminata leggera per abbassare la frequenza cardiaca"
   ],
   "note_generali": [
-    "⚠ INFORTUNIO TOS — VIETATI: panca piana (qualsiasi variante), dip, military press, overhead press, trazioni qualsiasi variante, fly, cable crossover, rematore con bilanciere. Nessuna eccezione.",
-    "MONITORAGGIO DOLORE: valuta il dolore TOS ogni giorno su scala 0-10. Se >2/10 durante esercizio: riduci carico 20% o cambia esercizio. Se >4/10: interrompi la sessione e contatta il fisioterapista.",
-    "SQUAT: se la presa al bilanciere sulla schiena causa disagio alla spalla, usa goblet squat con manubrio come sostituto sicuro. Non sacrificare la spalla per tenere il bilanciere.",
-    "UPPER SAFE (settimane 3-4): la sessione di Martedi e' condizionata all'assenza TOTALE di dolore TOS. Se nella settimana 1-2 hai avuto anche solo un fastidio, posponi l'Upper alla settimana successiva.",
-    "LAT MACHINE presa LARGA: usa grip pronato a larghezza superiore alle spalle. Non usare grip stretto o neutro ravvicinato. Se senti tensione al petto durante il movimento, fermati.",
-    "REMATORE AL CAVO presa neutra: usa manubri singoli o barra EZ con presa neutra. Schiena inclinata a 45°, non orizzontale come il rematore con bilanciere. Monitora attentamente qualsiasi sensazione al petto.",
-    "PROGRESSIONE LINEARE: ogni settimana +5 kg sullo squat e sullo stacco (se tollerato e TOS silente). Non forzare la progressione se hai dormito male o sei sotto stress — la conservazione e' meglio dell'overreach.",
-    "FISIOTERAPIA: almeno 2-3 sedute in queste 4 settimane. Stretching specifico piccolo pettorale 2 volte al giorno, anche nei giorni di riposo.",
-    "SEGNALE DI OK per Fase 2 (Forza Base): assenza totale di dolore TOS per almeno 7 giorni consecutivi E Test Day completato con buona tecnica. Se TOS persiste, estendi la Fase 1 di 2 settimane."
+    "INFORTUNIO TOS ATTIVO: sono esclusi TUTTI gli esercizi che coinvolgono pettorale, spalla (adduzione/abduzione), overhead press, trazioni alla sbarra, dip, panca piana. Non fare eccezioni.",
+    "Segnale di stop immediato: qualsiasi dolore, formicolio o sensazione anomala alla spalla/braccio/collo/petto = fine allenamento. Senza eccezioni.",
+    "Massimali di riferimento per i calcoli percentuali: Squat 145.8 kg | Stacco 198.3 kg",
+    "60% 1RM Squat = ~87 kg | 65% 1RM Squat = ~95 kg",
+    "60% 1RM Stacco = ~119 kg | 65% 1RM Stacco = ~129 kg",
+    "RPE target massimo 7: devi sempre avere almeno 3 reps in riserva. Non andare mai vicino al cedimento.",
+    "Il rematore con bilanciere va eseguito con busto a MAX 30-45 gradi dall'orizzontale. Busto piu' verticale = meno stress sulla spalla.",
+    "Strategia nutrizionale fase 0: mantenimento calorico TDEE ~2870 kcal. NON fare deficit in questa fase — rallenta la guarigione e accelera il catabolismo muscolare. Proteine minimo 200g/die (2.3g/kg).",
+    "Fisioterapia raccomandata: almeno 3-4 sessioni per il piccolo pettorale e rinforzo stabilizzatori spalla (serratus anterior, trapezio inferiore, rotatori).",
+    "Omega-3 2-3g EPA+DHA/die per effetto anti-infiammatorio. Creatina monoidrato 5g/die (sicura anche durante il recupero).",
+    "Nessun Test Day in questa fase: i massimali vengono testati nella Fase 6 del piano annuale (Peaking), come pianificato."
   ],
   "settimane": [
     {
       "numero": 1,
-      "intensita_target": "50-60% 1RM sui compound principali",
-      "note_settimana": "Prima settimana di ripresa strutturata post-Fase 0. Carichi molto conservativi: Squat a ~62% 1RM, Stacco a ~55%. Priorita' assoluta alla tecnica e alla verifica della tolleranza. Se avverti qualsiasi disagio alla spalla o al petto, riduci il carico o cambia esercizio immediatamente.\n",
+      "intensita_target": "60% 1RM — RPE 6-7",
+      "note_settimana": "Settimana di reingresso. Carichi conservativi, focus sulla tecnica e sulla sensazione. Il corpo torna a muoversi dopo 3 settimane di stop: non forzare nulla.",
       "giorni": [
         {
           "giorno": "Lunedi",
-          "tipo": "Lower A — Squat focus + Core",
-          "note_sessione": "Sessione di apertura settimana. Vai leggero, goditi il movimento. Verifica che la presa del bilanciere non provochi disagio alla spalla: se si', usa goblet squat con manubrio. Durata: 50-55 min.\n",
+          "tipo": "Lower A — Squat Focus",
+          "note_sessione": "Prima sessione di rientro: tecnica prima di tutto. Se senti fastidio alla spalla durante il rematore o qualsiasi esercizio, salta quell'esercizio e segnalalo.",
           "esercizi": [
             {
-              "nome": "Squat con Bilanciere",
-              "serie": 4,
-              "reps": "8-10",
-              "peso": "90 kg (62% 1RM)",
-              "recupero": "2 min",
+              "nome": "squat con bilanciere",
+              "serie": 3,
+              "reps": "5",
+              "peso": "87 kg (60% 1RM)",
+              "recupero": "3 min",
               "gruppo": "Quadricipiti / Glutei",
               "principale": true
             },
             {
-              "nome": "Leg Press",
+              "nome": "stacco rumeno",
               "serie": 3,
-              "reps": "12-15",
+              "reps": "8",
+              "peso": "80 kg (40% 1RM stacco)",
+              "recupero": "2 min",
+              "gruppo": "Femorali / Glutei",
+              "principale": false
+            },
+            {
+              "nome": "leg press",
+              "serie": 3,
+              "reps": "10",
               "peso": "120 kg",
-              "recupero": "90 sec",
-              "gruppo": "Quadricipiti / Glutei",
+              "recupero": "2 min",
+              "gruppo": "Quadricipiti",
               "principale": false
             },
             {
-              "nome": "Leg Curl",
+              "nome": "rematore con bilanciere",
               "serie": 3,
-              "reps": "12-15",
-              "peso": "40 kg",
-              "recupero": "90 sec",
-              "gruppo": "Ischiocrurali",
+              "reps": "8",
+              "peso": "60 kg (busto a 30-45 gradi, presa prona)",
+              "recupero": "2 min",
+              "gruppo": "Dorsali / Trapezi",
               "principale": false
             },
             {
-              "nome": "Plank",
+              "nome": "plank",
               "serie": 3,
-              "reps": "45 sec",
-              "peso": "BW",
-              "recupero": "60 sec",
-              "gruppo": "Core",
-              "principale": false
-            },
-            {
-              "nome": "Dead Bug",
-              "serie": 3,
-              "reps": "8 per lato",
-              "peso": "BW",
+              "reps": "30 sec",
+              "peso": "corpo libero",
               "recupero": "60 sec",
               "gruppo": "Core",
               "principale": false
@@ -112,113 +112,104 @@
         },
         {
           "giorno": "Mercoledi",
-          "tipo": "Lower B — Stacco + RDL + Core",
-          "note_sessione": "Focus sul pattern dello stacco. Presa prona o mista (no presa a gancio questa settimana, troppo presto). Barra a contatto con le gambe, schiena neutra, nessuna tensione alle spalle. Durata: 50-55 min.\n",
+          "tipo": "Lower B — Stacco Focus",
+          "note_sessione": "Focus sul pattern motorio dello stacco dopo 3 settimane di stop. Carichi molto conservativi per riabituare la catena posteriore.",
           "esercizi": [
             {
-              "nome": "Stacco da Terra",
-              "serie": 4,
-              "reps": "6-8",
-              "peso": "110 kg (55% 1RM)",
-              "recupero": "2 min 30 sec",
-              "gruppo": "Schiena / Glutei / Ischiocrurali",
+              "nome": "stacco da terra convenzionale",
+              "serie": 3,
+              "reps": "5",
+              "peso": "119 kg (60% 1RM)",
+              "recupero": "3 min",
+              "gruppo": "Femorali / Glutei / Erettori",
               "principale": true
             },
             {
-              "nome": "Stacco Rumeno",
+              "nome": "leg press",
               "serie": 3,
-              "reps": "10-12",
-              "peso": "100 kg (50% 1RM stacco)",
-              "recupero": "2 min",
-              "gruppo": "Ischiocrurali / Glutei",
-              "principale": false
-            },
-            {
-              "nome": "Leg Extension",
-              "serie": 3,
-              "reps": "12-15",
-              "peso": "45 kg",
+              "reps": "12",
+              "peso": "110 kg",
               "recupero": "90 sec",
               "gruppo": "Quadricipiti",
               "principale": false
             },
             {
-              "nome": "Calf Raise in Piedi",
+              "nome": "leg curl sdraiato",
               "serie": 3,
-              "reps": "15-20",
-              "peso": "60 kg",
-              "recupero": "60 sec",
-              "gruppo": "Polpacci",
+              "reps": "10",
+              "peso": "RPE 6-7 (regola il macchinario)",
+              "recupero": "90 sec",
+              "gruppo": "Femorali",
               "principale": false
             },
             {
-              "nome": "Pallof Press al Cavo",
+              "nome": "face pull al cavo",
               "serie": 3,
-              "reps": "10 per lato",
-              "peso": "10 kg",
+              "reps": "15",
+              "peso": "RPE 5-6 (carico molto leggero)",
               "recupero": "60 sec",
-              "gruppo": "Core / Anti-rotazione",
+              "gruppo": "Deltoidi posteriori / Cuffia rotatori",
+              "principale": false
+            },
+            {
+              "nome": "dead bug",
+              "serie": 3,
+              "reps": "8 per lato",
+              "peso": "corpo libero",
+              "recupero": "60 sec",
+              "gruppo": "Core",
               "principale": false
             }
           ]
         },
         {
           "giorno": "Venerdi",
-          "tipo": "Lower C — Volume + Core (consolidamento)",
-          "note_sessione": "Sessione di consolidamento. Se lunedi e mercoledi sono andati bene senza dolore TOS, mantieni gli stessi carichi. Se hai avuto anche solo rigidita' o fastidio, riduci del 10% e segnalalo nel prossimo feedback. Durata: 45-55 min.\n",
+          "tipo": "Lower C — Full Lower + Core",
+          "note_sessione": "Sessione mista per chiudere la settimana. Volume moderato, tecnica curata.",
           "esercizi": [
             {
-              "nome": "Squat con Bilanciere",
+              "nome": "squat con bilanciere",
               "serie": 3,
-              "reps": "8-10",
-              "peso": "90 kg (62% 1RM)",
-              "recupero": "2 min",
+              "reps": "6",
+              "peso": "85 kg (58% 1RM)",
+              "recupero": "3 min",
               "gruppo": "Quadricipiti / Glutei",
               "principale": true
             },
             {
-              "nome": "Stacco Rumeno",
+              "nome": "stacco rumeno",
               "serie": 3,
-              "reps": "10-12",
-              "peso": "100 kg",
+              "reps": "10",
+              "peso": "75 kg",
               "recupero": "2 min",
-              "gruppo": "Ischiocrurali / Glutei",
+              "gruppo": "Femorali / Glutei",
               "principale": false
             },
             {
-              "nome": "Leg Press",
+              "nome": "cable row presa neutra (cavo basso)",
               "serie": 3,
-              "reps": "12-15",
-              "peso": "120 kg",
+              "reps": "10",
+              "peso": "RPE 6 (busto eretto, presa neutra)",
               "recupero": "90 sec",
-              "gruppo": "Quadricipiti / Glutei",
+              "gruppo": "Dorsali / Trapezi",
               "principale": false
             },
             {
-              "nome": "Leg Curl",
+              "nome": "ab wheel rollout",
               "serie": 3,
-              "reps": "12-15",
-              "peso": "40 kg",
-              "recupero": "90 sec",
-              "gruppo": "Ischiocrurali",
-              "principale": false
-            },
-            {
-              "nome": "Dead Bug",
-              "serie": 3,
-              "reps": "8 per lato",
-              "peso": "BW",
+              "reps": "8",
+              "peso": "corpo libero",
               "recupero": "60 sec",
               "gruppo": "Core",
               "principale": false
             },
             {
-              "nome": "Plank",
+              "nome": "calf raise in piedi",
               "serie": 3,
-              "reps": "45 sec",
-              "peso": "BW",
+              "reps": "15",
+              "peso": "60 kg (o macchinario RPE 6)",
               "recupero": "60 sec",
-              "gruppo": "Core",
+              "gruppo": "Polpacci",
               "principale": false
             }
           ]
@@ -227,55 +218,55 @@
     },
     {
       "numero": 2,
-      "intensita_target": "60-65% 1RM sui compound principali",
-      "note_settimana": "Lieve progressione (+5 kg sullo squat, +10 kg sullo stacco) SOLO se settimana 1 completamente priva di dolore TOS. Stacco da Terra raggiunge il 60% 1RM. Rimani su 3 sessioni, tutte Lower. Ultima settimana prima dell'introduzione dell'Upper: usa questo tempo per consolidare la tecnica sui compound.\n",
+      "intensita_target": "65% 1RM — RPE 7",
+      "note_settimana": "Settimana di consolidamento. Aumento leggero dei carichi solo se la S1 e' andata bene SENZA alcun sintomo TOS. Se hai avuto fastidi alla spalla, mantieni i carichi della S1.",
       "giorni": [
         {
           "giorno": "Lunedi",
-          "tipo": "Lower A — Squat progressivo + Core",
-          "note_sessione": "Aumenta carico rispetto alla scorsa settimana SOLO se hai avuto zero dolore TOS. Se c'e' stato qualsiasi segnale di disagio, mantieni 90 kg e segnala al feedback. Durata: 50-55 min.\n",
+          "tipo": "Lower A — Squat Focus",
+          "note_sessione": "Leggero aumento del carico rispetto alla settimana 1. Tecnica ancora prioritaria.",
           "esercizi": [
             {
-              "nome": "Squat con Bilanciere",
+              "nome": "squat con bilanciere",
               "serie": 4,
-              "reps": "8-10",
+              "reps": "4",
               "peso": "95 kg (65% 1RM)",
-              "recupero": "2 min",
+              "recupero": "3 min",
               "gruppo": "Quadricipiti / Glutei",
               "principale": true
             },
             {
-              "nome": "Leg Press",
+              "nome": "stacco rumeno",
               "serie": 3,
-              "reps": "10-12",
-              "peso": "140 kg",
-              "recupero": "90 sec",
-              "gruppo": "Quadricipiti / Glutei",
+              "reps": "8",
+              "peso": "90 kg",
+              "recupero": "2 min",
+              "gruppo": "Femorali / Glutei",
               "principale": false
             },
             {
-              "nome": "Leg Curl",
+              "nome": "leg press",
               "serie": 3,
-              "reps": "10-12",
-              "peso": "45 kg",
-              "recupero": "90 sec",
-              "gruppo": "Ischiocrurali",
+              "reps": "10",
+              "peso": "130 kg",
+              "recupero": "2 min",
+              "gruppo": "Quadricipiti",
               "principale": false
             },
             {
-              "nome": "Pallof Press al Cavo",
+              "nome": "rematore con bilanciere",
               "serie": 3,
-              "reps": "12 per lato",
-              "peso": "12 kg",
-              "recupero": "60 sec",
-              "gruppo": "Core / Anti-rotazione",
+              "reps": "8",
+              "peso": "65 kg (busto a 30-45 gradi, presa prona)",
+              "recupero": "2 min",
+              "gruppo": "Dorsali / Trapezi",
               "principale": false
             },
             {
-              "nome": "Dead Bug",
+              "nome": "plank",
               "serie": 3,
-              "reps": "10 per lato",
-              "peso": "BW",
+              "reps": "40 sec",
+              "peso": "corpo libero",
               "recupero": "60 sec",
               "gruppo": "Core",
               "principale": false
@@ -284,50 +275,50 @@
         },
         {
           "giorno": "Mercoledi",
-          "tipo": "Lower B — Stacco progressivo + RDL + Core",
-          "note_sessione": "Stacco da Terra sale a 120 kg (60% 1RM). Mantieni tecnica impeccabile: barra vicina alle gambe, non arrotondare la schiena, respiro diaframmatico. Durata: 50-60 min.\n",
+          "tipo": "Lower B — Stacco Focus",
+          "note_sessione": "Riportare lo stacco verso i carichi di lavoro normali in modo graduale. 65% e' ancora conservativo ma abbastanza da stimolare la catena posteriore.",
           "esercizi": [
             {
-              "nome": "Stacco da Terra",
+              "nome": "stacco da terra convenzionale",
               "serie": 4,
-              "reps": "6-8",
-              "peso": "120 kg (60% 1RM)",
-              "recupero": "2 min 30 sec",
-              "gruppo": "Schiena / Glutei / Ischiocrurali",
+              "reps": "4",
+              "peso": "129 kg (65% 1RM)",
+              "recupero": "3 min",
+              "gruppo": "Femorali / Glutei / Erettori",
               "principale": true
             },
             {
-              "nome": "Stacco Rumeno",
+              "nome": "leg press",
               "serie": 3,
-              "reps": "10-12",
-              "peso": "110 kg (55% 1RM stacco)",
-              "recupero": "2 min",
-              "gruppo": "Ischiocrurali / Glutei",
-              "principale": false
-            },
-            {
-              "nome": "Leg Extension",
-              "serie": 3,
-              "reps": "10-12",
-              "peso": "50 kg",
+              "reps": "12",
+              "peso": "120 kg",
               "recupero": "90 sec",
               "gruppo": "Quadricipiti",
               "principale": false
             },
             {
-              "nome": "Calf Raise in Piedi",
+              "nome": "leg curl sdraiato",
               "serie": 3,
-              "reps": "15-20",
-              "peso": "70 kg",
-              "recupero": "60 sec",
-              "gruppo": "Polpacci",
+              "reps": "10",
+              "peso": "RPE 7 (aggiungi un po' rispetto alla S1)",
+              "recupero": "90 sec",
+              "gruppo": "Femorali",
               "principale": false
             },
             {
-              "nome": "Plank",
+              "nome": "face pull al cavo",
               "serie": 3,
-              "reps": "55 sec",
-              "peso": "BW",
+              "reps": "15",
+              "peso": "RPE 6 (carico leggero, focalizzati sulla retrazione scapolare)",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori / Cuffia rotatori",
+              "principale": false
+            },
+            {
+              "nome": "dead bug",
+              "serie": 3,
+              "reps": "10 per lato",
+              "peso": "corpo libero",
               "recupero": "60 sec",
               "gruppo": "Core",
               "principale": false
@@ -336,506 +327,53 @@
         },
         {
           "giorno": "Venerdi",
-          "tipo": "Lower C — Volume + Core (consolidamento S2)",
-          "note_sessione": "Ultima sessione prima del cambio struttura (settimane 3-4 con 4 giorni). Consolida i carichi della settimana. Nessuna forzatura. Durata: 50-55 min.\n",
+          "tipo": "Lower C — Verifica Tecnica",
+          "note_sessione": "Sessione conclusiva della Fase 0. Valuta come ti senti. Se la TOS ha migliorato, sei pronto per la Fase 1. Se hai ancora sintomi, ripeti la Fase 0 per altri 3-5 giorni prima di procedere.",
           "esercizi": [
             {
-              "nome": "Squat con Bilanciere",
-              "serie": 3,
-              "reps": "8-10",
-              "peso": "95 kg (65% 1RM)",
-              "recupero": "2 min",
-              "gruppo": "Quadricipiti / Glutei",
-              "principale": true
-            },
-            {
-              "nome": "Stacco Rumeno",
-              "serie": 3,
-              "reps": "10-12",
-              "peso": "110 kg",
-              "recupero": "2 min",
-              "gruppo": "Ischiocrurali / Glutei",
-              "principale": false
-            },
-            {
-              "nome": "Leg Press",
-              "serie": 3,
-              "reps": "10-12",
-              "peso": "140 kg",
-              "recupero": "90 sec",
-              "gruppo": "Quadricipiti / Glutei",
-              "principale": false
-            },
-            {
-              "nome": "Leg Curl",
-              "serie": 3,
-              "reps": "10-12",
-              "peso": "45 kg",
-              "recupero": "90 sec",
-              "gruppo": "Ischiocrurali",
-              "principale": false
-            },
-            {
-              "nome": "Dead Bug",
-              "serie": 3,
-              "reps": "10 per lato",
-              "peso": "BW",
-              "recupero": "60 sec",
-              "gruppo": "Core",
-              "principale": false
-            },
-            {
-              "nome": "Pallof Press al Cavo",
-              "serie": 3,
-              "reps": "12 per lato",
-              "peso": "12 kg",
-              "recupero": "60 sec",
-              "gruppo": "Core / Anti-rotazione",
-              "principale": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "numero": 3,
-      "intensita_target": "65-68% 1RM sui compound principali — intro Upper Safe",
-      "note_settimana": "Prima settimana con 4 sessioni. Martedi si aggiunge la sessione Upper sicura per TOS: lat machine presa larga e rematore al cavo presa neutra a carichi molto bassi. CONDIZIONE OBBLIGATORIA: zero dolore TOS nelle settimane 1-2. Se c'e' stato anche solo un fastidio residuo, posticipa l'Upper a settimana 4 e mantieni 3 sessioni Lower.\n",
-      "giorni": [
-        {
-          "giorno": "Lunedi",
-          "tipo": "Lower A — Squat + Leg Work + Core",
-          "note_sessione": "Squat sale a 100 kg (68% 1RM), rep range si abbassa a 6-8 per aumentare l'intensita'. Sessione piu' densa, mantieni recuperi adeguati. Durata: 55-60 min.\n",
-          "esercizi": [
-            {
-              "nome": "Squat con Bilanciere",
-              "serie": 4,
-              "reps": "6-8",
-              "peso": "100 kg (68% 1RM)",
-              "recupero": "2 min 30 sec",
-              "gruppo": "Quadricipiti / Glutei",
-              "principale": true
-            },
-            {
-              "nome": "Leg Press",
-              "serie": 3,
-              "reps": "10-12",
-              "peso": "160 kg",
-              "recupero": "90 sec",
-              "gruppo": "Quadricipiti / Glutei",
-              "principale": false
-            },
-            {
-              "nome": "Leg Curl",
-              "serie": 3,
-              "reps": "10-12",
-              "peso": "50 kg",
-              "recupero": "90 sec",
-              "gruppo": "Ischiocrurali",
-              "principale": false
-            },
-            {
-              "nome": "Pallof Press al Cavo",
-              "serie": 3,
-              "reps": "12 per lato",
-              "peso": "14 kg",
-              "recupero": "60 sec",
-              "gruppo": "Core / Anti-rotazione",
-              "principale": false
-            },
-            {
-              "nome": "Plank",
-              "serie": 3,
-              "reps": "60 sec",
-              "peso": "BW",
-              "recupero": "60 sec",
-              "gruppo": "Core",
-              "principale": false
-            }
-          ]
-        },
-        {
-          "giorno": "Martedi",
-          "tipo": "Upper Safe — Dorsali/Schiena (presa neutra/larga — SOLO se TOS silente)",
-          "note_sessione": "ATTENZIONE: questa sessione e' CONDIZIONATA alla totale assenza di dolore TOS. Se nelle ultime 2 settimane hai avuto anche solo un fastidio al petto o alla spalla, SALTA questa sessione e aggiungi una sessione Lower leggera al suo posto. Lat Machine: usa grip LARGO (pronato, larghezza superiore alle spalle). NON stretto. Rematore al cavo: usa manubri singoli presa neutra, busto inclinato 45°, non orizz. Al minimo segnale di tensione al petto: fermati. Durata: 45-50 min.\n",
-          "esercizi": [
-            {
-              "nome": "Lat Machine presa larga",
-              "serie": 3,
-              "reps": "10-12",
-              "peso": "55 kg (intro molto cauto)",
-              "recupero": "2 min",
-              "gruppo": "Dorsali",
-              "principale": true
-            },
-            {
-              "nome": "Rematore al cavo presa neutra",
-              "serie": 3,
-              "reps": "10-12",
-              "peso": "50 kg (intro molto cauto)",
-              "recupero": "2 min",
-              "gruppo": "Dorsali / Trapezi",
-              "principale": true
-            },
-            {
-              "nome": "Face Pull al cavo",
-              "serie": 3,
-              "reps": "15",
-              "peso": "15 kg",
-              "recupero": "90 sec",
-              "gruppo": "Deltoidi Posteriori / Cuffia Rotatori",
-              "principale": false
-            },
-            {
-              "nome": "Dead Bug",
-              "serie": 3,
-              "reps": "10 per lato",
-              "peso": "BW",
-              "recupero": "60 sec",
-              "gruppo": "Core",
-              "principale": false
-            },
-            {
-              "nome": "Pallof Press al Cavo",
-              "serie": 2,
-              "reps": "12 per lato",
-              "peso": "12 kg",
-              "recupero": "60 sec",
-              "gruppo": "Core / Anti-rotazione",
-              "principale": false
-            }
-          ]
-        },
-        {
-          "giorno": "Giovedi",
-          "tipo": "Lower B — Stacco + RDL",
-          "note_sessione": "Stacco da Terra sale a 130 kg (65% 1RM). Rep range 5-6 per costruire abitudine neuromuscolare a carichi crescenti. Mantieni la tecnica: schiena neutra, barra a contatto con le gambe. Durata: 55-60 min.\n",
-          "esercizi": [
-            {
-              "nome": "Stacco da Terra",
-              "serie": 4,
-              "reps": "5-6",
-              "peso": "130 kg (65% 1RM)",
-              "recupero": "3 min",
-              "gruppo": "Schiena / Glutei / Ischiocrurali",
-              "principale": true
-            },
-            {
-              "nome": "Stacco Rumeno",
-              "serie": 3,
-              "reps": "8-10",
-              "peso": "112.5 kg (57% 1RM stacco)",
-              "recupero": "2 min",
-              "gruppo": "Ischiocrurali / Glutei",
-              "principale": false
-            },
-            {
-              "nome": "Leg Extension",
-              "serie": 3,
-              "reps": "10-12",
-              "peso": "55 kg",
-              "recupero": "90 sec",
-              "gruppo": "Quadricipiti",
-              "principale": false
-            },
-            {
-              "nome": "Calf Raise in Piedi",
-              "serie": 3,
-              "reps": "15-20",
-              "peso": "75 kg",
-              "recupero": "60 sec",
-              "gruppo": "Polpacci",
-              "principale": false
-            }
-          ]
-        },
-        {
-          "giorno": "Sabato",
-          "tipo": "Lower Accessorio + Core (scarico attivo)",
-          "note_sessione": "Sessione leggera di scarico attivo prima della settimana finale con Test Day. Carichi ridotti del 20% rispetto al Lunedi. Obiettivo: mantenere il pattern motorio e favorire il recupero. Durata: 40-45 min.\n",
-          "esercizi": [
-            {
-              "nome": "Squat con Bilanciere",
-              "serie": 3,
-              "reps": "8",
-              "peso": "80 kg (scarico attivo)",
-              "recupero": "2 min",
-              "gruppo": "Quadricipiti / Glutei",
-              "principale": false
-            },
-            {
-              "nome": "Leg Press",
-              "serie": 3,
-              "reps": "12",
-              "peso": "140 kg",
-              "recupero": "90 sec",
-              "gruppo": "Quadricipiti / Glutei",
-              "principale": false
-            },
-            {
-              "nome": "Leg Curl",
-              "serie": 3,
-              "reps": "12",
-              "peso": "45 kg",
-              "recupero": "90 sec",
-              "gruppo": "Ischiocrurali",
-              "principale": false
-            },
-            {
-              "nome": "Plank",
-              "serie": 3,
-              "reps": "60 sec",
-              "peso": "BW",
-              "recupero": "60 sec",
-              "gruppo": "Core",
-              "principale": false
-            },
-            {
-              "nome": "Dead Bug",
-              "serie": 3,
-              "reps": "10 per lato",
-              "peso": "BW",
-              "recupero": "60 sec",
-              "gruppo": "Core",
-              "principale": false
-            }
-          ]
-        }
-      ]
-    },
-    {
-      "numero": 4,
-      "intensita_target": "Lun-Gio: 60-65% (scarico pre-test) — Sab: Test submassimale ~88-90% 1RM",
-      "note_settimana": "Settimana di peaking leggero verso il Test Day di Sabato. Lunedi e Giovedi: sessioni brevi con carichi ridotti per mantenere il pattern motorio senza accumulare fatica. Martedi: Upper Safe leggero. Venerdi: riposo obbligatorio. Sabato: Test Day Squat + Stacco (Panca esclusa per TOS). Dormi bene Giovedi e Venerdi notte.\n",
-      "giorni": [
-        {
-          "giorno": "Lunedi",
-          "tipo": "Lower A — Pre-test (carichi ridotti)",
-          "note_sessione": "Sessione corta di mantenimento. Carichi ridotti: obiettivo e' sentirsi attivato senza affaticare il sistema nervoso. Nessuna serie al limite. Stop se hai anche solo un RPE percepito >7. Durata: 40 min max.\n",
-          "esercizi": [
-            {
-              "nome": "Squat con Bilanciere",
+              "nome": "squat con bilanciere",
               "serie": 3,
               "reps": "5",
-              "peso": "90 kg (62% 1RM — attivazione)",
-              "recupero": "2 min",
+              "peso": "92 kg (63% 1RM)",
+              "recupero": "3 min",
               "gruppo": "Quadricipiti / Glutei",
               "principale": true
             },
             {
-              "nome": "Leg Press",
-              "serie": 2,
+              "nome": "stacco da terra convenzionale",
+              "serie": 3,
+              "reps": "4",
+              "peso": "125 kg (63% 1RM)",
+              "recupero": "3 min",
+              "gruppo": "Femorali / Glutei / Erettori",
+              "principale": false
+            },
+            {
+              "nome": "cable row presa neutra (cavo basso)",
+              "serie": 3,
               "reps": "10",
-              "peso": "140 kg",
+              "peso": "RPE 7 (busto eretto)",
               "recupero": "90 sec",
-              "gruppo": "Quadricipiti / Glutei",
-              "principale": false
-            },
-            {
-              "nome": "Plank",
-              "serie": 2,
-              "reps": "45 sec",
-              "peso": "BW",
-              "recupero": "60 sec",
-              "gruppo": "Core",
-              "principale": false
-            },
-            {
-              "nome": "Dead Bug",
-              "serie": 2,
-              "reps": "8 per lato",
-              "peso": "BW",
-              "recupero": "60 sec",
-              "gruppo": "Core",
-              "principale": false
-            }
-          ]
-        },
-        {
-          "giorno": "Martedi",
-          "tipo": "Upper Safe — Dorsali (leggero, pre-test)",
-          "note_sessione": "Sessione Upper leggera. Carichi ridotti rispetto a settimana 3. Obiettivo: mantenere attivazione neurale dei dorsali senza affaticare il sistema. Nessuna serie al limite. Durata: 35-40 min max.\n",
-          "esercizi": [
-            {
-              "nome": "Lat Machine presa larga",
-              "serie": 3,
-              "reps": "10-12",
-              "peso": "60 kg",
-              "recupero": "2 min",
-              "gruppo": "Dorsali",
-              "principale": true
-            },
-            {
-              "nome": "Rematore al cavo presa neutra",
-              "serie": 3,
-              "reps": "10-12",
-              "peso": "55 kg",
-              "recupero": "2 min",
               "gruppo": "Dorsali / Trapezi",
-              "principale": true
-            },
-            {
-              "nome": "Face Pull al cavo",
-              "serie": 3,
-              "reps": "15",
-              "peso": "17.5 kg",
-              "recupero": "90 sec",
-              "gruppo": "Deltoidi Posteriori / Cuffia Rotatori",
               "principale": false
-            }
-          ]
-        },
-        {
-          "giorno": "Giovedi",
-          "tipo": "Lower B — Stacco Pre-test (attivazione SNC)",
-          "note_sessione": "Mini sessione di attivazione per lo stacco. Poche serie, carichi medi, focus totale sulla tecnica. L'obiettivo e' 'ripassare' il pattern motorio prima del test di Sabato, non accumulare fatica. Durata: 35 min max. RIPOSA bene Giovedi e Venerdi notte.\n",
-          "esercizi": [
+            },
             {
-              "nome": "Stacco da Terra",
+              "nome": "ab wheel rollout",
               "serie": 3,
-              "reps": "3",
-              "peso": "120 kg (60% 1RM — attivazione)",
-              "recupero": "2 min 30 sec",
-              "gruppo": "Schiena / Glutei / Ischiocrurali",
-              "principale": true
-            },
-            {
-              "nome": "Stacco Rumeno",
-              "serie": 2,
-              "reps": "8",
-              "peso": "100 kg",
-              "recupero": "2 min",
-              "gruppo": "Ischiocrurali / Glutei",
+              "reps": "10",
+              "peso": "corpo libero",
+              "recupero": "60 sec",
+              "gruppo": "Core",
               "principale": false
-            }
-          ]
-        },
-        {
-          "giorno": "Sabato",
-          "tipo": "Test Day (Adattato TOS — Valutazione Submassimale)",
-          "note_sessione": "QUESTO NON E' UN TEST 1RM MASSIMALE. E' una valutazione submassimale (~88-90% 1RM stimato) per misurare il ritorno della forza dopo 4 settimane di ripresa. PANCA PIANA: ESCLUSA categoricamente per Sindrome TOS — non eseguire nessuna variante. Riposa bene Venerdi. Mangia normalmente (no diguno, no eccessi). Al riscaldamento: se senti QUALSIASI disagio a spalla o petto, sospendi e rinvia. Usa cintura lombare per lo stacco a partire dal tentativo 2. Durata: 60-70 min.\n",
-          "protocolli": [
-            {
-              "nome": "Squat",
-              "target": "130 kg (~89% 1RM stimato) — non tentare il massimale assoluto",
-              "serie": [
-                {
-                  "set": "Riscaldamento 1",
-                  "peso": "40 kg",
-                  "reps": 5,
-                  "note": "Solo bilanciere + poco peso — attivazione pattern, verifica comfort presa",
-                  "tentativo": false
-                },
-                {
-                  "set": "Riscaldamento 2",
-                  "peso": "65 kg",
-                  "reps": 5,
-                  "note": "Focus profondita' e postura",
-                  "tentativo": false
-                },
-                {
-                  "set": "Riscaldamento 3",
-                  "peso": "85 kg",
-                  "reps": 3,
-                  "note": "",
-                  "tentativo": false
-                },
-                {
-                  "set": "Riscaldamento 4",
-                  "peso": "100 kg",
-                  "reps": 2,
-                  "note": "Verifica comfort presa al bilanciere sulla schiena — se disagio alla spalla, fermati",
-                  "tentativo": false
-                },
-                {
-                  "set": "Tentativo 1",
-                  "peso": "110 kg",
-                  "reps": 1,
-                  "note": "75% 1RM — deve essere ampiamente gestibile (RPE max 7)",
-                  "tentativo": true
-                },
-                {
-                  "set": "Tentativo 2",
-                  "peso": "120 kg",
-                  "reps": 1,
-                  "note": "82% 1RM — obiettivo minimo. Tecnica pulita, piena profondita'.",
-                  "tentativo": true
-                },
-                {
-                  "set": "Tentativo 3",
-                  "peso": "130 kg",
-                  "reps": 1,
-                  "note": "Target principale (~89% 1RM). Solo se tentativo 2 completamente pulito con RPE <=8.",
-                  "tentativo": true
-                },
-                {
-                  "set": "Tentativo 4 (opzionale)",
-                  "peso": "135 kg",
-                  "reps": 1,
-                  "note": "Solo se tentativo 3 facile (RPE <=7.5). Stima 93% 1RM. Non forzare.",
-                  "tentativo": true
-                }
-              ]
             },
             {
-              "nome": "Panca Piana",
-              "target": "ESCLUSA — Sindrome TOS attiva",
-              "serie": []
-            },
-            {
-              "nome": "Stacco da Terra",
-              "target": "175 kg (~88% 1RM stimato) — non tentare il massimale assoluto",
-              "serie": [
-                {
-                  "set": "Riscaldamento 1",
-                  "peso": "60 kg",
-                  "reps": 5,
-                  "note": "Attivazione pattern, presa prona",
-                  "tentativo": false
-                },
-                {
-                  "set": "Riscaldamento 2",
-                  "peso": "100 kg",
-                  "reps": 3,
-                  "note": "",
-                  "tentativo": false
-                },
-                {
-                  "set": "Riscaldamento 3",
-                  "peso": "130 kg",
-                  "reps": 2,
-                  "note": "Indossa la cintura da questo punto",
-                  "tentativo": false
-                },
-                {
-                  "set": "Tentativo 1",
-                  "peso": "150 kg",
-                  "reps": 1,
-                  "note": "76% 1RM — tecnica prioritaria, ritmo controllato (RPE max 7)",
-                  "tentativo": true
-                },
-                {
-                  "set": "Tentativo 2",
-                  "peso": "165 kg",
-                  "reps": 1,
-                  "note": "83% 1RM — obiettivo minimo. Barra a contatto con le gambe per tutta la salita.",
-                  "tentativo": true
-                },
-                {
-                  "set": "Tentativo 3",
-                  "peso": "175 kg",
-                  "reps": 1,
-                  "note": "Target principale (~88% 1RM). Solo se tentativo 2 pulito con RPE <=8.",
-                  "tentativo": true
-                },
-                {
-                  "set": "Tentativo 4 (opzionale)",
-                  "peso": "185 kg",
-                  "reps": 1,
-                  "note": "Solo se tentativo 3 rapido (RPE <=7.5). Stima 93% 1RM. Non forzare.",
-                  "tentativo": true
-                }
-              ]
+              "nome": "pallof press al cavo",
+              "serie": 3,
+              "reps": "10 per lato",
+              "peso": "RPE 6",
+              "recupero": "60 sec",
+              "gruppo": "Core",
+              "principale": false
             }
           ]
         }

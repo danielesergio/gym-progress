@@ -1,0 +1,183 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "project": "Daniele Fitness Dashboard",
+    "goal": "Miglioramento del sito esistente: correzione di 5 bug segnalati, aggiunta pagina Volume, gestione nuova struttura dati measurements/workout_history",
+    "sommario": "Il sito ha 5 pagine (Dashboard, Progressi, Allenamento, Dieta, Piano) con navigazione a tab. Dall'analisi emergono 7 interventi richiesti: 3 bug sui grafici della pagina Progressi (asse Y composizione corporea, legende Massimali e Storico Misurazioni), 1 bug sulla sezione Strategia Nutrizionale in Piano (testo di caricamento bloccato), 1 feature per selezionare una scheda di allenamento per volta, 1 nuova pagina Volume e 1 adeguamento alla nuova struttura dati. I dati di measurements sono 6 rilevazioni dal 2022 al 2026-03-21; l'ultima ha massimali stimati (tipo S). Il workout_history contiene 6 intervalli tra misurazioni con deltas. Il volume.json contiene 9 gruppi muscolari con serie pesate e dettaglio per esercizio.",
+    "features_totali": 5,
+    "tasks_totali": 9
+  },
+  "features": [
+    {
+      "name": "Bugfix Grafici Progressi",
+      "priority": 1,
+      "description": "Correzione di tre bug visivi nella pagina Progressi che rendono illeggibili i grafici. Sono i problemi più urgenti perché compromettono la lettura dei dati storici principali dell'atleta.",
+      "tasks": [
+        {
+          "id": "bugfix-composizione-corporea-yaxis",
+          "type": "bugfix",
+          "title": "Correggi asse Y del grafico Composizione Corporea",
+          "description": "Nel grafico 'Composizione Corporea' l'asse Y parte da 76 kg, ma la massa magra massima registrata è 73.5 kg (ottobre 2025) e quella attuale è 72.3 kg. La linea della massa magra risulta invisibile perché cade sotto il minimo dell'asse. L'asse Y deve essere calcolato dinamicamente includendo tutti i valori di peso, body_fat_pct (su scala secondaria se presente) e massa_magra_kg, con un margine inferiore che garantisca la visibilità di tutte le serie. I dati disponibili coprono 6 misurazioni dal 2022-10-22 al 2026-03-21.",
+          "inputs": ["measurements_data"],
+          "outputs": ["ComposizioneCorporeaChart"],
+          "acceptance_criteria": [
+            "La linea della massa magra è visibile per tutti i 6 punti disponibili",
+            "Il valore minimo dell'asse Y è inferiore al valore più basso di massa magra (68.9 kg)",
+            "Le linee di peso e massa magra non si sovrappongono sull'asse e sono distinguibili"
+          ],
+          "dependencies": []
+        },
+        {
+          "id": "bugfix-massimali-legenda",
+          "type": "bugfix",
+          "title": "Correggi legenda Reale/Stimato nel grafico Massimali Big 3",
+          "description": "Nel grafico 'Andamento Massimali Big 3' la legenda mostra badge con le lettere 'R = Reale' e 'S = Stimato' ma con simboli errati. La specifica richiede che i punti Reali siano rappresentati da un cerchio e i punti Stimati da un quadrato, sia nei marker del grafico che nella legenda. Nei dati, 5 misurazioni su 6 hanno massimali_tipo='R' e l'ultima (2026-03-21) ha massimali_tipo='S'. Ogni serie (squat, panca, stacco) ha il proprio tipo per ogni punto.",
+          "inputs": ["measurements_data"],
+          "outputs": ["MassimaliBig3Chart"],
+          "acceptance_criteria": [
+            "I punti Reali sono visualizzati con marker a cerchio nel grafico",
+            "I punti Stimati sono visualizzati con marker a quadrato nel grafico",
+            "La legenda mostra un cerchio accanto a 'Reale' e un quadrato accanto a 'Stimato'",
+            "Il marker dell'ultimo punto (2026-03-21, tipo S) appare come quadrato"
+          ],
+          "dependencies": []
+        },
+        {
+          "id": "bugfix-storico-misurazioni-legenda",
+          "type": "bugfix",
+          "title": "Aggiungi legenda Reale/Stimato nella tabella Storico Misurazioni",
+          "description": "Nella sezione 'Storico Misurazioni' (tabella) mancano completamente i badge/indicatori che distinguono i massimali Reali (R) da quelli Stimati (S). I badge già esistenti nella sezione Massimali Big 3 devono essere riutilizzati o replicati coerentemente in questa tabella. La colonna dei massimali (squat, panca, stacco) deve indicare visivamente se il valore è reale o stimato, usando lo stesso sistema cerchio/quadrato definito nel task precedente.",
+          "inputs": ["measurements_data", "MassimaliBig3Chart"],
+          "outputs": ["StoricoMisurazioniTable"],
+          "acceptance_criteria": [
+            "Ogni riga della tabella mostra un indicatore visivo (cerchio o quadrato) accanto ai valori dei massimali",
+            "La legenda R=Reale / S=Stimato con i simboli corretti è presente sopra o sotto la tabella",
+            "L'ultima riga (2026-03-21) mostra il marker Stimato su tutti e tre i massimali",
+            "Le 5 righe precedenti mostrano il marker Reale"
+          ],
+          "dependencies": ["bugfix-massimali-legenda"]
+        }
+      ]
+    },
+    {
+      "name": "Bugfix Pagina Piano",
+      "priority": 2,
+      "description": "Correzione del bug che blocca il caricamento della sezione Strategia Nutrizionale nella pagina Piano, mostrando indefinitamente il testo 'Caricamento strategia nutrizionale…'.",
+      "tasks": [
+        {
+          "id": "bugfix-strategia-nutrizionale",
+          "type": "bugfix",
+          "title": "Correggi il caricamento della Strategia Nutrizionale in Piano",
+          "description": "Nella pagina Piano la sezione 'Strategia Nutrizionale — Approccio per fase del programma' rimane bloccata sul testo 'Caricamento strategia nutrizionale…' invece di mostrare i dati. Il contenuto atteso è la strategia nutrizionale per ciascuna delle 10 fasi del programma annuale, leggibile dal plan.json. Ogni fase ha un approccio calorico e proteico specifico (es. fase 0-1: mantenimento ~2800-2900 kcal, proteine 192 g/die; fasi successive: lieve surplus o recomp).",
+          "inputs": ["plan_data"],
+          "outputs": ["StrategiaNutrizionaleSection"],
+          "acceptance_criteria": [
+            "La sezione non mostra più il testo 'Caricamento strategia nutrizionale…'",
+            "Viene mostrata la strategia nutrizionale per almeno la fase corrente del programma",
+            "I valori calorici e proteici sono leggibili e non vuoti"
+          ],
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "name": "Feature Selezione Scheda Allenamento",
+      "priority": 3,
+      "description": "La pagina Allenamento attualmente mostra una sola scheda. Con l'avanzare del programma ci saranno più schede (una per fase). L'atleta deve poter visualizzare una scheda per volta e navigare tra quelle disponibili.",
+      "tasks": [
+        {
+          "id": "feature-workout-selector",
+          "type": "component",
+          "title": "Selettore scheda di allenamento per fase",
+          "description": "Aggiungere alla pagina Allenamento un meccanismo che permetta di visualizzare una sola scheda per volta e di cambiare tra le schede disponibili. Attualmente esiste solo 'Scheda Ripresa Graduale — Fase 1' (periodo 2026-04/2026-05). In futuro ci saranno schede per ogni fase del programma. Il selettore deve mostrare il nome e il periodo di ogni scheda disponibile e permettere di selezionarne una. La scheda attiva (quella con periodo corrente o più recente) deve essere pre-selezionata al caricamento. L'header della pagina deve aggiornare il periodo mostrato in base alla scheda selezionata.",
+          "inputs": ["workout_data"],
+          "outputs": ["WorkoutSchemaSelector", "WorkoutDetailView"],
+          "acceptance_criteria": [
+            "È visibile un selettore (dropdown, pulsanti o tab) con le schede disponibili",
+            "Selezionando una scheda il contenuto (settimane, esercizi, obiettivo) si aggiorna",
+            "La scheda attiva/corrente è pre-selezionata al caricamento della pagina",
+            "L'header mostra il periodo della scheda selezionata",
+            "Se è disponibile una sola scheda il selettore è comunque presente ma non crea confusione"
+          ],
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "name": "Nuova Pagina Volume",
+      "priority": 4,
+      "description": "Aggiunta di una nuova pagina dedicata al volume di allenamento. I dati sono disponibili in volume.json con 9 gruppi muscolari, serie pesate e dettaglio per esercizio/giorno. La pagina deve essere aggiunta alla navigazione principale.",
+      "tasks": [
+        {
+          "id": "page-volume",
+          "type": "page",
+          "title": "Pagina Volume di allenamento",
+          "description": "Creare una nuova pagina 'Volume' che visualizza il volume di allenamento settimanale per gruppo muscolare. I dati disponibili in volume.json includono 9 gruppi muscolari (glutei 20.0 serie, core 19.7, femorali 19.5, quadricipiti 18.0, erettori spinali 9.1, dorsali 3.8, polpacci 3.0, trapezi 2.0, avambracci 1.2) con dettaglio di quale esercizio, in quale giorno e con quale peso (ruolo: principale/secondario/terziario) contribuisce al totale. I metadati riportano 96.3 serie totali pesate e un balance_rating 'insufficiente_pull' (pull_serie 5.8, push_serie 0). La pagina deve seguire lo stesso layout del sito (header, nav, footer).",
+          "inputs": ["volume_data"],
+          "outputs": ["VolumePage", "VolumePerMuscleChart", "VolumeDetailTable"],
+          "acceptance_criteria": [
+            "La pagina 'Volume' è raggiungibile dalla navigazione principale",
+            "Viene mostrata una lista o grafico con i gruppi muscolari ordinati per serie pesate (dal più alto al più basso)",
+            "Per ogni gruppo muscolare è visibile il totale di serie pesate",
+            "È presente un indicatore o nota sul balance pull/push (attualmente insufficiente_pull)",
+            "Il dettaglio esercizi per gruppo muscolare è accessibile (es. espandibile o in tabella)",
+            "La pagina usa lo stesso stile visivo delle altre pagine"
+          ],
+          "dependencies": ["nav-add-volume"]
+        },
+        {
+          "id": "nav-add-volume",
+          "type": "navigation",
+          "title": "Aggiungi voce 'Volume' alla navigazione principale",
+          "description": "Tutte le pagine del sito condividono la stessa barra di navigazione a tab con 5 voci: Dashboard, Progressi, Allenamento, Dieta, Piano. La nuova pagina Volume deve essere aggiunta come sesta voce della navigazione su tutte le pagine esistenti. La voce deve essere attiva (aria-current) quando ci si trova sulla pagina Volume.",
+          "inputs": ["MainNav"],
+          "outputs": ["MainNavWithVolume"],
+          "acceptance_criteria": [
+            "La voce 'Volume' appare nella barra di navigazione su tutte le pagine",
+            "Cliccando 'Volume' si arriva alla pagina Volume",
+            "La voce 'Volume' è evidenziata come attiva quando si è sulla pagina Volume",
+            "Le voci esistenti non cambiano ordine né aspetto"
+          ],
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "name": "Aggiornamento Struttura Dati",
+      "priority": 5,
+      "description": "I dati di measurements.json nel sito sono stati aggiornati con nuovi campi (id, squat_1rm_tipo, panca_1rm_tipo, stacco_1rm_tipo, delta_*, bf_trend, totale_1rm) e il nuovo file workout_history.json è stato introdotto. Il sito deve consumare la nuova struttura dati correttamente.",
+      "tasks": [
+        {
+          "id": "data-measurements-new-fields",
+          "type": "data",
+          "title": "Gestisci nuova struttura measurements.json con campi aggiuntivi",
+          "description": "Il file measurements.json nel sito (docs/data/measurements.json) è stato arricchito rispetto alla versione precedente. Ogni record ora include: id (identificativo univoco), squat_1rm_tipo / panca_1rm_tipo / stacco_1rm_tipo (tipo per singolo massimale, 'R' o 'S'), delta_peso_kg / delta_bf_pct / delta_mm_kg (variazioni rispetto alla misurazione precedente), bf_trend (baseline/peggiorante/stabile/migliorante), totale_1rm (somma dei tre massimali). La logica di visualizzazione nei grafici e nella tabella deve utilizzare i campi xxx_tipo specifici per esercizio invece del campo generico massimali_tipo, consentendo che futuri record possano avere tipo misto. I campi delta_* e bf_trend sono disponibili per arricchire la tabella Storico Misurazioni.",
+          "inputs": ["measurements_data"],
+          "outputs": ["MeasurementsDataLayer"],
+          "acceptance_criteria": [
+            "I marker Reale/Stimato dei grafici leggono squat_1rm_tipo, panca_1rm_tipo, stacco_1rm_tipo invece di massimali_tipo",
+            "La tabella Storico Misurazioni può mostrare i valori delta (variazioni) se disponibili",
+            "Il campo totale_1rm è utilizzabile per i grafici del totale Big 3",
+            "Nessun errore visivo o console su record che hanno id e nessun errore su record che non lo hanno (retrocompatibilità)"
+          ],
+          "dependencies": []
+        },
+        {
+          "id": "data-workout-history",
+          "type": "data",
+          "title": "Integra workout_history.json nella visualizzazione progressi",
+          "description": "È stato introdotto un nuovo file workout_history.json (in docs/data/) che contiene gli intervalli tra misurazioni consecutive con: id intervallo, start/end (id delle misurazioni), delta_squat_kg / delta_panca_kg / delta_stacco_kg, delta_weight_kg, duration_days, delta_bf_pct, delta_mm_kg, fase_teorica (bulk/mantenimento/cut), efficacia_workout (numero 1-10 o null), note. L'ultimo record ha end=null (periodo corrente, ancora aperto). Questi dati aggiungono contesto ai progressi: mostrano quale fase (bulk/cut/mantenimento) ha prodotto i migliori guadagni di forza. Il sito deve essere in grado di accedere a questo file per arricchire le visualizzazioni nella pagina Progressi o nella pagina Piano.",
+          "inputs": ["workout_history_data", "measurements_data"],
+          "outputs": ["WorkoutHistoryDataLayer"],
+          "acceptance_criteria": [
+            "Il file workout_history.json viene caricato correttamente senza errori",
+            "I dati degli intervalli sono accessibili per collegare ogni misurazione alla precedente",
+            "Il record con end=null non causa errori di visualizzazione",
+            "I dati di fase_teorica sono utilizzabili per etichettare i periodi nella pagina Progressi"
+          ],
+          "dependencies": ["data-measurements-new-fields"]
+        }
+      ]
+    }
+  ]
+}

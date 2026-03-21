@@ -1,0 +1,150 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "bugfix-massimali-legenda",
+    "task_title": "Correggi legenda Reale/Stimato nel grafico Massimali Big 3",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "bugfix-massimali-legenda",
+    "type": "bugfix",
+    "title": "Correggi legenda Reale/Stimato nel grafico Massimali Big 3",
+    "description": "Nel grafico 'Andamento Massimali Big 3' la legenda mostra badge testuali 'R = Reale' e 'S = Stimato', ma la specifica richiede simboli visivi: cerchio (●) per i punti Reali e quadrato (■) per i punti Stimati, sia nei marker del grafico che nella legenda HTML. Il bug ha due componenti: (1) in progress.js la funzione buildPointStyles restituisce 'rectRot' (rombo/diamante) per i punti stimati invece di 'rect' (quadrato); (2) in progress.html i badge .badge-reale / .badge-stimato mostrano solo testo 'R =' / 'S =' senza simbolo geometrico visivo. Il fix richiede: correggere 'rectRot' → 'rect' in buildPointStyles, e aggiornare la legenda HTML aggiungendo un elemento SVG o carattere Unicode (cerchio ●, quadrato ■) prima del testo.",
+    "inputs": ["measurements_data"],
+    "outputs": ["MassimaliBig3Chart"],
+    "acceptance_criteria": [
+      "I punti Reali sono visualizzati con marker a cerchio nel grafico",
+      "I punti Stimati sono visualizzati con marker a quadrato nel grafico",
+      "La legenda mostra un cerchio accanto a 'Reale' e un quadrato accanto a 'Stimato'",
+      "Il marker dell'ultimo punto (2026-03-21, tipo S) appare come quadrato"
+    ],
+    "notes": "Il fix è chirurgico e circoscritto a due file: progress.js (1 riga nel body di buildPointStyles) e progress.html (aggiornamento markup legenda) + progress.css (eventuali stili per i simboli). Non tocca la logica di determinazione degli indici stimati (squatStimatoIdx, pancaStimatoIdx, staccoStimatoIdx) che funziona correttamente leggendo squat_1rm_tipo / panca_1rm_tipo / stacco_1rm_tipo."
+  },
+  "analisi_bug": {
+    "causa_radice_1": {
+      "file": "docs/js/progress.js",
+      "funzione": "buildPointStyles",
+      "riga_circa": 309,
+      "codice_errato": "return i === stimatoIdx ? 'rectRot' : 'circle';",
+      "codice_corretto": "return i === stimatoIdx ? 'rect' : 'circle';",
+      "spiegazione": "Chart.js usa 'circle' per cerchio e 'rect' per quadrato. 'rectRot' produce un rombo/diamante ruotato di 45°, non un quadrato. La specifica richiede quadrato → usare 'rect'."
+    },
+    "causa_radice_2": {
+      "file": "docs/progress.html",
+      "elemento": ".progress-section__legend con .badge-reale e .badge-stimato",
+      "riga_circa": 78,
+      "codice_errato": "<span class=\"badge-reale\">R = Reale</span>\n          <span class=\"badge-stimato\">S = Stimato</span>",
+      "codice_corretto": "<span class=\"badge-reale\"><span class=\"badge-symbol\" aria-hidden=\"true\">●</span> Reale</span>\n          <span class=\"badge-stimato\"><span class=\"badge-symbol\" aria-hidden=\"true\">■</span> Stimato</span>",
+      "spiegazione": "I badge mostrano solo testo letterale 'R = Reale'. Aggiungere il carattere Unicode ● (U+25CF, cerchio pieno) prima di 'Reale' e ■ (U+25A0, quadrato pieno) prima di 'Stimato', coerentemente con i pointStyle del grafico Chart.js."
+    },
+    "causa_radice_3": {
+      "file": "docs/css/progress.css",
+      "elemento": ".badge-reale, .badge-stimato e nuova classe .badge-symbol",
+      "spiegazione": "Aggiungere stile per .badge-symbol con font-size leggermente maggiore per rendere il simbolo visibile e ben allineato con il testo. Opzionale ma consigliato per la coerenza visiva."
+    }
+  },
+  "contesto_dati": {
+    "struttura_measurements": {
+      "campi_massimali": ["squat_1rm", "panca_1rm", "stacco_1rm"],
+      "campi_tipo_per_esercizio": ["squat_1rm_tipo", "panca_1rm_tipo", "stacco_1rm_tipo"],
+      "campo_tipo_legacy": "massimali_tipo",
+      "valori_tipo": ["R", "S"],
+      "distribuzione_attuale": "5 record con tipo=R (2022-10-22, 2023-04-10, 2024-05-25, 2024-11-29, 2025-10-02), 1 record con tipo=S (2026-03-21 — ultimo record, indice 5)"
+    },
+    "nota": "I campi squat_1rm_tipo, panca_1rm_tipo, stacco_1rm_tipo sono già presenti in tutti i record del JSON. La logica buildPointStyles/buildPointColors in progress.js identifica correttamente l'indice 5 come stimato — il bug è solo nel simbolo 'rectRot' invece di 'rect'."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "Correggere buildPointStyles: sostituire 'rectRot' con 'rect' come pointStyle per i punti stimati. Il quadrato (rect) è il simbolo corretto in Chart.js.",
+        "esiste": true,
+        "modifica_specifica": {
+          "funzione": "buildPointStyles (riga ~309)",
+          "old": "return i === stimatoIdx ? 'rectRot' : 'circle';",
+          "new": "return i === stimatoIdx ? 'rect' : 'circle';"
+        }
+      },
+      {
+        "path": "docs/progress.html",
+        "motivo": "Aggiornare i badge della legenda HTML: aggiungere simbolo Unicode ● prima di 'Reale' e ■ prima di 'Stimato', rimuovere il prefisso letterale 'R =' e 'S ='.",
+        "esiste": true,
+        "modifica_specifica": {
+          "sezione": ".progress-section__legend (righe 78-81)",
+          "old": "<span class=\"badge-reale\">R = Reale</span>\n          <span class=\"badge-stimato\">S = Stimato</span>",
+          "new": "<span class=\"badge-reale\"><span class=\"badge-symbol\" aria-hidden=\"true\">●</span> Reale</span>\n          <span class=\"badge-stimato\"><span class=\"badge-symbol\" aria-hidden=\"true\">■</span> Stimato</span>"
+        }
+      },
+      {
+        "path": "docs/css/progress.css",
+        "motivo": "Aggiungere stile per .badge-symbol per allineare verticalmente il simbolo Unicode con il testo del badge e dimensionarlo correttamente.",
+        "esiste": true,
+        "modifica_specifica": {
+          "dove": "Dopo il blocco .badge-stimato (riga ~63), aggiungere nuova regola",
+          "new_rule": ".badge-symbol {\n  font-size: 0.9em;\n  line-height: 1;\n  vertical-align: middle;\n}"
+        }
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/measurements.json",
+        "motivo": "Struttura dati: array 6 elementi. Campi tipo per esercizio: squat_1rm_tipo, panca_1rm_tipo, stacco_1rm_tipo ('R'|'S'). Ultimo record (2026-03-21, id 3a6a7aad) ha tutti i campi tipo='S'. I 5 record precedenti hanno tipo='R'. Il developer deve verificare che buildPointStyles riceva l'indice corretto (5) e che il fix 'rect' sia applicato a quell'indice."
+      },
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "Leggere l'intera funzione renderStrengthChart per capire il contesto di buildPointStyles, buildPointColors, buildPointRadius e come vengono usati nei dataset Chart.js. Verifica che solo 'rectRot' → 'rect' sia necessario e che nessun'altra funzione usi simboli errati."
+      },
+      {
+        "path": "docs/progress.html",
+        "motivo": "Verificare il markup corrente della .progress-section__legend (righe 78-81) per applicare la modifica ai badge in modo preciso."
+      },
+      {
+        "path": "docs/css/progress.css",
+        "motivo": "Verificare gli stili correnti di .badge-reale e .badge-stimato per capire dove inserire la nuova regola .badge-symbol senza conflitti."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "grafici": {
+        "nome": "Chart.js",
+        "versione": "4.x",
+        "cdn": "https://cdn.jsdelivr.net/npm/chart.js",
+        "pointStyles_disponibili": [
+          "'circle' → cerchio (usato per punti Reali)",
+          "'rect' → quadrato (da usare per punti Stimati — FIX)",
+          "'rectRot' → rombo/diamante ruotato (errato — causa del bug)",
+          "'triangle', 'star', 'cross', ecc."
+        ]
+      }
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase",
+      "classi_css": "kebab-case con prefisso pagina (es. .badge-reale, .badge-symbol)",
+      "gestione_null": "skippa null nei dataset, usa spanGaps: true",
+      "pattern_js": "funzioni helper locali dentro renderStrengthChart (buildPointStyles, buildPointColors, buildPointRadius)",
+      "accessibilita": "Simboli Unicode decorativi wrappati in <span aria-hidden='true'> per non interferire con screen reader"
+    },
+    "pagina": {
+      "nome": "Progressi",
+      "file": "docs/progress.html",
+      "js": "docs/js/progress.js",
+      "css": "docs/css/progress.css",
+      "dati_json": ["data/measurements.json"]
+    }
+  },
+  "criteri_accettazione": [
+    "I punti Reali sono visualizzati con marker a cerchio nel grafico (pointStyle: 'circle')",
+    "I punti Stimati sono visualizzati con marker a quadrato nel grafico (pointStyle: 'rect')",
+    "La legenda mostra un cerchio ● accanto a 'Reale' e un quadrato ■ accanto a 'Stimato'",
+    "Il marker dell'ultimo punto (2026-03-21, tipo S, indice 5) appare come quadrato in tutti e 3 i dataset (Squat, Panca, Stacco)",
+    "docs/js/progress.js nella funzione buildPointStyles non contiene 'rectRot' — contiene 'rect'",
+    "docs/progress.html contiene '●' nel badge .badge-reale e '■' nel badge .badge-stimato",
+    "docs/css/progress.css contiene la regola .badge-symbol",
+    "I punti Reali dei 5 record precedenti (indici 0-4) mantengono il marker 'circle' invariato",
+    "Il tooltip del grafico mostra ancora correttamente il tipo (R/S) accanto al valore kg"
+  ],
+  "dipendenze": []
+}

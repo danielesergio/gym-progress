@@ -21,7 +21,7 @@ Flusso:
   6. [LLM] gym-personal-trainer genera feedback_coach_(data).md
   7. [LLM x2 parallelo] gym-dietologo + gym-personal-trainer -> diet + workout
   8. [Loop] gym-pt-senior-reviewer valuta scheda (max N iter)
-  9. [Python] Archivia file, crea nuovo feedback_atleta.md vuoto
+  9. [Python] Archivia file, crea nuovo feedback_atleta.yaml vuoto
 
 Uso:
     python source/new_iteration.py
@@ -133,48 +133,41 @@ def _read_path_or_dir(p: Path) -> str:
 # Feedback parsing (Python puro, nessun LLM)
 # ---------------------------------------------------------------------------
 
-def _parse_number(text: str, label: str) -> Optional[float]:
-    """Estrae un valore numerico da '**Label**: 87.2' o 'label: 87.2'."""
-    patterns = [
-        rf"\*\*{re.escape(label)}\*\*\s*[:\(]?\s*(\d+[.,]?\d*)",
-        rf"\b{re.escape(label.lower())}\b\s*[:\(]?\s*(\d+[.,]?\d*)",
-    ]
-    for pat in patterns:
-        m = re.search(pat, text, re.IGNORECASE)
-        if m:
-            try:
-                return float(m.group(1).replace(",", "."))
-            except ValueError:
-                pass
-    return None
-
-
-def _parse_lift(text: str, lift: str) -> Optional[tuple]:
-    """Estrae (peso_kg, reps) da '**Squat**: 120 kg x 5' o '120x5'."""
-    pat = rf"\*\*{re.escape(lift)}\*\*\s*[:\(]?\s*(\d+\.?\d*)\s*(?:kg)?\s*[xX×]\s*(\d+)"
-    m = re.search(pat, text, re.IGNORECASE)
-    if m:
-        return float(m.group(1)), int(m.group(2))
-    return None
-
-
-def parse_feedback(feedback_text: str) -> dict:
+def parse_feedback(feedback_data: dict) -> dict:
     """
-    Estrae i dati numerici da feedback_atleta.md.
-    I campi mancanti o template non compilati restano None.
+    Estrae i dati numerici da feedback_atleta.yaml (dict gia' parsato).
+    I campi mancanti o non compilati restano None.
     """
-    t = feedback_text
+    def _num(val) -> Optional[float]:
+        try:
+            return float(val) if val not in (None, "", "?") else None
+        except (ValueError, TypeError):
+            return None
+
+    def _lift(val) -> Optional[tuple]:
+        if not val:
+            return None
+        if isinstance(val, dict):
+            kg   = _num(val.get("kg"))
+            reps = _num(val.get("reps"))
+            return (kg, int(reps)) if kg and reps else None
+        return None
+
+    corpo = feedback_data.get("corpo", {}) or {}
+    misure = corpo.get("misure", {}) or {}
+    massimali = feedback_data.get("massimali", {}) or {}
+
     return {
-        "peso_kg":       _parse_number(t, "Peso (kg)") or _parse_number(t, "Peso"),
-        "vita_cm":       _parse_number(t, "Vita ombelico (cm)") or _parse_number(t, "Vita"),
-        "fianchi_cm":    _parse_number(t, "Fianchi (cm)") or _parse_number(t, "Fianchi"),
-        "petto_cm":      _parse_number(t, "Petto (cm)") or _parse_number(t, "Petto"),
-        "braccio_dx_cm": _parse_number(t, "Braccio dx (cm)") or _parse_number(t, "Braccio"),
-        "coscia_dx_cm":  _parse_number(t, "Coscia dx (cm)") or _parse_number(t, "Coscia"),
-        "collo_cm":      _parse_number(t, "Collo (cm)") or _parse_number(t, "collo"),
-        "squat_test":    _parse_lift(t, "Squat"),
-        "panca_test":    _parse_lift(t, "Panca"),
-        "stacco_test":   _parse_lift(t, "Stacco"),
+        "peso_kg":       _num(corpo.get("peso_kg")),
+        "vita_cm":       _num(misure.get("vita_cm")),
+        "fianchi_cm":    _num(misure.get("fianchi_cm")),
+        "petto_cm":      _num(misure.get("petto_cm")),
+        "braccio_dx_cm": _num(misure.get("braccio_dx_cm")),
+        "coscia_dx_cm":  _num(misure.get("coscia_dx_cm")),
+        "collo_cm":      _num(misure.get("collo_cm")),
+        "squat_test":    _lift(massimali.get("squat")),
+        "panca_test":    _lift(massimali.get("panca")),
+        "stacco_test":   _lift(massimali.get("stacco")),
     }
 
 
@@ -360,9 +353,12 @@ def build_new_measurement(
         else:
             entry[key] = last.get(key)
 
-    entry["massimali_tipo"]   = tipo
-    entry["efficacia_workout"] = None   # calcolata dal coach con contesto completo
-    entry["note"]              = ""
+    entry["massimali_tipo"] = tipo
+    entry["note"]           = ""
+
+    # Totale massimali (squat + panca + stacco)
+    vals = [entry.get(k) for k in ("squat_1rm", "panca_1rm", "stacco_1rm")]
+    entry["totale_1rm"] = round(sum(vals), 1) if all(v is not None for v in vals) else None
 
     return entry
 
@@ -370,6 +366,200 @@ def build_new_measurement(
 def _fill_body_nulls(entry: dict) -> None:
     for k in ("body_fat_pct", "massa_magra_kg", "ffmi_adj", "bmr_kcal", "tdee_kcal"):
         entry[k] = None
+
+
+def _calc_fase_teorica(prev: dict, curr: dict) -> str:
+    """Determina la fase teorica in base a delta BF% e massa magra."""
+    delta_bf = curr.get("body_fat_pct", 0) - prev.get("body_fat_pct", 0) if (curr.get("body_fat_pct") is not None and prev.get("body_fat_pct") is not None) else None
+    delta_mm = curr.get("massa_magra_kg", 0) - prev.get("massa_magra_kg", 0) if (curr.get("massa_magra_kg") is not None and prev.get("massa_magra_kg") is not None) else None
+
+    if delta_bf is None or delta_mm is None:
+        return "sconosciuto"
+    if delta_bf < -0.3:
+        return "cut"
+    if delta_mm > 0.5 and delta_bf >= -0.3:
+        return "bulk"
+    return "mantenimento"
+
+
+def build_workout_history_from_seed(measurements: list) -> None:
+    """
+    Genera workout_history.json dai dati storici gia' enriched.
+    Chiamata una sola volta dopo enrich_missing_body_composition,
+    solo se workout_history.json non esiste ancora.
+    """
+    wh_path = OUTPUT_DIR / "workout_history.json"
+    if wh_path.exists() or len(measurements) < 2:
+        return
+
+    history = []
+    for i in range(len(measurements) - 1):
+        prev = measurements[i]
+        curr = measurements[i + 1]
+        entry = {
+            "id":                uuid.uuid4().hex[:8],
+            "start":             prev["id"],
+            "end":               curr["id"],
+            "delta_squat_kg":    round(curr["squat_1rm"] - prev["squat_1rm"], 1) if (curr.get("squat_1rm") and prev.get("squat_1rm")) else None,
+            "delta_panca_kg":    round(curr["panca_1rm"] - prev["panca_1rm"], 1) if (curr.get("panca_1rm") and prev.get("panca_1rm")) else None,
+            "delta_stacco_kg":   round(curr["stacco_1rm"] - prev["stacco_1rm"], 1) if (curr.get("stacco_1rm") and prev.get("stacco_1rm")) else None,
+            "delta_totale_kg":   round(curr["totale_1rm"] - prev["totale_1rm"], 1) if (curr.get("totale_1rm") is not None and prev.get("totale_1rm") is not None) else None,
+            "delta_weight_kg":   round(curr["peso_kg"] - prev["peso_kg"], 1) if (curr.get("peso_kg") is not None and prev.get("peso_kg") is not None) else None,
+            "duration_days":     (datetime.strptime(curr["data"], "%Y-%m-%d") - datetime.strptime(prev["data"], "%Y-%m-%d")).days if (curr.get("data") and prev.get("data")) else None,
+            "delta_bf_pct":      round(curr["body_fat_pct"] - prev["body_fat_pct"], 1) if (curr.get("body_fat_pct") is not None and prev.get("body_fat_pct") is not None) else None,
+            "delta_mm_kg":       round(curr["massa_magra_kg"] - prev["massa_magra_kg"], 1) if (curr.get("massa_magra_kg") is not None and prev.get("massa_magra_kg") is not None) else None,
+            "fase_teorica":      _calc_fase_teorica(prev, curr),
+            "efficacia_workout": None,
+            "note":              prev.get("note", ""),
+        }
+        history.append(entry)
+
+    # Aggiunge l'ultima entry incompleta: periodo seed[-1] -> prossima misurazione (non ancora nota)
+    last = measurements[-1]
+    history.append({
+        "id":                uuid.uuid4().hex[:8],
+        "start":             last["id"],
+        "end":               None,
+        "delta_squat_kg":    None,
+        "delta_panca_kg":    None,
+        "delta_stacco_kg":   None,
+        "delta_totale_kg":   None,
+        "delta_weight_kg":   None,
+        "duration_days":     None,
+        "delta_bf_pct":      None,
+        "delta_mm_kg":       None,
+        "fase_teorica":      None,
+        "efficacia_workout": None,
+        "note":              last.get("note", ""),
+    })
+
+    wh_path.write_text(json.dumps(history, indent=2, ensure_ascii=False), encoding="utf-8")
+    log("OK", f"workout_history.json creato da dati storici ({len(history)} entry, ultima incompleta)")
+
+
+def load_workout_history() -> list:
+    path = OUTPUT_DIR / "workout_history.json"
+    if not path.exists():
+        return []
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as e:
+        log("WARN", f"workout_history.json non valido: {e}")
+        return []
+
+
+def save_workout_history(history: list) -> None:
+    path = OUTPUT_DIR / "workout_history.json"
+    path.write_text(json.dumps(history, indent=2, ensure_ascii=False), encoding="utf-8")
+
+
+def complete_last_workout_history_entry(history: list, measurements: list) -> bool:
+    """
+    Completa l'ultima entry di workout_history con i dati dell'ultima misurazione.
+    L'entry N-1 diventa completa: end, delta massimali, delta BF, delta MM, fase_teorica.
+    Ritorna True se un'entry e' stata completata.
+    """
+    if not history or len(measurements) < 2:
+        return False
+
+    last_entry = history[-1]
+    if last_entry.get("end") is not None:
+        return False  # gia' completata
+
+    # L'entry N-1 parte da 'start' (measurement di inizio) e termina con l'ultima measurement
+    start_id = last_entry.get("start")
+    curr = measurements[-1]
+
+    # Trova la measurement di inizio per calcolare i delta
+    prev = next((m for m in measurements if m.get("id") == start_id), None)
+    if not prev:
+        log("WARN", f"workout_history: measurement start_id={start_id} non trovata — delta non calcolabili")
+        prev = measurements[-2] if len(measurements) >= 2 else curr
+
+    last_entry["end"] = curr.get("id")
+
+    for lift, key in [("squat", "squat_1rm"), ("panca", "panca_1rm"), ("stacco", "stacco_1rm")]:
+        c, p = curr.get(key), prev.get(key)
+        last_entry[f"delta_{lift}_kg"] = round(c - p, 1) if (c is not None and p is not None) else None
+
+    c_bf, p_bf = curr.get("body_fat_pct"), prev.get("body_fat_pct")
+    last_entry["delta_bf_pct"] = round(c_bf - p_bf, 1) if (c_bf is not None and p_bf is not None) else None
+
+    c_mm, p_mm = curr.get("massa_magra_kg"), prev.get("massa_magra_kg")
+    last_entry["delta_mm_kg"] = round(c_mm - p_mm, 1) if (c_mm is not None and p_mm is not None) else None
+
+    last_entry["fase_teorica"] = _calc_fase_teorica(prev, curr)
+
+    c_tot, p_tot = curr.get("totale_1rm"), prev.get("totale_1rm")
+    last_entry["delta_totale_kg"] = round(c_tot - p_tot, 1) if (c_tot is not None and p_tot is not None) else None
+
+    c_w, p_w = curr.get("peso_kg"), prev.get("peso_kg")
+    last_entry["delta_weight_kg"] = round(c_w - p_w, 1) if (c_w is not None and p_w is not None) else None
+
+    c_d, p_d = curr.get("data"), prev.get("data")
+    last_entry["duration_days"] = (datetime.strptime(c_d, "%Y-%m-%d") - datetime.strptime(p_d, "%Y-%m-%d")).days if (c_d and p_d) else None
+
+    log("OK", f"workout_history entry {last_entry['id']} completata (end={last_entry['end']})")
+    return True
+
+
+def append_workout_history_entry(history: list, measurements: list) -> dict:
+    """
+    Aggiunge la nuova entry N in workout_history per l'iterazione corrente.
+    start = id dell'ultima measurement (quella appena aggiunta).
+    I campi end, delta*, fase_teorica, efficacia_workout restano null.
+    Ritorna la nuova entry.
+    """
+    new_entry = {
+        "id":                uuid.uuid4().hex[:8],
+        "start":             measurements[-1].get("id") if measurements else None,
+        "end":               None,
+        "delta_squat_kg":    None,
+        "delta_panca_kg":    None,
+        "delta_stacco_kg":   None,
+        "delta_totale_kg":   None,
+        "delta_weight_kg":   None,
+        "duration_days":     None,
+        "delta_bf_pct":      None,
+        "delta_mm_kg":       None,
+        "fase_teorica":      None,
+        "efficacia_workout": None,
+        "note":              "",
+    }
+    history.append(new_entry)
+    log("OK", f"workout_history nuova entry aggiunta (id={ITERATION_ID}, start={new_entry['start']})")
+    return new_entry
+
+
+def write_efficacia_to_workout_history(history: list) -> None:
+    """
+    Legge EFFICACIA_WORKOUT dal feedback_coach appena generato e lo scrive
+    nell'ultima entry di workout_history (quella dell'iterazione corrente).
+    """
+    feedback_coach_path = OUTPUT_DIR / f"feedback_coach_{ITERATION_ID}.md"
+    if not feedback_coach_path.exists():
+        log("WARN", "feedback_coach non trovato — efficacia_workout non aggiornata")
+        return
+
+    text = feedback_coach_path.read_text(encoding="utf-8")
+    m = re.search(r"EFFICACIA_WORKOUT:\s*(\d+)", text)
+    if not m:
+        log("WARN", "EFFICACIA_WORKOUT non trovata nel feedback_coach — workout_history non aggiornata")
+        return
+
+    valore = int(m.group(1))
+    if not (1 <= valore <= 10):
+        log("WARN", f"EFFICACIA_WORKOUT={valore} fuori range 1-10 — ignorato")
+        return
+
+    if len(history) < 2:
+        log("WARN", "workout_history ha meno di 2 entry — nessuna entry precedente da aggiornare")
+        return
+
+    # L'efficacia valuta la scheda precedente (penultima entry), non quella corrente
+    target = history[-2]
+    target["efficacia_workout"] = valore
+    log("OK", f"efficacia_workout={valore} scritto in workout_history entry {target.get('id', '?')}")
 
 
 def enrich_missing_body_composition(measurements: list, profile: dict) -> int:
@@ -495,14 +685,14 @@ def parse_review(path: Path) -> tuple:
 # ---------------------------------------------------------------------------
 
 def archive_feedback() -> None:
-    """Copia data/feedback_atleta.md -> data/output/feedback_atleta_(date).md."""
-    src  = DATA_DIR / "feedback_atleta.md"
-    dest = OUTPUT_DIR / f"feedback_atleta_{ITERATION_ID}.md"
+    """Copia data/feedback_atleta.yaml -> data/output/feedback_atleta_(id).yaml."""
+    src  = DATA_DIR / "feedback_atleta.yaml"
+    dest = OUTPUT_DIR / f"feedback_atleta_{ITERATION_ID}.yaml"
     if src.exists():
         shutil.copy2(src, dest)
         log("OK", f"Archiviato: {dest.name}")
     else:
-        log("WARN", "feedback_atleta.md non trovato -nessuna copia archiviata")
+        log("WARN", "feedback_atleta.yaml non trovato -nessuna copia archiviata")
 
 
 def archive_old_output_files() -> None:
@@ -542,52 +732,55 @@ def archive_old_output_files() -> None:
 
 
 def create_empty_feedback(next_label: str = "") -> None:
-    """Sovrascrive data/feedback_atleta.md con il template vuoto."""
-    header = f"# Feedback Atleta -{next_label}" if next_label else "# Feedback Atleta"
-    template = f"""{header}
-## Come ti sei sentito questo mese?
-- **Energia generale**: (1-10)
-- **Qualita' del sonno**: (1-10)
-- **Stress**: (basso / medio / alto)
+    """Sovrascrive data/feedback_atleta.yaml con il template vuoto."""
+    label_comment = f"  # {next_label}" if next_label else ""
+    template = f"""\
+# Feedback Atleta{label_comment}
+# Compila i campi lasciando i valori dopo i ':'. Lascia null se non disponibile.
 
-## Allenamento
-- **Hai seguito la scheda?**: (si' / parzialmente / no)
-- **Esercizi troppo pesanti / leggeri**:
-- **Esercizi che hai trovato difficili o problematici**:
-- **Note sull'allenamento**:
+sensazioni:
+  energia_generale:   # numero 1-10
+  qualita_sonno:      # numero 1-10
+  stress:             # basso / medio / alto
 
-## Dieta
-- **Hai seguito la dieta?**: (si' / parzialmente / no)
-- **Difficolta' riscontrate**:
-- **Note sulla dieta**:
+allenamento:
+  seguito_scheda:     # si / parzialmente / no
+  esercizi_pesanti:
+  esercizi_difficili:
+  note:
 
-## Progressi Percepiti
-- **Ti senti piu' forte?**: (si' / no / uguale)
-- **Cambiamenti fisici notati**:
+dieta:
+  seguita:            # si / parzialmente / no
+  difficolta:
+  note:
 
-## Massimali / Test del mese
-Inserisci il peso e le ripetizioni fatte (es. 100 kg x 5). La conversione a 1RM viene calcolata automaticamente.
-- **Squat**: kg x rep
-- **Panca**: kg x rep
-- **Stacco**: kg x rep
+progressi:
+  piu_forte:          # si / no / uguale
+  cambiamenti_fisici:
 
-## Composizione Corporea
-- **Peso (kg)**:
-- **Misure** (opzionale):
-    - Vita ombelico (cm):
-    - Fianchi (cm):
-    - Petto (cm):
-    - Braccio dx (cm):
-    - Coscia dx (cm):
-    - Collo (cm):
+# Inserisci peso (kg) e reps eseguiti. Il calcolo 1RM e' automatico.
+massimali:
+  squat:  {{kg: , reps: }}
+  panca:  {{kg: , reps: }}
+  stacco: {{kg: , reps: }}
 
-## Altro
-- **Infortuni o dolori**:
-- **Commenti liberi**:
+corpo:
+  peso_kg:
+  misure:
+    vita_cm:
+    fianchi_cm:
+    petto_cm:
+    braccio_dx_cm:
+    coscia_dx_cm:
+    collo_cm:
+
+altro:
+  infortuni:
+  note:
 """
-    dest = DATA_DIR / "feedback_atleta.md"
+    dest = DATA_DIR / "feedback_atleta.yaml"
     dest.write_text(template, encoding="utf-8")
-    log("OK", f"Nuovo feedback_atleta.md creato ({next_label or 'prossima iterazione'})")
+    log("OK", f"Nuovo feedback_atleta.yaml creato ({next_label or 'prossima iterazione'})")
 
 
 # ---------------------------------------------------------------------------
@@ -750,7 +943,7 @@ applicando TUTTI i problemi_critici e i suggerimenti indicati.
 
 ## Dati disponibili per la rigenerazione
 - Profilo: data/athlete.md
-- Feedback archiviato: data/output/feedback_atleta_{ITERATION_ID}.md
+- Feedback archiviato: data/output/feedback_atleta_{ITERATION_ID}.yaml
 - Misurazioni: data/output/measurements.json
 - Obiettivi: data/goals | data/preferences
 
@@ -863,41 +1056,6 @@ Consigli pratici su allenamento, recupero e nutrizione.
 Formato Markdown, tono professionale ma diretto."""
 
 
-def write_efficacia_to_measurements(measurements: list) -> None:
-    """
-    Legge EFFICACIA_WORKOUT dal feedback_coach appena generato e lo scrive
-    nella penultima entry di measurements.json (la scheda che viene valutata).
-    """
-    feedback_coach_path = OUTPUT_DIR / f"feedback_coach_{ITERATION_ID}.md"
-    if not feedback_coach_path.exists():
-        log("WARN", "feedback_coach non trovato — efficacia_workout non aggiornata")
-        return
-
-    text = feedback_coach_path.read_text(encoding="utf-8")
-    m = re.search(r"EFFICACIA_WORKOUT:\s*(\d+)", text)
-    if not m:
-        log("WARN", "EFFICACIA_WORKOUT non trovata nel feedback_coach — misurazioni non aggiornate")
-        return
-
-    valore = int(m.group(1))
-    if not (1 <= valore <= 10):
-        log("WARN", f"EFFICACIA_WORKOUT={valore} fuori range 1-10 — ignorato")
-        return
-
-    if len(measurements) < 2:
-        log("WARN", "Meno di 2 entry in measurements — nessuna penultima da aggiornare")
-        return
-
-    # La penultima entry e' la scheda da valutare
-    target_data = measurements[-2].get("data", "?")
-    measurements[-2]["efficacia_workout"] = valore
-
-    measurements_path = OUTPUT_DIR / "measurements.json"
-    measurements_path.write_text(
-        json.dumps(measurements, indent=2, ensure_ascii=False),
-        encoding="utf-8"
-    )
-    log("OK", f"efficacia_workout={valore} scritto in entry {target_data}")
 
 
 def build_diet_prompt(ctx: dict) -> str:
@@ -1032,7 +1190,7 @@ applicando TUTTI i problemi_critici e i suggerimenti indicati.
 
 ## Dati disponibili
 - Profilo: data/athlete.md
-- Feedback archiviato: data/output/feedback_atleta_{ITERATION_ID}.md
+- Feedback archiviato: data/output/feedback_atleta_{ITERATION_ID}.yaml
 - Piano: data/output/plan.yaml
 - Misurazioni: data/output/measurements.json
 
@@ -1048,7 +1206,7 @@ def load_all_data() -> dict:
     log("INFO", "Caricamento file dati...")
 
     athlete_text    = read_text(DATA_DIR / "athlete.md")
-    feedback_text   = read_text(DATA_DIR / "feedback_atleta.md")
+    feedback_path   = DATA_DIR / "feedback_atleta.yaml"
     goals_text      = _read_path_or_dir(DATA_DIR / "goals")
     preferences_text = _read_path_or_dir(DATA_DIR / "preferences")
     measurements_path = OUTPUT_DIR / "measurements.json"
@@ -1057,22 +1215,36 @@ def load_all_data() -> dict:
         previous_path = DATA_DIR / "previous_data.json"
         if previous_path.exists():
             seed = read_json(previous_path, default=[])
+            for entry in seed:
+                if not entry.get("id"):
+                    entry["id"] = uuid.uuid4().hex[:8]
             measurements_path.write_text(
                 json.dumps(seed, indent=2, ensure_ascii=False), encoding="utf-8"
             )
-            log("OK", f"measurements.json creato da previous_data.json ({len(seed)} entry)")
+            log("OK", f"measurements.json creato da previous_data.json ({len(seed)} entry, ID generati)")
         else:
             measurements_path.write_text("[]", encoding="utf-8")
             log("OK", "measurements.json creato (lista vuota - previous_data.json non trovato)")
     measurements    = read_json(measurements_path, default=[])
     plan_text       = read_text(OUTPUT_DIR / "plan.yaml") or read_text(OUTPUT_DIR / "plan.html")
 
+    import yaml as _yaml
+    feedback_data: dict = {}
+    if feedback_path.exists():
+        try:
+            feedback_data = _yaml.safe_load(feedback_path.read_text(encoding="utf-8")) or {}
+        except Exception as e:
+            log("WARN", f"feedback_atleta.yaml non parsabile: {e}")
+    else:
+        log("WARN", "feedback_atleta.yaml non trovato")
+
     log("INFO", f"  {len(measurements)} misurazioni storiche")
-    log("INFO", f"  feedback_atleta.md: {len(feedback_text)} caratteri")
+    log("INFO", f"  feedback_atleta.yaml: {len(feedback_data)} sezioni")
 
     return {
         "athlete_text":     athlete_text,
-        "feedback_text":    feedback_text,
+        "feedback_data":    feedback_data,
+        "feedback_text":    feedback_path.read_text(encoding="utf-8") if feedback_path.exists() else "",
         "goals_text":       goals_text,
         "preferences_text": preferences_text,
         "measurements":     measurements,
@@ -1161,7 +1333,7 @@ def main() -> None:
     separator("FASE 2 -Calcoli progressione e composizione corporea")
 
     athlete_profile = parse_athlete_profile(ctx["athlete_text"])
-    feedback        = parse_feedback(ctx["feedback_text"])
+    feedback        = parse_feedback(ctx["feedback_data"])
 
     log("INFO", f"Profilo: altezza={athlete_profile.get('altezza_cm')} cm, "
         f"sesso={athlete_profile.get('sesso')}, eta={athlete_profile.get('eta')} anni")
@@ -1176,6 +1348,9 @@ def main() -> None:
             encoding="utf-8"
         )
         log("OK", f"Arricchite {enriched_count} entry storiche con body composition")
+
+    # Genera workout_history storico se non esiste ancora (ora i delta BF/MM sono disponibili)
+    build_workout_history_from_seed(ctx["measurements"])
     misure_mancanti = [k for k in ("vita_cm","collo_cm","fianchi_cm","petto_cm","braccio_dx_cm","coscia_dx_cm")
                        if not feedback.get(k)]
     if misure_mancanti:
@@ -1207,6 +1382,8 @@ def main() -> None:
         log("INFO", f"NEW: entry {DATE_STR} esistente con id={existing_today['id']} -sara' ignorata, nuovo id={ITERATION_ID}")
         existing_today = None  # forza la creazione di una nuova entry
 
+    workout_history = load_workout_history()
+
     new_m = build_new_measurement(feedback, athlete_profile, ctx["measurements"])
     if new_m:
         if existing_today:
@@ -1219,6 +1396,17 @@ def main() -> None:
             )
             log("OK", f"measurements.json aggiornato: BF%={new_m.get('body_fat_pct')}, "
                 f"MM={new_m.get('massa_magra_kg')} kg, FFMI={new_m.get('ffmi_adj')}")
+
+            # Completa entry N-1 di workout_history con i risultati appena misurati
+            if complete_last_workout_history_entry(workout_history, ctx["measurements"]):
+                save_workout_history(workout_history)
+
+        # Aggiunge entry N per l'iterazione corrente (campi risultato ancora null)
+        if not any(e.get("id") == ITERATION_ID for e in workout_history):
+            append_workout_history_entry(workout_history, ctx["measurements"])
+            save_workout_history(workout_history)
+        else:
+            log("INFO", f"RESUME: entry workout_history {ITERATION_ID} gia' presente")
     else:
         log("SKIP", "measurements.json non aggiornato (dati insufficienti nel feedback)")
 
@@ -1258,7 +1446,7 @@ def main() -> None:
             ("data/athlete.md",           "incorporato"),
             ("data/goals",                "incorporato"),
             ("data/preferences",          "incorporato"),
-            ("data/feedback_atleta.md",   "incorporato"),
+            ("data/feedback_atleta.yaml",   "incorporato"),
             ("data/output/plan.yaml",     "incorporato"),
             ("data/output/performance_analysis.yaml", "incorporato"),
         ], ["Misurazioni storiche (ultime 5) — tabella markdown",
@@ -1284,7 +1472,7 @@ def main() -> None:
             log_context("gym-pt-senior-reviewer [review_plan]", [
                 ("data/output/plan.yaml",       "incorporato"),
                 ("data/athlete.md",             "incorporato"),
-                ("data/feedback_atleta.md",     "incorporato"),
+                ("data/feedback_atleta.yaml",     "incorporato"),
             ], [f"Misurazioni storiche (ultime 5) — tabella markdown",
                 "Rate progressione corretti per eta'/infortuni/stallo",
                 f"Schema JSON review: source/schemas/review_pt.schema.json"])
@@ -1316,13 +1504,14 @@ def main() -> None:
     else:
         log("ACTION", f"gym-personal-trainer -> feedback_coach_{ITERATION_ID}.md")
         log_context("gym-personal-trainer [feedback_coach]", [
-            ("data/feedback_atleta.md",   "incorporato"),
+            ("data/feedback_atleta.yaml",   "incorporato"),
             ("data/output/plan.yaml",     "incorporato"),
         ], ["Delta mensile massimali e composizione corporea (calcolato da Python)",
             "Misurazioni storiche (ultime 3) — tabella markdown",
             "Rate progressione corretti per eta'/infortuni/stallo"])
         run_agent("gym-personal-trainer", build_feedback_coach_prompt(ctx))
-    write_efficacia_to_measurements(ctx["measurements"])
+    write_efficacia_to_workout_history(workout_history)
+    save_workout_history(workout_history)
 
     # ──────────────────────────────────────────────────────────────────
     # FASE 3d+3e -Dieta + Scheda in parallelo
@@ -1338,7 +1527,7 @@ def main() -> None:
             ("data/athlete.md",           "incorporato"),
             ("data/goals",                "incorporato"),
             ("data/preferences",          "incorporato"),
-            ("data/feedback_atleta.md",   "incorporato"),
+            ("data/feedback_atleta.yaml",   "incorporato"),
             ("data/output/plan.yaml",     "incorporato"),
             (OUTPUT_DIR / "diet_*.yaml",  "incorporato"),
         ], ["Misurazioni storiche (ultime 2) — tabella markdown"])
@@ -1350,7 +1539,7 @@ def main() -> None:
             ("data/athlete.md",                    "incorporato"),
             ("data/goals",                         "incorporato"),
             ("data/preferences",                   "incorporato"),
-            ("data/feedback_atleta.md",            "incorporato"),
+            ("data/feedback_atleta.yaml",            "incorporato"),
             (OUTPUT_DIR / "feedback_coach_*.md",   "incorporato"),
             ("data/output/plan.yaml",              "incorporato"),
             (OUTPUT_DIR / "workout_data_*.yaml",   "incorporato"),
@@ -1406,7 +1595,7 @@ def main() -> None:
                 (OUTPUT_DIR / f"workout_data_{ITERATION_ID}.yaml", "incorporato"),
                 ("data/output/plan.yaml",                          "incorporato"),
                 ("data/athlete.md",                                "incorporato"),
-                ("data/feedback_atleta.md",                        "incorporato"),
+                ("data/feedback_atleta.yaml",                        "incorporato"),
                 ("data/output/performance_analysis.yaml",          "incorporato"),
             ], ["Misurazioni storiche (ultime 3) — tabella markdown",
                 "Rate progressione corretti per eta'/infortuni/stallo",
@@ -1432,9 +1621,9 @@ def main() -> None:
     # ──────────────────────────────────────────────────────────────────
     # FASE 4 -Archiviazione
     # ──────────────────────────────────────────────────────────────────
-    if RESUME and (OUTPUT_DIR / f"feedback_atleta_{ITERATION_ID}.md").exists():
+    if RESUME and (OUTPUT_DIR / f"feedback_atleta_{ITERATION_ID}.yaml").exists():
         separator("FASE 4 -SALTATA (gia' completata)")
-        log("INFO", f"feedback_atleta_{ITERATION_ID}.md trovato -fase 4 gia' eseguita")
+        log("INFO", f"feedback_atleta_{ITERATION_ID}.yaml trovato -fase 4 gia' eseguita")
     else:
         separator("FASE 4 -Archiviazione")
 
@@ -1469,12 +1658,13 @@ def main() -> None:
     print("FILE OUTPUT (data/output/):")
     for name in [
         "measurements.json",
+        "workout_history.json",
         "performance_analysis.yaml",
         "plan.yaml",
         f"feedback_coach_{ITERATION_ID}.md",
         f"diet_{ITERATION_ID}.yaml",
         f"workout_data_{ITERATION_ID}.yaml",
-        f"feedback_atleta_{ITERATION_ID}.md",
+        f"feedback_atleta_{ITERATION_ID}.yaml",
     ]:
         status = "OK" if (OUTPUT_DIR / name).exists() else "MANCANTE"
         print(f"  [{status}] {name}")

@@ -1,0 +1,124 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "workout-single-day-view",
+    "task_title": "Vista giorno singolo con selettore giorno nella pagina Allenamento",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "workout-single-day-view",
+    "type": "component",
+    "title": "Vista giorno singolo con selettore giorno nella pagina Allenamento",
+    "description": "Nella pagina Allenamento, dopo aver selezionato una settimana (es. S1), vengono mostrate tutte le sessioni dei giorni in quella settimana. Il nuovo comportamento: mostrare sempre e solo una sessione giornaliera per volta. Se la settimana ha più giorni (es. 3 giorni: Lunedì, Mercoledì, Venerdì), aggiungere un selettore che permette di navigare tra i giorni. Il selettore deve essere generato dinamicamente in base al numero di giorni presenti nella settimana attiva nei dati — se domani la scheda cambiasse da 3 a 4 giorni, il selettore mostrerebbe 4 opzioni automaticamente. Il giorno mostrato di default è il primo della settimana. Se la settimana ha un solo giorno, non mostrare il selettore. La struttura del selettore giorni è coerente con il selettore settimane già esistente (bottoni con etichetta giorno, bottone attivo evidenziato).",
+    "inputs": ["workout_data"],
+    "outputs": ["WorkoutDaySelector", "WorkoutDayDetail"],
+    "acceptance_criteria": [
+      "All'apertura della pagina viene mostrata la sessione del primo giorno della settimana attiva",
+      "Se la settimana ha più di un giorno, è visibile un selettore con un bottone per ciascun giorno",
+      "Cliccando un giorno nel selettore, la sessione visualizzata cambia al giorno selezionato",
+      "Il selettore mostra tanti bottoni quanti sono i giorni nell'array della settimana corrente nel JSON",
+      "Se la settimana ha un solo giorno, il selettore non è mostrato",
+      "Cambiando settimana (dal selettore settimane), il selettore giorni si aggiorna al primo giorno della nuova settimana",
+      "Il comportamento è identico per le settimane S1 e S2 (o quante settimane ci sono)"
+    ],
+    "notes": "Il task sblocca workout-dynamic-week-buttons e workout-dynamic-tos-banner. Il codice attuale in renderWorkoutDetail() itera su tutti i giorni con giorni.map(giorno => renderGiornoCard(giorno)) e li mostra contemporaneamente — va sostituito con logica a giorno singolo + selettore dinamico. Il CSS ha già .week-btn e il pattern #week-selector come riferimento stilistico per i bottoni giorno. Occorre aggiungere #day-selector come nuovo elemento HTML (o generarlo interamente da JS) e le classi .day-selector / .day-btn."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/workout.html",
+        "motivo": "Aggiungere il placeholder container #day-selector tra #week-selector e #workout-detail. Il container può essere vuoto nell'HTML perché viene popolato dinamicamente da JS; va aggiunto l'attributo aria-label='Seleziona giorno di allenamento'.",
+        "esiste": true
+      },
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "Aggiungere: (1) variabile di stato giornoAttivoIndex (intero, indice nell'array giorni della settimana attiva); (2) funzione renderDaySelector(giorni) che popola #day-selector con un bottone per ogni giorno — nasconde il container se giorni.length <= 1; (3) funzione renderGiornoSingolo(data, numeroSettimana, giornoIndex) che sostituisce renderWorkoutDetail(): mostra riepilogo settimana + chiama renderGiornoCard() solo per il giorno all'indice giornoAttivoIndex; (4) aggiornare aggiornaSelezioneSettimane() per resettare giornoAttivoIndex = 0 e chiamare renderDaySelector() + renderGiornoSingolo() invece di renderWorkoutDetail().",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Aggiungere stili per #day-selector, .day-btn e .day-btn.active/.day-btn[aria-pressed='true'], modellati sul pattern esistente #week-selector/.week-btn. Il .workout-giorni con grid su tablet/desktop va rimosso o ignorato (il nuovo layout mostra sempre e solo una card per volta, non una griglia).",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/workout.json",
+        "motivo": "Struttura dati: oggetto con settimane[] — ogni settimana ha numero (int), intensita_target (string), note_settimana (string), giorni[] — ogni giorno ha giorno (string, es. 'Lunedi'), tipo (string), note_sessione (string), esercizi[] o protocolli[]. I bottoni del selettore giorni useranno giorno.giorno come etichetta."
+      },
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "Capire l'implementazione attuale: renderWorkoutDetail() itera su tutti i giorni con map(); aggiornaSelezioneSettimane() orchestra settimane + dettaglio. Entrambe vanno modificate o sostituite."
+      },
+      {
+        "path": "docs/workout.html",
+        "motivo": "Verificare dove inserire #day-selector: va posizionato tra #week-selector (riga 117) e #workout-detail (riga 145)."
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Leggere i blocchi #week-selector e .week-btn (righe 265-311) come modello stilistico diretto per #day-selector e .day-btn."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS ES2022",
+      "styling": "CSS custom properties (variables.css)",
+      "grafici": "non coinvolto in questo task",
+      "dati": "fetch() da docs/data/workout.json al DOMContentLoaded"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase — es. giornoAttivoIndex, settimanaAttiva, workoutData",
+      "classi_css": "kebab-case con prefisso pagina BEM-like — es. .day-selector, .day-btn",
+      "id_html": "kebab-case — es. #day-selector",
+      "event_listeners": "addEventListener() — mai onclick inline. Usare event delegation sul container #day-selector per i click sui bottoni giorno.",
+      "dom_manipulation": "getElementById() per elementi noti, innerHTML per liste generate dinamicamente",
+      "gestione_stato": "variabile modulo giornoAttivoIndex (intero, 0-based), analoga a settimanaAttiva già esistente",
+      "pattern_js": "funzione renderDaySelector(giorni) + renderGiornoSingolo(data, numeroSettimana, giornoIndex); aggiornaSelezioneSettimane() aggiornata per resettare giornoAttivoIndex = 0 ad ogni cambio settimana"
+    },
+    "pagina": {
+      "nome": "Allenamento",
+      "file": "docs/workout.html",
+      "js": "docs/js/workout.js",
+      "css": "docs/css/workout.css",
+      "dati_json": ["data/workout.json"]
+    },
+    "struttura_dati_workout": {
+      "nota": "workout.json è un oggetto singolo (non array) — normalizzaSchede() lo wrappa in [data]. I giorni di ogni settimana si trovano in settimana.giorni[] con campo 'giorno' (nome stringa).",
+      "esempio_settimana": {
+        "numero": 1,
+        "intensita_target": "60% 1RM — RPE 6-7",
+        "note_settimana": "...",
+        "giorni": [
+          { "giorno": "Lunedi", "tipo": "Lower A — Squat Focus", "esercizi": [] },
+          { "giorno": "Mercoledi", "tipo": "Lower B — Stacco Focus", "esercizi": [] },
+          { "giorno": "Venerdi", "tipo": "Lower C — Full Lower + Core", "esercizi": [] }
+        ]
+      }
+    },
+    "pattern_selettore_settimane_esistente": {
+      "html_container": "<nav id='week-selector' class='week-selector' aria-label='Seleziona settimana di allenamento'>",
+      "css_container": "#week-selector { display: flex; gap: var(--space-3); margin-bottom: var(--space-6); flex-wrap: wrap; }",
+      "css_btn": ".week-btn { flex: 1; min-width: 60px; padding-block: var(--space-4); font-size: var(--font-size-lg); background-color: var(--color-bg-card); border: 2px solid var(--color-border); border-radius: var(--radius-md); }",
+      "css_btn_active": ".week-btn.active { color: var(--color-accent); background-color: var(--color-accent-dim); border-color: var(--color-accent); }",
+      "nota": "Replicare esattamente questo pattern per #day-selector / .day-btn, adattando le classi"
+    }
+  },
+  "criteri_accettazione": [
+    "All'apertura della pagina viene mostrata la sessione del primo giorno della settimana attiva (indice 0 di settimana.giorni[])",
+    "Se settimana.giorni.length > 1, il container #day-selector è visibile con un bottone per ogni giorno",
+    "Se settimana.giorni.length === 1, #day-selector è nascosto (hidden o display:none)",
+    "Cliccando un bottone in #day-selector, la card in #workout-detail cambia mostrando solo il giorno selezionato",
+    "Cambiando settimana nel selettore settimane, #day-selector si rigenera con i giorni della nuova settimana e giornoAttivoIndex viene resettato a 0",
+    "Il comportamento è identico per S1 (3 giorni: Lunedi, Mercoledi, Venerdi) e S2 (3 giorni: Lunedi, Mercoledi, Venerdi)",
+    "docs/workout.html contiene un elemento con id='day-selector'",
+    "docs/js/workout.js contiene la funzione renderDaySelector()",
+    "docs/js/workout.js contiene la variabile di stato giornoAttivoIndex",
+    "Il riepilogo settimana (intensita_target + note_settimana) rimane visibile sopra la card giornaliera",
+    "Su tablet (>= 768px) e desktop, la singola card giornaliera non usa la griglia multi-colonna — .workout-giorni con grid va rimosso o la griglia non si applica quando c'è un solo figlio",
+    "I bottoni .day-btn sono stilisticamente coerenti con .week-btn (stessa forma, stesso stato active)"
+  ],
+  "dipendenze": []
+}

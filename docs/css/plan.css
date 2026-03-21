@@ -291,7 +291,7 @@
   overflow: hidden;
 }
 
-/* Card nutrizione per fase (usata dai task figli) */
+/* Card nutrizione per fase */
 .plan-nutrition-card {
   padding: var(--space-5);
   border-bottom: 1px solid var(--color-border);
@@ -299,6 +299,12 @@
 
 .plan-nutrition-card:last-child {
   border-bottom: none;
+}
+
+/* Card fase corrente — evidenziata con bordo accent e sfondo elevato */
+.plan-nutrition-card--current {
+  background-color: var(--color-bg-elevated);
+  border-left: 3px solid var(--color-accent);
 }
 
 .plan-nutrition-card-title {
@@ -310,10 +316,98 @@
   letter-spacing: 0.06em;
 }
 
+.plan-nutrition-card--current .plan-nutrition-card-title {
+  color: var(--color-accent);
+}
+
 .plan-nutrition-card-text {
   font-size: var(--font-size-sm);
   color: var(--color-text-muted);
   line-height: var(--line-height-loose);
+}
+
+/* Griglia card fasi dieta (mini-cut / mantenimento / bulk) */
+.plan-nutrition-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 1px solid var(--color-border);
+}
+
+.plan-nutrition-grid .plan-nutrition-card {
+  border-bottom: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
+}
+
+.plan-nutrition-grid .plan-nutrition-card:last-child {
+  border-right: none;
+}
+
+/* Trigger cut / bulk — due colonne affiancate */
+.plan-nutrition-triggers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-top: 1px solid var(--color-border);
+}
+
+.plan-nutrition-triggers .plan-nutrition-card {
+  border-bottom: 1px solid var(--color-border);
+  border-right: 1px solid var(--color-border);
+}
+
+.plan-nutrition-triggers .plan-nutrition-card:last-child {
+  border-right: none;
+}
+
+/* Sezione macronutrienti */
+.plan-nutrition-macros {
+  padding: var(--space-5);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.plan-nutrition-macros-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+  margin-top: var(--space-3);
+}
+
+.plan-nutrition-macros-table th,
+.plan-nutrition-macros-table td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.plan-nutrition-macros-table thead th {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.plan-nutrition-macros-table tbody tr:last-child td,
+.plan-nutrition-macros-table tbody tr:last-child th {
+  border-bottom: none;
+}
+
+.plan-nutrition-macros-table th[scope="row"] {
+  color: var(--color-text);
+  font-weight: var(--font-weight-semibold);
+  width: 40%;
+}
+
+.plan-nutrition-macros-table td {
+  color: var(--color-text-muted);
+}
+
+/* Nota finale */
+.plan-nutrition-note {
+  padding: var(--space-5);
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-bg-secondary);
 }
 
 /* ══════════════════════════════════════════
@@ -375,6 +469,23 @@
 
   .plan-targets-table {
     min-width: 480px;
+  }
+
+  /* Griglia nutrizione: stack verticale su mobile */
+  .plan-nutrition-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .plan-nutrition-grid .plan-nutrition-card {
+    border-right: none;
+  }
+
+  .plan-nutrition-triggers {
+    grid-template-columns: 1fr;
+  }
+
+  .plan-nutrition-triggers .plan-nutrition-card {
+    border-right: none;
   }
 }
 

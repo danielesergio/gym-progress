@@ -62,6 +62,12 @@
   border: 1px solid rgba(255, 193, 7, 0.35);
 }
 
+.badge-symbol {
+  font-size: 0.9em;
+  line-height: 1;
+  vertical-align: middle;
+}
+
 /* ── Container canvas Chart.js ── */
 .progress-chart-container {
   position: relative;

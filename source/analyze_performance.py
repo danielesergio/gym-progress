@@ -49,11 +49,25 @@ def load_measurements() -> list:
     return data
 
 
-def compute_periods(measurements: list) -> list:
+def load_workout_history() -> list:
+    path = OUTPUT_DIR / "workout_history.json"
+    if not path.exists():
+        return []
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError:
+        return []
+
+
+def compute_periods(measurements: list, workout_history: list) -> list:
     """
     Calcola i delta tra entry consecutive.
     Ritorna lista di dict con dati del periodo.
+    Usa workout_history per efficacia e note invece di measurements.
     """
+    # Indice workout_history per start id -> entry
+    wh_by_start = {e["start"]: e for e in workout_history if e.get("start")}
+
     periods = []
     for i in range(1, len(measurements)):
         prev = measurements[i - 1]
@@ -70,14 +84,17 @@ def compute_periods(measurements: list) -> list:
             continue
         years = days / 365.25
 
+        # La scheda da valutare e' quella che inizia in prev (start=prev.id in workout_history)
+        wh_entry = wh_by_start.get(prev.get("id"), {})
+
         period = {
             "idx":         i,
             "data_inizio": str(d0),
             "data_fine":   str(d1),
             "giorni":      days,
-            "id_scheda":   prev.get("id"),          # la scheda da valutare e' quella di prev
-            "efficacia":   prev.get("efficacia_workout"),
-            "note":        prev.get("note", ""),
+            "id_scheda":   wh_entry.get("id"),
+            "efficacia":   wh_entry.get("efficacia_workout"),
+            "note":        wh_entry.get("note", prev.get("note", "")),
             "delta":       {},
             "delta_anno":  {},
         }
@@ -155,7 +172,7 @@ def resolve_files(periods: list) -> dict:
 
         resolved[sid] = {
             "workout":          _find_file(f"workout_data_{sid}.yaml"),
-            "feedback_atleta":  _find_file(f"feedback_atleta_{sid}.md"),
+            "feedback_atleta":  _find_file(f"feedback_atleta_{sid}.yaml"),
             "feedback_coach":   _find_file(f"feedback_coach_{sid}.md"),
         }
     return resolved
@@ -234,7 +251,7 @@ Periodi selezionati ({selection_desc}):
 ## {_files_section(resolved)}
 
 Leggi SOLO i file elencati sopra (quelli contrassegnati come "non trovato" saltali).
-Non leggere altri file oltre a quelli indicati, salvo `data/output/measurements.json` che puoi sempre consultare.
+Non leggere altri file oltre a quelli indicati, salvo `data/output/measurements.json` e `data/output/workout_history.json` che puoi sempre consultare.
 
 ---
 
@@ -345,8 +362,9 @@ def main() -> None:
     lifts = LIFTS if args.lift == "tutti" else [args.lift]
 
     # Carica e calcola
-    measurements = load_measurements()
-    periods      = compute_periods(measurements)
+    measurements    = load_measurements()
+    workout_history = load_workout_history()
+    periods         = compute_periods(measurements, workout_history)
 
     print(f"[INFO] {len(measurements)} misurazioni, {len(periods)} periodi calcolati")
     print(f"[INFO] Lift: {', '.join(lifts)} | Modalita': {mode}")
@@ -390,6 +408,7 @@ def main() -> None:
     # Costruisci lista file per log_context
     period_files = []
     period_files.append((OUTPUT_DIR / "measurements.json", "obbligatorio"))
+    period_files.append((OUTPUT_DIR / "workout_history.json", "obbligatorio"))
     for sid, files in resolved.items():
         for label, path in files.items():
             if path:

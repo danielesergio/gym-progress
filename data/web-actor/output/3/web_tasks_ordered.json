@@ -1,0 +1,155 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "project": "Daniele Fitness — Dashboard Powerlifting",
+    "goal": "Miglioramento del sito esistente: correzione bug, regression fix, miglioramenti UX e dinamicità dei dati",
+    "sommario": "Il sito è composto da 6 pagine statiche (Dashboard, Progressi, Allenamento, Dieta, Piano, Volume) con dati caricati via fetch da JSON. L'analisi dei goal ha identificato 6 aree di intervento: 1 regression sulla card Target di Forza, 2 bug (contatore settimane hardcoded, legenda errata), 1 intervento di stile (rimozione colonna Note), 1 feature UX (vista giorno singolo in Allenamento), 1 requisito trasversale di dinamicità per rendere il sito resiliente ai cambiamenti dei dati. Tutti i task operano su componenti già esistenti — non è necessario creare nuove pagine.",
+    "features_totali": 5,
+    "tasks_totali": 8,
+    "anomalie": []
+  },
+  "tasks": [
+    {
+      "ordine": 1,
+      "id": "dashboard-fix-target-longterm",
+      "type": "bugfix",
+      "title": "Ripristina evidenziazione colonna obiettivo a lungo termine nella card Target di Forza",
+      "feature": "Dashboard — Fix Card Target di Forza",
+      "feature_priority": 1,
+      "motivazione_ordine": "Primo perché è una regression critica sulla Dashboard (priorità 1): corregge la logica di evidenziazione della colonna obiettivo per renderla robusta ai cambiamenti dei nomi orizzonte nel JSON.",
+      "dependencies_resolved": [],
+      "sblocca": [],
+      "inputs": ["plan_data"],
+      "outputs": ["TargetForceCard"],
+      "acceptance_criteria": [
+        "L'ultima colonna della tabella Target di Forza è visivamente distinta dalle colonne intermedie (stile differente e/o badge)",
+        "Il badge 'Obiettivo' (o equivalente) è visibile sulla colonna a lungo termine",
+        "Se i dati del piano contengono 4 orizzonti, tutte e 4 le colonne sono mostrate e la più lontana è evidenziata",
+        "Le colonne a 3, 6, 12 mesi NON ricevono lo stile di evidenziazione"
+      ]
+    },
+    {
+      "ordine": 2,
+      "id": "dashboard-fix-phase-week-counter",
+      "type": "bugfix",
+      "title": "Calcola dinamicamente il contatore settimane nella card Fase Corrente",
+      "feature": "Dashboard — Fix Card Fase Corrente",
+      "feature_priority": 2,
+      "motivazione_ordine": "Secondo perché corregge il bug del contatore settimane hardcoded sulla Dashboard (priorità 2), che deve diventare dinamico rispetto ai dati del piano.",
+      "dependencies_resolved": [],
+      "sblocca": [],
+      "inputs": ["plan_data"],
+      "outputs": ["ProgramPhaseCard"],
+      "acceptance_criteria": [
+        "Il numero totale 'Y' di settimane corrisponde alla somma delle durata_settimane di tutte le fasi nel piano.json",
+        "Se nel piano.json si aggiunge o rimuove una fase, Y cambia automaticamente senza modifiche al codice",
+        "La settimana corrente X è calcolata in modo dinamico rispetto ai dati, non rispetto a una data hardcoded nel codice",
+        "La barra di progressione si aggiorna coerentemente con X/Y",
+        "Se i dati della fase corrente cambiano, la card si aggiorna alla prossima visita"
+      ]
+    },
+    {
+      "ordine": 3,
+      "id": "progress-fix-legend-labels",
+      "type": "bugfix",
+      "title": "Correggi le etichette della legenda Reale/Stimato nella tabella Storico Misurazioni",
+      "feature": "Progressi — Fix Tabella Storico Misurazioni",
+      "feature_priority": 3,
+      "motivazione_ordine": "Terzo perché corregge il bug della legenda sulla pagina Progressi (priorità 3) ed è una dipendenza obbligatoria per il task successivo di rimozione colonna Note.",
+      "dependencies_resolved": [],
+      "sblocca": ["progress-remove-note-column"],
+      "inputs": ["measurements_data"],
+      "outputs": ["MeasurementsTableLegend"],
+      "acceptance_criteria": [
+        "La legenda sopra la tabella Storico Misurazioni mostra 'R = Reale' e 'S = Stimato'",
+        "I badge nella tabella (celle dei massimali) mostrano R o S coerentemente con la legenda",
+        "La legenda sopra 'Andamento Massimali Big 3' è coerente (stessa convenzione simbolo/testo)"
+      ]
+    },
+    {
+      "ordine": 4,
+      "id": "progress-remove-note-column",
+      "type": "bugfix",
+      "title": "Rimuovi la colonna Note dalla tabella Storico Misurazioni",
+      "feature": "Progressi — Fix Tabella Storico Misurazioni",
+      "feature_priority": 3,
+      "motivazione_ordine": "Quarto perché rimuove la colonna Note della tabella Storico Misurazioni (parte della priorità 3), dipendendo dal task precedente di correzione della legenda.",
+      "dependencies_resolved": ["progress-fix-legend-labels"],
+      "sblocca": [],
+      "inputs": ["measurements_data"],
+      "outputs": ["MeasurementsTable"],
+      "acceptance_criteria": [
+        "La tabella non ha la colonna 'Note' nell'intestazione",
+        "Le righe dati non hanno una cella corrispondente alla colonna Note",
+        "Le note non scompaiono: continuano a essere mostrate come riga secondaria sotto la misurazione principale (quando presenti)",
+        "La tabella rimane correttamente formattata su desktop e mobile"
+      ]
+    },
+    {
+      "ordine": 5,
+      "id": "workout-single-day-view",
+      "type": "component",
+      "title": "Vista giorno singolo con selettore giorno nella pagina Allenamento",
+      "feature": "Allenamento — Vista Giorno Singolo con Navigazione",
+      "feature_priority": 4,
+      "motivazione_ordine": "Quinto perché implementa la feature UX della vista giorno singolo (priorità 4) e sblocca i due task di dinamicità trasversale che ne dipendono.",
+      "dependencies_resolved": [],
+      "sblocca": ["workout-dynamic-week-buttons", "workout-dynamic-tos-banner"],
+      "inputs": ["workout_data"],
+      "outputs": ["WorkoutDaySelector", "WorkoutDayDetail"],
+      "acceptance_criteria": [
+        "All'apertura della pagina viene mostrata la sessione del primo giorno della settimana attiva",
+        "Se la settimana ha più di un giorno, è visibile un selettore con un bottone per ciascun giorno",
+        "Cliccando un giorno nel selettore, la sessione visualizzata cambia al giorno selezionato",
+        "Il selettore mostra tanti bottoni quanti sono i giorni nell'array della settimana corrente nel JSON",
+        "Se la settimana ha un solo giorno, il selettore non è mostrato",
+        "Cambiando settimana (dal selettore settimane), il selettore giorni si aggiorna al primo giorno della nuova settimana",
+        "Il comportamento è identico per le settimane S1 e S2 (o quante settimane ci sono)"
+      ]
+    },
+    {
+      "ordine": 6,
+      "id": "workout-dynamic-week-buttons",
+      "type": "bugfix",
+      "title": "Genera dinamicamente i bottoni settimana dal numero reale di settimane nel JSON",
+      "feature": "Dinamicità Trasversale — Dati come Unica Fonte di Verità",
+      "feature_priority": 5,
+      "motivazione_ordine": "Sesto perché completa la dinamicità della pagina Allenamento (priorità 5), generando i bottoni settimana in base ai dati anziché hardcoded, dipendendo dalla vista giorno singolo completata.",
+      "dependencies_resolved": ["workout-single-day-view"],
+      "sblocca": [],
+      "inputs": ["workout_data"],
+      "outputs": ["WorkoutWeekSelector"],
+      "acceptance_criteria": [
+        "Se workout.json ha 2 settimane, il selettore mostra 2 bottoni",
+        "Se workout.json ha 5 settimane, il selettore mostra 5 bottoni senza modifiche al markup HTML",
+        "I bottoni mostrano le etichette corrette (es. S1, S2, … Sn) in base ai numeri nell'array",
+        "Il markup HTML della pagina allenamento non contiene bottoni settimana hardcoded"
+      ]
+    },
+    {
+      "ordine": 7,
+      "id": "workout-dynamic-tos-banner",
+      "type": "bugfix",
+      "title": "Mostra il banner infortunio solo se i dati indicano un infortunio attivo, con contenuto dinamico",
+      "feature": "Dinamicità Trasversale — Dati come Unica Fonte di Verità",
+      "feature_priority": 5,
+      "motivazione_ordine": "Settimo e ultimo perché completa la dinamicità della pagina Allenamento (priorità 5), rendendo il banner infortunio dipendente dai dati e non dal markup hardcoded, dipendendo dalla vista giorno singolo.",
+      "dependencies_resolved": ["workout-single-day-view"],
+      "sblocca": [],
+      "inputs": ["workout_data"],
+      "outputs": ["WorkoutInjuryBanner"],
+      "acceptance_criteria": [
+        "Se i dati della scheda non indicano restrizioni/infortuni, il banner non è visibile",
+        "Se i dati indicano un infortunio, il banner è visibile con il contenuto proveniente dal JSON (non hardcoded nel markup)",
+        "Il markup HTML iniziale non contiene testo hardcoded degli esercizi vietati",
+        "Cambiando scheda (se ci sono più schede), il banner si aggiorna in base alla nuova scheda"
+      ]
+    }
+  ],
+  "summary": {
+    "tasks_ordinati": 8,
+    "anomalie": 0,
+    "ordine_logico": "dashboard-fix-target-longterm → dashboard-fix-phase-week-counter → progress-fix-legend-labels → progress-remove-note-column → workout-single-day-view → workout-dynamic-week-buttons → workout-dynamic-tos-banner",
+    "note": "Nessuna anomalia rilevata. Tutte le dipendenze sono valide e rispettate. L'ordine segue: 1) correzioni Dashboard (P1 e P2), 2) correzioni Progressi con dipendenza interna (P3), 3) feature Allenamento (P4) che sblocca 4) dinamicità trasversale (P5)."
+  }
+}

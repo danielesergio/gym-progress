@@ -1,0 +1,127 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "nav-add-volume",
+    "task_title": "Aggiungi voce 'Volume' alla navigazione principale",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "nav-add-volume",
+    "type": "navigation",
+    "title": "Aggiungi voce 'Volume' alla navigazione principale",
+    "description": "Tutte le pagine del sito condividono la stessa barra di navigazione a tab con 5 voci: Dashboard, Progressi, Allenamento, Dieta, Piano. La nuova pagina Volume deve essere aggiunta come sesta voce della navigazione su tutte le pagine esistenti. La voce deve essere attiva (aria-current) quando ci si trova sulla pagina Volume.",
+    "inputs": ["MainNav"],
+    "outputs": ["MainNavWithVolume"],
+    "acceptance_criteria": [
+      "La voce 'Volume' appare nella barra di navigazione su tutte le pagine",
+      "Cliccando 'Volume' si arriva alla pagina Volume",
+      "La voce 'Volume' è evidenziata come attiva quando si è sulla pagina Volume",
+      "Le voci esistenti non cambiano ordine né aspetto"
+    ],
+    "notes": "nav.js (setActiveNav) è già generico: legge window.location.pathname e confronta con l'href di ogni .nav-tab presente nell'HTML. Non richiede alcuna modifica — gestirà automaticamente il nuovo tab Volume non appena il markup HTML sarà aggiunto alle pagine. L'unica operazione è aggiungere il blocco <a href='volume.html'> nelle 5 pagine HTML esistenti."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/dashboard.html",
+        "motivo": "Aggiungere la sesta voce Volume al <nav class='tab-list'>, dopo il link a plan.html. La voce NON ha class='active' né aria-current (dashboard è la pagina attiva, non volume). Aggiornare il commento nav da '5 sezioni' a '6 sezioni'.",
+        "esiste": true
+      },
+      {
+        "path": "docs/progress.html",
+        "motivo": "Aggiungere la sesta voce Volume al <nav class='tab-list'>, dopo il link a plan.html. Nessun attributo active/aria-current sulla voce Volume. Aggiornare il commento nav da '5 sezioni' a '6 sezioni'.",
+        "esiste": true
+      },
+      {
+        "path": "docs/workout.html",
+        "motivo": "Aggiungere la sesta voce Volume al <nav class='tab-list'>, dopo il link a plan.html. Nessun attributo active/aria-current sulla voce Volume. Aggiornare il commento nav da '5 sezioni, Allenamento attivo' a '6 sezioni, Allenamento attivo'.",
+        "esiste": true
+      },
+      {
+        "path": "docs/diet.html",
+        "motivo": "Aggiungere la sesta voce Volume al <nav class='tab-list'>, dopo il link a plan.html. Nessun attributo active/aria-current sulla voce Volume. Aggiornare il commento nav da '5 sezioni, Dieta attivo' a '6 sezioni, Dieta attivo'.",
+        "esiste": true
+      },
+      {
+        "path": "docs/plan.html",
+        "motivo": "Aggiungere la sesta voce Volume al <nav class='tab-list'>, dopo il link a plan.html. Nessun attributo active/aria-current sulla voce Volume. Aggiornare il commento nav da 'Piano active' a 'Piano active — 6 sezioni'.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/dashboard.html",
+        "motivo": "Pagina modello per il pattern esatto del blocco <nav class='tab-list'> e la struttura dei tag <a role='tab' class='nav-tab'>. Verificare indentazione e attributi presenti (href, role, class, aria-label). Questo file è già nella lista da modificare — leggere prima di modificare."
+      },
+      {
+        "path": "docs/progress.html",
+        "motivo": "Leggere prima di modificare — verificare la struttura del nav block."
+      },
+      {
+        "path": "docs/workout.html",
+        "motivo": "Leggere prima di modificare — verificare la struttura del nav block."
+      },
+      {
+        "path": "docs/diet.html",
+        "motivo": "Leggere prima di modificare — verificare la struttura del nav block."
+      },
+      {
+        "path": "docs/plan.html",
+        "motivo": "Leggere prima di modificare — verificare la struttura del nav block."
+      },
+      {
+        "path": "docs/js/nav.js",
+        "motivo": "Verificare che setActiveNav() sia già generico (itera tutti i .nav-tab e confronta con pathname). Confermato: non richiede modifiche. Il developer deve solo leggere per sicurezza prima di decidere."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML / ES2022",
+      "build": "nessuno — file scritti direttamente in docs/"
+    },
+    "navigazione": {
+      "struttura_attuale": "nav.tab-list con 5 voci: Dashboard → Progressi → Allenamento → Dieta → Piano",
+      "struttura_target": "nav.tab-list con 6 voci: Dashboard → Progressi → Allenamento → Dieta → Piano → Volume",
+      "ordine_voci": ["dashboard.html", "progress.html", "workout.html", "diet.html", "plan.html", "volume.html"],
+      "active_state": "Gestito a runtime da nav.js (setActiveNav). Gli attributi class='active' e aria-current='page' hardcoded nell'HTML sono sovrascritti da nav.js al DOMContentLoaded. La nuova voce Volume NON deve avere active/aria-current hardcoded in nessuna delle 5 pagine esistenti.",
+      "nav_js_modifiche_necessarie": "NESSUNA — setActiveNav() è già generico: itera document.querySelectorAll('.nav-tab') e confronta tab.getAttribute('href').split('/').pop() con window.location.pathname.split('/').pop(). Funzionerà automaticamente con il nuovo tab."
+    },
+    "convenzioni": {
+      "struttura_nav_block": "<nav role='tablist' class='tab-list' id='nav-tabs' aria-label='Navigazione sezioni'><div class='container'>[6 × <a>]</div></nav>",
+      "struttura_voce": "<a href='volume.html' role='tab' class='nav-tab' aria-label='Volume di allenamento'>Volume</a>",
+      "classi_css": "nav-tab (classe condivisa, definita in layout.css — nessuna modifica CSS necessaria)",
+      "aria_label_voce_volume": "Volume di allenamento",
+      "indentazione": "6 spazi per il tag <a> (coerente con le voci esistenti nelle pagine analizzate)"
+    }
+  },
+  "markup_da_inserire": {
+    "descrizione": "Blocco HTML identico da aggiungere in TUTTE e 5 le pagine, dopo il tag </a> di plan.html e prima del </div> di chiusura del container nav",
+    "html": "      <a href=\"volume.html\"\n         role=\"tab\"\n         class=\"nav-tab\"\n         aria-label=\"Volume di allenamento\">Volume</a>",
+    "posizione": "Dopo <a href='plan.html' ...>Piano</a>, prima del </div> che chiude il .container dentro il <nav>",
+    "nota": "Non aggiungere class='active' né aria-current in nessuna delle 5 pagine esistenti — nav.js gestisce lo stato attivo dinamicamente"
+  },
+  "criteri_accettazione": [
+    "La voce 'Volume' appare nella barra di navigazione su tutte le pagine (dashboard, progress, workout, diet, plan)",
+    "Cliccando 'Volume' si arriva alla pagina volume.html",
+    "La voce 'Volume' è evidenziata come attiva (class='active' + aria-current='page') quando si naviga su volume.html — gestito da nav.js senza intervento manuale",
+    "Le 5 voci esistenti (Dashboard, Progressi, Allenamento, Dieta, Piano) mantengono identico ordine e attributi",
+    "docs/dashboard.html contiene <a href='volume.html' role='tab' class='nav-tab' aria-label='Volume di allenamento'>Volume</a>",
+    "docs/progress.html contiene <a href='volume.html' role='tab' class='nav-tab' aria-label='Volume di allenamento'>Volume</a>",
+    "docs/workout.html contiene <a href='volume.html' role='tab' class='nav-tab' aria-label='Volume di allenamento'>Volume</a>",
+    "docs/diet.html contiene <a href='volume.html' role='tab' class='nav-tab' aria-label='Volume di allenamento'>Volume</a>",
+    "docs/plan.html contiene <a href='volume.html' role='tab' class='nav-tab' aria-label='Volume di allenamento'>Volume</a>",
+    "docs/js/nav.js NON è stato modificato (è già compatibile)",
+    "Nessun file CSS è stato modificato (la voce Volume riusa la classe .nav-tab già stilata in layout.css)",
+    "La voce Volume compare come sesta e ultima voce — dopo Piano — in ogni pagina"
+  ],
+  "dipendenze": [],
+  "note_implementative": [
+    "Questo task è SOLO markup HTML — nessuna riga di JS o CSS da scrivere.",
+    "La modifica è identica su tutte e 5 le pagine: aggiungere lo stesso blocco <a> dopo Piano.",
+    "nav.js non va toccato: la funzione setActiveNav() usa querySelectorAll('.nav-tab') che automaticamente includerà il nuovo tab.",
+    "volume.html non esiste ancora (verrà creata dal task successivo page-volume) — il link sarà presente ma la pagina sarà raggiungibile solo dopo quel task. Questo è corretto per la sequenza."
+  ]
+}

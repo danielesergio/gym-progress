@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "progress-remove-note-column",
+    "task_titolo": "Rimuovi la colonna Note dalla tabella Storico Misurazioni",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "La tabella non ha la colonna 'Note' nell'intestazione (<th>)",
+      "soddisfatto": true,
+      "dettaglio": "Intestazione confermata da righe 573-586 di progress.js: 12 <th> totali senza alcuna menzione di 'Note'. Ricerca grep di 'Note</th>' non trova risultati."
+    },
+    {
+      "criterio": "Le righe dati hanno 12 celle, non 13 — la cella della colonna Note è stata rimossa",
+      "soddisfatto": true,
+      "dettaglio": "Le righe dati (righe 596-634) contengono 12 <td> distribuite da riga 599 (Data) a riga 632 (Stacco 1RM). Conteggio: Data, Peso, BF%, Massa Magra, FFMI, Vita, Petto, Braccio, Coscia, Squat 1RM, Panca 1RM, Stacco 1RM = 12 celle."
+    },
+    {
+      "criterio": "Le note non vuote continuano a essere mostrate come riga secondaria <tr class='measurements-table__note-row'> sotto la riga principale",
+      "soddisfatto": true,
+      "dettaglio": "Righe 636-642 di progress.js: if(hasNota) emette <tr class=\"measurements-table__note-row\"><td colspan=\"12\">' + nota + '</td></tr>. Il CSS (righe 212-224 di progress.css) definisce .measurements-table__note-row td con stili per la visualizzazione corretta."
+    },
+    {
+      "criterio": "Il colspan della riga .measurements-table__note-row è 12 (non 13)",
+      "soddisfatto": true,
+      "dettaglio": "Riga 640 di progress.js: '<td colspan=\"12\">'. Grep per 'colspan=\"13\"' non trova alcun risultato nel file JS."
+    },
+    {
+      "criterio": "Le misurazioni senza note (hasNota = false) non mostrano righe secondarie — comportamento invariato",
+      "soddisfatto": true,
+      "dettaglio": "Logica a righe 636-642: la riga secondaria .measurements-table__note-row è emessa solo se hasNota === true. Una misurazione con note vuota o null (come l'ultima misurazione in measurements.json con note: '') non emette la riga. Comportamento corretto."
+    },
+    {
+      "criterio": "La tabella rimane correttamente formattata su desktop e mobile (le 4 colonne .col-mobile-hide restano tali)",
+      "soddisfatto": true,
+      "dettaglio": "Le colonne .col-mobile-hide rimangono a righe 578-582 (FFMI, Vita, Petto, Braccio, Coscia). Il CSS a riga 251-253 nasconde questi elementi su mobile (max-width: 768px). Nessuna modifica ai breakpoint responsive."
+    },
+    {
+      "criterio": "docs/js/progress.js non contiene più 'Note</th>' nel blocco dell'intestazione tabella",
+      "soddisfatto": true,
+      "dettaglio": "Grep non trova alcun match per 'Note</th>' in progress.js. Intestazione genera solo 12 colonne."
+    },
+    {
+      "criterio": "docs/js/progress.js non contiene più 'td-note-icon' nel corpo della riga principale",
+      "soddisfatto": true,
+      "dettaglio": "Grep non trova alcun match per 'td-note-icon' in progress.js. La logica della riga principale (righe 596-634) non emette alcuna <span class=\"td-note-icon\"> o <td class=\"td-note-icon\">."
+    },
+    {
+      "criterio": "docs/js/progress.js contiene 'colspan=\"12\"' nella riga nota (non più 13)",
+      "soddisfatto": true,
+      "dettaglio": "Riga 640: '<td colspan=\"12\">' confermato da grep. Non esiste alcun 'colspan=\"13\"' in progress.js."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/progress.js",
+      "esiste": true,
+      "note": "File modificato correttamente. Funzione renderMeasurementsTable() genera tabella con 12 colonne, riga secondaria nota ha colspan=12, nessuna traccia di colonna Note."
+    },
+    {
+      "path": "docs/css/progress.css",
+      "esiste": true,
+      "note": "CSS contiene ancora stile .td-note-icon (linee 203-209) non più utilizzato nel codice JS. Vedi anomalia warning."
+    },
+    {
+      "path": "docs/data/measurements.json",
+      "esiste": true,
+      "note": "Dati di riferimento letti correttamente. Campo 'note' presente in tutti i record (alcuni con valori non vuoti, uno vuoto). Non modificati — read-only as expected."
+    },
+    {
+      "path": "docs/progress.html",
+      "esiste": true,
+      "note": "HTML statico confermato. Tabella è 100% generata via innerHTML da JS, nessun markup statico da modificare."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "warning",
+      "descrizione": "Il CSS contiene lo stile .measurements-table .td-note-icon (righe 203-209 di progress.css) che non è più utilizzato nel codice JS dopo la rimozione della colonna Note. Consigliato: rimuovere lo stile CSS orfano per mantenere il file pulito, ma non è un blocco critico.",
+      "file": "docs/css/progress.css"
+    }
+  ]
+}

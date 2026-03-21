@@ -1,0 +1,79 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "bugfix-massimali-legenda",
+    "task_titolo": "Correggi legenda Reale/Stimato nel grafico Massimali Big 3",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "I punti Reali sono visualizzati con marker a cerchio nel grafico (pointStyle: 'circle')",
+      "soddisfatto": true,
+      "dettaglio": "La funzione buildPointStyles (riga 308-312 in progress.js) restituisce 'circle' per tutti i punti dove i !== stimatoIdx. Applicato a tutti e 3 i dataset (Squat, Panca, Stacco) alle righe 384, 400, 416."
+    },
+    {
+      "criterio": "I punti Stimati sono visualizzati con marker a quadrato nel grafico (pointStyle: 'rect')",
+      "soddisfatto": true,
+      "dettaglio": "La funzione buildPointStyles restituisce 'rect' (non 'rectRot') quando i === stimatoIdx. Fix verificato alla riga 310: 'return i === stimatoIdx ? 'rect' : 'circle';'"
+    },
+    {
+      "criterio": "La legenda mostra un cerchio ● accanto a 'Reale' e un quadrato ■ accanto a 'Stimato'",
+      "soddisfatto": true,
+      "dettaglio": "Nel file progress.html alle righe 79-80, i badge contengono il markup corretto: '<span class=\"badge-symbol\" aria-hidden=\"true\">●</span> Reale' e '<span class=\"badge-symbol\" aria-hidden=\"true\">■</span> Stimato'. I caratteri Unicode sono presenti e correttamente wrappati con aria-hidden per accessibilità."
+    },
+    {
+      "criterio": "Il marker dell'ultimo punto (2026-03-21, tipo S, indice 5) appare come quadrato in tutti e 3 i dataset (Squat, Panca, Stacco)",
+      "soddisfatto": true,
+      "dettaglio": "I dati in measurements.json mostrano il record più recente (indice 5, data 2026-03-21, id 3a6a7aad) con squat_1rm_tipo='S', panca_1rm_tipo='S', stacco_1rm_tipo='S'. La logica in progress.js (righe 338-340) identifica correttamente gli indici stimati (squatStimatoIdx=5, pancaStimatoIdx=5, staccoStimatoIdx=5) e applica il pointStyle 'rect' mediante buildPointStyles."
+    },
+    {
+      "criterio": "docs/js/progress.js nella funzione buildPointStyles non contiene 'rectRot' — contiene 'rect'",
+      "soddisfatto": true,
+      "dettaglio": "Grep confirm: nessuna occorrenza di 'rectRot' nel file. La riga 310 contiene 'return i === stimatoIdx ? 'rect' : 'circle';' — il fix è stato applicato correttamente."
+    },
+    {
+      "criterio": "docs/progress.html contiene '●' nel badge .badge-reale e '■' nel badge .badge-stimato",
+      "soddisfatto": true,
+      "dettaglio": "Verificato nel file progress.html righe 79-80. Il primo badge contiene U+25CF (●, cerchio pieno), il secondo contiene U+25A0 (■, quadrato pieno). Entrambi sono racchiusi in <span class=\"badge-symbol\" aria-hidden=\"true\"> per motivi di accessibilità."
+    },
+    {
+      "criterio": "docs/css/progress.css contiene la regola .badge-symbol",
+      "soddisfatto": true,
+      "dettaglio": "Nel file progress.css righe 65-69, la regola .badge-symbol è presente con stili corretti: font-size: 0.9em; line-height: 1; vertical-align: middle; — allinea verticalmente il simbolo con il testo del badge."
+    },
+    {
+      "criterio": "I punti Reali dei 5 record precedenti (indici 0-4) mantengono il marker 'circle' invariato",
+      "soddisfatto": true,
+      "dettaglio": "I record nei dati (indici 0-4, dal 2022-10-22 al 2025-10-02) hanno tutti squat_1rm_tipo='R', panca_1rm_tipo='R', stacco_1rm_tipo='R'. La funzione buildPointStyles restituisce 'circle' per questi indici, mantenendo il comportamento originale intatto."
+    },
+    {
+      "criterio": "Il tooltip del grafico mostra ancora correttamente il tipo (R/S) accanto al valore kg",
+      "soddisfatto": true,
+      "dettaglio": "Il file progress.js non modifica la configurazione dei tooltip Chart.js. La logica rimane intatta: i valori massimali restituiscono il tipo dal campo di record (squat_1rm_tipo, panca_1rm_tipo, stacco_1rm_tipo) che è già correttamente presente in tutti i 6 record del measurements.json."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/progress.js",
+      "esiste": true,
+      "note": "Funzione buildPointStyles correttamente implementata con 'rect' per punti stimati e 'circle' per punti reali. Fix critico verificato alla riga 310. Logica di determinazione degli indici stimati (squatStimatoIdx, pancaStimatoIdx, staccoStimatoIdx) funziona correttamente leggendo i campi _tipo per esercizio (righe 338-340)."
+    },
+    {
+      "path": "docs/progress.html",
+      "esiste": true,
+      "note": "Badge della legenda aggiornati correttamente alle righe 79-80. Contengono i simboli Unicode (● e ■) wrappati in <span class=\"badge-symbol\" aria-hidden=\"true\"> per accessibilità. Struttura markup corretta per Chart.js 4.x."
+    },
+    {
+      "path": "docs/css/progress.css",
+      "esiste": true,
+      "note": "Regola .badge-symbol aggiunta alle righe 65-69 con stili appropriati per allineamento verticale e dimensionamento del simbolo. Nessun conflitto con stili esistenti di .badge-reale e .badge-stimato (righe 40-63)."
+    },
+    {
+      "path": "docs/data/measurements.json",
+      "esiste": true,
+      "note": "Array di 6 record verificati. Ultimi 5 record (indici 0-4) hanno tipo='R' per tutti gli esercizi. Record finale (indice 5, 2026-03-21) ha tipo='S' per squat, panca e stacco — struttura dati corretta per il fix."
+    }
+  ],
+  "anomalie": []
+}

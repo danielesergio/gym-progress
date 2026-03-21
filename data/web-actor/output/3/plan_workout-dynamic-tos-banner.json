@@ -1,0 +1,118 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "workout-dynamic-tos-banner",
+    "task_title": "Mostra il banner infortunio solo se i dati indicano un infortunio attivo, con contenuto dinamico",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "workout-dynamic-tos-banner",
+    "type": "bugfix",
+    "title": "Mostra il banner infortunio solo se i dati indicano un infortunio attivo, con contenuto dinamico",
+    "description": "Il banner TOS in cima alla pagina Allenamento è sempre visibile e contiene una lista hardcoded di esercizi vietati (Panca piana, Dip, Military press, ecc.) scritta nel markup HTML. Questo è sbagliato per due motivi: 1) se l'atleta non è infortunato, il banner non deve essere mostrato; 2) se l'infortunio fosse diverso dalla TOS, il banner dovrebbe riflettere le restrizioni specifiche di quell'infortunio. Il contenuto del banner deve provenire dai dati della scheda workout.json: se il JSON non segnala alcun infortunio/restrizione, il banner non deve essere mostrato. Se il JSON contiene informazioni su restrizioni (es. lista esercizi vietati, note di sicurezza), queste devono popolare dinamicamente il banner. La struttura attuale delle note_generali della scheda contiene già le informazioni rilevanti.",
+    "inputs": ["workout_data"],
+    "outputs": ["WorkoutInjuryBanner"],
+    "acceptance_criteria": [
+      "Se i dati della scheda non indicano restrizioni/infortuni, il banner non è visibile",
+      "Se i dati indicano un infortunio, il banner è visibile con il contenuto proveniente dal JSON (non hardcoded nel markup)",
+      "Il markup HTML iniziale non contiene testo hardcoded degli esercizi vietati",
+      "Cambiando scheda (se ci sono più schede), il banner si aggiorna in base alla nuova scheda"
+    ],
+    "notes": "La funzione renderTOSBanner() esiste già in workout.js ma è incompleta: aggiorna solo il titolo e non gestisce visibilità né lista esercizi. Il task richiede di riscriverla completamente. Non esiste un campo booleano dedicato nel JSON (es. infortunio_attivo): la rilevazione dell'infortunio deve avvenire ispezionando note_generali[] — se almeno una nota inizia con 'INFORTUNIO' o contiene parole chiave di restrizione, il banner è attivo. Il banner nel markup HTML deve diventare vuoto (solo struttura scheletro) e ricevere il contenuto dal JS. La lista hardcoded degli esercizi vietati nel markup va rimossa."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/workout.html",
+        "motivo": "Rimuovere il contenuto hardcoded del banner: svuotare il <div id='tos-alert-banner'> mantenendo solo la struttura scheletro (div wrapper, elementi vuoti che il JS popola). Il banner deve partire con attributo 'hidden' in modo che sia nascosto per default prima che il JS si esegua.",
+        "esiste": true
+      },
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "Riscrivere la funzione renderTOSBanner(data) per: (1) rilevare se il JSON segnala un infortunio attivo ispezionando data.note_generali[]; (2) se nessun infortunio: aggiungere attributo 'hidden' al banner; (3) se infortunio attivo: rimuovere 'hidden', estrarre il titolo del protocollo, estrarre le restrizioni come lista, estrarre il messaggio di stop, e popolare dinamicamente i relativi elementi nel DOM.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Verificare se è necessario aggiungere una regola per la gestione del banner nascosto. Il meccanismo preferito è l'attributo HTML 'hidden' (nativo, accessibile) — in tal caso non servono modifiche al CSS. Se invece si opta per una classe CSS dedicata (es. .workout-tos-banner--hidden), aggiungerla nel foglio di stile.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/workout.json",
+        "motivo": "Struttura dati critica: capire dove sono i dati di infortunio. Campi rilevanti: note_generali (array di stringhe — la prima nota inizia con 'INFORTUNIO TOS ATTIVO:' e contiene le restrizioni in forma testuale). Non esiste un campo booleano dedicato: la logica JS deve rilevare l'infortunio dalla presenza e contenuto delle note_generali. La nota index 0 contiene il protocollo TOS. La nota index 1 contiene il segnale di stop immediato."
+      },
+      {
+        "path": "docs/workout.html",
+        "motivo": "File da modificare — capire la struttura attuale del banner hardcoded (righe 70-91): struttura DOM esistente con classi workout-tos-banner__title, workout-tos-banner__list, workout-tos-banner__safety. Il JS deve poter selezionare questi elementi via querySelector per popolarli dinamicamente."
+      },
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "File da modificare — la funzione renderTOSBanner() (righe 271-279) è già definita e già chiamata da selectSchema() (riga 190). Il developer deve riscrivere solo quella funzione, mantenendo la firma e il punto di chiamata invariati. Le funzioni circostanti (renderWorkoutHeader, aggiornaSelezioneSettimane) non vanno toccate."
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "File potenzialmente da modificare — verificare se esiste già una regola per nascondere il banner (es. .workout-tos-banner[hidden] o variante hidden). Attualmente il CSS non contiene tale regola: il banner non ha mai un attributo hidden nel markup corrente."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS vanilla ES2022",
+      "styling": "CSS custom properties con prefisso BEM workout-*",
+      "dati": "JSON statici in docs/data/ — fetch() in workout.js al DOMContentLoaded"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase, es. noteGenerali, infortunioAttivo, esercizioVietato",
+      "classi_css": "kebab-case con prefisso pagina, es. .workout-tos-banner, .workout-tos-banner__list",
+      "id_html": "kebab-case, es. #tos-alert-banner",
+      "gestione_null": "Usare optional chaining (?.) e nullish coalescing (??) — es. data?.note_generali ?? []",
+      "dom_manipulation": "innerHTML per popolare liste generate dinamicamente. textContent per valori singoli. Attributo 'hidden' nativo per mostrare/nascondere elementi.",
+      "event_listeners": "Non applicabile a questo task — il banner non ha interazioni",
+      "pattern_js": "La funzione renderTOSBanner(data) è già chiamata da selectSchema() ad ogni cambio scheda. Deve solo essere riscritta internamente — la firma rimane identica.",
+      "no": "No inline style, no var, no document.write()"
+    },
+    "pagina": {
+      "nome": "Allenamento",
+      "file": "docs/workout.html",
+      "js": "docs/js/workout.js",
+      "css": "docs/css/workout.css",
+      "dati_json": ["data/workout.json"]
+    },
+    "note_rilevamento_infortunio": {
+      "strategia": "Ispezione di note_generali[] nel JSON. Non esiste un campo booleano dedicato nel formato attuale.",
+      "campo_fonte": "workout.json → note_generali (array di stringhe)",
+      "nota_indice_0_attuale": "Inizia con 'INFORTUNIO TOS ATTIVO:' e contiene le restrizioni sugli esercizi esclusi",
+      "nota_indice_1_attuale": "Contiene il messaggio di stop immediato (segnale di pericolo)",
+      "suggerimento_logica": "Considerare come 'infortunio attivo' qualsiasi scheda in cui almeno una nota_generali inizia con 'INFORTUNIO' (case-insensitive) o contiene la parola chiave 'ESCLUSI'. In alternativa più robusta: cercare note che iniziano con 'INFORTUNIO' oppure controllare se mesociclo.metodologia o meta.tipo_fase contiene 'Recupero'. Il developer sceglie la strategia più leggibile e manutenibile.",
+      "attenzione_futuro": "Se in futuro Python aggiunge un campo dedicato (es. meta.infortunio_attivo: true/false), la funzione andrà aggiornata per usarlo direttamente."
+    }
+  },
+  "criteri_accettazione": [
+    "Se i dati della scheda non indicano restrizioni/infortuni, il banner non è visibile nella pagina",
+    "Se i dati indicano un infortunio, il banner è visibile con il contenuto proveniente dal JSON (non hardcoded nel markup)",
+    "Il markup HTML iniziale non contiene testo hardcoded degli esercizi vietati (niente 'Panca piana', 'Dip', 'Military press' scritti direttamente nell'HTML)",
+    "Cambiando scheda (se ci sono più schede), il banner si aggiorna in base alla nuova scheda",
+    "docs/workout.html — il div #tos-alert-banner non contiene testo statico degli esercizi vietati nell'HTML sorgente",
+    "docs/workout.html — il div #tos-alert-banner ha attributo 'hidden' di default nel markup (nascosto prima del JS)",
+    "docs/js/workout.js — la funzione renderTOSBanner(data) gestisce il caso note_generali vuoto o assente senza lanciare eccezioni",
+    "docs/js/workout.js — la funzione renderTOSBanner(data) rimuove l'attributo 'hidden' dal banner solo se rileva un infortunio attivo nei dati",
+    "docs/js/workout.js — la funzione renderTOSBanner(data) aggiunge l'attributo 'hidden' al banner se i dati non segnalano infortuni",
+    "docs/js/workout.js — renderTOSBanner(data) è chiamata da selectSchema() ad ogni cambio scheda (comportamento già presente, da non alterare)"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "workout-single-day-view",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/workout.html",
+        "docs/js/workout.js",
+        "docs/css/workout.css"
+      ],
+      "note": "Il file plan_workout-single-day-view.json esiste in data/web-actor/output/. La logica JS della dipendenza (renderDaySelector, renderGiornoSingolo, aggiornaSelezioneSettimane, selectSchema) è già implementata in docs/js/workout.js. Il selettore #day-selector è già presente in docs/workout.html. La funzione selectSchema() chiama già renderTOSBanner(workoutData) alla riga 190 — il punto di aggancio per il banner dinamico è già correttamente posizionato nel codice."
+    }
+  ]
+}

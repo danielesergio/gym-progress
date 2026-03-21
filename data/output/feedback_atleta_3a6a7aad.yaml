@@ -1,0 +1,44 @@
+# Feedback Atleta  # Aprile 2026
+# Compila i campi lasciando i valori dopo i ':'. Lascia null se non disponibile.
+
+sensazioni:
+  energia_generale:   # numero 1-10
+  qualita_sonno:      # numero 1-10
+  stress:             # basso / medio / alto
+
+allenamento:
+  seguito_scheda:     # si / parzialmente / no
+  esercizi_pesanti:
+  esercizi_difficili:
+  note:
+
+dieta:
+  seguita:            # si / parzialmente / no
+  difficolta:
+  note:
+
+progressi:
+  piu_forte:          # si / no / uguale
+  cambiamenti_fisici:
+
+# Inserisci peso (kg) e reps eseguiti. Il calcolo 1RM e' automatico.
+massimali:
+  squat:  {kg: 125, reps: 5}
+  panca:  {kg: 100, reps: 5}
+  stacco: {kg: 170, reps: 5}
+
+corpo:
+  peso_kg: 87.2
+  misure:
+    vita_cm: 89
+    fianchi_cm: 100
+    petto_cm: 100
+    braccio_dx_cm: 33.5
+    coscia_dx_cm: 57
+    collo_cm: 39
+
+altro:
+  infortuni: Sindrome TOS dovuta probabilmente a infiammazione / contrattura del piccolo pettorale.
+  note:
+    - sono fermo da 3 settimane per infortunio, adesso sono in via di guarigione. fammi un programma di 2 settimane per riprendere ad allenarmi senza forzare minimamente il piccolo pettorale (dolore trazioni, panca piana, military press e altri).Evita tutti gli esercizi che posso far peggiorare la mia situazione attuale.
+    - al momentono sono in una fase di cut che vorrei protrarre per abbassare la mia body fat e poi riprendere con il bulk. Questa è solo una mia idea dimmi tu se è opportuno o è meglio interrompere il piano di bulk.

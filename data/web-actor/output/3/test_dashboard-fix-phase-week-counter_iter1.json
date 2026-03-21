@@ -1,0 +1,110 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "dashboard-fix-phase-week-counter",
+    "task_titolo": "Calcola dinamicamente il contatore settimane nella card Fase Corrente",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Y (totale settimane) corrisponde alla somma delle durata_settimane di tutte le fasi nel plan.json — attualmente 52",
+      "soddisfatto": true,
+      "dettaglio": "Riga 223: const totaleSettimane = fasi.reduce((acc, f) => acc + (f.durata_settimane ?? 0), 0); Somma dinamica delle durata_settimane di tutte le fasi. Con i dati attuali (2+4+8+6+8+6+4+2+8+4) = 52."
+    },
+    {
+      "criterio": "Se nel plan.json si aggiunge una fase con durata_settimane: 6, Y diventa 58 senza modifiche al codice JS",
+      "soddisfatto": true,
+      "dettaglio": "Il calcolo a riga 223 usa .reduce() su plan.fasi, pertanto qualsiasi modifica ai dati del JSON (aggiunta/rimozione fasi) si propaga automaticamente al totale Y."
+    },
+    {
+      "criterio": "X (settimana corrente) non contiene la data hardcoded '2026-03-01' nel codice",
+      "soddisfatto": true,
+      "dettaglio": "Ricerca della stringa '2026-03-01' in dashboard.js: NON TROVATA. Nessuna data hardcoded nel codice."
+    },
+    {
+      "criterio": "X è calcolato usando plan.meta.data_aggiornamento o una data derivata dai dati, non una costante letterale",
+      "soddisfatto": true,
+      "dettaglio": "Righe 236-242: const dataAggiornamentoStr = plan?.meta?.data_aggiornamento; Legge dinamicamente data_aggiornamento dal JSON con optional chaining e fallback a new Date() se assente o non parsabile."
+    },
+    {
+      "criterio": "La barra di progressione (.phase-card__progress-fill) aggiorna il suo width% coerentemente con X/Y",
+      "soddisfatto": true,
+      "dettaglio": "Riga 253: const percentuale = Math.min(100, Math.round(settCorrente / (totaleSettimane || 1) * 100)); Riga 264: style=\"width: ${percentuale}%\". Percentuale calcolata dinamicamente e applicata inline."
+    },
+    {
+      "criterio": "Il testo 'Settimana X di Y' (.phase-card__progress-label) mostra valori coerenti con i dati",
+      "soddisfatto": true,
+      "dettaglio": "Riga 266: <p class=\"phase-card__progress-label\">Settimana ${settCorrente} di ${totaleSettimane}</p>. Testo dinamico interpolato da variabili calcolate."
+    },
+    {
+      "criterio": "Se plan.fasi ha una sola fase, X e Y sono calcolati correttamente senza errori",
+      "soddisfatto": true,
+      "dettaglio": "Il reduce() a riga 223 funziona con 1 elemento. I calcoli di settCorrente (righe 249-251) usano operatori nulli-safe (??) e Math.max/min per evitare NaN."
+    },
+    {
+      "criterio": "Se plan.meta.data_aggiornamento è assente o non parsabile, il codice non lancia eccezioni (fallback a today o '—')",
+      "soddisfatto": true,
+      "dettaglio": "Righe 234-242: let dataInizioProgramma = oggi; with isNaN() check. Se data assente o non parsabile, fallback a new Date(). Nessun throw, no eccezioni."
+    },
+    {
+      "criterio": "docs/js/dashboard.js NON contiene la stringa letterale '2026-03-01' nel codice",
+      "soddisfatto": true,
+      "dettaglio": "Ricerca in tutto il file: '2026-03-01' NON TROVATA. Confermato."
+    },
+    {
+      "criterio": "docs/js/dashboard.js NON contiene 'TOTALE_SETTIMANE = 52' come costante hardcoded",
+      "soddisfatto": true,
+      "dettaglio": "Ricerca di costante globale TOTALE_SETTIMANE: NON TROVATA. La variabile totaleSettimane è locale alla funzione renderProgramPhaseCard() e calcolata dinamicamente."
+    },
+    {
+      "criterio": "docs/js/dashboard.js contiene almeno una chiamata a .reduce() o equivalente per sommare durata_settimane",
+      "soddisfatto": true,
+      "dettaglio": "Riga 223: fasi.reduce((acc, f) => acc + (f.durata_settimane ?? 0), 0) — Somma Y. Righe 229-231: Secondo reduce() per settimanePreFase. Due implementazioni di reduce() presenti."
+    },
+    {
+      "criterio": "La funzione renderProgramPhaseCard(plan) riceve solo plan come argomento — la firma non cambia",
+      "soddisfatto": true,
+      "dettaglio": "Riga 199: function renderProgramPhaseCard(plan) { — Un solo parametro 'plan', firma invariata rispetto alle convenzioni."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/dashboard.js",
+      "esiste": true,
+      "note": "Contiene la funzione renderProgramPhaseCard() completamente reimplementata con calcoli dinamici di X (settimana corrente) e Y (totale settimane). Righe 199-268. Nessuna modifica a renderDashboard(), renderAthleteStatusCard(), renderStrengthSummaryCard(), renderTargetsCard()."
+    },
+    {
+      "path": "docs/data/plan.json",
+      "esiste": true,
+      "note": "Struttura conforme: meta.data_aggiornamento (2026-03-21), fasi[] con numero, nome, durata_settimane, stato. 10 fasi, somma durata_settimane = 52. Fase corrente: numero 0 ('Recupero TOS'), durata 2, stato 'corrente'."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "warning",
+      "descrizione": "Riga 249: const durataProgramma = faseCorrente?.durata_settimane ?? totaleSettimane; — Il fallback a totaleSettimane è concettualmente errato. Se faseCorrente.durata_settimane è undefined, il clamp di settCorrenteFase a totaleSettimane (52) dovrebbe essere alla durata della fase (es. 2). In pratica, con dati ben formati, faseCorrente è sempre definito e ha durata_settimane, quindi non è bloccante. Miglioramento: const durataProgramma = faseCorrente.durata_settimane ?? 1;",
+      "file": "docs/js/dashboard.js"
+    }
+  ],
+  "dettagli_logica": {
+    "calcolo_X_oggi": {
+      "data_aggiornamento": "2026-03-21",
+      "fase_corrente": "numero=0, nome='Recupero TOS', durata=2, stato='corrente'",
+      "settimane_pre_fase": 0,
+      "data_inizio_programma": "2026-03-21",
+      "data_inizio_fase_corrente": "2026-03-21 + 0 settimane = 2026-03-21",
+      "giorni_trascorsi": 1,
+      "sett_corrente_fase_calcolata": "ceil(1/7) = 1",
+      "sett_corrente_finale": "min(52, 0 + min(1, 2)) = 1",
+      "percentuale": "round(1/52*100) = 2%",
+      "risultato_html": "Settimana 1 di 52 — width: 2%"
+    },
+    "test_aggiunta_fase": {
+      "scenario": "Se si aggiunge fase con durata_settimane: 6 in plan.json",
+      "Y_atteso": "52 + 6 = 58",
+      "impatto_X": "Nessuno (X dipende da data_inizio e fase corrente, non da Y)",
+      "codice_sensibile": "Riga 223 (.reduce()) — automaticamente somma il nuovo valore"
+    }
+  }
+}

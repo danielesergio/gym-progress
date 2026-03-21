@@ -1,0 +1,96 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "bugfix-strategia-nutrizionale",
+    "task_titolo": "Correggi il caricamento della Strategia Nutrizionale in Piano",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "La sezione non mostra più il testo 'Caricamento strategia nutrizionale…'",
+      "soddisfatto": true,
+      "dettaglio": "plan.js riga 28: renderNutritionStrategy(planData) è attiva (non commentata). La funzione sostituisce il placeholder con innerHTML. plan.html riga 104 contiene il placeholder originale ma viene sovrascritto al caricamento della pagina."
+    },
+    {
+      "criterio": "Viene mostrata la strategia nutrizionale per almeno la fase corrente del programma",
+      "soddisfatto": true,
+      "dettaglio": "plan.js righe 242-244 determinano la fase corrente. La funzione renderizza il campo strategia.ora con label 'Adesso: Fase 0 — Recupero TOS'. plan.json riga 142 contiene il testo descrittivo non vuoto."
+    },
+    {
+      "criterio": "I valori calorici e proteici sono leggibili e non vuoti",
+      "soddisfatto": true,
+      "dettaglio": "plan.js righe 308-331 creano tabella macronutrienti. Proteine: 2.3 g/kg/die (da plan.json riga 149). Carboidrati: '50-55% delle calorie totali' (riga 150). Grassi: '25-30% delle calorie totali' (riga 151). Tutti i valori sono visibili e leggibili."
+    },
+    {
+      "criterio": "docs/js/plan.js: la riga con il commento è sostituita dalla chiamata attiva renderNutritionStrategy(planData)",
+      "soddisfatto": true,
+      "dettaglio": "plan.js riga 28: il commento '// I task figli completeranno: renderNutritionStrategy(planData)' è stato rimosso e sostituito con 'renderNutritionStrategy(planData);' — chiamata attiva."
+    },
+    {
+      "criterio": "docs/js/plan.js: esiste la funzione renderNutritionStrategy(planData) con header JSDoc",
+      "soddisfatto": true,
+      "dettaglio": "plan.js righe 223-230: funzione con header JSDoc completo. Contiene @param {Object} planData e @returns {void}. Descrive il comportamento della funzione."
+    },
+    {
+      "criterio": "La funzione renderNutritionStrategy() controlla l'esistenza del container #plan-nutrition-container prima di scrivere",
+      "soddisfatto": true,
+      "dettaglio": "plan.js righe 232-233: if (!container) return; presente. Il container viene cercato con getElementById('plan-nutrition-container') e la funzione esce subito se non trovato."
+    },
+    {
+      "criterio": "La funzione usa optional chaining (?.) per accedere ai campi di strategia_nutrizionale",
+      "soddisfatto": true,
+      "dettaglio": "plan.js riga 235: planData?.strategia_nutrizionale. Righe 242, 271-274: optional chaining usato su macro?.proteine_g_per_kg, macro?.carboidrati, macro?.grassi. Tutti i campi acceduti in modo sicuro."
+    },
+    {
+      "criterio": "I valori null/undefined mostrano '—' e non causano errori in console",
+      "soddisfatto": true,
+      "dettaglio": "plan.js righe 236-239: if (!strategia) chiama renderError(). Righe 248, 254, 258, 262, 267-268, 272-274, 277: tutti i campi usano ?? '—' o ternario con fallback. Non ci sono accessi diretti a proprietà non guardate."
+    },
+    {
+      "criterio": "La sezione macronutrienti mostra: proteine (2.3 g/kg), carboidrati (50-55%), grassi (25-30%)",
+      "soddisfatto": true,
+      "dettaglio": "plan.js righe 318-330: tabella con 3 righe (Proteine, Carboidrati, Grassi). plan.json contiene: proteine_g_per_kg: 2.3 (riga 149), carboidrati: '50-55%...' (riga 150), grassi: '25-30%...' (riga 151). Valori renderizzati correttamente nel TD con contenuto '2.3 g/kg/die', percentuali e focus omega-3."
+    },
+    {
+      "criterio": "Sono visibili i trigger: BF > 16% per il cut, BF <= 13% per il bulk",
+      "soddisfatto": true,
+      "dettaglio": "plan.js righe 297-306: sezione triggers con due card affiancate. Trigger Cut renderizzato con testo 'BF > 16% durante le fasi di bulk -> ridurre surplus immediatamente'. Trigger Bulk: 'BF <= 13% e forza stagnante -> aumentare surplus a +400 kcal'. plan.json righe 146-147 contengono i valori."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/plan.js",
+      "esiste": true,
+      "note": "Funzione renderNutritionStrategy() implementata (righe 231-341). Chiamata attiva in renderPlan() (riga 28). JSDoc header, gestione null, optional chaining, fallback su dati mancanti — tutto presente e corretto."
+    },
+    {
+      "path": "docs/data/plan.json",
+      "esiste": true,
+      "note": "Campo strategia_nutrizionale presente (righe 141-153) con struttura corretta: ora, fase_mini_cut, fase_mantenimento, fase_bulk, trigger_cut, trigger_bulk, macronutrienti (sotto-oggetto), note. Tutti i campi contengono dati non vuoti."
+    },
+    {
+      "path": "docs/css/plan.css",
+      "esiste": true,
+      "note": "Classi CSS presenti e funzionali: .plan-nutrition-container (righe 287-292), .plan-nutrition-card, .plan-nutrition-card--current, .plan-nutrition-grid (righe 330-343), .plan-nutrition-triggers (righe 346-359), .plan-nutrition-macros (righe 362-404), .plan-nutrition-note (righe 407-411). Responsive media query (righe 475-489)."
+    },
+    {
+      "path": "docs/plan.html",
+      "esiste": true,
+      "note": "Sezione HTML presente (righe 95-106) con id='plan-nutrition-container' e placeholder iniziale 'Caricamento strategia nutrizionale…'. Container target è corretto e identificato dal JavaScript."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "warning",
+      "descrizione": "Mancanza di log esplicito quando nessuna fase ha stato 'corrente'. plan.js riga 243 usa find() che potrebbe restituire undefined, ma il codice gestisce il fallback. Consigliato aggiungere console.warn() se faseCorrente è null per debugging.",
+      "file": "docs/js/plan.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Nome del campo JSON 'ora' per la fase corrente è controintuitivo. Semanticamente 'fase_corrente' o 'fase_attuale' sarebbe stato più chiaro. Nota: il codice è corretto, è una osservazione di design dati.",
+      "file": "docs/data/plan.json"
+    }
+  ],
+  "nota_finale": "Implementazione completata con successo. Tutti i 10 criteri di accettazione sono soddisfatti. La funzione renderNutritionStrategy() è completamente implementata, integrata e funzionante. Non ci sono anomalie bloccanti. Le anomalie segnalate sono di tipo warning e info, non impattano il funzionamento della feature."
+}

@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Volume di Allenamento — Daniele Fitness</title>
+  <link rel="stylesheet" href="css/variables.css">
+  <link rel="stylesheet" href="css/layout.css">
+  <link rel="stylesheet" href="css/volume.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js" defer></script>
+</head>
+<body>
+
+  <!-- ══════════════════════════════════════════
+       HEADER — nome atleta
+  ══════════════════════════════════════════ -->
+  <header class="page-header" id="main-header" role="banner">
+    <div class="container">
+      <div class="header-brand">
+        <span class="header-athlete-name">Daniele</span>
+        <span class="header-tagline">Fitness &amp; Powerlifting</span>
+      </div>
+      <div class="header-meta" aria-label="Volume settimana corrente">
+        <span class="header-meta-label">Volume totale:</span>
+        <span class="header-meta-value" id="header-total-volume">—</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ══════════════════════════════════════════
+       NAV TAB — Volume active — 6 sezioni
+  ══════════════════════════════════════════ -->
+  <nav role="tablist" class="tab-list" id="nav-tabs" aria-label="Navigazione sezioni">
+    <div class="container">
+      <a href="dashboard.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Dashboard atleta">Dashboard</a>
+      <a href="progress.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Progressi nel tempo">Progressi</a>
+      <a href="workout.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Scheda allenamento">Allenamento</a>
+      <a href="diet.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Piano dieta">Dieta</a>
+      <a href="plan.html"
+         role="tab"
+         class="nav-tab"
+         aria-label="Piano annuale e obiettivi">Piano</a>
+      <a href="volume.html"
+         role="tab"
+         class="nav-tab active"
+         aria-current="page"
+         aria-label="Volume di allenamento">Volume</a>
+    </div>
+  </nav>
+
+  <!-- ══════════════════════════════════════════
+       MAIN — tre sezioni: meta KPI, grafico, tabella
+  ══════════════════════════════════════════ -->
+  <main id="page-content" aria-label="Contenuto principale">
+    <div class="container">
+
+      <!-- Messaggio errore globale -->
+      <div id="volume-error"
+           class="volume-error"
+           role="alert"
+           aria-live="polite"
+           hidden></div>
+
+      <!-- ── SEZIONE 1: Card metadati KPI ── -->
+      <section id="volume-meta-section"
+               class="volume-section"
+               aria-labelledby="volume-meta-title">
+        <div class="volume-section-header">
+          <h2 class="volume-section-title" id="volume-meta-title">Riepilogo Volume Settimanale</h2>
+          <p class="volume-section-subtitle">Serie pesate totali per muscolo — scheda corrente</p>
+        </div>
+        <div id="volume-meta-card" class="volume-meta-card">
+          <p class="volume-placeholder">Caricamento metadati…</p>
+        </div>
+      </section>
+
+      <!-- ── SEZIONE 2: Grafico a barre per muscolo ── -->
+      <section id="volume-chart-section"
+               class="volume-section"
+               aria-labelledby="volume-chart-title">
+        <div class="volume-section-header">
+          <h2 class="volume-section-title" id="volume-chart-title">Volume per Gruppo Muscolare</h2>
+          <p class="volume-section-subtitle">Serie pesate ordinate dal più alto al più basso</p>
+        </div>
+        <div class="volume-chart-container" aria-label="Grafico volume per gruppo muscolare">
+          <canvas id="chart-volume-muscoli"
+                  role="img"
+                  aria-label="Grafico a barre orizzontali del volume per gruppo muscolare"></canvas>
+        </div>
+      </section>
+
+      <!-- ── SEZIONE 3: Tabella dettaglio esercizi ── -->
+      <section id="volume-detail-section"
+               class="volume-section"
+               aria-labelledby="volume-detail-title">
+        <div class="volume-section-header">
+          <h2 class="volume-section-title" id="volume-detail-title">Dettaglio Esercizi per Muscolo</h2>
+          <p class="volume-section-subtitle">Elenco completo con giorno, serie, ruolo e contributo</p>
+        </div>
+        <div id="volume-detail-container" class="volume-detail-container">
+          <p class="volume-placeholder">Caricamento dettaglio esercizi…</p>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <!-- ══════════════════════════════════════════
+       FOOTER — minimale
+  ══════════════════════════════════════════ -->
+  <footer class="page-footer" id="main-footer" role="contentinfo">
+    <div class="container">
+      <p class="footer-text">Daniele Fitness &copy; 2026</p>
+    </div>
+  </footer>
+
+  <script src="js/nav.js" defer></script>
+  <script src="js/volume.js" defer></script>
+
+</body>
+</html>

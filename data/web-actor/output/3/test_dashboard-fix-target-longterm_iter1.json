@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "dashboard-fix-target-longterm",
+    "task_titolo": "Ripristina evidenziazione colonna obiettivo a lungo termine nella card Target di Forza",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "L'ultima colonna della tabella Target di Forza è visivamente distinta dalle colonne intermedie (stile differente e/o badge)",
+      "soddisfatto": true,
+      "dettaglio": "La funzione renderTargetsCard() applica correttamente le classi CSS targets-card__th--longterm (riga 267) e targets-card__td--longterm (riga 290) all'ultima colonna. Il CSS (dashboard.css, righe 356-359, 419-423) definisce stili distinti con background var(--color-accent-dim) e colore var(--color-accent). La logica isLongterm utilizza idx === targets.length - 1 per la colonna di intestazione e tidx === targets.length - 1 per le celle corpo, garantendo corretta applicazione dello stile alla colonna 'Lungo termine' (5 anni) che è l'ultima dell'array targets."
+    },
+    {
+      "criterio": "Il badge '🎯 Obiettivo' (o equivalente) è visibile sulla colonna a lungo termine",
+      "soddisfatto": true,
+      "dettaglio": "Riga 268 in dashboard.js produce correttamente il badge: badgeHtml = isLongterm ? '<span class=\"targets-card__goal-badge\">🎯 Obiettivo</span>' : ''. Il badge è inserito nella cella di intestazione (riga 270) solo quando isLongterm è true (ossia quando idx === targets.length - 1). Il CSS targets-card__goal-badge (dashboard.css, righe 373-385) definisce lo stile con colore accent e background accent-dim."
+    },
+    {
+      "criterio": "Se i dati del piano contengono 4 orizzonti, tutte e 4 le colonne sono mostrate e la più lontana è evidenziata",
+      "soddisfatto": true,
+      "dettaglio": "Il file plan.json contiene 4 target con orizzonti: '3 mesi', '6 mesi', '12 mesi', '5 anni'. La mappa targets.map() (righe 265 e 281) itera su tutti e 4 gli elementi. La logica idx === targets.length - 1 identifica correttamente l'indice 3 (ultimo elemento) come colonna a lungo termine. Tutte e 4 le colonne vengono renderizzate (headCellsHtml e cellsHtml per ogni esercizio), con la quarta colonna ('5 anni') evidenziata."
+    },
+    {
+      "criterio": "Le colonne a 3, 6, 12 mesi NON ricevono lo stile di evidenziazione",
+      "soddisfatto": true,
+      "dettaglio": "Solo quando isLongterm è true (idx === targets.length - 1 oppure tidx === targets.length - 1) le classi CSS --longterm vengono applicate. Per i primi 3 elementi (indici 0, 1, 2), isLongterm rimane false, quindi colClass e cellClass ricevono rispettivamente le classi base 'targets-card__th' (riga 267) e 'targets-card__td' (riga 290) senza il suffisso --longterm. Nessun badge viene generato per questi elementi (riga 268)."
+    },
+    {
+      "criterio": "docs/js/dashboard.js non contiene più la stringa 'Lungo termine (2-5 anni)'",
+      "soddisfatto": true,
+      "dettaglio": "Grep search per la stringa 'Lungo termine (2-5 anni)' restituisce zero risultati nel file dashboard.js. La stringa hardcoded che causava il bug è stata completamente rimossa. La logica di identificazione della colonna a lungo termine ora utilizza esclusivamente il check posizionale idx === targets.length - 1."
+    },
+    {
+      "criterio": "La funzione renderTargetsCard() usa targets.map((t, idx) => ...) per headCellsHtml e targets.map((t, tidx) => ...) per cellsHtml",
+      "soddisfatto": true,
+      "dettaglio": "Riga 265: const headCellsHtml = targets.map((t, idx) => { ... la callback include il parametro indice idx. Riga 281: const cellsHtml = targets.map((t, tidx) => { ... la callback include il parametro indice tidx. Entrambe le mappe ricevono i parametri corretti per accedere all'indice posizionale."
+    },
+    {
+      "criterio": "La variabile isLongterm è calcolata come idx === targets.length - 1 (o tidx === targets.length - 1) in entrambe le mappe",
+      "soddisfatto": true,
+      "dettaglio": "Riga 266: const isLongterm = idx === targets.length - 1; nella mappa headCellsHtml. Riga 282: const isLongterm = tidx === targets.length - 1; nella mappa cellsHtml. Entrambe le occorrenze di isLongterm utilizzano il check posizionale invece del confronto stringa precedente."
+    },
+    {
+      "criterio": "Il comportamento è robusto: se l'orizzonte viene rinominato in plan.json, l'evidenziazione continua a funzionare senza modifiche al codice",
+      "soddisfatto": true,
+      "dettaglio": "La logica idx === targets.length - 1 è indipendente dal valore del campo t.orizzonte. Se il JSON viene modificato e il valore '5 anni' viene cambiato in '5y' oppure 'Long-term Goal', l'evidenziazione continuerà a funzionare perché l'identificazione della colonna è basata sulla posizione (ultimo elemento dell'array), non sul testo. Questo è un design robusto e futuro-proof."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/dashboard.js",
+      "esiste": true,
+      "note": "File modificato correttamente. La funzione renderTargetsCard() contiene il fix chirurgico: (1) riga 265: targets.map((t, idx) => con indice; (2) riga 266: isLongterm = idx === targets.length - 1; (3) riga 281: targets.map((t, tidx) => con indice; (4) riga 282: isLongterm = tidx === targets.length - 1. Nessun residuo della stringa hardcoded 'Lungo termine (2-5 anni)'."
+    },
+    {
+      "path": "docs/css/dashboard.css",
+      "esiste": true,
+      "note": "CSS già presente e corretto. Stili .targets-card__th--longterm (righe 356-359), .targets-card__td--longterm (righe 419-423), .targets-card__goal-badge (righe 373-385) definiti correttamente. Nessuna modifica necessaria, come previsto dal task."
+    },
+    {
+      "path": "docs/data/plan.json",
+      "esiste": true,
+      "note": "Dati di input verificati. L'array target contiene 4 oggetti con orizzonti corretti. Il valore dell'ultimo elemento è 'orizzonte': '5 anni' (non la stringa hardcoded 'Lungo termine (2-5 anni)'). Il fix basato sull'indice funziona correttamente."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "La formattazione numerica nelle celle lungterm differisce dalle altre: il valore viene mostrato senza .toFixed(1). I valori nel JSON per l'orizzonte '5 anni' sono già interi (200, 150, 250), quindi visualmente non c'è differenza, ma la logica di riga 286-288 mantiene questa distinzione. Non è un problema, ma è una osservazione sulla coerenza di formattazione.",
+      "file": "docs/js/dashboard.js"
+    }
+  ],
+  "sommario": {
+    "task_id": "dashboard-fix-target-longterm",
+    "task_title": "Ripristina evidenziazione colonna obiettivo a lungo termine nella card Target di Forza",
+    "esito": "OK",
+    "criteri_soddisfatti": 8,
+    "criteri_totali": 8,
+    "anomalie_bloccanti": 0,
+    "anomalie_warning": 0,
+    "anomalie_info": 1
+  }
+}

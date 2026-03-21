@@ -1,0 +1,156 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "bugfix-strategia-nutrizionale",
+    "task_title": "Correggi il caricamento della Strategia Nutrizionale in Piano",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "bugfix-strategia-nutrizionale",
+    "type": "bugfix",
+    "title": "Correggi il caricamento della Strategia Nutrizionale in Piano",
+    "description": "Nella pagina Piano la sezione 'Strategia Nutrizionale — Approccio per fase del programma' rimane bloccata sul testo 'Caricamento strategia nutrizionale…' invece di mostrare i dati. Il bug è in docs/js/plan.js: la chiamata renderNutritionStrategy(planData) è commentata fuori (riga 28) con il commento '// I task figli completeranno: renderNutritionStrategy(planData)' e la funzione non è mai stata implementata. Il contenuto atteso è la strategia nutrizionale leggibile dal campo plan.json['strategia_nutrizionale'] (oggetto con chiavi: ora, fase_mini_cut, fase_mantenimento, fase_bulk, trigger_cut, trigger_bulk, macronutrienti, note). Non è un array per fase, ma un oggetto con sezioni descrittive che coprono raggruppamenti di fasi.",
+    "inputs": [
+      "plan_data"
+    ],
+    "outputs": [
+      "StrategiaNutrizionaleSection"
+    ],
+    "acceptance_criteria": [
+      "La sezione non mostra più il testo 'Caricamento strategia nutrizionale…'",
+      "Viene mostrata la strategia nutrizionale per almeno la fase corrente del programma",
+      "I valori calorici e proteici sono leggibili e non vuoti"
+    ],
+    "notes": "Il campo plan.json['strategia_nutrizionale'] NON è un array di 10 oggetti-fase. È un oggetto con chiavi descrittive (ora, fase_mini_cut, fase_mantenimento, fase_bulk, trigger_cut, trigger_bulk, macronutrienti, note). Il rendering deve presentare queste sezioni in modo leggibile, eventualmente evidenziando quella più rilevante per la fase corrente. La fase corrente (stato='corrente') è la fase 0 'Recupero TOS' che corrisponde alla sezione 'ora'. Le sezioni fasi[] del JSON contengono già la logica nutrizionale nella proprietà 'metodologia' e 'note' di ciascuna fase — ma la sezione dedicata è plan.json.strategia_nutrizionale."
+  },
+  "analisi_bug": {
+    "causa_radice": "La funzione renderNutritionStrategy() non esiste in plan.js e la sua chiamata è commentata nella funzione renderPlan(). Il commento '// I task figli completeranno: renderNutritionStrategy(planData)' indica che la funzione era pianificata ma mai implementata.",
+    "riga_incriminata": "docs/js/plan.js — riga 28: commento che disabilita la chiamata a renderNutritionStrategy(planData)",
+    "dato_disponibile": "plan.json contiene il campo 'strategia_nutrizionale' con 8 chiavi: ora, fase_mini_cut, fase_mantenimento, fase_bulk, trigger_cut, trigger_bulk, macronutrienti (oggetto con 3 sotto-chiavi), note",
+    "fix_richiesto": "1) Implementare la funzione renderNutritionStrategy(planData) in plan.js. 2) Rimuovere il commento e richiamare la funzione attivamente in renderPlan()."
+  },
+  "struttura_dati_riferimento": {
+    "campo": "plan.json['strategia_nutrizionale']",
+    "tipo": "oggetto (non array)",
+    "chiavi": {
+      "ora": "stringa — approccio attuale durante recupero TOS (~2870 kcal, no cut)",
+      "fase_mini_cut": "stringa — Fase 2 (settimane 7-14): deficit -300/-400 kcal, proteine 200g/die",
+      "fase_mantenimento": "stringa — Fasi 3-7: mantenimento ~2870 kcal + piccolo surplus nelle fasi forza",
+      "fase_bulk": "stringa — Fase 8 (settimane 41-48): surplus +300/+400 kcal, 3150-3270 kcal",
+      "trigger_cut": "stringa — BF > 16% -> ridurre surplus",
+      "trigger_bulk": "stringa — BF <= 13% e forza stagnante -> aumentare surplus",
+      "macronutrienti": {
+        "proteine_g_per_kg": "numero (2.3)",
+        "carboidrati": "stringa (50-55% calorie, priorità pre/post workout)",
+        "grassi": "stringa (25-30% calorie, focus omega-3)"
+      },
+      "note": "stringa — note generali su proteine, omega-3 e creatina"
+    }
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/plan.js",
+        "motivo": "1) Rimuovere il commento alla riga 28 che disabilita renderNutritionStrategy(planData) e richiamare la funzione attivamente. 2) Implementare la funzione renderNutritionStrategy(planData) che legge planData.strategia_nutrizionale e popola #plan-nutrition-container con le sezioni nutrizionali. 3) Aggiungere la funzione buildNutritionSection() di supporto se necessario.",
+        "esiste": true,
+        "riga_chiave": 28
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/js/plan.js",
+        "motivo": "File con il bug — capire struttura esistente, pattern usati (renderError, template literals, JSDoc header), dove inserire la nuova funzione e come modificare renderPlan()"
+      },
+      {
+        "path": "docs/data/plan.json",
+        "motivo": "Struttura reale del campo strategia_nutrizionale: oggetto con chiavi ora, fase_mini_cut, fase_mantenimento, fase_bulk, trigger_cut, trigger_bulk, macronutrienti (sotto-oggetto), note. Verificare campo per campo prima di codificare il render."
+      },
+      {
+        "path": "docs/css/plan.css",
+        "motivo": "Classi CSS disponibili per il container .plan-nutrition-container — verificare se esistono già classi per card/sezione nutrizionale o se ne servono di nuove"
+      },
+      {
+        "path": "docs/plan.html",
+        "motivo": "Confermare l'id del container target (#plan-nutrition-container) e la struttura HTML esistente della sezione 3"
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS ES2022",
+      "grafici": "Chart.js — NON necessario per questo task",
+      "dati": "fetch() da 'data/plan.json' (già esistente in renderPlan)"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase (es. planData, nutritionStrategy, currentPhase)",
+      "classi_css": "kebab-case con prefisso pagina 'plan-' (es. .plan-nutrition-container, .plan-nutrition-section, .plan-nutrition-card)",
+      "gestione_null": "Usare optional chaining (?.) su tutti i campi. Fallback a '—' per stringhe mancanti.",
+      "pattern_js": "funzione renderNutritionStrategy(planData) chiamata da renderPlan() dopo renderStrengthTargets(). Pattern esistente: ogni render function → verifica container → verifica dati → innerHTML = html generato.",
+      "commenti": "Header JSDoc-style: descrizione, @param {Object} planData, @returns {void}. Sezioni separate da commenti ASCII '// ── Nome sezione ────'",
+      "gestione_errori": "if (!container) return; prima di accedere al DOM. Se dati mancanti: chiamare renderError('plan-nutrition-container', messaggio).",
+      "fetch": "Il fetch è già gestito in renderPlan() — renderNutritionStrategy() riceve planData già caricato, NON fa un nuovo fetch"
+    },
+    "pagina": {
+      "nome": "Piano",
+      "file": "docs/plan.html",
+      "js": "docs/js/plan.js",
+      "css": "docs/css/plan.css",
+      "dati_json": ["data/plan.json"],
+      "container_target": "#plan-nutrition-container"
+    }
+  },
+  "istruzioni_implementazione": {
+    "passo_1": {
+      "descrizione": "In renderPlan(): rimuovere il commento alla riga 28 e attivare la chiamata",
+      "da": "// I task figli completeranno: renderNutritionStrategy(planData)",
+      "a": "renderNutritionStrategy(planData);"
+    },
+    "passo_2": {
+      "descrizione": "Implementare renderNutritionStrategy(planData) — funzione che legge planData.strategia_nutrizionale e popola #plan-nutrition-container",
+      "logica": [
+        "Recuperare il container #plan-nutrition-container",
+        "Se non esiste: return",
+        "Leggere planData?.strategia_nutrizionale",
+        "Se undefined/null: chiamare renderError('plan-nutrition-container', 'Strategia nutrizionale non disponibile.') e return",
+        "Determinare la fase corrente da planData.fasi (stato === 'corrente') per evidenziare la sezione più rilevante",
+        "Costruire HTML con le sezioni principali: ora (approccio attuale), fasi dieta (mini-cut/mantenimento/bulk), trigger, macronutrienti, note generali",
+        "Impostare container.innerHTML = html"
+      ]
+    },
+    "passo_3": {
+      "descrizione": "Struttura HTML suggerita per il rendering",
+      "note": [
+        "Usare una card per la sezione 'Ora / Fase Corrente' — evidenziata visivamente (es. classe .plan-nutrition-card--current)",
+        "Usare card separate per Mini-Cut, Mantenimento, Bulk",
+        "Una sezione orizzontale (o tabella) per Macronutrienti (proteine g/kg, carboidrati %, grassi %)",
+        "Una sezione trigger (due card affiancate): trigger_cut e trigger_bulk",
+        "Una sezione note finali"
+      ]
+    },
+    "classi_css_da_usare_o_creare": [
+      ".plan-nutrition-grid — griglia per le card nutrizionali (CSS grid o flex-wrap)",
+      ".plan-nutrition-card — card singola sezione nutrizionale",
+      ".plan-nutrition-card--current — variante evidenziata per la fase attuale",
+      ".plan-nutrition-card__title — titolo della card",
+      ".plan-nutrition-card__body — testo descrittivo",
+      ".plan-nutrition-macros — tabella/griglia macro (P/C/G)",
+      ".plan-nutrition-triggers — container trigger cut/bulk",
+      ".plan-nutrition-note — nota finale"
+    ]
+  },
+  "criteri_accettazione": [
+    "La sezione non mostra più il testo 'Caricamento strategia nutrizionale…'",
+    "Viene mostrata la strategia nutrizionale per almeno la fase corrente del programma",
+    "I valori calorici e proteici sono leggibili e non vuoti",
+    "docs/js/plan.js: la riga con il commento '// I task figli completeranno: renderNutritionStrategy(planData)' è sostituita dalla chiamata attiva renderNutritionStrategy(planData)",
+    "docs/js/plan.js: esiste la funzione renderNutritionStrategy(planData) con header JSDoc",
+    "La funzione renderNutritionStrategy() controlla l'esistenza del container #plan-nutrition-container prima di scrivere",
+    "La funzione usa optional chaining (?.) per accedere ai campi di strategia_nutrizionale",
+    "I valori null/undefined mostrano '—' e non causano errori in console",
+    "La sezione macronutrienti mostra: proteine (2.3 g/kg), carboidrati (50-55%), grassi (25-30%)",
+    "Sono visibili i trigger: BF > 16% per il cut, BF <= 13% per il bulk"
+  ],
+  "dipendenze": []
+}

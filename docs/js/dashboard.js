@@ -125,8 +125,20 @@ function renderStrengthSummaryCard(last, plan) {
   const container = document.getElementById('card-massimali');
   if (!container) return;
 
-  // Badge tipo: usa massimali_tipo come indicatore globale
-  const tipoRaw  = last?.massimali_tipo ?? null;
+  // Badge tipo: preferisce i campi per-esercizio (squat/panca/stacco_1rm_tipo).
+  // Logica a cascata:
+  //   1) se almeno uno tra i tre campi per-esercizio è 'S' → badge 'Stimato'
+  //   2) se tutti e tre i campi per-esercizio sono 'R'     → badge 'Reale'
+  //   3) se tutti e tre sono assenti → fallback su massimali_tipo (record legacy)
+  //   4) se anche massimali_tipo è assente                 → nessun badge
+  const hasPerEsercizioTipo = last?.squat_1rm_tipo || last?.panca_1rm_tipo || last?.stacco_1rm_tipo;
+  let tipoRaw;
+  if (hasPerEsercizioTipo) {
+    const isStimato = last?.squat_1rm_tipo === 'S' || last?.panca_1rm_tipo === 'S' || last?.stacco_1rm_tipo === 'S';
+    tipoRaw = isStimato ? 'S' : 'R';
+  } else {
+    tipoRaw = last?.massimali_tipo ?? null;
+  }
   const tipoLabel = tipoRaw === 'S' ? 'Stimato' : tipoRaw === 'R' ? 'Reale' : null;
   const tipoClass = tipoRaw === 'S' ? 'strength-card__tipo-badge--stimato' : 'strength-card__tipo-badge--reale';
   const tipoBadgeHtml = tipoLabel
@@ -180,8 +192,8 @@ function renderStrengthSummaryCard(last, plan) {
 /**
  * Popola #card-fase con il nome, numero e periodo della fase attiva,
  * l'obiettivo sintetico e una barra di progressione settimanale CSS pura.
- * La settimana corrente è calcolata dinamicamente rispetto all'inizio
- * del programma (1 marzo 2026).
+ * La settimana corrente X è calcolata dinamicamente da plan.meta.data_aggiornamento
+ * e dalle fasi precedenti. Il totale Y è la somma delle durata_settimane di tutte le fasi.
  * @param {Object|null|undefined} plan — dati piano (fasi[])
  */
 function renderProgramPhaseCard(plan) {
@@ -207,12 +219,38 @@ function renderProgramPhaseCard(plan) {
   const periodo = faseCorrente?.periodo_indicativo ?? '—';
   const obiettivo = faseCorrente?.obiettivo ?? '—';
 
-  // Calcolo settimana corrente: giorni dal 1 marzo 2026 / 7, clamp 1-52
-  const PROGRAM_START = new Date('2026-03-01');
+  // Calcolo totale settimane: somma dinamica da tutte le fasi del piano
+  const totaleSettimane = fasi.reduce((acc, f) => acc + (f.durata_settimane ?? 0), 0);
+
+  // Indice della fase corrente nell'array (per calcolare le settimane precedenti)
+  const indiceFaseCorrente = fasi.indexOf(faseCorrente);
+
+  // Settimane già trascorse nelle fasi precedenti alla fase corrente
+  const settimanePreFase = fasi
+    .slice(0, indiceFaseCorrente < 0 ? 0 : indiceFaseCorrente)
+    .reduce((acc, f) => acc + (f.durata_settimane ?? 0), 0);
+
+  // Data di inizio programma da meta.data_aggiornamento — fallback a oggi se assente/non parsabile
   const oggi = new Date();
-  const settCorrente = Math.min(52, Math.max(1, Math.ceil((oggi - PROGRAM_START) / (7 * 24 * 3600 * 1000))));
-  const TOTALE_SETTIMANE = 52;
-  const percentuale = Math.min(100, Math.round(settCorrente / TOTALE_SETTIMANE * 100));
+  let dataInizioProgramma = oggi;
+  const dataAggiornamentoStr = plan?.meta?.data_aggiornamento;
+  if (dataAggiornamentoStr) {
+    const parsed = new Date(dataAggiornamentoStr + 'T00:00:00');
+    if (!isNaN(parsed.getTime())) {
+      dataInizioProgramma = parsed;
+    }
+  }
+
+  // Data di inizio della fase corrente = inizio programma + settimane delle fasi precedenti
+  const MS_PER_SETTIMANA = 7 * 24 * 3600 * 1000;
+  const dataInizioFaseCorrente = new Date(dataInizioProgramma.getTime() + settimanePreFase * MS_PER_SETTIMANA);
+
+  // Settimana corrente nella fase: giorni trascorsi / 7, arrotondato per eccesso, clampato [1, durata fase]
+  const durataProgramma = faseCorrente?.durata_settimane ?? totaleSettimane;
+  const settCorrenteFase = Math.max(1, Math.ceil((oggi - dataInizioFaseCorrente) / MS_PER_SETTIMANA));
+  const settCorrente = Math.min(totaleSettimane, settimanePreFase + Math.min(settCorrenteFase, durataProgramma));
+
+  const percentuale = Math.min(100, Math.round(settCorrente / (totaleSettimane || 1) * 100));
 
   container.innerHTML = `
     <h2 class="dashboard-card__title">Fase Corrente</h2>
@@ -222,10 +260,10 @@ function renderProgramPhaseCard(plan) {
     </div>
     <p class="phase-card__period">${periodo}</p>
     <p class="phase-card__objective">${obiettivo}</p>
-    <div class="phase-card__progress-bar" aria-label="Progressione settimana ${settCorrente} di ${TOTALE_SETTIMANE}">
+    <div class="phase-card__progress-bar" aria-label="Progressione settimana ${settCorrente} di ${totaleSettimane}">
       <div class="phase-card__progress-fill" style="width: ${percentuale}%"></div>
     </div>
-    <p class="phase-card__progress-label">Settimana ${settCorrente} di ${TOTALE_SETTIMANE}</p>
+    <p class="phase-card__progress-label">Settimana ${settCorrente} di ${totaleSettimane}</p>
   `;
 }
 
@@ -250,8 +288,8 @@ function renderTargetsCard(plan) {
   const targets = plan.target;
 
   // Costruisce le celle di intestazione (orizzonti)
-  const headCellsHtml = targets.map(t => {
-    const isLongterm = t.orizzonte === 'Lungo termine (2-5 anni)';
+  const headCellsHtml = targets.map((t, idx) => {
+    const isLongterm = idx === targets.length - 1;
     const colClass = isLongterm ? 'targets-card__th targets-card__th--longterm' : 'targets-card__th';
     const badgeHtml = isLongterm ? '<span class="targets-card__goal-badge">🎯 Obiettivo</span>' : '';
     const dataHtml = t.data ? `<span class="targets-card__horizon-date">${t.data}</span>` : '';
@@ -266,8 +304,8 @@ function renderTargetsCard(plan) {
   ];
 
   const bodyRowsHtml = exercises.map(ex => {
-    const cellsHtml = targets.map(t => {
-      const isLongterm = t.orizzonte === 'Lungo termine (2-5 anni)';
+    const cellsHtml = targets.map((t, tidx) => {
+      const isLongterm = tidx === targets.length - 1;
       const val = t[ex.campo];
       let valStr = '—';
       if (val != null) {

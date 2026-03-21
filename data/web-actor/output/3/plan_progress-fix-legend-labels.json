@@ -1,0 +1,86 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "progress-fix-legend-labels",
+    "task_title": "Correggi le etichette della legenda Reale/Stimato nella tabella Storico Misurazioni",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "progress-fix-legend-labels",
+    "type": "bugfix",
+    "title": "Correggi le etichette della legenda Reale/Stimato nella tabella Storico Misurazioni",
+    "description": "Sopra la tabella Storico Misurazioni è presente una legenda con due voci. Attualmente la legenda mostra un cerchio (●) con testo 'Reale' e un quadrato (■) con testo 'Stimato'. Questa legenda è errata: deve mostrare 'R = Reale' e 'S = Stimato', coerentemente con i badge che compaiono nelle celle della tabella (che mostrano la lettera R o S). La stessa legenda è presente anche sopra la sezione 'Andamento Massimali Big 3' — verificare se anche quella va aggiornata con la stessa logica.",
+    "inputs": ["measurements_data"],
+    "outputs": ["MeasurementsTableLegend"],
+    "acceptance_criteria": [
+      "La legenda sopra la tabella Storico Misurazioni mostra 'R = Reale' e 'S = Stimato'",
+      "I badge nella tabella (celle dei massimali) mostrano R o S coerentemente con la legenda",
+      "La legenda sopra 'Andamento Massimali Big 3' è coerente (stessa convenzione simbolo/testo)"
+    ],
+    "notes": "Il bugfix riguarda esclusivamente il markup HTML di progress.html (due blocchi .progress-section__legend identici, uno per la sezione massimali Big 3 e uno per Storico Misurazioni). I badge nelle celle sono già generati correttamente da progress.js con la lettera 'R' o 'S' — non richiedono modifiche JS. La legenda HTML attualmente usa ● e ■ come simboli decorativi con le parole 'Reale' e 'Stimato': va sostituita con i badge .badge-reale e .badge-stimato che mostrano direttamente 'R = Reale' e 'S = Stimato'. Non è richiesta nessuna modifica a progress.js né a progress.css."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/progress.html",
+        "motivo": "Correggere entrambi i blocchi .progress-section__legend: quello nella sezione #section-massimali (righe 82-85) e quello nella sezione #section-tabella (righe 102-105). Sostituire il testo '● Reale' con 'R = Reale' e '■ Stimato' con 'S = Stimato', usando i badge .badge-reale e .badge-stimato già esistenti, rimuovendo il .badge-symbol con i caratteri ● e ■.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/progress.html",
+        "motivo": "File da modificare — identificare i due blocchi .progress-section__legend e il loro contenuto esatto (righe 82-85 per sezione massimali, righe 102-105 per sezione tabella)"
+      },
+      {
+        "path": "docs/css/progress.css",
+        "motivo": "Verificare classi disponibili: .badge-reale, .badge-stimato, .badge-symbol, .progress-section__legend — già presenti e non vanno modificate. Il developer le usa direttamente nell'HTML."
+      },
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "Verificare la funzione badgeTipo() (riga 554): già corretta, genera badge con testo 'R' o 'S'. Nessuna modifica richiesta — solo lettura per conferma."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS ES2022",
+      "styling": "CSS custom properties (variables.css + layout.css + progress.css)"
+    },
+    "convenzioni": {
+      "classi_css": "kebab-case con prefisso pagina BEM-like: .badge-reale, .badge-stimato, .badge-symbol, .progress-section__legend",
+      "html_accessibilita": "Usare aria-hidden='true' sugli elementi puramente decorativi (es. span con simbolo grafico). La legenda ha aria-label='Legenda tipo massimale'.",
+      "no_inline_style": "Non usare style= inline — usare classi CSS esistenti",
+      "no_modifica_js": "La funzione badgeTipo() in progress.js è già corretta e NON va modificata",
+      "no_modifica_css": "progress.css ha già .badge-reale e .badge-stimato con gli stili corretti — NON va modificato"
+    },
+    "stato_attuale_html": {
+      "legenda_massimali_riga_82_85": "<span class='badge-reale'><span class='badge-symbol' aria-hidden='true'>●</span> Reale</span> / <span class='badge-stimato'><span class='badge-symbol' aria-hidden='true'>■</span> Stimato</span>",
+      "legenda_tabella_riga_102_105": "Identica struttura errata — stessa correzione da applicare"
+    },
+    "stato_corretto_atteso": {
+      "descrizione": "Sostituire il .badge-symbol con la lettera identificativa ('R' o 'S') e aggiungere il testo ' = Reale' / ' = Stimato' direttamente nel badge, rimuovendo il .badge-symbol separato",
+      "esempio_markup": "<span class='badge-reale'>R = Reale</span> / <span class='badge-stimato'>S = Stimato</span>"
+    },
+    "pagina": {
+      "nome": "Progressi",
+      "file": "docs/progress.html",
+      "js": "docs/js/progress.js",
+      "css": "docs/css/progress.css",
+      "dati_json": ["data/measurements.json"]
+    }
+  },
+  "criteri_accettazione": [
+    "La legenda sopra 'Andamento Massimali Big 3' mostra badge verde con testo 'R = Reale' e badge giallo con testo 'S = Stimato'",
+    "La legenda sopra 'Storico Misurazioni' mostra badge verde con testo 'R = Reale' e badge giallo con testo 'S = Stimato'",
+    "I badge R/S nelle celle della tabella (generati da badgeTipo() in progress.js) rimangono invariati e mostrano 'R' o 'S'",
+    "Il file docs/progress.html NON contiene più il carattere ● né ■ nei blocchi .progress-section__legend",
+    "Il file docs/progress.html contiene la stringa 'R = Reale' in entrambi i blocchi .progress-section__legend (sezione massimali e sezione tabella)",
+    "Il file docs/progress.html contiene la stringa 'S = Stimato' in entrambi i blocchi .progress-section__legend",
+    "docs/js/progress.js rimane invariato",
+    "docs/css/progress.css rimane invariato"
+  ],
+  "dipendenze": []
+}

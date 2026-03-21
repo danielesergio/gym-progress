@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "bugfix-storico-misurazioni-legenda",
+    "task_titolo": "Aggiungi legenda Reale/Stimato nella tabella Storico Misurazioni",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Ogni riga della tabella mostra un badge .td-badge inline accanto ai valori di Squat 1RM, Panca 1RM, Stacco 1RM",
+      "soddisfatto": true,
+      "dettaglio": "La funzione cellaMassimale(val, tipo) in docs/js/progress.js (righe 563–567) genera le celle con badgeTipo(tipo) appeso al valore numerico. Ogni riga delle righe 627, 630, 633 utilizza cellaMassimale() che concatena il valore + ' kg' + il badge HTML."
+    },
+    {
+      "criterio": "Il badge mostra 'R' in verde (.td-badge--reale) per massimali reali e 'S' in giallo (.td-badge--stimato) per massimali stimati",
+      "soddisfatto": true,
+      "dettaglio": "La funzione badgeTipo() (righe 554–560) genera <span class='td-badge td-badge--stimato'> per tipo === 'S' e <span class='td-badge td-badge--reale'> altrimenti. Gli stili CSS in progress.css righe 190–200 definiscono .td-badge--reale con background rgba(76, 175, 80, ...) verde e .td-badge--stimato con background rgba(255, 193, 7, ...) giallo."
+    },
+    {
+      "criterio": "La legenda ● Reale / ■ Stimato è visibile nella sezione Storico Misurazioni, sopra la tabella",
+      "soddisfatto": true,
+      "dettaglio": "Il blocco HTML .progress-section__legend è presente in docs/progress.html righe 98–101, subito dopo il titolo <h2> della sezione #section-tabella. Contiene esattamente i badge-reale e badge-stimato con i simboli corretti (● e ■)."
+    },
+    {
+      "criterio": "L'ultima riga (21 mar 2026) mostra badge 'S' (stimato) su tutti e tre i massimali",
+      "soddisfatto": true,
+      "dettaglio": "Nel file docs/data/measurements.json righe 178–180, il record 2026-03-21 ha squat_1rm_tipo: 'S', panca_1rm_tipo: 'S', stacco_1rm_tipo: 'S'. La funzione renderMeasurementsTable() legge questi campi e genera i badge 'S' per ogni massimale."
+    },
+    {
+      "criterio": "Le prime 5 righe (2022–2025) mostrano badge 'R' (reale) su tutti e tre i massimali",
+      "soddisfatto": true,
+      "dettaglio": "Nel file docs/data/measurements.json, i 5 record da 2022-10-22 a 2025-10-02 (righe 28–30, 58–60, 88–90, 118–120, 148–150) hanno squat_1rm_tipo, panca_1rm_tipo, stacco_1rm_tipo tutti = 'R'. La funzione renderMeasurementsTable() genererà badge 'R' per ogni massimale di queste righe."
+    },
+    {
+      "criterio": "docs/progress.html contiene nella sezione #section-tabella un elemento con classe .progress-section__legend",
+      "soddisfatto": true,
+      "dettaglio": "Elemento <div class='progress-section__legend' aria-label='Legenda tipo massimale'> è presente in docs/progress.html righe 98–101, dentro la sezione #section-tabella (riga 96)."
+    },
+    {
+      "criterio": "Il blocco legenda contiene .badge-reale con ● e .badge-stimato con ■, coerente con la legenda della sezione Massimali Big 3",
+      "soddisfatto": true,
+      "dettaglio": "Struttura HTML identica in entrambe le sezioni: righe 78–81 (sezione #section-massimali) e righe 98–101 (sezione #section-tabella). Entrambe contengono <span class='badge-reale'><span class='badge-symbol'>●</span> Reale</span> e <span class='badge-stimato'><span class='badge-symbol'>■</span> Stimato</span>."
+    },
+    {
+      "criterio": "docs/js/progress.js contiene la funzione renderMeasurementsTable() che usa cellaMassimale(val, tipo) per le celle squat/panca/stacco",
+      "soddisfatto": true,
+      "dettaglio": "La funzione renderMeasurementsTable() è presente in docs/js/progress.js righe 531–660. La funzione cellaMassimale(val, tipo) è definita alle righe 563–567 e viene usata per le celle Squat (riga 627), Panca (riga 630), Stacco (riga 633). Ogni invocazione passa il campo _1rm (valore) e il campo _1rm_tipo (tipo 'R' o 'S')."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/progress.html",
+      "esiste": true,
+      "note": "Blocco .progress-section__legend aggiunto nella sezione #section-tabella (righe 98–101), identico a quello presente in #section-massimali. HTML ben formato e accessibile."
+    },
+    {
+      "path": "docs/js/progress.js",
+      "esiste": true,
+      "note": "Funzione renderMeasurementsTable() completa con helper badgeTipo() e cellaMassimale(). Legge correttamente i campi squat_1rm_tipo, panca_1rm_tipo, stacco_1rm_tipo dai dati e genera i badge inline."
+    },
+    {
+      "path": "docs/css/progress.css",
+      "esiste": true,
+      "note": "Stili .progress-section__legend (righe 31–37), .badge-reale, .badge-stimato (righe 40–69), e .td-badge, .td-badge--reale, .td-badge--stimato (righe 176–200) tutti presenti e coerenti."
+    },
+    {
+      "path": "docs/data/measurements.json",
+      "esiste": true,
+      "note": "Array di 6 record con campi squat_1rm_tipo, panca_1rm_tipo, stacco_1rm_tipo correttamente popolati: 'R' per i primi 5 record (2022–2025), 'S' per l'ultimo record (2026-03-21)."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "La funzione badgeTipo() restituisce stringa vuota per tipo falsy (riga 555), il che è coretto dal punto di vista null-safety, ma logicamente tutti i 6 record in measurements.json hanno campi _tipo valorizzati, quindi non si verificherà in pratica.",
+      "file": "docs/js/progress.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "L'HTML del badge in badgeTipo() usa concatenazione string (riga 559) anziché template literal, ma il codice è coerente con lo stile ES2022 plain JS adottato nel resto della funzione.",
+      "file": "docs/js/progress.js"
+    }
+  ]
+}

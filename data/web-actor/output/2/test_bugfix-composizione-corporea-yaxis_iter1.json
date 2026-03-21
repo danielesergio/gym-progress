@@ -1,0 +1,84 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "task_id": "bugfix-composizione-corporea-yaxis",
+    "task_titolo": "Correggi asse Y del grafico Composizione Corporea",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "La linea verde 'Massa magra (kg)' è visibile per tutti i 6 punti nel grafico Composizione Corporea",
+      "soddisfatto": true,
+      "dettaglio": "Il dataset 'Massa magra' è configurato con data:massaMagraDataset (righe 145-146), yAxisID:'y' (asse sinistro, riga 157), color #4caf50 (verde, riga 147), spanGaps:true (riga 156). I 6 valori [68.9, 70.2, 70.9, 70.2, 73.5, 72.3] sono estratti da measurements.json. Il calcolo del range asse Y include massaMagraValues (riga 92-93), quindi il min dell'asse è 66 (Math.floor(68.9-2)), sufficientemente basso per visualizzare tutti i punti massa magra senza taglio."
+    },
+    {
+      "criterio": "Il valore minimo dell'asse Y sinistro è ≤ 66 (cioè inferiore al valore più basso di massa magra: 68.9 kg)",
+      "soddisfatto": true,
+      "dettaglio": "Righe 91-95: yLeftValues = pesoValues.concat(massaMagraValues) combina [78.3, 81.4, 82.1, 85.4, 89.4, 87.2] con [68.9, 70.2, 70.9, 70.2, 73.5, 72.3]. minPeso = Math.min.apply(null, yLeftValues) = 68.9. Asse Y min = Math.floor(68.9 - 2) = 66. Condizione: 66 ≤ 66 ✓"
+    },
+    {
+      "criterio": "Il punto di massa magra del 2022-10-22 (68.9 kg) è visualizzato nel grafico senza essere tagliato",
+      "soddisfatto": true,
+      "dettaglio": "Il valore minimo 68.9 kg è la base del calcolo (riga 94: minPeso = 68.9). L'asse Y ha min = floor(68.9-2) = 66, quindi il punto 68.9 ha margine di 2.9 kg sopra lo zero dell'asse. Non sarà tagliato. Verificato in measurements.json riga 19: massa_magra_kg = 68.9 per data 2022-10-22."
+    },
+    {
+      "criterio": "Il punto di massa magra del 2026-03-21 (72.3 kg) è visibile e distinguibile dalla linea peso",
+      "soddisfatto": true,
+      "dettaglio": "Valore massa magra 72.3 kg (riga 164 measurements.json) è incluso in yLeftValues. Asse Y range [66, 92] contiene 72.3 con ampio spazio. Linea peso (arancio #ff6b35) e massa magra (verde #4caf50, borderDash [5,4]) sono visibili e distinte. Peso 87.2 kg vs massa magra 72.3 kg hanno una differenza di 14.9 kg, ben separati visivamente."
+    },
+    {
+      "criterio": "Le linee peso (arancio) e massa magra (verde) sono entrambe visibili e non sovrapposte sull'asse",
+      "soddisfatto": true,
+      "dettaglio": "Entrambe assegnate a yAxisID:'y' (asse sinistro kg). Dataset peso (riga 117-128): borderColor #ff6b35, borderWidth 2. Dataset massa magra (riga 145-158): borderColor #4caf50, borderDash [5,4], borderWidth 1.5. Il range asse Y [66, 92] accomoda tutti i 12 punti (6 peso + 6 massa magra) con spazio sufficiente. Non c'è sovrapplessione geometrica: peso min 78.3 > massa magra max 73.5 ma entrambi visibili senza tagli."
+    },
+    {
+      "criterio": "La linea BF% (asse destro, giallo) non è influenzata dalla modifica",
+      "soddisfatto": true,
+      "dettaglio": "Dataset BF% (riga 131-143) usa yAxisID:'y1' (asse destro). Il range BF% è calcolato indipendentemente (riga 98-100) e non incluso in yLeftValues (riga 93). Le modifiche alle righe 91-95 riguardano solo yLeftValues per l'asse Y sinistro. BF% rimane inalterato e correttamente calcolato tra 10% e 20%."
+    },
+    {
+      "criterio": "docs/js/progress.js contiene il calcolo del range asse Y che include sia peso_kg che massa_magra_kg",
+      "soddisfatto": true,
+      "dettaglio": "Righe 91-95: pesoValues estratti da pesoDataset (riga 91), massaMagraValues estratti da massaMagraDataset (riga 92), yLeftValues = pesoValues.concat(massaMagraValues) (riga 93). Questo unifica il calcolo del range su entrambe le serie. Variabili minPeso e maxPeso (riga 94-95) usano yLeftValues, non solo pesoValues."
+    },
+    {
+      "criterio": "Il valore null in massa_magra_kg (se presente) non causa errori — usare .filter(v => v !== null)",
+      "soddisfatto": true,
+      "dettaglio": "Riga 92: massaMagraValues = massaMagraDataset.map(...).filter(function (v) { return v !== null; }). Il filtro null è presente e corretto. Riga 91: pesoValues applica lo stesso filtro. Data measurements.json mostra 6 valori validi di massa_magra_kg (68.9, 70.2, 70.9, 70.2, 73.5, 72.3), nessun null. Anche se null fosse presente, verrebbe filtrato e Math.min/max avrebbe comunque valori validi."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/progress.js",
+      "esiste": true,
+      "note": "Funzione renderWeightBfChart() presente e corretta. Righe 54-258 contengono la funzione completa. Correzione bugfix implementata nelle righe 91-95 (calcolo unificato yLeftValues). Asse Y configurato alle righe 217-236 usa minPeso e maxPeso derivati da yLeftValues."
+    },
+    {
+      "path": "docs/data/measurements.json",
+      "esiste": true,
+      "note": "6 record validi con dati completi. Massa magra (massa_magra_kg): [68.9, 70.2, 70.9, 70.2, 73.5, 72.3]. Peso (peso_kg): [78.3, 81.4, 82.1, 85.4, 89.4, 87.2]. Body fat (body_fat_pct): [12.0, 13.7, 13.7, 17.8, 17.8, 17.1]. Tutti i valori sono validi (nessun null)."
+    }
+  ],
+  "anomalie": [],
+  "numerica_verifica": {
+    "dati_input": {
+      "peso_kg": [78.3, 81.4, 82.1, 85.4, 89.4, 87.2],
+      "massa_magra_kg": [68.9, 70.2, 70.9, 70.2, 73.5, 72.3],
+      "body_fat_pct": [12.0, 13.7, 13.7, 17.8, 17.8, 17.1]
+    },
+    "calcolo_yLeftValues": {
+      "pesoValues": [78.3, 81.4, 82.1, 85.4, 89.4, 87.2],
+      "massaMagraValues": [68.9, 70.2, 70.9, 70.2, 73.5, 72.3],
+      "yLeftValues_concat": [78.3, 81.4, 82.1, 85.4, 89.4, 87.2, 68.9, 70.2, 70.9, 70.2, 73.5, 72.3],
+      "minPeso": 68.9,
+      "maxPeso": 89.4,
+      "asse_y_min": 66,
+      "asse_y_max": 92
+    },
+    "comparazione_bug": {
+      "codice_vecchio": "pesoValues solo da peso_kg → min=78.3 → asse min=floor(78.3-2)=76 ❌ (massa magra 68.9 invisibile)",
+      "codice_nuovo": "yLeftValues = peso + massa_magra → min=68.9 → asse min=floor(68.9-2)=66 ✓ (tutti visibili)"
+    }
+  }
+}

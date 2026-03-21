@@ -1,0 +1,135 @@
+{
+  "meta": {
+    "data": "2026-03-21",
+    "project": "Daniele Fitness Dashboard",
+    "goal": "Miglioramento del sito esistente: correzione di 5 bug segnalati, aggiunta pagina Volume, gestione nuova struttura dati measurements/workout_history",
+    "anomalie": []
+  },
+  "tasks": [
+    {
+      "ordine": 1,
+      "id": "data-measurements-new-fields",
+      "title": "Gestisci nuova struttura measurements.json con campi aggiuntivi",
+      "type": "data",
+      "feature": "Aggiornamento Struttura Dati",
+      "feature_priority": 5,
+      "motivazione_ordine": "Primo perché tutti i bugfix sui grafici della pagina Progressi (composizione corporea, massimali, storico misurazioni) dipendono dalla corretta lettura dei nuovi campi tipo_massimale specifici per esercizio (squat_1rm_tipo, panca_1rm_tipo, stacco_1rm_tipo).",
+      "dependencies_resolved": [],
+      "sblocca": [
+        "bugfix-composizione-corporea-yaxis",
+        "bugfix-massimali-legenda",
+        "bugfix-storico-misurazioni-legenda",
+        "data-workout-history"
+      ]
+    },
+    {
+      "ordine": 2,
+      "id": "data-workout-history",
+      "title": "Integra workout_history.json nella visualizzazione progressi",
+      "type": "data",
+      "feature": "Aggiornamento Struttura Dati",
+      "feature_priority": 5,
+      "motivazione_ordine": "Secondo perché dipende dalla corretta gestione dei campi measurements e costituisce la seconda parte della preparazione dati, pronta per arricchire future visualizzazioni nella pagina Progressi e Piano.",
+      "dependencies_resolved": [
+        "data-measurements-new-fields"
+      ],
+      "sblocca": []
+    },
+    {
+      "ordine": 3,
+      "id": "bugfix-composizione-corporea-yaxis",
+      "title": "Correggi asse Y del grafico Composizione Corporea",
+      "type": "bugfix",
+      "feature": "Bugfix Grafici Progressi",
+      "feature_priority": 1,
+      "motivazione_ordine": "Terzo perché è uno dei tre bugfix critici sulla pagina Progressi (priorità 1) e la massa magra invisibile rende illeggibile il grafico principale di composizione corporea. Ha priorità massima tra i bugfix perché colpisce la visualizzazione core dell'andamento fisico.",
+      "dependencies_resolved": [
+        "data-measurements-new-fields"
+      ],
+      "sblocca": []
+    },
+    {
+      "ordine": 4,
+      "id": "bugfix-massimali-legenda",
+      "title": "Correggi legenda Reale/Stimato nel grafico Massimali Big 3",
+      "type": "bugfix",
+      "feature": "Bugfix Grafici Progressi",
+      "feature_priority": 1,
+      "motivazione_ordine": "Quarto perché completa il secondo dei tre bugfix sulla pagina Progressi e sblocca il terzo (storico misurazioni) che deve riutilizzare gli stessi marker visivi. La legenda corretta è prerequisito per la tabella che la referenzia.",
+      "dependencies_resolved": [
+        "data-measurements-new-fields"
+      ],
+      "sblocca": [
+        "bugfix-storico-misurazioni-legenda"
+      ]
+    },
+    {
+      "ordine": 5,
+      "id": "bugfix-storico-misurazioni-legenda",
+      "title": "Aggiungi legenda Reale/Stimato nella tabella Storico Misurazioni",
+      "type": "bugfix",
+      "feature": "Bugfix Grafici Progressi",
+      "feature_priority": 1,
+      "motivazione_ordine": "Quinto perché chiude i tre bugfix della pagina Progressi e dipende esplicitamente dalla legenda Reale/Stimato del task precedente. Completa la coerenza visiva tra i due grafici e la tabella.",
+      "dependencies_resolved": [
+        "data-measurements-new-fields",
+        "bugfix-massimali-legenda"
+      ],
+      "sblocca": []
+    },
+    {
+      "ordine": 6,
+      "id": "bugfix-strategia-nutrizionale",
+      "title": "Correggi il caricamento della Strategia Nutrizionale in Piano",
+      "type": "bugfix",
+      "feature": "Bugfix Pagina Piano",
+      "feature_priority": 2,
+      "motivazione_ordine": "Sesto perché è l'unico bugfix della pagina Piano (priorità 2, seconda dopo Progressi) e non ha dipendenze. Viene dopo i tre bugfix Progressi per priorità feature, ma precede le feature perché corregge un problema critico di funzionalità bloccata.",
+      "dependencies_resolved": [],
+      "sblocca": []
+    },
+    {
+      "ordine": 7,
+      "id": "feature-workout-selector",
+      "title": "Selettore scheda di allenamento per fase",
+      "type": "component",
+      "feature": "Feature Selezione Scheda Allenamento",
+      "feature_priority": 3,
+      "motivazione_ordine": "Settimo perché aggiunge una nuova feature (non è un bugfix) sulla pagina Allenamento. È una component che arricchisce l'esperienza utente permettendo di visualizzare una scheda per volta. Viene dopo i bugfix ma prima delle feature strutturali (navigation, page) perché è un miglioramento self-contained.",
+      "dependencies_resolved": [],
+      "sblocca": []
+    },
+    {
+      "ordine": 8,
+      "id": "nav-add-volume",
+      "title": "Aggiungi voce 'Volume' alla navigazione principale",
+      "type": "navigation",
+      "feature": "Nuova Pagina Volume",
+      "feature_priority": 4,
+      "motivazione_ordine": "Ottavo perché la navigazione è prerequisito per la pagina Volume che la referenzia. La voce di nav deve esistere prima che la pagina sia raggiungibile. Viene prima della pagina stessa.",
+      "dependencies_resolved": [],
+      "sblocca": [
+        "page-volume"
+      ]
+    },
+    {
+      "ordine": 9,
+      "id": "page-volume",
+      "title": "Pagina Volume di allenamento",
+      "type": "page",
+      "feature": "Nuova Pagina Volume",
+      "feature_priority": 4,
+      "motivazione_ordine": "Nono e ultimo perché è una pagina completa (type: page) che dipende dalla navigazione aggiunta nel task precedente. Una nuova pagina è feature strutturale di bassa priorità (4) implementata per ultima dopo tutti i bugfix e le feature di priorità più alta.",
+      "dependencies_resolved": [
+        "nav-add-volume"
+      ],
+      "sblocca": []
+    }
+  ],
+  "stats": {
+    "tasks_totali": 9,
+    "tasks_ordinati": 9,
+    "anomalie": 0,
+    "sequenza": "data-measurements-new-fields → data-workout-history → bugfix-composizione-corporea-yaxis → bugfix-massimali-legenda → bugfix-storico-misurazioni-legenda → bugfix-strategia-nutrizionale → feature-workout-selector → nav-add-volume → page-volume"
+  }
+}

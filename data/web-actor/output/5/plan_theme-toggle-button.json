@@ -1,0 +1,167 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "theme-toggle-button",
+    "task_title": "Pulsante toggle tema nell'header",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "theme-toggle-button",
+    "type": "component",
+    "title": "Pulsante toggle tema nell'header",
+    "description": "Aggiungere nell'header di tutte le pagine un pulsante compatto che permette di alternare tra tema originale ('Dark') e tema professionale ('Pro'). Il pulsante deve essere discreto (non dominare visivamente l'header), posizionato vicino al lato destro dell'header. Deve mostrare visivamente quale tema è attivo (es. icona sole/luna, etichetta 'Dark/Pro', o toggle switch). Il click deve: (1) aggiungere/rimuovere la classe del tema pro all'elemento html, (2) salvare la preferenza in localStorage con chiave 'fitness-theme', (3) aggiornare l'aspetto del pulsante stesso per riflettere lo stato. Tutte e 6 le pagine devono avere il pulsante.",
+    "inputs": [
+      "ProThemeVariables",
+      "MainLayout"
+    ],
+    "outputs": [
+      "ThemeToggleButton"
+    ],
+    "acceptance_criteria": [
+      "Il pulsante è visibile nell'header di tutte e 6 le pagine (Dashboard, Progressi, Allenamento, Dieta, Piano, Volume)",
+      "Cliccando il pulsante, il sito cambia tema immediatamente senza ricaricare la pagina",
+      "L'aspetto del pulsante cambia per indicare il tema attivo",
+      "Il pulsante non spinge altri elementi dell'header fuori posizione su mobile",
+      "L'header rimane a una sola riga su schermi da 375px"
+    ],
+    "notes": "Il task crea js/theme.js (nuovo file) e lo include nel <head> SENZA defer in tutte le 6 pagine. Il pulsante è già descritto in web_architecture.json con id='theme-toggle-btn' e classe 'theme-toggle-btn'. Non è richiesta la persistenza della preferenza tra sessioni (quella è compito del task theme-persistence successivo): il toggle deve funzionare nella singola sessione, ma il salvataggio in localStorage è richiesto dall'acceptance criteria, quindi va implementato qui in modo completo."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/css/layout.css",
+        "motivo": "Aggiungere stili per .theme-toggle-btn: pulsante compatto, discreto, accanto a .header-meta. Include stile base, stato attivo (.theme-pro .theme-toggle-btn), hover, focus-visible e responsive per 375px (il pulsante deve stare su una riga senza spingere altri elementi)",
+        "esiste": true
+      },
+      {
+        "path": "docs/dashboard.html",
+        "motivo": "Aggiungere <script src='js/theme.js'> nel <head> SENZA defer (anti-FOUC, prima dei <link> CSS o subito dopo). Aggiungere <button id='theme-toggle-btn' class='theme-toggle-btn' aria-label='Attiva tema professionale'>…</button> come terzo elemento nel .container dell'header, dopo .header-meta",
+        "esiste": true
+      },
+      {
+        "path": "docs/progress.html",
+        "motivo": "Aggiungere <script src='js/theme.js'> nel <head> SENZA defer. Aggiungere il pulsante #theme-toggle-btn nell'header dopo .header-meta",
+        "esiste": true
+      },
+      {
+        "path": "docs/workout.html",
+        "motivo": "Aggiungere <script src='js/theme.js'> nel <head> SENZA defer. Aggiungere il pulsante #theme-toggle-btn nell'header dopo .header-meta",
+        "esiste": true
+      },
+      {
+        "path": "docs/diet.html",
+        "motivo": "Aggiungere <script src='js/theme.js'> nel <head> SENZA defer. Aggiungere il pulsante #theme-toggle-btn nell'header dopo .header-meta",
+        "esiste": true
+      },
+      {
+        "path": "docs/plan.html",
+        "motivo": "Aggiungere <script src='js/theme.js'> nel <head> SENZA defer. Aggiungere il pulsante #theme-toggle-btn nell'header dopo .header-meta",
+        "esiste": true
+      },
+      {
+        "path": "docs/volume.html",
+        "motivo": "Aggiungere <script src='js/theme.js'> nel <head> SENZA defer. Aggiungere il pulsante #theme-toggle-btn nell'header dopo .header-meta",
+        "esiste": true
+      }
+    ],
+    "da_creare": [
+      {
+        "path": "docs/js/theme.js",
+        "motivo": "Nuovo file condiviso per la gestione del tema. Contiene: (1) initTheme() — legge localStorage('fitness-theme'), applica html.theme-pro se necessario, eseguita SUBITO (non in DOMContentLoaded) per evitare FOUC; (2) toggleTheme() — inverte lo stato, aggiorna localStorage, aggiorna aria-label del pulsante; (3) listener click sul #theme-toggle-btn, agganciato via DOMContentLoaded; (4) updateToggleBtn(isPro) — aggiorna il contenuto/aria-label del pulsante in base allo stato tema",
+        "esiste": false
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/css/layout.css",
+        "motivo": "Capire la struttura esistente dell'header (.page-header, .container, .header-brand, .header-meta) e le media query attive a 375px, per inserire il pulsante senza rompere il layout a una riga"
+      },
+      {
+        "path": "docs/dashboard.html",
+        "motivo": "Modello strutturale dell'header da replicare sulle altre 5 pagine — posizione esatta dove inserire il pulsante e il tag script"
+      },
+      {
+        "path": "docs/css/variables.css",
+        "motivo": "Verificare le variabili CSS disponibili (--color-accent, --color-bg-elevated, --color-border, --radius-full, ecc.) da usare per lo stile del pulsante in entrambi i temi"
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS ES2022 — nessun framework, nessun bundler",
+      "styling": "CSS custom properties; variabili tema originale in :root, tema pro in html.theme-pro"
+    },
+    "tema": {
+      "toggle_classe": "html.theme-pro — aggiunta/rimozione con document.documentElement.classList.toggle('theme-pro')",
+      "localStorage_chiave": "fitness-theme",
+      "localStorage_valori": ["original", "pro"],
+      "localStorage_default": "original",
+      "anti_FOUC": "js/theme.js caricato SENZA defer nel <head>, initTheme() chiamata subito (NON dentro DOMContentLoaded)"
+    },
+    "toggle_button": {
+      "id": "theme-toggle-btn",
+      "classe": "theme-toggle-btn",
+      "posizione_html": "Terzo elemento figlio nel .container del .page-header, dopo .header-meta",
+      "aria_label_dark": "Attiva tema professionale",
+      "aria_label_pro": "Attiva tema originale",
+      "contenuto_suggerito": "Testo 'Dark' / 'Pro' con icona SVG inline (luna ☾ / sole ☀) oppure emoji Unicode — senza immagini esterne"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase",
+      "classi_css": "kebab-case senza prefisso pagina per componenti globali (es. .theme-toggle-btn in layout.css)",
+      "no_inline_style": "Vietato style= inline — usare classi CSS e custom properties",
+      "no_var_js": "Usare const/let — mai var",
+      "no_onclick": "Nessun onclick= inline — usare addEventListener in theme.js",
+      "pattern_script_order": "<script src='js/theme.js'> nel <head> SENZA defer → <script src='js/nav.js' defer> + <script src='js/[pagina].js' defer> prima di </body>"
+    },
+    "responsive": {
+      "breakpoint_mobile": "max-width: 375px",
+      "requisito": "Header a una sola riga — su mobile .header-tagline e .header-meta-label sono già nascosti (display:none in layout.css). Il pulsante deve essere abbastanza compatto da stare in linea con .header-athlete-name e .header-meta-value",
+      "suggerimento": "Su mobile il pulsante mostra solo l'icona (es. ☾/☀) senza testo etichetta, oppure testo brevissimo ('D'/'P'). Usare flex-shrink: 0 per evitare compressione."
+    },
+    "struttura_js_theme": {
+      "ordine": [
+        "1. initTheme() — applica subito il tema da localStorage (eseguita inline, senza DOMContentLoaded)",
+        "2. updateToggleBtn(isPro) — aggiorna aria-label e contenuto testuale/icona del pulsante",
+        "3. toggleTheme() — inverte stato, salva in localStorage, chiama updateToggleBtn()",
+        "4. DOMContentLoaded listener — aggancia click su #theme-toggle-btn, chiama updateToggleBtn() per sincronizzare lo stato iniziale del pulsante"
+      ]
+    }
+  },
+  "criteri_accettazione": [
+    "Il pulsante #theme-toggle-btn è presente nel markup dell'header in tutti e 6 i file HTML (dashboard.html, progress.html, workout.html, diet.html, plan.html, volume.html)",
+    "Il tag <script src='js/theme.js'> è presente nel <head> di tutte e 6 le pagine SENZA l'attributo defer",
+    "docs/js/theme.js esiste ed è un file valido JavaScript",
+    "docs/js/theme.js contiene la funzione initTheme()",
+    "docs/js/theme.js contiene la funzione toggleTheme()",
+    "docs/js/theme.js contiene la funzione updateToggleBtn(isPro)",
+    "initTheme() è chiamata immediatamente (non dentro DOMContentLoaded) per prevenire FOUC",
+    "toggleTheme() esegue document.documentElement.classList.toggle('theme-pro')",
+    "toggleTheme() salva la preferenza in localStorage con chiave 'fitness-theme' e valori 'original'/'pro'",
+    "docs/css/layout.css contiene il selettore .theme-toggle-btn con stili base",
+    "docs/css/layout.css contiene stili per .theme-toggle-btn in contesto html.theme-pro",
+    "Il pulsante visualizza un'indicazione diversa quando il tema pro è attivo vs tema originale (aria-label + contenuto visivo)",
+    "Su viewport 375px l'header rimane a una sola riga (verificabile visivamente nella pagina Dashboard)",
+    "Cliccando il pulsante il sito cambia tema immediatamente senza ricaricare la pagina",
+    "L'aspetto del pulsante riflette lo stato corrente del tema (tema pro attivo vs originale)"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "theme-pro-variables",
+      "stato": "completato",
+      "file_prodotti": ["docs/css/variables.css"],
+      "note": "Il blocco html.theme-pro { ... } è già presente in docs/css/variables.css (righe 99-155) con override completo di palette, tipografia e border-radius. La dipendenza è soddisfatta."
+    }
+  ],
+  "note_implementazione": [
+    "ANTI-FOUC critico: initTheme() DEVE essere eseguita prima che il browser applichi i CSS. Inserire il tag <script src='js/theme.js'> nel <head> PRIMA dei <link rel='stylesheet'> oppure immediatamente dopo. NON usare defer. NON aspettare DOMContentLoaded per la chiamata a initTheme().",
+    "Il pulsante #theme-toggle-btn deve avere flex-shrink: 0 per non comprimersi su schermi piccoli.",
+    "Su mobile (375px), considerare di nascondere la label testuale del pulsante e mostrare solo l'icona, analogamente a come .header-tagline e .header-meta-label sono già display:none a 375px.",
+    "Gli stili del pulsante vanno in layout.css (non nei CSS di pagina) perché il pulsante è presente in tutte le pagine.",
+    "Il task NON include il comportamento di persistenza tra sessioni (leggere da localStorage al boot di ogni pagina) — quello è tecnicamente lo stesso script ma il requisito di testare la persistenza tra sessioni è compito di theme-persistence. Tuttavia, siccome localStorage.setItem è necessario al click, va implementato qui.",
+    "L'HTML del pulsante è identico in tutte e 6 le pagine — il developer può copiarlo dalla prima e incollarlo nelle altre 5.",
+    "index.html non fa parte delle 6 pagine target (è solo un redirect) — NON aggiungere il pulsante lì."
+  ]
+}

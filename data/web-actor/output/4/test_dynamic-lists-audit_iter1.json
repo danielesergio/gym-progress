@@ -1,0 +1,90 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "dynamic-lists-audit",
+    "task_titolo": "Verifica e fix di tutte le sezioni che costruiscono liste da array in modo statico",
+    "iterazione": 1,
+    "tipo": "audit"
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Nessuna pagina ha elementi DOM statici nell'HTML che rappresentano singoli elementi di un array JSON",
+      "soddisfatto": true,
+      "dettaglio": "Verificati dashboard.html, progress.html, plan.html, volume.html: tutti contengono solo placeholder di caricamento (skeleton) o sezioni presentazionali fisse. Nessun elemento HTML corrisponde a un singolo item di un array JSON variabile."
+    },
+    {
+      "criterio": "Aggiungendo o rimuovendo un elemento da qualsiasi array nei file JSON, la pagina corrispondente si aggiorna senza modifiche al codice",
+      "soddisfatto": true,
+      "dettaglio": "Tutti gli array JSON sono iterati dinamicamente: plan.target[] (renderTargetsCard linea 291-297), measurements[] (renderMeasurementsTable linea 569), plan.fasi[] (renderTimeline linea 48-62), volume.volumi[] (renderVolumeChart/Table linee 139-236). Aggiungere/rimuovere elementi si riflette automaticamente nell'UI senza modifiche al JS."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/dashboard.html",
+      "esiste": true,
+      "note": "4 placeholder card (#card-stato, #card-massimali, #card-fase, #card-target) sono skeleton svuotati da JS, non rappresentano dati array"
+    },
+    {
+      "path": "docs/js/dashboard.js",
+      "esiste": true,
+      "note": "renderTargetsCard() itera plan.target[] dinamicamente; renderAthleteStatusCard(), renderStrengthSummaryCard(), renderProgramPhaseCard() usano campi scalari fissi (peso_kg, squat_1rm, ecc.), non array variabili"
+    },
+    {
+      "path": "docs/progress.html",
+      "esiste": true,
+      "note": "4 sezioni statiche (Composizione Corporea, Big 3, Circonferenze, Storico) sono container presentazionali, non corrispondono a array JSON"
+    },
+    {
+      "path": "docs/js/progress.js",
+      "esiste": true,
+      "note": "renderMeasurementsTable() genera righe dinamicamente da measurements[].forEach() (linea 569); renderWeightBfChart(), renderStrengthChart(), renderCircumferencesChart() costruiscono dataset da campi scalari fissi (peso_kg, body_fat_pct, squat_1rm, ecc.)"
+    },
+    {
+      "path": "docs/plan.html",
+      "esiste": true,
+      "note": "3 sezioni statiche (Timeline, Target Forza, Strategia Nutrizionale) sono container presentazionali; il contenuto dinamico è generato da plan.js"
+    },
+    {
+      "path": "docs/js/plan.js",
+      "esiste": true,
+      "note": "renderTimeline() itera plan.fasi[] (linea 48-62); renderStrengthTargets() itera plan.target[] (linea 138); renderNutritionStrategy() mappa le chiavi fisse di strategia_nutrizionale (oggetto, non array)"
+    },
+    {
+      "path": "docs/volume.html",
+      "esiste": true,
+      "note": "3 sezioni statiche (KPI Meta, Grafico, Tabella Dettaglio) sono container presentazionali"
+    },
+    {
+      "path": "docs/js/volume.js",
+      "esiste": true,
+      "note": "renderVolumeMetaCard() usa campi scalari fissi di volume.json.meta; renderVolumeChart() e renderVolumeTable() iterano volumi[] dinamicamente (linee 139, 236)"
+    }
+  ],
+  "anomalie": [],
+  "analisi_strutture": {
+    "dashboard": {
+      "card_stato": "Template literal con 5 metriche fisse (peso, BF, massa magra, FFMI, TDEE) — campi scalari, non array",
+      "card_massimali": "Array JS locale exercises = [Squat, Panca, Stacco] generato con .map() — i dati vengono da campi scalari (last.squat_1rm, ecc.)",
+      "card_fase": "Fase corrente trovata da plan.fasi[].find() — dinamico",
+      "card_target": "Colonne orizzonti generate da plan.target[].map() — dinamico; righe esercizi (Big 3) da array JS fisso semantico"
+    },
+    "progress": {
+      "peso_bf_chart": "3 dataset fissi (peso_kg, body_fat_pct, massa_magra_kg) — campi scalari dello schema measurements",
+      "massimali_chart": "4 dataset fissi (squat_1rm, panca_1rm, stacco_1rm, totale_1rm) — campi scalari dello schema measurements",
+      "circonferenze_chart": "3 dataset fissi (vita_cm, braccio_dx_cm, coscia_dx_cm) — campi scalari dello schema measurements",
+      "tabella_misurazioni": "Colonne fisse, righe generate da records.forEach() — completamente dinamico"
+    },
+    "plan": {
+      "timeline": "plan.fasi[] iterato con .map() — completamente dinamico",
+      "strength_targets": "plan.target[] iterato in renderStrengthTargets() — completamente dinamico",
+      "nutrition_strategy": "Chiavi fisse di plan.strategia_nutrizionale (oggetto, non array) mappate con array JS locale fasiDieta — corretto per oggetto schema fisso"
+    },
+    "volume": {
+      "meta_card": "5 KPI fissi (total_serie_pesate, pull_serie, push_serie, ratio, balance_rating) — campi scalari di volume.json.meta",
+      "volume_chart": "volume.volumi[] iterato e ordinato dinamicamente (linea 139)",
+      "volume_table": "volume.volumi[] iterato e ordinato dinamicamente; sotto-array dettaglio[] anche dinamico (linea 236)"
+    }
+  },
+  "conclusione": "Tutte le pagine verificate (Dashboard, Progressi, Piano, Volume) sono conformi al principio di rendering dinamico. Nessuna struttura DOM statica nell'HTML rappresenta singoli elementi di un array JSON variabile. Ogni struttura che appare 'hardcodata' nel codice JavaScript corrisponde a campi scalari fissi dello schema JSON (es. peso_kg, body_fat_pct, squat_1rm) o a chiavi fisse di oggetti (es. strategia_nutrizionale), NON a elementi di array variabili. Aggiungendo o rimuovendo elementi da qualsiasi array in plan.json, volume.json, o measurements.json, le pagine si aggiornano automaticamente senza modifiche al codice. Il task è completato senza anomalie critiche."
+}

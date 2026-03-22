@@ -19,6 +19,12 @@
   box-shadow: var(--shadow-sm);
   min-height: 120px;
   min-width: 0; /* evita overflow orizzontale in grid */
+  transition: box-shadow var(--transition-normal), border-color var(--transition-normal);
+}
+
+.dashboard-card:hover {
+  box-shadow: var(--shadow-md);
+  border-color: var(--color-border-light);
 }
 
 /* ── Placeholder testo no-JS ── */
@@ -451,4 +457,91 @@
   .targets-card__th {
     padding: var(--space-2);
   }
+}
+
+/* ============================================================
+   html.theme-pro — Override tipografici dashboard
+   Gerarchia visiva premium: titoli prominenti, KPI in evidenza,
+   label sbiadite per contrasto. Opera SOLO sotto html.theme-pro.
+   ============================================================ */
+
+/* Titolo card: più grande, peso 700, letter-spacing negativo premium */
+html.theme-pro .dashboard-card__title {
+  font-size: var(--font-size-md);       /* 18px vs 16px originale */
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+}
+
+/* Label KPI: più sbiadita — lascia risaltare il valore */
+html.theme-pro .status-card__label {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-faint);
+  opacity: 0.85;
+  letter-spacing: 0.08em;
+}
+
+/* Valore KPI: aumentato e grassetto massimo Inter */
+html.theme-pro .status-card__value {
+  font-size: var(--font-size-kpi-value, 1.625rem);
+  font-weight: var(--font-weight-extrabold, 800);
+  letter-spacing: -0.02em;
+  line-height: 1.1;
+}
+
+/* Nome esercizio (Squat/Panca/Stacco): più sbiadito */
+html.theme-pro .strength-card__name {
+  color: var(--color-text-faint);
+  letter-spacing: 0.08em;
+}
+
+/* Valore massimale: aumentato e bold massimo */
+html.theme-pro .strength-card__value {
+  font-size: var(--font-size-kpi-value, 1.625rem);
+  font-weight: var(--font-weight-extrabold, 800);
+  letter-spacing: -0.02em;
+}
+
+/* Etichetta esercizio target: più sbiadita */
+html.theme-pro .targets-card__exercise-label {
+  color: var(--color-text-faint);
+  opacity: 0.85;
+}
+
+/* Cella valore target: aumentata */
+html.theme-pro .targets-card__td {
+  font-size: var(--font-size-lg);       /* 20px vs 18px originale */
+  font-weight: var(--font-weight-extrabold, 800);
+  letter-spacing: -0.01em;
+}
+
+/* ============================================================
+   html.theme-pro — Override componenti dashboard
+   Card premium: bordo accent sinistro, ombra più profonda,
+   look GitHub-dark con depth elevata.
+   Opera SOLO sotto html.theme-pro.
+   ============================================================ */
+
+/* Dashboard card: bordo sinistro accent + shadow premium */
+html.theme-pro .dashboard-card {
+  border-left: 3px solid var(--color-accent);
+  box-shadow: var(--shadow-md);
+  background: linear-gradient(
+    135deg,
+    var(--color-bg-card) 0%,
+    var(--color-bg-elevated) 100%
+  );
+  transition: box-shadow var(--transition-normal), border-color var(--transition-normal);
+}
+
+/* Hover card tema pro: shadow più profonda, bordo accent più luminoso */
+html.theme-pro .dashboard-card:hover {
+  box-shadow: var(--shadow-lg);
+  border-color: var(--color-accent-hover);
+}
+
+/* Titolo card: separatore accent sottostante per look premium */
+html.theme-pro .dashboard-card__title {
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-accent-dim);
 }

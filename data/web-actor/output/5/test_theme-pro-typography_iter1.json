@@ -1,0 +1,101 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "theme-pro-typography",
+    "task_titolo": "Tipografia e gerarchia visiva del tema professionale",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Nel tema pro, i titoli di sezione (h2.progress-section__title, .dashboard-card__title) sono visivamente più grandi e/o pesanti rispetto al tema originale",
+      "soddisfatto": true,
+      "dettaglio": "Progress.css (riga 270-274): .progress-section__title con font-size var(--font-size-section-title, 1.5rem) [24px vs 20px originale], font-weight bold, letter-spacing -0.01em. Dashboard.css (riga 463-468): .dashboard-card__title con font-size var(--font-size-md) [18px vs 16px originale], font-weight bold, letter-spacing -0.01em."
+    },
+    {
+      "criterio": "I valori numerici nelle card (.status-card__value, .strength-card__value, .targets-card__td) sono in grassetto marcato (weight ≥ 700) con font-size aumentata rispetto al tema originale",
+      "soddisfatto": true,
+      "dettaglio": "Dashboard.css: .status-card__value (riga 479-484) font-size var(--font-size-kpi-value, 1.625rem) [26px vs 20px], font-weight var(--font-weight-extrabold, 800). .strength-card__value (riga 493-497) font-size kpi-value, font-weight extrabold 800. .targets-card__td (riga 506-510) font-size var(--font-size-lg) [20px], font-weight extrabold 800."
+    },
+    {
+      "criterio": "Le label descrittive (.status-card__label, .strength-card__name, .targets-card__exercise-label) appaiono visivamente più sbiadite/tenui rispetto ai valori numerici adiacenti",
+      "soddisfatto": true,
+      "dettaglio": "Dashboard.css: .status-card__label (riga 471-476) color var(--color-text-faint), opacity 0.85, letter-spacing 0.08em. .strength-card__name (riga 487-490) color var(--color-text-faint), letter-spacing 0.08em. .targets-card__exercise-label (riga 500-503) color var(--color-text-faint), opacity 0.85."
+    },
+    {
+      "criterio": "Se viene usato Google Fonts (Inter/DM Sans), il @import è in cima a variables.css e la font family è applicata solo nel blocco html.theme-pro tramite override di --font-base",
+      "soddisfatto": true,
+      "dettaglio": "Variables.css riga 7: @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap') PRIMA di :root. Variables.css riga 144-147: blocco html.theme-pro con --font-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;"
+    },
+    {
+      "criterio": "Rimuovendo la classe html.theme-pro il sito torna esattamente alla tipografia originale (nessun residuo)",
+      "soddisfatto": true,
+      "dettaglio": ":root (riga 9-90) in variables.css rimane invariato. Tutti gli override tipografici Pro sono SOLO in blocchi html.theme-pro {} nei file CSS. Nessuna modifica a :root per tipografia."
+    },
+    {
+      "criterio": "docs/css/variables.css contiene @import Google Fonts (se usato) PRIMA del blocco :root",
+      "soddisfatto": true,
+      "dettaglio": "Riga 7: @import Google Fonts è prima di :root (riga 9). Posizionamento corretto per garantire caricamento font prima dei CSS."
+    },
+    {
+      "criterio": "Tutti gli override tipografici pro in variables.css stanno dentro html.theme-pro { } — mai in :root",
+      "soddisfatto": true,
+      "dettaglio": "Variables.css: blocco html.theme-pro (riga 144-155) contiene --font-base, --font-weight-extrabold, --font-size-kpi-value, --font-size-section-title. Il blocco :root (riga 9-90) rimane intatto, nessun override tipografico pro."
+    },
+    {
+      "criterio": "Tutti gli override nei CSS di pagina usano html.theme-pro .classe { } come selettore radice",
+      "soddisfatto": true,
+      "dettaglio": "Dashboard.css (riga 463-510): 7 rule-set con html.theme-pro .classe. Progress.css (riga 270-281): 2 rule-set. Workout.css (riga 646-684): 6 rule-set. Diet.css (riga 521-552): 5 rule-set. Plan.css (riga 512-557): 8 rule-set. Volume.css (riga 345-397): 9 rule-set. Selettore corretto ovunque."
+    },
+    {
+      "criterio": "Non esistono style= inline nei file HTML né nei file JS per proprietà tipografiche",
+      "soddisfatto": true,
+      "dettaglio": "Grep su tutti i file *.html in docs/ per 'style=' + font properties: nessun risultato. Tutti gli stili tipografici pro sono gestiti da CSS, non da style= inline."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/css/variables.css",
+      "esiste": true,
+      "note": "Contiene @import Google Fonts (riga 7, prima di :root) e blocco html.theme-pro tipografico (riga 144-155) con --font-base Inter, --font-weight-extrabold, custom --font-size-kpi-value e --font-size-section-title. :root invariato."
+    },
+    {
+      "path": "docs/css/dashboard.css",
+      "esiste": true,
+      "note": "Sezione html.theme-pro (riga 456-510) con override per 7 classi: .dashboard-card__title, .status-card__label, .status-card__value, .strength-card__name, .strength-card__value, .targets-card__exercise-label, .targets-card__td. Tutti corretti con font-size aumentato, font-weight bold/extrabold, label sbiadite."
+    },
+    {
+      "path": "docs/css/progress.css",
+      "esiste": true,
+      "note": "Sezione html.theme-pro (riga 263-281) con override per .progress-section__title (font-size-section-title 24px, weight bold, letter-spacing -0.01em) + responsive mobile (riga 277-281 media query)."
+    },
+    {
+      "path": "docs/css/workout.css",
+      "esiste": true,
+      "note": "Sezione html.theme-pro (riga 639-684) con override per 6 classi: .workout-header__title, .workout-giorno-card__giorno (font-size-xl, extrabold), .workout-esercizio-row__* (bold), .workout-week-summary__label (text-faint), .workout-week-summary__value (bold, font-size-md)."
+    },
+    {
+      "path": "docs/css/diet.css",
+      "esiste": true,
+      "note": "Sezione html.theme-pro (riga 514-552) con override per 5 blocchi: titoli sezione (font-size-lg, weight bold, letter-spacing -0.01em), .diet-macros-bar__value (font-size 2xl, extrabold), .diet-macros-bar__label/.unit (text-faint, opacity 0.85), .diet-meal-card__nome (font-size-md, weight bold)."
+    },
+    {
+      "path": "docs/css/plan.css",
+      "esiste": true,
+      "note": "Sezione html.theme-pro (riga 505-557) con 8 rule-set: .plan-section-title (font-size 2xl, weight bold, letter-spacing -0.02em), .plan-section-subtitle (text-faint), target forza table (weight bold/extrabold), .plan-phase-name. Include responsive mobile/small (riga 548-557)."
+    },
+    {
+      "path": "docs/css/volume.css",
+      "esiste": true,
+      "note": "Sezione html.theme-pro (riga 338-397) con 9 rule-set: .volume-section-title (font-size 2xl, weight bold), .volume-meta-value (font-size-kpi-value 26px, extrabold), .volume-meta-label (text-faint, opacity 0.85), .volume-muscle-name/.total (font-size-lg/base, weight bold). Include responsive mobile (riga 384-397)."
+    }
+  ],
+  "anomalie": [],
+  "riepilogo_esito": {
+    "criteri_soddisfatti": 9,
+    "criteri_totali": 9,
+    "anomalie_bloccanti": 0,
+    "anomalie_warning": 0,
+    "note": "Implementazione completa e corretta. Tutti i criteri di accettazione sono soddisfatti. Il tema pro introduce un font Google (Inter) con gerarchia tipografica premium su dashboard, progress, workout, diet, plan, volume. Le modifiche operano SOLO sotto html.theme-pro, il tema originale rimane invariato. Nessuna anomalia rilevata."
+  }
+}

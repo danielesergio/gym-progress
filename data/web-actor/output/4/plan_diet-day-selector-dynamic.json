@@ -1,0 +1,150 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "diet-day-selector-dynamic",
+    "task_title": "Selettore giorni dieta generato dinamicamente dall'array giorni[]",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "diet-day-selector-dynamic",
+    "type": "bugfix",
+    "title": "Selettore giorni dieta generato dinamicamente dall'array giorni[]",
+    "description": "Il selettore giorni della pagina Dieta è attualmente composto da due bottoni hardcoded: '🏋️ Allenamento' e '😴 Riposo'. Questi corrispondono ai valori del campo 'tipo' in giorni[], ma il JSON contiene 7 giorni distinti (Lunedì-Allenamento, Martedì-Allenamento, Mercoledì-Riposo, ecc.). La logica di rendering usa .find() sul tipo e mostra solo un giorno per tipo, ignorando gli altri. Il fix deve: (1) rimuovere i bottoni hardcoded dall'HTML, (2) generare un bottone per ogni elemento di giorni[] usando il campo 'nome' come etichetta, (3) al click mostrare macros e pasti del giorno specifico per indice, (4) gestire N giorni senza limite fisso. Gli integratori restano sempre visibili. Se giorni[] è vuoto, mostrare empty state.",
+    "inputs": ["diet_data"],
+    "outputs": ["DietDaySelector", "DietDayContent"],
+    "acceptance_criteria": [
+      "La pagina Dieta mostra un bottone selettore per ogni elemento presente nell'array 'giorni' del JSON",
+      "Il numero di bottoni si adatta automaticamente: se giorni[] ha 7 elementi appaiono 7 bottoni, se ne ha 2 appaiono 2",
+      "Selezionando un giorno specifico (es. 'Martedì - Allenamento') vengono mostrati i macros e i pasti di quel preciso giorno",
+      "Il primo giorno dell'array è selezionato di default al caricamento della pagina",
+      "I bottoni non sono hardcoded nell'HTML: nessun bottone giorno deve essere presente nel markup statico",
+      "Se l'array giorni[] è vuoto, la sezione mostra un messaggio 'Nessun giorno pianificato'"
+    ],
+    "notes": "Il JSON attuale ha 7 giorni. Il campo 'nome' è la stringa completa da usare come etichetta del bottone (es. 'Lunedì - Allenamento'). La selezione deve avvenire per indice nell'array, non per campo 'tipo' (che non è univoco: ci sono più giorni allenamento e più giorni riposo)."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/diet.html",
+        "motivo": "Rimuovere i 2 bottoni hardcoded (<button data-day-type='allenamento'> e <button data-day-type='riposo'>) dalla sezione #day-toggle. La sezione <section class='diet-day-toggle' id='day-toggle'> deve restare vuota nel markup: i bottoni saranno iniettati da diet.js. Il contenitore section deve avere aria-label aggiornato a 'Seleziona giorno'.",
+        "esiste": true
+      },
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "Refactor completo della logica selettore: (1) eliminare la variabile currentDayType (stringa tipo) e sostituirla con currentDayIndex (numero intero, default 0); (2) aggiungere la funzione renderDaySelector(giorni) che itera su giorni[] e crea dinamicamente un <button> per ogni elemento con il campo 'nome' come testo e data-day-index come attributo; (3) aggiornare renderDiet() per usare giorni[currentDayIndex] invece di giorni.find(g => g.tipo === currentDayType); (4) aggiornare renderToggle() in renderDaySelector() per usare data-day-index; (5) rimuovere il blocco DOMContentLoaded che collega i bottoni hardcoded, sostituirlo con event delegation sul container #day-toggle; (6) gestire empty state se giorni[] è vuoto.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Nessuna modifica strutturale richiesta: .diet-day-toggle ha già flex-wrap: wrap e .diet-toggle-btn ha già gli stili attivo/hover corretti. Eventuale aggiunta di una classe .diet-day-toggle--empty o stile per il messaggio empty state del selettore se non già coperto da .diet-empty.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/diet.json",
+        "motivo": "Struttura dati reale da comprendere prima di scrivere il codice. Array giorni[] con 7 elementi: ogni elemento ha campi 'nome' (string, es. 'Lunedì - Allenamento'), 'tipo' (string, 'allenamento'|'riposo'), 'kcal' (number), 'macros' {proteine, carboidrati, grassi}, 'pasti' (array di oggetti pasto con alimenti e totale). Campo radice 'integratori' separato da giorni[]. Il tipo NON è univoco (più giorni possono avere stesso tipo)."
+      },
+      {
+        "path": "docs/diet.html",
+        "motivo": "File da modificare: capire la struttura HTML esistente, in particolare il markup del selettore hardcoded da rimuovere (righe 72-87), gli id dei container (#day-toggle, #macros-summary, #meals-list, #supplements-list) e la struttura generale della pagina."
+      },
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "File da modificare: analizzare la logica esistente. In particolare: variabile currentDayType (da sostituire con currentDayIndex), funzione renderToggle() (da integrare nella nuova renderDaySelector()), funzione renderDiet() con giorni.find() (da cambiare in giorni[currentDayIndex]), blocco DOMContentLoaded con querySelector sui bottoni hardcoded (da refactorare in event delegation)."
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Verificare stili esistenti .diet-day-toggle e .diet-toggle-btn prima di aggiungere regole. Già presente flex-wrap: wrap — compatibile con N bottoni. Verificare se .diet-empty copre anche l'empty state del selettore o serve una classe dedicata."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS, ES2022, vanilla JS, nessun build step",
+      "grafici": "Chart.js non utilizzato in diet.html",
+      "dati": "fetch() da data/diet.json — path relativo, file statico"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase (es. currentDayIndex, selectedDay)",
+      "costanti_js": "UPPER_SNAKE_CASE (es. DATA_PATH)",
+      "classi_css": "kebab-case con prefisso diet- (es. .diet-toggle-btn, .diet-day-toggle)",
+      "id_html": "kebab-case (es. #day-toggle, #macros-summary)",
+      "data_attributes": "kebab-case (es. data-day-index='0')",
+      "rendering_liste": "REGOLA CRITICA: bottoni generati dinamicamente da JS iterando su array JSON. Vietato hardcodare bottoni nell'HTML.",
+      "fetch_pattern": "async/await con try/catch. Errore mostrato in #diet-error con hidden = false.",
+      "struttura_js": "Pattern obbligatorio: costanti → stato → funzioni render → DOMContentLoaded. Nessuna logica inline nell'HTML.",
+      "gestione_null": "Campi null/undefined → '—' nel DOM. Mai stringa 'null' o 'undefined'.",
+      "no": ["no jQuery", "no var", "no inline style", "no console.log in produzione", "no alert"]
+    },
+    "pagina_dieta": {
+      "file_html": "docs/diet.html",
+      "file_js": "docs/js/diet.js",
+      "file_css": "docs/css/diet.css",
+      "dati_json": ["data/diet.json"],
+      "container_selettore": "#day-toggle (section.diet-day-toggle)",
+      "container_macros": "#macros-summary",
+      "container_pasti": "#meals-list",
+      "container_integratori": "#supplements-list",
+      "container_errore": "#diet-error"
+    }
+  },
+  "criteri_accettazione": [
+    "La pagina Dieta mostra un bottone selettore per ogni elemento presente nell'array 'giorni' del JSON",
+    "Il numero di bottoni si adatta automaticamente: se giorni[] ha 7 elementi appaiono 7 bottoni, se ne ha 2 appaiono 2",
+    "Selezionando un giorno specifico (es. 'Martedì - Allenamento') vengono mostrati i macros e i pasti di quel preciso giorno",
+    "Il primo giorno dell'array è selezionato di default al caricamento della pagina",
+    "I bottoni non sono hardcoded nell'HTML: nessun bottone giorno deve essere presente nel markup statico",
+    "Se l'array giorni[] è vuoto, la sezione mostra un messaggio 'Nessun giorno pianificato'",
+    "docs/diet.html NON contiene nessun elemento <button> con data-day-type o data-day-index nel markup statico",
+    "docs/diet.html: la sezione #day-toggle è vuota (nessun figlio hardcoded)",
+    "docs/js/diet.js contiene la funzione renderDaySelector(giorni) che itera su giorni[] e genera i bottoni",
+    "docs/js/diet.js usa una variabile currentDayIndex (intero) per tracciare il giorno selezionato, NON currentDayType (stringa)",
+    "docs/js/diet.js usa giorni[currentDayIndex] per ottenere il dayData corrente, NON giorni.find(g => g.tipo === ...)",
+    "docs/js/diet.js: la selezione del giorno usa event delegation sul container #day-toggle (non querySelector su bottoni hardcoded)",
+    "docs/js/diet.js: se giorni[] è vuoto, renderDaySelector() inserisce nel container il testo 'Nessun giorno pianificato'",
+    "Il bottone del giorno corrente ha classe 'active' e aria-pressed='true'; gli altri hanno aria-pressed='false'",
+    "Gli integratori restano sempre visibili indipendentemente dal giorno selezionato",
+    "docs/css/diet.css: presenza di stili per il selettore dinamico compatibili con N bottoni (flex-wrap già presente)"
+  ],
+  "dipendenze": [],
+  "analisi_bug": {
+    "problema_1_html_hardcoded": {
+      "file": "docs/diet.html",
+      "righe": "73-87",
+      "descrizione": "Presenti 2 bottoni hardcoded: <button data-day-type='allenamento'> e <button data-day-type='riposo'>. Violano la regola CRITICA di rendering dinamico.",
+      "fix": "Rimuovere entrambi i bottoni. Lasciare vuoto il <section id='day-toggle'>. I bottoni saranno iniettati da renderDaySelector() in diet.js."
+    },
+    "problema_2_find_per_tipo": {
+      "file": "docs/js/diet.js",
+      "riga": 325,
+      "codice_buggy": "const dayData = giorni.find(g => g.tipo === currentDayType) ?? null;",
+      "descrizione": "Usa .find() per tipo: se ci sono più giorni con tipo 'allenamento' (es. Lun/Mar/Ven), restituisce sempre il primo trovato, ignorando gli altri 5/6 giorni. Non è possibile visualizzare 'Martedì - Allenamento' separatamente da 'Lunedì - Allenamento'.",
+      "fix": "Sostituire con giorni[currentDayIndex] dove currentDayIndex è l'indice nell'array."
+    },
+    "problema_3_event_listener_hardcoded": {
+      "file": "docs/js/diet.js",
+      "righe": "342-353",
+      "codice_buggy": "const toggleBtns = document.querySelectorAll('.diet-toggle-btn'); toggleBtns.forEach(btn => { btn.addEventListener('click', ...) })",
+      "descrizione": "Collega i listener ai bottoni hardcoded presenti nell'HTML al momento del DOMContentLoaded. Se i bottoni sono generati dinamicamente da JS, questo codice non trova nessun elemento.",
+      "fix": "Usare event delegation: singolo listener su #day-toggle che intercetta click su .diet-toggle-btn figli. Oppure attaccare i listener durante la generazione dei bottoni in renderDaySelector()."
+    },
+    "problema_4_stato_tipo": {
+      "file": "docs/js/diet.js",
+      "riga": 11,
+      "codice_buggy": "let currentDayType = 'allenamento';",
+      "descrizione": "Lo stato traccia il 'tipo' (allenamento/riposo) invece dell'indice specifico del giorno. Con 7 giorni distinti, serve tracciare l'indice.",
+      "fix": "Sostituire con: let currentDayIndex = 0; (primo giorno selezionato di default)"
+    }
+  },
+  "struttura_js_proposta": {
+    "note": "Il developer deve refactorare diet.js seguendo questo schema logico",
+    "stato": "let currentDayIndex = 0;",
+    "funzione_renderDaySelector": "renderDaySelector(giorni): svuota #day-toggle; se giorni[] è vuoto inserisce messaggio empty; altrimenti itera giorni[], crea un <button class='diet-toggle-btn'> per ogni elemento con: textContent = giorno.nome, data-day-index = indice, aria-pressed = (indice === currentDayIndex). Attacca listener click su ogni bottone OPPURE usa event delegation sul container.",
+    "funzione_renderDiet_aggiornata": "renderDiet(data): chiama renderDietHeader(data); recupera giorni[]; chiama renderDaySelector(giorni); recupera dayData = giorni[currentDayIndex] ?? null; chiama renderMacrosSummary(dayData, nota_strategia); chiama renderMealsList(dayData); chiama renderSupplements(data.integratori).",
+    "on_click_bottone": "Aggiorna currentDayIndex = indice letto da data-day-index del bottone cliccato; chiama renderDiet(dietData) per aggiornare tutta la pagina.",
+    "domcontentloaded": "Rimuovere il blocco che collega i bottoni hardcoded. Il fetch e il primo renderDiet() restano invariati."
+  }
+}

@@ -1,0 +1,115 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "theme-pro-components",
+    "task_titolo": "Stili componenti per il tema professionale",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Le card della dashboard hanno uno stile visivamente distinto nel tema pro rispetto all'originale (es. bordo sinistro accent o shadow aumentata)",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.css righe 520-534: html.theme-pro .dashboard-card ha border-left: 3px solid var(--color-accent) + box-shadow: var(--shadow-md) + linear-gradient background. Originale a riga 14-21 rimane intatto."
+    },
+    {
+      "criterio": "La tabella storico in Progressi mostra righe alternate distinguibili nel tema pro (.measurements-table tbody tr:nth-child(even) con sfondo diverso)",
+      "soddisfatto": true,
+      "dettaglio": "progress.css righe 303-305: html.theme-pro .measurements-table tbody tr:nth-child(even) td ha background-color: var(--color-bg-secondary) per zebra-striping. Originale (righe 124-138) non modificato."
+    },
+    {
+      "criterio": "I selettori settimana (.week-btn.active) e giorno (.day-btn.active, .diet-toggle-btn.active) mostrano lo stato attivo in modo chiaramente più evidente nel tema pro (es. halo/box-shadow colorata)",
+      "soddisfatto": true,
+      "dettaglio": "workout.css righe 694-705: html.theme-pro .week-btn.active e .day-btn.active hanno box-shadow: 0 0 0 2px var(--color-accent) + font-weight: var(--font-weight-extrabold, 800). Diet.css righe 563-566: html.theme-pro .diet-toggle-btn.active identico pattern. Originali (workout righe 317-386, diet righe 81-86) rimangono intatti."
+    },
+    {
+      "criterio": "La barra macro dieta usa colori coerenti con la palette pro (proteine: #58a6ff, carbo: #d29922, grassi: #3fb950)",
+      "soddisfatto": true,
+      "dettaglio": "diet.css righe 569-592: html.theme-pro .diet-macros-proportion-bar__segment--proteine usa var(--color-accent) #58a6ff, --carbo usa var(--color-warning) #d29922, --grassi usa var(--color-success) #3fb950. Legend items ::before aggiornati linee 582-592. Originali (righe 214-260) con colori hardcoded rimangono intatti."
+    },
+    {
+      "criterio": "I badge R/S (.badge-reale, .badge-stimato, .td-badge--reale, .td-badge--stimato) sono più leggibili nel tema pro (border più spessa, sfondo più opaco)",
+      "soddisfatto": true,
+      "dettaglio": "progress.css righe 290-318: html.theme-pro .badge-reale e .badge-stimato hanno border: 2px solid (vs 1px originale) + sfondo rgba aumentato (0.25 vs 0.2/0.15) + font-weight: bold. Badge inline td-badge--reale/--stimato righe 308-318 identici. Originali (righe 40-200) rimangono intatti."
+    },
+    {
+      "criterio": "Nessuno stile del tema originale viene sovrascritto globalmente: tutti gli override stanno SOLO sotto html.theme-pro",
+      "soddisfatto": true,
+      "dettaglio": "Verifica su tutti e 4 i file CSS: dashboard.css (linee 519-534 sotto blocco html.theme-pro), progress.css (linee 283-318 sotto blocco html.theme-pro), workout.css (linee 686-705 sotto blocco html.theme-pro), diet.css (linee 555-592 sotto blocco html.theme-pro). Zero selettori globali o :root toccati. Convenzione rispettata perfettamente."
+    },
+    {
+      "criterio": "Il file docs/css/dashboard.css contiene html.theme-pro .dashboard-card { con border-left o box-shadow aumentata",
+      "soddisfatto": true,
+      "dettaglio": "Righe 520-534: html.theme-pro .dashboard-card { border-left: 3px solid var(--color-accent); box-shadow: var(--shadow-md); background: linear-gradient(135deg, var(--color-bg-card) 0%, var(--color-bg-elevated) 100%); }"
+    },
+    {
+      "criterio": "Il file docs/css/progress.css contiene html.theme-pro .measurements-table tbody tr:nth-child(even)",
+      "soddisfatto": true,
+      "dettaglio": "Righe 303-305: html.theme-pro .measurements-table tbody tr:nth-child(even) td { background-color: var(--color-bg-secondary); }"
+    },
+    {
+      "criterio": "Il file docs/css/progress.css contiene html.theme-pro .badge-reale e html.theme-pro .badge-stimato",
+      "soddisfatto": true,
+      "dettaglio": "Righe 290-300: html.theme-pro .badge-reale { background-color: rgba(63, 185, 80, 0.25); border: 2px solid var(--color-success); font-weight: var(--font-weight-bold); } e identico per .badge-stimato con colore warning."
+    },
+    {
+      "criterio": "Il file docs/css/workout.css contiene html.theme-pro .week-btn.active e html.theme-pro .day-btn.active",
+      "soddisfatto": true,
+      "dettaglio": "Righe 693-705: html.theme-pro .week-btn.active, .week-btn[aria-pressed='true'] e html.theme-pro .day-btn.active, .day-btn[aria-pressed='true'] entrambi con box-shadow: 0 0 0 2px var(--color-accent); font-weight: var(--font-weight-extrabold, 800);"
+    },
+    {
+      "criterio": "Il file docs/css/diet.css contiene html.theme-pro .diet-toggle-btn.active",
+      "soddisfatto": true,
+      "dettaglio": "Righe 563-566: html.theme-pro .diet-toggle-btn.active { box-shadow: 0 0 0 2px var(--color-accent); font-weight: var(--font-weight-extrabold, 800); }"
+    },
+    {
+      "criterio": "Il file docs/css/diet.css contiene html.theme-pro .diet-macros-proportion-bar__segment--proteine, --carbo, --grassi",
+      "soddisfatto": true,
+      "dettaglio": "Righe 569-579: html.theme-pro .diet-macros-proportion-bar__segment--proteine { background-color: var(--color-accent); }, --carbo { background-color: var(--color-warning); }, --grassi { background-color: var(--color-success); }"
+    },
+    {
+      "criterio": "Rimuovendo la classe html.theme-pro, tutti i componenti tornano agli stili originali senza residui visivi",
+      "soddisfatto": true,
+      "dettaglio": "Nessun override colpisce selettori senza html.theme-pro. Regole originali in :root (righe 9-90 variables.css) rimangono intatte. Selettori base (.dashboard-card, .measurements-table tbody tr, .badge-reale, .week-btn.active, ecc.) non sono stati modificati globalmente. Fallback garantito."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/css/variables.css",
+      "esiste": true,
+      "note": "Palette tema pro definita righe 99-155 con token --color-accent #58a6ff, --color-bg-card #1c2128, --color-success #3fb950, --color-warning #d29922, --shadow-md/lg, --font-weight-extrabold: 800. Usati tramite var() in tutti i file CSS."
+    },
+    {
+      "path": "docs/css/dashboard.css",
+      "esiste": true,
+      "note": "Blocco html.theme-pro override componenti aggiunto righe 519-534 IN CODA al blocco tipografico (fine riga 510). Dashboard card: border-left accent + shadow premium + gradient background."
+    },
+    {
+      "path": "docs/css/progress.css",
+      "esiste": true,
+      "note": "Blocco html.theme-pro override componenti aggiunto righe 283-318 IN CODA al blocco tipografico (fine riga 281). Badge con border 2px + sfondo opaco, tabella con zebra-striping, badge inline con stesso pattern."
+    },
+    {
+      "path": "docs/css/workout.css",
+      "esiste": true,
+      "note": "Blocco html.theme-pro override componenti aggiunto righe 686-705 IN CODA al blocco tipografico (fine riga 684). Selettori settimana/giorno con halo box-shadow accent + extrabold."
+    },
+    {
+      "path": "docs/css/diet.css",
+      "esiste": true,
+      "note": "Blocco html.theme-pro override componenti aggiunto righe 555-592 IN CODA al blocco tipografico (fine riga 547). Toggle btn con halo accent, barra macro con colori pro, legend items aggiornati."
+    }
+  ],
+  "anomalie": [],
+  "riepilogo_implementazione": {
+    "dashboard_card": "✅ Bordo sinistro accent 3px + shadow md + gradient 135deg bg-card → bg-elevated",
+    "tabella_storico": "✅ Zebra-striping: righe pari con bg-secondary",
+    "badge_rs": "✅ Sfondo rgba aumentato (0.25), border 2px, font-weight bold",
+    "badge_inline": "✅ Stessi override, font-size mantenuto 10px",
+    "selettore_settimana": "✅ Box-shadow 0 0 0 2px accent + extrabold",
+    "selettore_giorno_workout": "✅ Box-shadow 0 0 0 2px accent + extrabold",
+    "selettore_giorno_dieta": "✅ Box-shadow 0 0 0 2px accent + extrabold",
+    "barra_macro_colori": "✅ Proteine var(--color-accent) #58a6ff, Carbo var(--color-warning) #d29922, Grassi var(--color-success) #3fb950",
+    "isolamento_css": "✅ Tutti gli override SOLO sotto html.theme-pro. Zero modifiche a :root o selettori globali"
+  }
+}

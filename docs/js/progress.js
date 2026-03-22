@@ -261,12 +261,12 @@ function renderWeightBfChart(data) {
 
 /* ============================================================
    renderStrengthChart(data)
-   Grafico a linee: evoluzione storica Squat, Panca e Stacco 1RM.
-   Asse X lineare con timestamp. 3 colori distinti per esercizio.
-   Il punto stimato (squat_1rm_tipo/panca_1rm_tipo/stacco_1rm_tipo='S')
-   è differenziato visivamente per esercizio con pointStyle 'rect'
-   (quadrato) vs 'circle' per i punti reali. Ogni esercizio ha il proprio
-   indice stimato indipendente per supportare tipi misti.
+   Grafico misto barre raggruppate (Squat / Panca / Stacco 1RM)
+   + linea sovrapposta per il Totale 1RM.
+   Asse X categorico (label date IT). Asse Y sinistro per i
+   singoli massimali, asse Y destro per il Totale.
+   I record con tipo Stimato ('S') hanno opacità ridotta nelle
+   barre (backgroundColor con alpha 0.25 vs 0.75 per i Reali).
    ============================================================ */
 function renderStrengthChart(data) {
   const canvas = document.getElementById('chart-massimali');
@@ -284,142 +284,105 @@ function renderStrengthChart(data) {
     return;
   }
 
-  /* Converti date in timestamp per asse X lineare */
-  const timestamps = records.map(function (d) {
-    return new Date(d.data).getTime();
+  /* ── Colori dal design system ── */
+  const COLOR_SQUAT  = '#ff6b35';             /* --color-accent, arancio */
+  const COLOR_PANCA  = '#4fc3f7';             /* celeste */
+  const COLOR_STACCO = '#ce93d8';             /* viola chiaro */
+  const COLOR_TOTALE = '#4caf50';             /* --color-success, verde */
+  const COLOR_GRID   = 'rgba(58,58,58,0.6)';  /* --color-border */
+  const COLOR_TEXT   = '#a0a0a0';             /* --color-text-muted */
+
+  /* ── Labels asse X categorico ── */
+  const labels = records.map(function (d) { return formatDateIT(d.data); });
+
+  /* ── Dati singoli esercizi (array numerici, null se assente) ── */
+  const squatData  = records.map(function (d) { return d.squat_1rm  ?? null; });
+  const pancaData  = records.map(function (d) { return d.panca_1rm  ?? null; });
+  const staccoData = records.map(function (d) { return d.stacco_1rm ?? null; });
+
+  /* ── Dati Totale (usa totale_1rm se già calcolato, altrimenti somma i tre) ── */
+  const totaleData = records.map(function (d) {
+    if (d.totale_1rm != null) return d.totale_1rm;
+    const s = d.squat_1rm  ?? 0;
+    const p = d.panca_1rm  ?? 0;
+    const st = d.stacco_1rm ?? 0;
+    return s + p + st;
   });
 
-  /* Indice dell'ultimo record — usato come fallback se nessun record stimato trovato */
-  const lastIdx = records.length - 1;
-
-  /* Colori dal design system */
-  const COLOR_SQUAT  = '#ff6b35';            /* --color-accent, arancio */
-  const COLOR_PANCA  = '#4fc3f7';            /* celeste */
-  const COLOR_STACCO = '#ce93d8';            /* viola chiaro */
-  const COLOR_GRID   = 'rgba(58,58,58,0.6)'; /* --color-border */
-  const COLOR_TEXT   = '#a0a0a0';            /* --color-text-muted */
-
-  /* Colori punto stimato (più chiari / semi-trasparenti per distinguerli) */
-  const COLOR_SQUAT_STIMATO  = 'rgba(255,107,53,0.4)';
-  const COLOR_PANCA_STIMATO  = 'rgba(79,195,247,0.4)';
-  const COLOR_STACCO_STIMATO = 'rgba(206,147,216,0.4)';
-
-  /* Helper: costruisce array di pointStyle (circle per reali, rect per stimato) */
-  function buildPointStyles(len, stimatoIdx) {
-    return records.map(function (d, i) {
-      return i === stimatoIdx ? 'rect' : 'circle';
-    });
-  }
-
-  /* Helper: costruisce array di pointBackgroundColor */
-  function buildPointColors(baseColor, stimatoColor, len, stimatoIdx) {
-    return records.map(function (d, i) {
-      return i === stimatoIdx ? stimatoColor : baseColor;
-    });
-  }
-
-  /* Helper: costruisce array di pointRadius (leggermente più grande il punto stimato) */
-  function buildPointRadius(len, stimatoIdx, normalR, stimatoR) {
-    return records.map(function (d, i) {
-      return i === stimatoIdx ? stimatoR : normalR;
-    });
-  }
-
-  /* Determina l'indice stimato per-esercizio: legge il campo specifico xxx_1rm_tipo.
-     Fallback su massimali_tipo (legacy) se tutti e tre i campi per-esercizio sono assenti.
-     Se findIndex ritorna -1 (nessun record stimato) si usa lastIdx come fallback. */
-  const hasPerEsercizioTipo = records.some(function (d) {
-    return d.squat_1rm_tipo || d.panca_1rm_tipo || d.stacco_1rm_tipo;
+  /* ── Colori per-elemento barre: opacità ridotta per Stimato ── */
+  const squatBg  = records.map(function (d) {
+    return d.squat_1rm_tipo  === 'S' ? 'rgba(255,107,53,0.25)' : 'rgba(255,107,53,0.75)';
+  });
+  const pancaBg  = records.map(function (d) {
+    return d.panca_1rm_tipo  === 'S' ? 'rgba(79,195,247,0.25)' : 'rgba(79,195,247,0.75)';
+  });
+  const staccoBg = records.map(function (d) {
+    return d.stacco_1rm_tipo === 'S' ? 'rgba(206,147,216,0.25)' : 'rgba(206,147,216,0.75)';
   });
 
-  let squatStimatoIdx, pancaStimatoIdx, staccoStimatoIdx;
+  /* ── Range asse Y sinistro (singoli massimali) ── */
+  const singolValues = squatData.concat(pancaData, staccoData)
+    .filter(function (v) { return v !== null; });
+  const minSingolo = singolValues.length ? Math.min.apply(null, singolValues) : 80;
+  const maxSingolo = singolValues.length ? Math.max.apply(null, singolValues) : 250;
 
-  if (hasPerEsercizioTipo) {
-    squatStimatoIdx  = records.findIndex(function (d) { return d.squat_1rm_tipo  === 'S'; });
-    pancaStimatoIdx  = records.findIndex(function (d) { return d.panca_1rm_tipo  === 'S'; });
-    staccoStimatoIdx = records.findIndex(function (d) { return d.stacco_1rm_tipo === 'S'; });
-    /* -1 = nessun record stimato → fallback lastIdx */
-    if (squatStimatoIdx  === -1) squatStimatoIdx  = lastIdx;
-    if (pancaStimatoIdx  === -1) pancaStimatoIdx  = lastIdx;
-    if (staccoStimatoIdx === -1) staccoStimatoIdx = lastIdx;
-  } else {
-    /* Record legacy senza campi per-esercizio: usa massimali_tipo globale */
-    const legacyIdx = records.findIndex(function (d) { return d.massimali_tipo === 'S'; });
-    const effectiveLegacy = legacyIdx !== -1 ? legacyIdx : lastIdx;
-    squatStimatoIdx  = effectiveLegacy;
-    pancaStimatoIdx  = effectiveLegacy;
-    staccoStimatoIdx = effectiveLegacy;
-  }
+  /* ── Range asse Y destro (Totale) ── */
+  const totaleValues = totaleData.filter(function (v) { return v !== null; });
+  const minTotale = totaleValues.length ? Math.min.apply(null, totaleValues) : 250;
+  const maxTotale = totaleValues.length ? Math.max.apply(null, totaleValues) : 500;
 
-  /* Dataset Squat */
-  const squatDataset = records.map(function (d, i) {
-    return { x: timestamps[i], y: d.squat_1rm ?? null };
-  });
-
-  /* Dataset Panca */
-  const pancaDataset = records.map(function (d, i) {
-    return { x: timestamps[i], y: d.panca_1rm ?? null };
-  });
-
-  /* Dataset Stacco */
-  const staccoDataset = records.map(function (d, i) {
-    return { x: timestamps[i], y: d.stacco_1rm ?? null };
-  });
-
-  /* Distruggi istanza precedente */
+  /* ── Distruggi istanza precedente ── */
   progressCharts['massimali']?.destroy();
 
   progressCharts['massimali'] = new Chart(canvas, {
-    type: 'line',
+    type: 'bar',
     data: {
+      labels: labels,
       datasets: [
+        /* ── Barra Squat 1RM ── */
         {
           label: 'Squat 1RM (kg)',
-          data: squatDataset,
+          data: squatData,
+          backgroundColor: squatBg,
           borderColor: COLOR_SQUAT,
-          backgroundColor: 'rgba(255,107,53,0.10)',
-          pointBackgroundColor: buildPointColors(COLOR_SQUAT, COLOR_SQUAT_STIMATO, records.length, squatStimatoIdx),
-          pointBorderColor: buildPointColors(COLOR_SQUAT, COLOR_SQUAT, records.length, squatStimatoIdx),
-          pointBorderWidth: buildPointRadius(records.length, squatStimatoIdx, 1, 2),
-          pointStyle: buildPointStyles(records.length, squatStimatoIdx),
-          pointRadius: buildPointRadius(records.length, squatStimatoIdx, 5, 8),
-          pointHoverRadius: buildPointRadius(records.length, squatStimatoIdx, 7, 10),
-          borderWidth: 2,
-          fill: false,
-          tension: 0.3,
-          spanGaps: true
+          borderWidth: 1.5,
+          yAxisID: 'y'
         },
+        /* ── Barra Panca 1RM ── */
         {
           label: 'Panca 1RM (kg)',
-          data: pancaDataset,
+          data: pancaData,
+          backgroundColor: pancaBg,
           borderColor: COLOR_PANCA,
-          backgroundColor: 'rgba(79,195,247,0.10)',
-          pointBackgroundColor: buildPointColors(COLOR_PANCA, COLOR_PANCA_STIMATO, records.length, pancaStimatoIdx),
-          pointBorderColor: buildPointColors(COLOR_PANCA, COLOR_PANCA, records.length, pancaStimatoIdx),
-          pointBorderWidth: buildPointRadius(records.length, pancaStimatoIdx, 1, 2),
-          pointStyle: buildPointStyles(records.length, pancaStimatoIdx),
-          pointRadius: buildPointRadius(records.length, pancaStimatoIdx, 5, 8),
-          pointHoverRadius: buildPointRadius(records.length, pancaStimatoIdx, 7, 10),
-          borderWidth: 2,
-          fill: false,
-          tension: 0.3,
-          spanGaps: true
+          borderWidth: 1.5,
+          yAxisID: 'y'
         },
+        /* ── Barra Stacco 1RM ── */
         {
           label: 'Stacco 1RM (kg)',
-          data: staccoDataset,
+          data: staccoData,
+          backgroundColor: staccoBg,
           borderColor: COLOR_STACCO,
-          backgroundColor: 'rgba(206,147,216,0.10)',
-          pointBackgroundColor: buildPointColors(COLOR_STACCO, COLOR_STACCO_STIMATO, records.length, staccoStimatoIdx),
-          pointBorderColor: buildPointColors(COLOR_STACCO, COLOR_STACCO, records.length, staccoStimatoIdx),
-          pointBorderWidth: buildPointRadius(records.length, staccoStimatoIdx, 1, 2),
-          pointStyle: buildPointStyles(records.length, staccoStimatoIdx),
-          pointRadius: buildPointRadius(records.length, staccoStimatoIdx, 5, 8),
-          pointHoverRadius: buildPointRadius(records.length, staccoStimatoIdx, 7, 10),
-          borderWidth: 2,
-          fill: false,
+          borderWidth: 1.5,
+          yAxisID: 'y'
+        },
+        /* ── Linea Totale 1RM (dataset inline type:'line') ── */
+        {
+          type: 'line',
+          label: 'Totale 1RM (kg)',
+          data: totaleData,
+          borderColor: COLOR_TOTALE,
+          backgroundColor: 'rgba(76,175,80,0.08)',
+          pointBackgroundColor: COLOR_TOTALE,
+          pointBorderColor: COLOR_TOTALE,
+          pointRadius: 5,
+          pointHoverRadius: 7,
+          borderWidth: 2.5,
           tension: 0.3,
-          spanGaps: true
+          spanGaps: true,
+          fill: false,
+          yAxisID: 'yTotale',
+          order: 0
         }
       ]
     },
@@ -451,44 +414,37 @@ function renderStrengthChart(data) {
           callbacks: {
             title: function (items) {
               if (!items.length) return '';
-              const ts = items[0].parsed.x;
-              const iso = new Date(ts).toISOString().slice(0, 10);
-              return formatDateIT(iso);
+              /* Con asse categorico il titolo è la label stessa */
+              return items[0].label;
             },
             label: function (item) {
               if (item.parsed.y === null || item.parsed.y === undefined) return null;
-              /* Trova il record corrispondente tramite timestamp */
-              const recIdx = records.findIndex(function (d) {
-                return new Date(d.data).getTime() === item.parsed.x;
-              });
-              /* Determina il campo tipo corretto per questo esercizio (per-esercizio) */
-              const labelLow = item.dataset.label.toLowerCase();
-              const tipoField = labelLow.includes('squat')
-                ? 'squat_1rm_tipo'
-                : labelLow.includes('panca')
-                  ? 'panca_1rm_tipo'
-                  : 'stacco_1rm_tipo';
-              /* Lettura campo per-esercizio con fallback su massimali_tipo (legacy) */
-              const tipo = (recIdx !== -1 && records[recIdx]?.[tipoField])
-                ? records[recIdx][tipoField]
-                : (records[recIdx]?.massimali_tipo ?? 'R');
-              return ' ' + item.dataset.label + ': ' + item.parsed.y.toFixed(1) + ' kg (' + tipo + ')';
+              const val = item.parsed.y.toFixed(1) + ' kg';
+              /* Per le barre aggiungi il tipo (R/S) */
+              if (item.dataset.type !== 'line' && item.dataset.label !== 'Totale 1RM (kg)') {
+                const recIdx = item.dataIndex;
+                const labelLow = item.dataset.label.toLowerCase();
+                const tipoField = labelLow.includes('squat')
+                  ? 'squat_1rm_tipo'
+                  : labelLow.includes('panca')
+                    ? 'panca_1rm_tipo'
+                    : 'stacco_1rm_tipo';
+                const tipo = records[recIdx]?.[tipoField]
+                  ?? records[recIdx]?.massimali_tipo
+                  ?? 'R';
+                return ' ' + item.dataset.label + ': ' + val + ' (' + tipo + ')';
+              }
+              return ' ' + item.dataset.label + ': ' + val;
             }
           }
         }
       },
       scales: {
         x: {
-          type: 'linear',
-          position: 'bottom',
+          type: 'category',
           ticks: {
             color: COLOR_TEXT,
-            font: { size: 11 },
-            maxTicksLimit: 6,
-            callback: function (value) {
-              const iso = new Date(value).toISOString().slice(0, 10);
-              return formatDateIT(iso);
-            }
+            font: { size: 11 }
           },
           grid: {
             color: COLOR_GRID
@@ -497,6 +453,8 @@ function renderStrengthChart(data) {
         y: {
           type: 'linear',
           position: 'left',
+          min: Math.floor(minSingolo - 5),
+          max: Math.ceil(maxSingolo + 10),
           ticks: {
             color: COLOR_TEXT,
             font: { size: 11 },
@@ -509,6 +467,26 @@ function renderStrengthChart(data) {
             display: true,
             text: '1RM (kg)',
             color: COLOR_TEXT,
+            font: { size: 11 }
+          }
+        },
+        yTotale: {
+          type: 'linear',
+          position: 'right',
+          min: Math.floor(minTotale - 10),
+          max: Math.ceil(maxTotale + 20),
+          ticks: {
+            color: COLOR_TOTALE,
+            font: { size: 11 },
+            callback: function (value) { return value + ' kg'; }
+          },
+          grid: {
+            drawOnChartArea: false
+          },
+          title: {
+            display: true,
+            text: 'Totale (kg)',
+            color: COLOR_TOTALE,
             font: { size: 11 }
           }
         }
@@ -574,15 +552,15 @@ function renderMeasurementsTable(data) {
   html += '<th scope="col">Data</th>';
   html += '<th scope="col">Peso (kg)</th>';
   html += '<th scope="col">BF%</th>';
-  html += '<th scope="col">Massa Magra (kg)</th>';
+  html += '<th scope="col">MM (kg)</th>';
   html += '<th scope="col" class="col-mobile-hide">FFMI</th>';
   html += '<th scope="col" class="col-mobile-hide">Vita (cm)</th>';
   html += '<th scope="col" class="col-mobile-hide">Petto (cm)</th>';
   html += '<th scope="col" class="col-mobile-hide">Braccio (cm)</th>';
   html += '<th scope="col" class="col-mobile-hide">Coscia (cm)</th>';
-  html += '<th scope="col">Squat 1RM</th>';
-  html += '<th scope="col">Panca 1RM</th>';
-  html += '<th scope="col">Stacco 1RM</th>';
+  html += '<th scope="col">Squat</th>';
+  html += '<th scope="col">Panca</th>';
+  html += '<th scope="col">Stacco</th>';
   html += '</tr></thead>';
 
   /* Righe dati */

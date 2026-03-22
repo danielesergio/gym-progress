@@ -1,0 +1,133 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "project": "Daniele Fitness — Sito Statico",
+    "goal": "Miglioramento del sito esistente: 1 bugfix critico sulla pagina Dieta, 1 generalizzazione rendering liste, 1 miglioramento UX selettori pagina Allenamento, 1 nuova visualizzazione grafico Massimali Big 3 con barre e totale",
+    "sommario": "Il sito esiste già con 6 pagine (Dashboard, Progressi, Allenamento, Dieta, Piano, Volume). Dall'analisi dei file sorgente emergono 4 interventi richiesti esplicitamente nel file web-site-goal. La pagina Dieta ha un bug strutturale: il selettore giorni è hardcoded su due soli bottoni (Allenamento / Riposo) ma il JSON diet.json contiene un array 'giorni' con 7 elementi distinti (uno per ogni giorno della settimana). La logica di rendering recupera con .find() solo il primo giorno del tipo selezionato, rendendo inaccessibili tutti gli altri giorni. Il fix richiede di sostituire il selettore toggle fisso con un selettore dinamico generato dall'array 'giorni'. La generalizzazione di liste dinamiche riguarda anche la dieta (già coperta dal fix) e potenzialmente altri componenti del sito — task separato per verifica e allineamento. I bottoni settimana/giorno nella pagina Allenamento usano flex con min-width piccoli: con molte settimane o molti giorni su mobile si accatastano male. Serve uno stile più scalabile (es. scroll orizzontale o griglia adattiva). Il grafico Massimali Big 3 in progress.js usa attualmente solo linee: la richiesta è un grafico misto con barre raggruppate per ogni misurazione (Squat/Panca/Stacco) e una linea per il totale 1RM. I dati measurements.json hanno 6 misurazioni storiche, ultima del 2026-03-21 con totale_1rm 460.8 (solo l'ultima ha il campo totale calcolato — le precedenti andranno calcolate a runtime).",
+    "features_totali": 4,
+    "tasks_totali": 7
+  },
+  "features": [
+    {
+      "name": "Dieta — Selezione Giorno Dinamica",
+      "priority": 1,
+      "description": "Bug critico: il selettore giorni della pagina Dieta è hardcoded con due soli bottoni fissi ('Allenamento' e 'Riposo'). Il JSON diet.json contiene un array 'giorni' con un numero variabile di elementi (attualmente 7, uno per giorno della settimana), ciascuno con nome, tipo e dati nutrizionali propri. La logica attuale recupera solo il primo giorno che corrisponde al tipo selezionato, rendendo inaccessibili tutti gli altri. Questa feature sostituisce il selettore fisso con uno generato dinamicamente dall'array 'giorni'.",
+      "tasks": [
+        {
+          "id": "diet-day-selector-dynamic",
+          "type": "bugfix",
+          "title": "Selettore giorni dieta generato dinamicamente dall'array giorni[]",
+          "description": "Il selettore giorni della pagina Dieta è attualmente composto da due bottoni hardcoded: '🏋️ Allenamento' e '😴 Riposo'. Questi corrispondono ai valori del campo 'tipo' in giorni[], ma il JSON può contenere più di due elementi (attualmente 7 giorni distinti: Lunedì-Allenamento, Martedì-Allenamento, Mercoledì-Riposo, ecc.). La logica di rendering usa .find() sul tipo e mostra solo un giorno per tipo, ignorando gli altri. Il fix deve: (1) leggere l'array 'giorni' dal JSON, (2) generare un bottone selettore per ogni elemento dell'array usando il campo 'nome' come etichetta, (3) al click sul bottone mostrare i dati nutrizionali specifici di quel giorno (macros, pasti), (4) gestire correttamente N giorni senza limite fisso. I dati di integratori restano visibili indipendentemente dal giorno selezionato. Se l'array è vuoto, mostrare empty state.",
+          "inputs": ["diet_data"],
+          "outputs": ["DietDaySelector", "DietDayContent"],
+          "acceptance_criteria": [
+            "La pagina Dieta mostra un bottone selettore per ogni elemento presente nell'array 'giorni' del JSON",
+            "Il numero di bottoni si adatta automaticamente: se giorni[] ha 7 elementi appaiono 7 bottoni, se ne ha 2 appaiono 2",
+            "Selezionando un giorno specifico (es. 'Martedì - Allenamento') vengono mostrati i macros e i pasti di quel preciso giorno",
+            "Il primo giorno dell'array è selezionato di default al caricamento della pagina",
+            "I bottoni non sono hardcoded nell'HTML: nessun bottone giorno deve essere presente nel markup statico",
+            "Se l'array giorni[] è vuoto, la sezione mostra un messaggio 'Nessun giorno pianificato'"
+          ],
+          "dependencies": []
+        },
+        {
+          "id": "diet-day-selector-style",
+          "type": "ux",
+          "title": "Stile selettore giorni scalabile per lista variabile di giorni",
+          "description": "Il selettore giorni attuale usa due bottoni orizzontali larghi (toggle pill). Con 7 giorni questa disposizione non è più adatta: i bottoni sarebbero troppo stretti su mobile o andrebbero su più righe in modo incontrollato. Il nuovo selettore deve presentare i giorni in modo leggibile anche con 5-7 voci. Opzioni appropriate: scroll orizzontale con bottoni a larghezza fissa, griglia a 2-3 colonne su mobile, o lista verticale compatta. Il nome del giorno (es. 'Lunedì - Allenamento') deve essere leggibile senza troncamento. Il giorno selezionato deve essere chiaramente evidenziato visivamente.",
+          "inputs": ["DietDaySelector"],
+          "outputs": ["DietDaySelectorStyle"],
+          "acceptance_criteria": [
+            "Su mobile (< 480px) tutti i nomi dei giorni sono leggibili senza testo troncato",
+            "Con 7 giorni il selettore non occupa più di 1/3 dell'altezza della viewport",
+            "Il giorno selezionato è visivamente distinto dagli altri (colore bordo, background o font differente)",
+            "Il selettore funziona correttamente sia con 2 giorni che con 7 giorni senza overflow o layout rotto"
+          ],
+          "dependencies": ["diet-day-selector-dynamic"]
+        }
+      ]
+    },
+    {
+      "name": "Generalizzazione Rendering Liste Dinamiche",
+      "priority": 2,
+      "description": "Principio trasversale: qualunque sezione del sito che legga dati da un array deve costruire il DOM in modo dinamico, senza bottoni o elementi hardcoded nell'HTML. L'allenamento è già corretto (settimane e giorni generati da JS). La dieta viene corretta nella feature precedente. Questo task verifica e allinea le altre pagine dove potrebbero esistere strutture fisse.",
+      "tasks": [
+        {
+          "id": "dynamic-lists-audit",
+          "type": "bugfix",
+          "title": "Verifica e fix di tutte le sezioni che costruiscono liste da array in modo statico",
+          "description": "Principio: se un dato viene da un array o lista JSON, la sua rappresentazione a schermo deve essere costruita interamente in JavaScript in base alla lunghezza dell'array — senza mai avere elementi corrispondenti hardcoded nell'HTML. Escludendo la pagina Dieta (già coperta dal task diet-day-selector-dynamic) e la pagina Allenamento (già dinamica per settimane e giorni), occorre verificare le pagine Dashboard, Progressi, Piano e Volume per identificare eventuali strutture fisse che si basano su assunzioni sul numero di elementi (es. esattamente N card, esattamente 2 tipi, esattamente 3 sezioni). Ogni anomalia trovata va corretta. Se nessuna anomalia è trovata, il task è considerato completato senza modifiche.",
+          "inputs": ["diet_data", "workout_data", "plan_data", "volume_data", "measurements_data"],
+          "outputs": ["DynamicListsCompliance"],
+          "acceptance_criteria": [
+            "Nessuna pagina ha elementi DOM statici nell'HTML che rappresentano singoli elementi di un array JSON",
+            "Aggiungendo o rimuovendo un elemento da qualsiasi array nei file JSON, la pagina corrispondente si aggiorna senza modifiche al codice"
+          ],
+          "dependencies": ["diet-day-selector-dynamic"]
+        }
+      ]
+    },
+    {
+      "name": "Allenamento — Selettori Settimana e Giorno Scalabili",
+      "priority": 3,
+      "description": "I bottoni per selezionare settimana e giorno di allenamento usano flex con min-width piccoli (60px). Con molte settimane (es. 8-12) o molti giorni di allenamento (es. 5-6 sessioni a settimana) su mobile i bottoni si accatastano male, diventano troppo piccoli per essere tappati, o vanno a capo in modo non controllato. Serve uno stile di visualizzazione più robusto che gestisca scalabilità verticale.",
+      "tasks": [
+        {
+          "id": "workout-week-selector-scalable",
+          "type": "style",
+          "title": "Selettore settimane allenamento con layout scalabile per molte settimane",
+          "description": "Il selettore settimane usa bottoni flex in riga con flex-wrap. Con schede brevi (2 settimane) funziona bene. Con schede lunghe (8-12 settimane) i bottoni diventano piccoli o si accatastano su più righe in modo non controllato su mobile. Il nuovo layout deve: (1) mantenere la leggibilità del numero di settimana anche con 10+ settimane, (2) permettere all'utente di navigare facilmente anche su touch screen con settimane molte. Opzioni adatte: scroll orizzontale con snap, griglia a 4-5 colonne, o bottoni con larghezza minima adeguata con scroll. Il bottone settimana attivo deve essere sempre visibile senza bisogno di scroll manuale.",
+          "inputs": ["workout_data"],
+          "outputs": ["WorkoutWeekSelectorStyle"],
+          "acceptance_criteria": [
+            "Con 2 settimane il selettore appare compatto e leggibile",
+            "Con 8 o più settimane i bottoni non diventano più stretti di 44px (target touch minimo)",
+            "Il bottone della settimana attiva è visibile senza scroll aggiuntivo al caricamento della pagina",
+            "Su mobile (< 480px) tutti i bottoni settimana sono chiaramente tappabili"
+          ],
+          "dependencies": []
+        },
+        {
+          "id": "workout-day-selector-scalable",
+          "type": "style",
+          "title": "Selettore giorni allenamento con layout scalabile per molti giorni",
+          "description": "Il selettore giorni di allenamento ha lo stesso problema strutturale del selettore settimane: usa flex con min-width 60px. Con 3 giorni funziona, ma con 5-6 giorni di allenamento settimanale su mobile i bottoni si restringono o vanno su più righe in modo non ottimale. Il nuovo stile deve gestire da 2 a 6+ giorni in modo pulito. Il nome del giorno (es. 'Giorno 1', 'Lunedì', 'A', 'B') deve essere leggibile. Il bottone giorno attivo deve essere chiaramente evidenziato.",
+          "inputs": ["workout_data"],
+          "outputs": ["WorkoutDaySelectorStyle"],
+          "acceptance_criteria": [
+            "Con 3 giorni il selettore appare identico o migliorato rispetto all'attuale",
+            "Con 6 giorni su mobile i bottoni non si sovrappongono e rimangono tappabili",
+            "Il giorno attivo è visivamente distinto dagli altri",
+            "Il layout non rompe il flusso della pagina indipendentemente dal numero di giorni"
+          ],
+          "dependencies": ["workout-week-selector-scalable"]
+        }
+      ]
+    },
+    {
+      "name": "Progressi — Grafico Massimali Big 3 con Barre e Totale",
+      "priority": 4,
+      "description": "Il grafico 'Andamento Massimali Big 3' nella pagina Progressi mostra attualmente tre linee (Squat, Panca, Stacco) su asse X temporale. La richiesta è di trasformarlo in un grafico misto: barre raggruppate per ogni punto di misurazione che mostrano il valore dei 3 massimali, e una linea sovrapposta che mostra l'andamento del totale (Squat + Panca + Stacco). I dati disponibili sono 6 misurazioni (2022-10 → 2026-03). Solo l'ultima misurazione ha il campo 'totale_1rm' precalcolato nel JSON — per le precedenti il totale va calcolato come somma dei tre massimali.",
+      "tasks": [
+        {
+          "id": "progress-big3-bar-line-chart",
+          "type": "component",
+          "title": "Grafico misto barre+linea per Massimali Big 3 e Totale",
+          "description": "Sostituire il grafico a sole linee dei Massimali Big 3 con un grafico misto che combina: (1) barre raggruppate per ogni data di misurazione, con una barra per Squat, una per Panca e una per Stacco; (2) una linea che mostra il Totale (Squat + Panca + Stacco) sovrapposta alle barre. Il totale si calcola come somma dei tre massimali per ogni record — se il campo 'totale_1rm' è già presente nel JSON si usa quello, altrimenti si somma a runtime. Le 6 misurazioni disponibili coprono il periodo 2022-10 / 2026-03. I valori variano da: Squat 96→145.8 kg, Panca 88→116.7 kg, Stacco 116→198.3 kg, Totale stimato ~300→460.8 kg. La distinzione tra massimali Reali (R) e Stimati (S) deve restare visibile — i punti/barre stimati devono avere aspetto visivamente distinto (es. pattern, opacità ridotta, bordo tratteggiato). La legenda 'R = Reale / S = Stimato' già presente nell'HTML deve continuare ad essere mostrata.",
+          "inputs": ["measurements_data"],
+          "outputs": ["Big3BarLineChart"],
+          "acceptance_criteria": [
+            "Il grafico mostra barre raggruppate: per ogni data di misurazione appaiono 3 barre (Squat, Panca, Stacco)",
+            "Una linea sovrapposta mostra il Totale (Squat + Panca + Stacco) per ogni data",
+            "Il Totale è calcolato correttamente: per la misurazione 2026-03-21 deve essere ~460.8 kg",
+            "I massimali di tipo Stimato (S) hanno un aspetto visivamente distinto da quelli Reali (R) anche nelle barre",
+            "Il grafico è responsive e leggibile su mobile",
+            "La legenda identifica chiaramente Squat, Panca, Stacco e Totale con colori distinti",
+            "L'asse Y parte da un valore sensato (non da 0 se i valori sono tutti > 80 kg)"
+          ],
+          "dependencies": []
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,148 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "project": "Daniele Fitness",
+    "goal": "Restyle professionale del sito con possibilità di tornare al tema originale tramite toggle CSS",
+    "sommario": "Il sito è già completo e funzionante (6 pagine: Dashboard, Progressi, Allenamento, Dieta, Piano, Volume). L'obiettivo è un restyle professionale esclusivamente visivo, con toggle CSS tra tema originale e nuovo tema pro, persistenza della scelta in localStorage.",
+    "anomalie": []
+  },
+  "tasks": [
+    {
+      "ordine": 1,
+      "id": "theme-pro-variables",
+      "title": "Variabili CSS del tema professionale",
+      "type": "component",
+      "feature": "Nuovo Tema Professionale",
+      "feature_priority": 1,
+      "motivazione_ordine": "È la fondazione assoluta su cui si costruisce tutto il resto. Nessun altro task di tema può essere implementato senza avere il set di variabili CSS pro definito. Sblocca 5 task: typography, toggle-button, components, polish.",
+      "dependencies_resolved": [],
+      "sblocca": [
+        "theme-pro-typography",
+        "theme-toggle-button",
+        "theme-pro-components",
+        "visual-polish-global"
+      ],
+      "acceptance_criteria": [
+        "Applicando la classe `.theme-pro` all'elemento html, tutti i colori del sito cambiano visibilmente",
+        "Il nuovo tema è chiaramente diverso dall'originale (non solo una variazione di tono)",
+        "Tutti gli elementi chiave (header, nav, card, grafici, tabelle, badge, pulsanti) risultano visivamente coerenti col nuovo tema",
+        "Il testo rimane leggibile (contrasto minimo AA per WCAG) in entrambi i temi",
+        "Rimuovendo la classe, si torna esattamente al tema originale senza residui visivi"
+      ]
+    },
+    {
+      "ordine": 2,
+      "id": "theme-pro-typography",
+      "title": "Tipografia e gerarchia visiva del tema professionale",
+      "type": "component",
+      "feature": "Nuovo Tema Professionale",
+      "feature_priority": 1,
+      "motivazione_ordine": "Secondo step logico: dipende solo da variables. Deve essere implementato prima di adattare i singoli componenti (card, tabelle, badge) perché stabilisce la gerarchia globale e i valori numerici che gli altri componenti ereditano.",
+      "dependencies_resolved": [
+        "theme-pro-variables"
+      ],
+      "sblocca": [
+        "theme-pro-components"
+      ],
+      "acceptance_criteria": [
+        "Nel tema pro, i titoli di sezione sono visivamente più prominenti rispetto al tema originale",
+        "I valori numerici nelle card (kg, %, date) sono immediatamente distinguibili dalle label",
+        "Se viene usato un font esterno, è visibile nel browser e il fallback funziona offline",
+        "Nel tema originale la tipografia rimane invariata"
+      ]
+    },
+    {
+      "ordine": 3,
+      "id": "theme-toggle-button",
+      "title": "Pulsante toggle tema nell'header",
+      "type": "component",
+      "feature": "Toggle Tema",
+      "feature_priority": 2,
+      "motivazione_ordine": "Dipende da variables (per i colori) ma è indipendente dalla tipografia e dai componenti specifici. Viene prima di persistence perché è il prerequisito UI per attivare il toggle. Implementato qui per dare rapidamente feedback visivo sulla feature.",
+      "dependencies_resolved": [
+        "theme-pro-variables"
+      ],
+      "sblocca": [
+        "theme-persistence"
+      ],
+      "acceptance_criteria": [
+        "Il pulsante è visibile nell'header di tutte e 6 le pagine (Dashboard, Progressi, Allenamento, Dieta, Piano, Volume)",
+        "Cliccando il pulsante, il sito cambia tema immediatamente senza ricaricare la pagina",
+        "L'aspetto del pulsante cambia per indicare il tema attivo",
+        "Il pulsante non spinge altri elementi dell'header fuori posizione su mobile",
+        "L'header rimane a una sola riga su schermi da 375px"
+      ]
+    },
+    {
+      "ordine": 4,
+      "id": "theme-pro-components",
+      "title": "Stili componenti per il tema professionale",
+      "type": "component",
+      "feature": "Nuovo Tema Professionale",
+      "feature_priority": 1,
+      "motivazione_ordine": "Dipende da variables e typography che sono ormai completati. Questo task raffina il tema pro sui componenti specifici (card, badge, tabelle, selettori) che gli utenti vedono direttamente. Va prima di polish perché polish dipende da questo per non creare incongruenze visive.",
+      "dependencies_resolved": [
+        "theme-pro-variables",
+        "theme-pro-typography"
+      ],
+      "sblocca": [
+        "visual-polish-global"
+      ],
+      "acceptance_criteria": [
+        "Le card della dashboard hanno uno stile visivamente distinto nel tema pro rispetto all'originale",
+        "La tabella storico in Progressi è leggibile con righe alternate nel tema pro",
+        "I selettori settimana e giorno mostrano lo stato attivo in modo chiaro nel tema pro",
+        "La barra macro dieta usa colori coerenti con la palette del tema pro",
+        "Nessuno stile del tema originale viene sovrascritto globalmente (solo sotto il selettore del tema pro)"
+      ]
+    },
+    {
+      "ordine": 5,
+      "id": "theme-persistence",
+      "title": "Persistenza preferenza tema tra pagine e sessioni",
+      "type": "ux",
+      "feature": "Toggle Tema",
+      "feature_priority": 2,
+      "motivazione_ordine": "Dipende dal toggle-button già implementato. Completa la feature di toggle aggiungendo la persistenza in localStorage e lo script di ricaricamento al boot. Viene qui (prima di polish) perché è un componente UX critico che deve funzionare prima di rifinire estetica globale.",
+      "dependencies_resolved": [
+        "theme-toggle-button"
+      ],
+      "sblocca": [
+        "visual-polish-global"
+      ],
+      "acceptance_criteria": [
+        "Selezionando il tema pro in Dashboard e navigando in Progressi, il tema pro è già attivo senza flash",
+        "Chiudendo e riaprendo il browser, il tema precedentemente scelto viene ripristinato",
+        "Non c'è un visibile 'lampo' di tema sbagliato al caricamento della pagina",
+        "Se non c'è una preferenza salvata, il sito parte con il tema originale dark/arancione"
+      ]
+    },
+    {
+      "ordine": 6,
+      "id": "visual-polish-global",
+      "title": "Micro-miglioramenti estetici applicabili a entrambi i temi",
+      "type": "ux",
+      "feature": "Rifinitura Visiva Globale",
+      "feature_priority": 3,
+      "motivazione_ordine": "Ultimo step perché dipende da theme-pro-components e theme-persistence. Una volta che tema pro è completamente implementato e la persistenza funziona, si applicano i micro-miglioramenti globali (nav indicators, transizioni, skeleton loader) su entrambi i temi senza rischio di conflitti o sfregi.",
+      "dependencies_resolved": [
+        "theme-pro-components",
+        "theme-persistence"
+      ],
+      "sblocca": [],
+      "acceptance_criteria": [
+        "La nav tab su mobile mostra un indicatore visivo che ci sono più tab scorrendo lateralmente",
+        "Le transizioni hover su nav-tab e card sono fluide (no scatti visibili)",
+        "I miglioramenti sono visibili in entrambi i temi (originale e pro)",
+        "Nessuna funzionalità JS esistente è rotta dopo le modifiche"
+      ]
+    }
+  ],
+  "summary": {
+    "ordine_implementazione": "theme-pro-variables → theme-pro-typography → theme-toggle-button → theme-pro-components → theme-persistence → visual-polish-global",
+    "tasks_totali": 6,
+    "anomalie_rilevate": 0,
+    "features_ordinate": 3,
+    "osservazioni": "Il progetto ha una struttura di dipendenze lineare ben definita. Il path critico è: variables → typography → components → polish. In parallelo, la feature di toggle (button → persistence) dipende anche da variables. Tutti i task sono implementabili sequenzialmente senza blocchi circolari."
+  }
+}

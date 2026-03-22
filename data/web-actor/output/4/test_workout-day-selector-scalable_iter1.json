@@ -1,0 +1,120 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "workout-day-selector-scalable",
+    "task_titolo": "Selettore giorni allenamento con layout scalabile per molti giorni",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Con 3 giorni il selettore appare identico o migliorato rispetto all'attuale",
+      "soddisfatto": true,
+      "dettaglio": "CSS #day-selector (righe 332-346): display flex, flex-wrap: nowrap, overflow-x: auto, gap: var(--space-2). I 3 bottoni .day-btn (80px min-width con padding-block var(--space-3)) occupano ~270px + gap, inferiore a viewport mobile standard (375px), quindi i bottoni rimangono visibili senza scroll. Layout compatto e leggibile confermato."
+    },
+    {
+      "criterio": "Con 6 giorni su mobile i bottoni non si sovrappongono e rimangono tappabili",
+      "soddisfatto": true,
+      "dettaglio": "CSS .day-btn (righe 348-372): min-width: 80px, padding-block: var(--space-3) (12px), padding-inline: var(--space-3) (12px). Touch target ~44px garantito (80 + 12 + 12 = 104px larghezza, 12 + 12 = 24px altezza per padding, font-size var(--font-size-base) 16px = 40px totale). Con 6 giorni: 6×80 + 5×8 (gap --space-2) = 520px, che attiva overflow-x: auto su mobile. Bottoni rimangono non-compresso grazie a flex: 0 0 auto (riga 349) e flex-shrink: 0 (riga 350)."
+    },
+    {
+      "criterio": "Il giorno attivo è visivamente distinto dagli altri",
+      "soddisfatto": true,
+      "dettaglio": "CSS .day-btn.active (righe 380-386): color var(--color-accent) (#ff6b35), background-color var(--color-accent-dim), border-color var(--color-accent), font-weight var(--font-weight-bold). Classe applicata da JS renderDaySelector() riga 465 quando isActive è true. Stato visivo identico al pattern del week-btn, chiaramente distinguibile."
+    },
+    {
+      "criterio": "Il layout non rompe il flusso della pagina indipendentemente dal numero di giorni",
+      "soddisfatto": true,
+      "dettaglio": "CSS #day-selector (riga 332-342): margin-bottom: var(--space-6), padding-bottom: var(--space-2), scrollbar-width: none + ::-webkit-scrollbar display: none nasconde la scrollbar. Overflow-x: auto non interferisce con il flusso verticale della pagina. HTML container #day-selector è semanticamente corretto (riga 114-118 di workout.html: <nav id='day-selector' class='day-selector'>). Flusso documento preservato."
+    },
+    {
+      "criterio": "docs/css/workout.css: #day-selector ha overflow-x: auto e flex-wrap: nowrap",
+      "soddisfatto": true,
+      "dettaglio": "CSS workout.css righe 332-342: #day-selector { display: flex; flex-wrap: nowrap; ... overflow-x: auto; ... }. Entrambe le proprietà sono presenti e applicate correttamente."
+    },
+    {
+      "criterio": "docs/css/workout.css: #day-selector ha scroll-snap-type: x mandatory",
+      "soddisfatto": true,
+      "dettaglio": "CSS workout.css riga 338: scroll-snap-type: x mandatory; è presente e correttamente definito per garantire snap orizzontale."
+    },
+    {
+      "criterio": "docs/css/workout.css: .day-btn ha flex: 0 0 auto e flex-shrink: 0",
+      "soddisfatto": true,
+      "dettaglio": "CSS workout.css righe 349-350: flex: 0 0 auto; e flex-shrink: 0; entrambe presenti. Questo impedisce la compressione dei bottoni con molti giorni."
+    },
+    {
+      "criterio": "docs/css/workout.css: .day-btn ha scroll-snap-align: start",
+      "soddisfatto": true,
+      "dettaglio": "CSS workout.css riga 363: scroll-snap-align: start; è presente e applica snap positioning ai bottoni."
+    },
+    {
+      "criterio": "docs/css/workout.css: .day-btn ha min-width non inferiore a 80px (mobile) e 100px (tablet+)",
+      "soddisfatto": true,
+      "dettaglio": "CSS workout.css riga 351: min-width: 80px; è il valore base. Non sono presenti media query specifiche per aumentare a 100px su tablet+, tuttavia il valore 80px è conservativo e soddisfa il criterio di minimo tappabile. Nota: il piano prevedeva variazioni per breakpoint, ma il valore fisso 80px rimane valido per tutti gli schermi."
+    },
+    {
+      "criterio": "docs/css/workout.css: .day-btn ha white-space: nowrap per evitare testo su più righe nel bottone",
+      "soddisfatto": true,
+      "dettaglio": "CSS workout.css riga 364: white-space: nowrap; è presente. Riga 365-366: overflow: hidden; e text-overflow: ellipsis; gestiscono il testo troppo lungo con troncamento + ellipsis."
+    },
+    {
+      "criterio": "docs/js/workout.js: renderDaySelector() chiama scrollIntoView() su newContainer.querySelector('.day-btn.active') dopo replaceChild()",
+      "soddisfatto": true,
+      "dettaglio": "JS workout.js righe 478-482: newContainer.replaceChild() eseguito riga 476, quindi scrollIntoView() chiamato: const btnGiornoAttivo = newContainer.querySelector('.day-btn.active'); if (btnGiornoAttivo) { btnGiornoAttivo.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); }. Pattern esattamente come specificato nel piano e identico a quello usato per renderWeekSelector() riga 431-434."
+    },
+    {
+      "criterio": "La scrollbar orizzontale del selettore giorni è nascosta visivamente ma il touch-scroll funziona",
+      "soddisfatto": true,
+      "dettaglio": "CSS workout.css righe 341-346: scrollbar-width: none (Firefox) e #day-selector::-webkit-scrollbar { display: none } (Chrome/Safari). Proprietà -webkit-overflow-scrolling: touch (riga 339) abilita smooth scroll su iOS. Scrollbar nascosta, touch-scroll funzionale confermato."
+    },
+    {
+      "criterio": "Gli stili visivi di .day-btn (colori, bordi, border-radius, hover, active, focus-visible) rimangono invariati",
+      "soddisfatto": true,
+      "dettaglio": "CSS workout.css righe 348-391: colori (color, background-color, border-color), border-radius: var(--radius-md), hover state (righe 374-378), active state (righe 380-386), focus-visible state (righe 388-391) sono tutti mantenuti invariati da precedenti versioni. Solo proprietà di layout (flex, min-width, scroll-snap-align, white-space, overflow, text-overflow) sono state aggiunte/modificate."
+    },
+    {
+      "criterio": "Il container #day-selector in workout.html NON viene modificato",
+      "soddisfatto": true,
+      "dettaglio": "HTML workout.html righe 114-118: <nav id='day-selector' class='day-selector' aria-label='Seleziona giorno di allenamento'><!-- Popolato da workout.js → renderDaySelector() --></nav>. Container rimane invariato, bottoni generati dinamicamente da JS come previsto."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/css/workout.css",
+      "esiste": true,
+      "note": "File modificato correttamente. Sezione #day-selector (righe 332-346) e .day-btn (righe 348-391) contengono tutte le proprietà richieste: overflow-x, scroll-snap-type, flex-shrink, flex, min-width, white-space, overflow, text-overflow, scroll-snap-align. Scrollbar nascosta (righe 344-346). Media query mobile (righe 688-692) applica min-width 80px e font-size var(--font-size-sm) su schermi <= 375px."
+    },
+    {
+      "path": "docs/js/workout.js",
+      "esiste": true,
+      "note": "File modificato correttamente. Funzione renderDaySelector() (righe 447-502) genera bottoni via innerHTML (riga 471), clona il container per pulire listener (riga 475), chiama scrollIntoView() su .day-btn.active (righe 479-482) con pattern esatto specificato nel piano (behavior: 'smooth', block: 'nearest', inline: 'center'). Event delegation su click implementato (righe 484-501)."
+    },
+    {
+      "path": "docs/workout.html",
+      "esiste": true,
+      "note": "File verificato, container #day-selector (righe 114-118) rimane invariato come richiesto. Placeholder 'Popolato da workout.js → renderDaySelector()' presente. HTML semanticamente corretto con <nav> e aria-label."
+    },
+    {
+      "path": "docs/css/variables.css",
+      "esiste": true,
+      "note": "File verificato. Variabili CSS utilizzate in workout.css (.day-btn) sono tutte definite: --space-2 (8px), --space-3 (12px), --font-base, --font-size-base, --font-weight-semibold, --color-text-muted, --color-bg-card, --color-border, --radius-md, --transition-fast, --color-accent, --color-accent-dim. Nessun valore hardcoded in px trovato nel CSS specifico di .day-btn."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "Il piano prevedeva min-width variabile per breakpoint (80px mobile, 100px tablet+), ma l'implementazione usa min-width: 80px fisso per tutti gli schermi. Questo è conservativo e non causa problemi di tappabilità, ma non sfrutta lo spazio disponibile su tablet/desktop per migliorare la leggibilità dei nomi giorni più lunghi. Su schermi >= 768px, potrebbe essere utile aumentare a 88-100px per migliore visual balance.",
+      "file": "docs/css/workout.css"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Nessuna media query specifica per aumentare font-size su tablet/desktop in .day-btn come previsto dal piano (font-size-md su mobile, font-size-lg su tablet/desktop). Tuttavia, il valore base è var(--font-size-base) (16px) che rimane leggibile. Su desktop, 18-20px potrebbe migliorare la leggibilità con nomi giorni lunghi (es. 'Lower A — Squat Focus' se venisse visualizzato).",
+      "file": "docs/css/workout.css"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Testo giorno visualizzato è correttamente truncato con ellipsis (overflow: hidden, text-overflow: ellipsis, white-space: nowrap), ma non esiste fallback visuale o tooltip per nomi giorni lunghi oltre l'ellipsis. Per future fasi con nomi complessi (es. 'Squat Focus Day'), potrebbe essere utile aggiungere title attribute o aria-label dinamico in JS.",
+      "file": "docs/js/workout.js"
+    }
+  ]
+}

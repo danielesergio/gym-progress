@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "theme-pro-variables",
+    "task_titolo": "Variabili CSS del tema professionale",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Applicando la classe `.theme-pro` all'elemento <html>, tutti i colori del sito cambiano visibilmente",
+      "soddisfatto": true,
+      "dettaglio": "Il blocco `html.theme-pro` in variables.css (righe 96-133) sovrascrive completamente la palette di colori: background da #1a1a1a a #0d1117, accent da #ff6b35 (arancione) a #58a6ff (blu acciaio), testo da #f0f0f0 a #e6edf3. Poiché layout.css e dashboard.css usano var(--color-*), il cambio sarà immediatamente visibile su header, nav, card, testo."
+    },
+    {
+      "criterio": "Il nuovo tema è chiaramente diverso dall'originale (non solo una variazione di tono dello stesso accent arancione)",
+      "soddisfatto": true,
+      "dettaglio": "Il tema 'pro' impiega una palette GitHub-style Dark Steel-Blue radicalmente diversa: sfondo quasi-nero (#0d1117 vs #1a1a1a originale), accent blu #58a6ff vs arancione #ff6b35, testo bianco caldo #e6edf3 vs grigio #f0f0f0. Non è una variazione dello stesso arancione — è un'identità visiva completamente nuova, conforme alla direzione 'opzione_a' della specifica."
+    },
+    {
+      "criterio": "Tutti gli elementi chiave (header, nav, card, badge, pulsanti) risultano visivamente coerenti col nuovo tema",
+      "soddisfatto": true,
+      "dettaglio": "Header (layout.css riga 40): usa --color-bg-secondary, border e shadow — tutti sovrascritti. Nav (riga 104): --color-bg-secondary. Card dashboard (dashboard.css riga 15): --color-bg-card, --color-border, --color-shadow. Badge (riga 103): --color-accent. Tutti gli elementi usano le variabili CSS specifiche sovrascritte nel tema pro, garantendo coerenza visiva globale."
+    },
+    {
+      "criterio": "Il testo rimane leggibile in entrambi i temi (contrasto minimo WCAG AA: 4.5:1 per testo normale, 3:1 per testo grande)",
+      "soddisfatto": true,
+      "dettaglio": "Tema originale: #f0f0f0 (text) su #1a1a1a (bg) → contrasto ~13:1 (AAA). Tema pro: #e6edf3 (text) su #0d1117 (bg) → contrasto ~12:1 (AAA). Entrambi superano il minimo WCAG AA (4.5:1). I commenti nel codice (riga 93) esplicitamente documentano il contrasto raggiunto."
+    },
+    {
+      "criterio": "Rimuovendo la classe .theme-pro da <html>, si torna esattamente al tema originale dark/arancione senza residui",
+      "soddisfatto": true,
+      "dettaglio": "Il blocco :root (righe 6-87) rimane intatto — nessuna modifica, nessuna cancellazione. Il blocco html.theme-pro (righe 96-133) sovrascrive solo quando la classe è presente. Rimuovere la classe fa fallire il selettore, ripristinando automaticamente i valori :root. Nessun residuo visivo."
+    },
+    {
+      "criterio": "Il file docs/css/variables.css contiene il blocco `html.theme-pro { ... }` posizionato dopo il blocco `:root { ... }`",
+      "soddisfatto": true,
+      "dettaglio": "Blocco :root termina a riga 87 (chiusura }). Blocco html.theme-pro inizia a riga 96 con commento intestazione (righe 89-94) e definizione (righe 96-133). Posizionamento corretto."
+    },
+    {
+      "criterio": "Il blocco `html.theme-pro` sovrascrive almeno le variabili: --color-bg, --color-bg-secondary, --color-bg-card, --color-bg-elevated, --color-text, --color-text-muted, --color-text-faint, --color-accent, --color-accent-hover, --color-accent-dim, --color-border, --color-border-light, --color-success, --color-warning, --color-danger, --shadow-sm, --shadow-md, --shadow-lg, --radius-sm, --radius-md, --radius-lg, --radius-xl",
+      "soddisfatto": true,
+      "dettaglio": "Verificate le override nel blocco html.theme-pro: righe 98-106 (color-bg, bg-secondary, bg-card, bg-elevated, text, text-muted, text-faint), 109-111 (accent, accent-hover, accent-dim), 114-115 (border, border-light), 118-120 (success, warning, danger), 123-125 (shadow-sm/md/lg), 128-132 (radius-sm/md/lg/xl). Tutte e 22 variabili obbligatorie presenti e valorizzate."
+    },
+    {
+      "criterio": "Il blocco `:root { ... }` originale rimane invariato (nessuna riga modificata o rimossa)",
+      "soddisfatto": true,
+      "dettaglio": "Il blocco :root (righe 6-87) contiene i valori originali documentati nella specifica: --color-bg #1a1a1a, --color-accent #ff6b35, tutti i font, spacing, radius, shadow originali. Nessuna modifica. Il file è stato esteso, non editato."
+    },
+    {
+      "criterio": "Il selettore usato è `html.theme-pro` e non `:root`, `body.theme-pro`, `[data-theme='pro']` o altri equivalenti non previsti dall'architettura",
+      "soddisfatto": true,
+      "dettaglio": "Riga 96: `html.theme-pro {` — selettore esatto conforme alla specifica architetturale (piano_theme-pro-variables.json riga 76). Non usati :root, body, data-attribute, o altri selettori alternativi."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/css/variables.css",
+      "esiste": true,
+      "note": "File modificato correttamente. Blocco :root (righe 6-87) intatto. Nuovo blocco html.theme-pro (righe 96-133) aggiunto con tema Dark Steel-Blue, 22 variabili sovrascritte, palette conforme alla specifica."
+    },
+    {
+      "path": "docs/dashboard.html",
+      "esiste": true,
+      "note": "File letto per verifica struttura — contiene gli elementi che userranno le variabili CSS (header, nav, card). Nessuna modifica necessaria — il tema si attiva aggiungendo classe .theme-pro a <html>."
+    },
+    {
+      "path": "docs/css/layout.css",
+      "esiste": true,
+      "note": "File letto per verifica uso dei token — header (riga 40 --color-bg-secondary), nav (riga 104), elementi strutturali. Usa correttamente var(--color-*) — il tema pro agisce subito."
+    },
+    {
+      "path": "docs/css/dashboard.css",
+      "esiste": true,
+      "note": "File letto per verifica card — .dashboard-card (riga 15 --color-bg-card, riga 16 --color-border, riga 19 --shadow-sm), badge (riga 103 --color-accent). Tutti i token usati sono sovrascritti nel tema pro. NOTA: il file contiene riferimenti a --color-text-primary e --color-text-secondary (righe 92, 138, 146) che non esistono in variables.css — questo è un warning del file, non del task."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "Il file dashboard.css contiene riferimenti a variabili CSS non definite (--color-text-primary riga 92, --color-text-secondary riga 138, 146) che non fanno parte di variables.css. Queste potrebbero causare fallback a ereditarietà se non gestite. Tuttavia, questa anomalia è PRE-ESISTENTE e NON introdotta dal task theme-pro-variables — il task riguarda solo variables.css. Il tema pro sovrascrive correttamente le variabili che ESISTONO in variables.css.",
+      "file": "docs/css/dashboard.css"
+    }
+  ]
+}

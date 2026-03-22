@@ -426,6 +426,12 @@ function renderWeekSelector(settimane, numeroSettimana) {
   });
 
   container.innerHTML = bttns.join('');
+
+  // Porta il bottone attivo in vista senza scroll manuale (necessario con > 2 settimane)
+  const btnAttivo = container.querySelector('.week-btn.active');
+  if (btnAttivo) {
+    btnAttivo.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
 }
 
 // ── Render selettore giorni ───────────────────────────────
@@ -468,6 +474,12 @@ function renderDaySelector(giorni, data, numeroSettimana) {
   // Rimuove eventuali listener precedenti clonando il nodo
   const newContainer = container.cloneNode(true);
   container.parentNode.replaceChild(newContainer, container);
+
+  // Porta il bottone giorno attivo in vista senza scroll manuale (necessario con > 3 giorni)
+  const btnGiornoAttivo = newContainer.querySelector('.day-btn.active');
+  if (btnGiornoAttivo) {
+    btnGiornoAttivo.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+  }
 
   newContainer.addEventListener('click', (e) => {
     const btn = e.target.closest('.day-btn');

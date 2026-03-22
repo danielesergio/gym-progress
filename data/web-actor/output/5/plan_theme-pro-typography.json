@@ -1,0 +1,189 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "theme-pro-typography",
+    "task_title": "Tipografia e gerarchia visiva del tema professionale",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "theme-pro-typography",
+    "type": "component",
+    "title": "Tipografia e gerarchia visiva del tema professionale",
+    "description": "Nel tema pro, migliorare la gerarchia tipografica rispetto all'attuale. Il sito usa system fonts (-apple-system, Segoe UI ecc.). Nel tema pro introdurre un font Google (Inter o DM Sans) tramite @import per dare un'identità più riconoscibile. I titoli di sezione (h2 / .dashboard-card__title / .progress-section__title ecc.) devono avere maggiore peso visivo. I valori numerici nei KPI (.status-card__value, .strength-card__value, .targets-card__td) devono essere in grassetto con size aumentata. Le label descrittive (.status-card__label, .strength-card__name, .targets-card__exercise-label) devono essere più sbiadite per lasciare risaltare i valori. Tutti questi aggiustamenti devono operare SOLO sotto il selettore html.theme-pro — il tema originale resta invariato.",
+    "inputs": [
+      "ProThemeVariables",
+      "current_design_system"
+    ],
+    "outputs": [
+      "ProThemeTypography"
+    ],
+    "acceptance_criteria": [
+      "Nel tema pro, i titoli di sezione sono visivamente più prominenti rispetto al tema originale",
+      "I valori numerici nelle card (kg, %, date) sono immediatamente distinguibili dalle label",
+      "Se viene usato un font esterno, è visibile nel browser e il fallback funziona offline",
+      "Nel tema originale la tipografia rimane invariata"
+    ],
+    "notes": "Il blocco html.theme-pro in variables.css è già presente (prodotto da theme-pro-variables). La tipografia pro va aggiunta in CODA a quel blocco oppure in un secondo blocco html.theme-pro separato nello stesso file — entrambi gli approcci sono validi. NON modificare :root. Il @import Google Fonts deve stare in variables.css SOPRA :root, protetto da una media query o condizionato al tema pro tramite override di --font-base."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/css/variables.css",
+        "motivo": "Aggiungere @import Google Fonts (Inter o DM Sans) in cima al file e aggiungere override tipografici nel blocco html.theme-pro: --font-base con Inter/DM Sans, --font-size-* aumentati per h2, --font-weight-* per KPI values e label muted.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "Aggiungere sezione html.theme-pro con override per: .dashboard-card__title (font-size maggiore, font-weight 700), .status-card__label (color più sbiadita, font-size ridotta), .status-card__value (font-size aumentata, font-weight 800), .strength-card__value (font-size aumentata), .strength-card__name (color muted più sbiadita), .targets-card__td (font-size aumentata), .targets-card__exercise-label (color muted più sbiadita).",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/progress.css",
+        "motivo": "Aggiungere sezione html.theme-pro con override per: .progress-section__title (font-size maggiore, font-weight 700, eventuale letter-spacing ridotto rispetto al tema originale per look premium).",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Aggiungere sezione html.theme-pro con override per titoli di sezione workout e valori numerici (carichi, RPE) se presenti come classi dedicate.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Aggiungere sezione html.theme-pro con override per titoli sezione dieta e valori macro (kcal, g proteine/carboidrati/grassi) se presenti come classi dedicate.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/plan.css",
+        "motivo": "Aggiungere sezione html.theme-pro con override per titoli sezione piano e target numerici forza.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/volume.css",
+        "motivo": "Aggiungere sezione html.theme-pro con override per titoli sezione volume e valori KPI serie settimanali.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/css/variables.css",
+        "motivo": "Capire le variabili tipografiche esistenti (--font-base, --font-size-*, --font-weight-*) e la struttura attuale del blocco html.theme-pro già scritto, per aggiungere in coda senza duplicare."
+      },
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "Identificare tutte le classi KPI esistenti (.dashboard-card__title, .status-card__value, .status-card__label, .status-card__unit, .strength-card__value, .strength-card__name, .targets-card__td, .targets-card__exercise-label) su cui applicare gli override tipografici pro."
+      },
+      {
+        "path": "docs/css/progress.css",
+        "motivo": "Identificare le classi titolo sezione (.progress-section__title) e i selettori tabella storico per gli override pro."
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Identificare le classi titolo e valori numerici (carichi, RPE) presenti in workout.css per eventuali override pro."
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Identificare classi macro e titoli in diet.css per override tipografici pro."
+      },
+      {
+        "path": "docs/css/plan.css",
+        "motivo": "Identificare classi titolo e target in plan.css per override tipografici pro."
+      },
+      {
+        "path": "docs/css/volume.css",
+        "motivo": "Identificare classi KPI e titoli in volume.css per override tipografici pro."
+      },
+      {
+        "path": "docs/dashboard.html",
+        "motivo": "Verifica struttura markup card dashboard: confermare che i KPI usano le classi .status-card__value, .status-card__label, .strength-card__value ecc. già presenti nel CSS."
+      },
+      {
+        "path": "docs/progress.html",
+        "motivo": "Verifica classe .progress-section__title usata sugli h2 di sezione — target principale degli override tipografici pro."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "styling": {
+        "nome": "CSS custom properties",
+        "versione": "CSS3",
+        "note": "Override tipografici pro tramite html.theme-pro. Nessun preprocessore."
+      },
+      "font_esterno": {
+        "provider": "Google Fonts",
+        "candidati": ["Inter", "DM Sans"],
+        "metodo_import": "@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap') — da inserire in cima a variables.css PRIMA di :root",
+        "fallback_offline": "var(--font-base) deve mantenere -apple-system, BlinkMacSystemFont, 'Segoe UI', ... come fallback dopo il font Google",
+        "esempio": "--font-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;"
+      }
+    },
+    "convenzioni": {
+      "tema_pro_pattern": "html.theme-pro { --variabile: valore; } oppure html.theme-pro .classe { proprietà: valore; } — MAI nested su :root",
+      "variabili_js": "non applicabile — questo task è solo CSS",
+      "classi_css": "kebab-case con prefisso pagina; classi esistenti non si rinominano",
+      "custom_properties": "Preferire override di variabili CSS (es. --font-base, --font-size-xl) nel blocco html.theme-pro in variables.css per impatto globale. Per aggiustamenti specifici per componente usare html.theme-pro .classe { } nei CSS di pagina.",
+      "no_inline_style": "Vietato style= inline — usare solo classi CSS"
+    },
+    "tipografia_attuale": {
+      "font_base_originale": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif",
+      "scale_dimensioni": {
+        "--font-size-xs":   "0.75rem  (12px)",
+        "--font-size-sm":   "0.875rem (14px)",
+        "--font-size-base": "1rem     (16px)",
+        "--font-size-md":   "1.125rem (18px)",
+        "--font-size-lg":   "1.25rem  (20px)",
+        "--font-size-xl":   "1.5rem   (24px)",
+        "--font-size-2xl":  "2rem     (32px)",
+        "--font-size-3xl":  "2.5rem   (40px)"
+      },
+      "weights": {
+        "--font-weight-normal":   400,
+        "--font-weight-medium":   500,
+        "--font-weight-semibold": 600,
+        "--font-weight-bold":     700
+      }
+    },
+    "classi_kpi_dashboard": {
+      ".dashboard-card__title":      "font-size: base (16px), weight: 600 — titolo card",
+      ".status-card__label":         "font-size: xs (12px), color: text-faint, uppercase — label metrica",
+      ".status-card__value":         "font-size: lg (20px), weight: 700 — valore numerico metrica",
+      ".status-card__unit":          "font-size: sm (14px), weight: 400 — unità misura",
+      ".strength-card__name":        "font-size: sm (14px), weight: semibold, color: text-muted — nome esercizio",
+      ".strength-card__value":       "font-size: lg (20px), weight: bold — valore massimale",
+      ".strength-card__unit":        "font-size: sm (14px), weight: normal, color: text-muted",
+      ".targets-card__exercise-label": "font-size: sm (14px), weight: semibold, color: text-muted, uppercase",
+      ".targets-card__td":           "font-size: md (18px), weight: bold — cella valore target"
+    },
+    "classi_titoli_sezione": {
+      ".progress-section__title":    "h2 nelle sezioni di progress.html — target principale per prominenza visiva",
+      ".dashboard-card__title":      "titolo di ogni card dashboard"
+    },
+    "raccomandazioni_incremento_pro": {
+      "titoli_h2_sezione":          "Passare da font-size attuale a --font-size-xl (24px) o --font-size-2xl (32px), weight 700, letter-spacing negativo (-0.01em) per look premium",
+      "kpi_values":                  "Aumentare a --font-size-xl (24px) o --font-size-2xl (32px), weight 800 se Inter è caricato (supporta 800)",
+      "label_descrittive":           "Ridurre opacity o usare --color-text-faint invece di --color-text-muted per maggiore contrasto valore/label",
+      "font_import":                 "Inter weight 400/500/600/700/800 — DM Sans come alternativa più geometrica"
+    }
+  },
+  "criteri_accettazione": [
+    "Nel tema pro, i titoli di sezione (h2.progress-section__title, .dashboard-card__title) sono visivamente più grandi e/o pesanti rispetto al tema originale",
+    "I valori numerici nelle card (.status-card__value, .strength-card__value, .targets-card__td) sono in grassetto marcato (weight ≥ 700) con font-size aumentata rispetto al tema originale",
+    "Le label descrittive (.status-card__label, .strength-card__name, .targets-card__exercise-label) appaiono visivamente più sbiadite/tenui rispetto ai valori numerici adiacenti",
+    "Se viene usato Google Fonts (Inter/DM Sans), il @import è in cima a variables.css e la font family è applicata solo nel blocco html.theme-pro tramite override di --font-base",
+    "Rimuovendo la classe html.theme-pro il sito torna esattamente alla tipografia originale (nessun residuo)",
+    "docs/css/variables.css contiene @import Google Fonts (se usato) PRIMA del blocco :root",
+    "Tutti gli override tipografici pro in variables.css stanno dentro html.theme-pro { } — mai in :root",
+    "Tutti gli override nei CSS di pagina usano html.theme-pro .classe { } come selettore radice",
+    "Non esistono style= inline nei file HTML né nei file JS per proprietà tipografiche"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "theme-pro-variables",
+      "stato": "completato",
+      "file_prodotti": ["docs/css/variables.css"],
+      "note": "Il blocco html.theme-pro { ... } è già presente in docs/css/variables.css con override di palette colori, ombre e border-radius. Le variabili tipografiche (--font-base, --font-size-*, --font-weight-*) non sono ancora overridate nel blocco pro — questo task le aggiunge."
+    }
+  ]
+}

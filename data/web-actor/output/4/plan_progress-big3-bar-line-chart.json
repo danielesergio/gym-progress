@@ -1,0 +1,212 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "progress-big3-bar-line-chart",
+    "task_title": "Grafico misto barre+linea per Massimali Big 3 e Totale",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "progress-big3-bar-line-chart",
+    "type": "component",
+    "title": "Grafico misto barre+linea per Massimali Big 3 e Totale",
+    "description": "Sostituire la funzione renderStrengthChart() in docs/js/progress.js con una nuova implementazione che usa un grafico Chart.js di tipo 'bar' (grouped) con un dataset di tipo 'line' sovrapposto per il Totale. Per ogni data di misurazione appaiono 3 barre raggruppate (Squat, Panca, Stacco) e una linea che mostra il Totale (totale_1rm se presente nel JSON, altrimenti calcolato a runtime come squat_1rm + panca_1rm + stacco_1rm). I record con tipo Stimato (S) devono avere aspetto distinto da quelli Reali (R): opacità ridotta e bordo tratteggiato per le barre stimate. La legenda R/S nell'HTML rimane invariata. Il canvas #chart-massimali in progress.html non cambia. Nessuna modifica al JSON.",
+    "inputs": [
+      "measurements_data"
+    ],
+    "outputs": [
+      "Big3BarLineChart"
+    ],
+    "acceptance_criteria": [
+      "Il grafico mostra barre raggruppate: per ogni data di misurazione appaiono 3 barre (Squat, Panca, Stacco)",
+      "Una linea sovrapposta mostra il Totale (Squat + Panca + Stacco) per ogni data",
+      "Il Totale è calcolato correttamente: per la misurazione 2026-03-21 deve essere ~460.8 kg",
+      "I massimali di tipo Stimato (S) hanno un aspetto visivamente distinto da quelli Reali (R) anche nelle barre",
+      "Il grafico è responsive e leggibile su mobile",
+      "La legenda identifica chiaramente Squat, Panca, Stacco e Totale con colori distinti",
+      "L'asse Y parte da un valore sensato (non da 0 se i valori sono tutti > 80 kg)"
+    ],
+    "notes": "Il canvas target è #chart-massimali già presente in docs/progress.html — NON modificare l'HTML. La funzione esistente si chiama renderStrengthChart(data): va sostituita interamente. Il registro progressCharts['massimali'] va distrutto prima di ricreare la nuova istanza (pattern già in uso). I dati hanno sempre tutti e 3 i campi per-esercizio (squat_1rm_tipo, panca_1rm_tipo, stacco_1rm_tipo). L'asse X di tipo 'category' con le etichette date funziona meglio delle barre rispetto all'asse lineare con timestamp: usare labels array + data array numerici invece di array di oggetti {x, y}."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "Sostituire la funzione renderStrengthChart(data) (righe ~262-518) con renderBig3BarLineChart(data): grafico misto barre raggruppate (Squat/Panca/Stacco) + linea Totale. Il resto del file (renderWeightBfChart, renderCircumferencesChart, renderMeasurementsTable, renderProgress, DOMContentLoaded) rimane invariato.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/js/progress.js",
+        "motivo": "Leggere l'implementazione completa: costanti condivise (DATA_PATH_MEASUREMENTS, progressCharts, progressErrorContainer), il pattern fetch/try-catch in renderProgress(), e la firma della chiamata a renderStrengthChart(data) per mantenere la stessa firma e il punto di invocazione."
+      },
+      {
+        "path": "docs/data/measurements.json",
+        "motivo": "Struttura dati reale: array di 6 record con campi squat_1rm (float), panca_1rm (float), stacco_1rm (float), totale_1rm (float, già calcolato), squat_1rm_tipo ('R'|'S'), panca_1rm_tipo ('R'|'S'), stacco_1rm_tipo ('R'|'S'), data (YYYY-MM-DD). I primi 5 record hanno massimali_tipo='R', il 6° (2026-03-21) ha massimali_tipo='S' e tutti e tre i campi per-esercizio a 'S'. Il campo totale_1rm è già presente per tutti i record."
+      },
+      {
+        "path": "docs/progress.html",
+        "motivo": "Verificare il canvas target (#chart-massimali), la struttura della sezione #section-massimali, la legenda .badge-reale/.badge-stimato — nessuna modifica necessaria, solo lettura per conferma."
+      },
+      {
+        "path": "docs/css/progress.css",
+        "motivo": "Verificare le classi CSS esistenti (.progress-chart-container con height 320px/240px/380px per breakpoint) per capire il contesto responsive del canvas. Nessuna modifica necessaria al CSS."
+      },
+      {
+        "path": "data/web-actor/output/web_architecture.json",
+        "motivo": "Architettura obbligatoria: stack Chart.js 4.x, convenzioni camelCase JS, kebab-case CSS, pattern destroy-before-recreate, no inline style."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "grafici": {
+        "nome": "Chart.js",
+        "versione": "4.x",
+        "cdn": "https://cdn.jsdelivr.net/npm/chart.js",
+        "note": "Già incluso in progress.html con defer nel head. Nessuna modifica all'HTML necessaria."
+      },
+      "framework": "plain HTML/JS, ES2022, nessun bundler"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase (es. squatDataset, totaleDataset, squatStimatoIndices)",
+      "costanti_js": "UPPER_SNAKE_CASE per colori (es. COLOR_SQUAT, COLOR_TOTALE)",
+      "classi_css": "non richieste — nessuna modifica al CSS",
+      "id_html": "chart-massimali (canvas già esistente, non modificare)",
+      "gestione_null": "filtrare record con d && d.data; per squat/panca/stacco usare ?? null; per totale: d.totale_1rm ?? (d.squat_1rm + d.panca_1rm + d.stacco_1rm)",
+      "chart_js_destroy": "progressCharts['massimali']?.destroy() PRIMA di new Chart(). Pattern già in uso nel file.",
+      "pattern_js": "La funzione si chiama renderStrengthChart(data) — mantenere la stessa firma per non toccare il punto di invocazione in renderProgress(). Il corpo va completamente riscritto.",
+      "asse_x": "Usare type:'category' con labels = array di date formattate (formatDateIT). Le barre Chart.js funzionano meglio con asse categorico che con asse lineare a timestamp.",
+      "asse_y_min": "Calcolare il minimo dei valori squat/panca/stacco (escludendo null), applicare Math.floor(min - 5) come suggerimento non 0, per non appiattire le differenze."
+    },
+    "pagina": {
+      "nome": "Progressi",
+      "file": "docs/progress.html",
+      "js": "docs/js/progress.js",
+      "css": "docs/css/progress.css",
+      "dati_json": ["data/measurements.json"]
+    },
+    "colori_design_system": {
+      "COLOR_SQUAT": "#ff6b35 (--color-accent, arancio — già in uso per Squat)",
+      "COLOR_PANCA": "#4fc3f7 (celeste — già in uso per Panca)",
+      "COLOR_STACCO": "#ce93d8 (viola chiaro — già in uso per Stacco)",
+      "COLOR_TOTALE": "#4caf50 (--color-success, verde — nuovo per la linea Totale)",
+      "COLOR_GRID": "rgba(58,58,58,0.6)",
+      "COLOR_TEXT": "#a0a0a0"
+    }
+  },
+  "guida_implementazione": {
+    "tipo_grafico": "Chart.js grafico misto: type:'bar' come tipo base, con il dataset Totale che ha type:'line' inline. Chart.js 4.x supporta nativamente dataset con type diverso dal tipo del grafico padre.",
+    "struttura_labels": "Array di stringhe con le date formattate: labels = records.map(d => formatDateIT(d.data)). Con asse categorico ogni label corrisponde a un gruppo di barre.",
+    "struttura_dataset_barre": [
+      {
+        "dataset": "Squat 1RM",
+        "type": "bar (ereditato dal tipo del grafico)",
+        "data": "records.map(d => d.squat_1rm ?? null)",
+        "colori_reali": "backgroundColor: 'rgba(255,107,53,0.75)', borderColor: '#ff6b35'",
+        "colori_stimati": "Per i record con squat_1rm_tipo === 'S': backgroundColor: 'rgba(255,107,53,0.25)', borderColor: '#ff6b35', borderDash applicato tramite borderSkipped:false e borderWidth:2 con bordo tratteggiato (non supportato nativamente per barre — usare opacità ridotta come distinzione principale)",
+        "nota_stimato": "Chart.js non supporta bordi tratteggiati sulle barre. La distinzione per i record stimati deve usare backgroundColor a opacità molto ridotta (0.25 vs 0.75) come approccio principale. In alternativa si può usare un array di backgroundColor per-elemento."
+      },
+      {
+        "dataset": "Panca 1RM",
+        "type": "bar",
+        "data": "records.map(d => d.panca_1rm ?? null)",
+        "colori_reali": "backgroundColor: 'rgba(79,195,247,0.75)', borderColor: '#4fc3f7'",
+        "colori_stimati": "backgroundColor: 'rgba(79,195,247,0.25)' per i record con panca_1rm_tipo === 'S'"
+      },
+      {
+        "dataset": "Stacco 1RM",
+        "type": "bar",
+        "data": "records.map(d => d.stacco_1rm ?? null)",
+        "colori_reali": "backgroundColor: 'rgba(206,147,216,0.75)', borderColor: '#ce93d8'",
+        "colori_stimati": "backgroundColor: 'rgba(206,147,216,0.25)' per i record con stacco_1rm_tipo === 'S'"
+      }
+    ],
+    "struttura_dataset_linea": {
+      "dataset": "Totale 1RM",
+      "type": "line (dichiarato inline nel dataset: type:'line')",
+      "data": "records.map(d => d.totale_1rm ?? ((d.squat_1rm ?? 0) + (d.panca_1rm ?? 0) + (d.stacco_1rm ?? 0)))",
+      "yAxisID": "yTotale (asse Y destro dedicato, range ~280-480 kg)",
+      "colore": "borderColor: '#4caf50', backgroundColor: 'rgba(76,175,80,0.08)'",
+      "stile": "pointRadius: 5, pointHoverRadius: 7, borderWidth: 2.5, tension: 0.3, spanGaps: true"
+    },
+    "scala_y_sinistra": {
+      "id": "y",
+      "posizione": "left",
+      "range": "min = Math.floor(minSingolo - 5), max = Math.ceil(maxSingolo + 10) dove minSingolo/maxSingolo sono calcolati sui valori squat/panca/stacco (escludendo null)",
+      "label": "1RM (kg)"
+    },
+    "scala_y_destra": {
+      "id": "yTotale",
+      "posizione": "right",
+      "range": "min = Math.floor(minTotale - 10), max = Math.ceil(maxTotale + 20)",
+      "label": "Totale (kg)",
+      "drawOnChartArea": false
+    },
+    "scala_x": {
+      "type": "category",
+      "ticks": "color: COLOR_TEXT, font.size: 11",
+      "grid": "color: COLOR_GRID"
+    },
+    "tooltip": {
+      "mode": "index",
+      "intersect": false,
+      "callbacks": {
+        "title": "Restituisce la label (data formattata) dell'elemento hover",
+        "label": "Per i dataset barre: mostra valore + ' kg (R)' o '(S)' in base al campo per-esercizio. Per la linea Totale: mostra 'Totale: X kg'."
+      }
+    },
+    "pattern_array_colori_per_elemento": "Per implementare l'opacità distinta per record stimati, usare un array di colori per ogni dataset. Esempio per Squat: const squatBg = records.map(d => d.squat_1rm_tipo === 'S' ? 'rgba(255,107,53,0.25)' : 'rgba(255,107,53,0.75)'); e assegnare backgroundColor: squatBg nel dataset.",
+    "firma_funzione_da_mantenere": "function renderStrengthChart(data) { ... } — la funzione è chiamata da renderProgress(data) già nel file; NON rinominare.",
+    "chiamata_in_renderProgress": "Nel body di renderProgress(data) esiste una chiamata renderStrengthChart(data) (o simile) — il developer deve trovarla e verificare che rimanga inalterata dopo la sostituzione della funzione."
+  },
+  "struttura_dati_measurements": {
+    "tipo": "Array JSON di 6 oggetti",
+    "campi_rilevanti": {
+      "data": "string YYYY-MM-DD — data misurazione",
+      "squat_1rm": "float — es. 96, 105, 117, 129, 145, 145.8",
+      "panca_1rm": "float — es. 88, 95, 105, 115, 115, 116.7",
+      "stacco_1rm": "float — es. 116, 130, 150, 175, 200, 198.3",
+      "totale_1rm": "float — già calcolato: 300, 330, 372, 419, 460, 460.8",
+      "squat_1rm_tipo": "'R' o 'S' — per record 2026-03-21 è 'S'",
+      "panca_1rm_tipo": "'R' o 'S' — per record 2026-03-21 è 'S'",
+      "stacco_1rm_tipo": "'R' o 'S' — per record 2026-03-21 è 'S'",
+      "massimali_tipo": "'R' o 'S' — globale (legacy), 5 record 'R' + 1 record 'S'"
+    },
+    "record_stimato": "Solo l'ultimo record (2026-03-21, id: 3a6a7aad) ha tutti i tipo a 'S'",
+    "valori_range": {
+      "squat_1rm": "96 – 145.8 kg",
+      "panca_1rm": "88 – 116.7 kg",
+      "stacco_1rm": "116 – 198.3 kg",
+      "totale_1rm": "300 – 460.8 kg"
+    },
+    "note_null": "Nessun campo squat/panca/stacco/totale è null in questi 6 record — gestire comunque con ?? null per robustezza."
+  },
+  "criteri_accettazione": [
+    "Il grafico mostra barre raggruppate: per ogni data di misurazione appaiono 3 barre affiancate (Squat, Panca, Stacco) — 6 gruppi totali",
+    "Una linea sovrapposta (dataset type:'line') mostra il Totale per ogni data con asse Y destro dedicato",
+    "Il Totale per la data 2026-03-21 è 460.8 kg (campo totale_1rm presente nel JSON, usato direttamente)",
+    "Il record 2026-03-21 (tipo 'S') ha le 3 barre con backgroundColor a opacità ridotta (~0.25) rispetto ai record reali (~0.75)",
+    "La legenda nell'HTML (.badge-reale, .badge-stimato) è ancora visibile nella sezione — nessuna modifica all'HTML",
+    "Il grafico è responsive: container .progress-chart-container ha height 320px (base), 240px (≤768px), 380px (≥1280px) — già definiti in progress.css, nessuna modifica CSS necessaria",
+    "La legenda Chart.js mostra 4 voci: 'Squat 1RM (kg)', 'Panca 1RM (kg)', 'Stacco 1RM (kg)', 'Totale 1RM (kg)' con colori distinti",
+    "L'asse Y sinistro NON parte da 0: min calcolato dinamicamente sui valori Squat/Panca/Stacco con padding negativo (min - 5)",
+    "docs/js/progress.js contiene la funzione renderStrengthChart(data) (firma mantenuta)",
+    "La funzione usa progressCharts['massimali']?.destroy() prima di creare la nuova istanza Chart",
+    "Il canvas target è document.getElementById('chart-massimali') — stesso ID già nell'HTML",
+    "Il dataset Totale usa yAxisID:'yTotale' e ha type:'line' esplicito nel dataset object",
+    "I dataset Squat/Panca/Stacco usano un array di backgroundColor per distinguere visivamente i record stimati",
+    "Nessun errore nella console del browser al caricamento della pagina progress.html"
+  ],
+  "dipendenze": [],
+  "note_aggiuntive": {
+    "html_invariato": "docs/progress.html NON va modificato. Il canvas #chart-massimali esiste già. La legenda .badge-reale/.badge-stimato è già presente nella sezione #section-massimali.",
+    "css_invariato": "docs/css/progress.css NON va modificato. Il .progress-chart-container con le altezze responsive è già correttamente definito.",
+    "solo_progress_js": "L'unico file da modificare è docs/js/progress.js — sostituire integralmente il corpo della funzione renderStrengthChart(data) mantenendo la firma.",
+    "chart_js_grafico_misto": "In Chart.js 4.x, per un grafico misto: il tipo principale del new Chart() è 'bar', e il dataset della linea Totale ha type:'line' come proprietà inline del dataset. Esempio: { label: 'Totale 1RM (kg)', type: 'line', data: [...], yAxisID: 'yTotale', ... }",
+    "bordi_tratteggiati_barre": "Chart.js 4.x non supporta borderDash per le barre (solo per le linee). La distinzione visiva per i record stimati deve basarsi su backgroundColor con opacità ridotta (differenza netta: 0.75 vs 0.25) e/o borderWidth aumentato con borderColor pieno.",
+    "verifica_totale": "Il campo totale_1rm è già presente in tutti e 6 i record del JSON (300, 330, 372, 419, 460, 460.8). Usarlo direttamente è più preciso del calcolo runtime."
+  }
+}

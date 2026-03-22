@@ -1,0 +1,115 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "progress-big3-bar-line-chart",
+    "task_titolo": "Grafico misto barre+linea per Massimali Big 3 e Totale",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Il grafico mostra barre raggruppate: per ogni data di misurazione appaiono 3 barre (Squat, Panca, Stacco)",
+      "soddisfatto": true,
+      "dettaglio": "La funzione renderStrengthChart() contiene 3 dataset di tipo 'bar' (righe 343-368) con labels Squat 1RM, Panca 1RM, Stacco 1RM. I dati vengono mappati dagli array squatData, pancaData, staccoData. Con type:'bar' e asse X categorico, le barre vengono raggruppate automaticamente per ogni data."
+    },
+    {
+      "criterio": "Una linea sovrapposta mostra il Totale (Squat + Panca + Stacco) per ogni data",
+      "soddisfatto": true,
+      "dettaglio": "Il dataset Totale (righe 369-387) ha type:'line' esplicito come proprietà inline. Utilizza yAxisID:'yTotale' per asse Y destro. I dati sono calcolati da totaleData che utilizza il campo totale_1rm se presente, altrimenti somma squat_1rm + panca_1rm + stacco_1rm."
+    },
+    {
+      "criterio": "Il Totale è calcolato correttamente: per la misurazione 2026-03-21 deve essere ~460.8 kg",
+      "soddisfatto": true,
+      "dettaglio": "Il file measurements.json contiene il record 2026-03-21 con totale_1rm: 460.8. La logica di calcolo (righe 304-310) utilizza d.totale_1rm se presente, quindi 460.8 verrà usato direttamente dal dataset."
+    },
+    {
+      "criterio": "I massimali di tipo Stimato (S) hanno un aspetto visivamente distinto da quelli Reali (R) anche nelle barre",
+      "soddisfatto": true,
+      "dettaglio": "I dati hanno array di backgroundColor per-elemento (righe 313-321): squatBg, pancaBg, staccoBg. Per ogni record, se il tipo_tipo è 'S' viene assegnata opacità 0.25 (rgba(...,0.25)), altrimenti 0.75. Nel record 2026-03-21 con squat/panca/stacco_1rm_tipo='S', le 3 barre avranno opacità distinta e visivamente distinguibile."
+    },
+    {
+      "criterio": "Il grafico è responsive e leggibile su mobile",
+      "soddisfatto": true,
+      "dettaglio": "Il grafico usa responsive:true e maintainAspectRatio:false (righe 390-391). Il container .progress-chart-container ha height 320px (base), 240px su ≤768px, 380px su ≥1280px come definito in progress.css (righe 72-76, 236-238, 258-260). Il canvas si adatta al container responsivo."
+    },
+    {
+      "criterio": "La legenda identifica chiaramente Squat, Panca, Stacco e Totale con colori distinti",
+      "soddisfatto": true,
+      "dettaglio": "La configurazione della legenda (righe 397-407) ha display:true, position:'bottom'. I 4 dataset hanno label chiari: 'Squat 1RM (kg)', 'Panca 1RM (kg)', 'Stacco 1RM (kg)', 'Totale 1RM (kg)' con colori rispettivi COLOR_SQUAT (#ff6b35), COLOR_PANCA (#4fc3f7), COLOR_STACCO (#ce93d8), COLOR_TOTALE (#4caf50)."
+    },
+    {
+      "criterio": "L'asse Y parte da un valore sensato (non da 0 se i valori sono tutti > 80 kg)",
+      "soddisfatto": true,
+      "dettaglio": "La scala Y sinistra (righe 453-472) ha min: Math.floor(minSingolo - 5) dove minSingolo è calcolato dal minimo dei valori squat/panca/stacco. Non è hardcodato a 0. Per il dataset (96-200 kg), il minimo sarebbe ~91 kg, quindi min ~86 kg, non 0."
+    },
+    {
+      "criterio": "docs/js/progress.js contiene la funzione renderStrengthChart(data) (firma mantenuta)",
+      "soddisfatto": true,
+      "dettaglio": "La funzione è definita a riga 271 con firma esatta: function renderStrengthChart(data). È chiamata da renderProgress() a riga 871 senza modifiche."
+    },
+    {
+      "criterio": "La funzione usa progressCharts['massimali']?.destroy() prima di creare la nuova istanza Chart",
+      "soddisfatto": true,
+      "dettaglio": "Riga 335: progressCharts['massimali']?.destroy(); viene eseguito prima del new Chart() a riga 337. Pattern corretto con optional chaining per evitare errori se la chiave non esiste."
+    },
+    {
+      "criterio": "Il canvas target è document.getElementById('chart-massimali') — stesso ID già nell'HTML",
+      "soddisfatto": true,
+      "dettaglio": "Riga 272: const canvas = document.getElementById('chart-massimali'); Il file progress.html contiene il canvas con id='chart-massimali' a riga 87."
+    },
+    {
+      "criterio": "Il dataset Totale usa yAxisID:'yTotale' e ha type:'line' esplicito nel dataset object",
+      "soddisfatto": true,
+      "dettaglio": "Il dataset Totale (righe 369-387) contiene type:'line' (riga 371) e yAxisID:'yTotale' (riga 384). La scala yTotale è definita a righe 473-492 con position:'right'."
+    },
+    {
+      "criterio": "I dataset Squat/Panca/Stacco usano un array di backgroundColor per distinguere visivamente i record stimati",
+      "soddisfatto": true,
+      "dettaglio": "Righe 313-321 definiscono array di backgroundColor: squatBg, pancaBg, staccoBg. Ogni elemento è un colore con opacità condizionale basata sul campo _tipo. Questi array sono assegnati direttamente a backgroundColor di ogni dataset (righe 346, 355, 364)."
+    },
+    {
+      "criterio": "Nessun errore nella console del browser al caricamento della pagina progress.html",
+      "soddisfatto": true,
+      "dettaglio": "Verifica statica del codice JS: sintassi corretta, tutte le variabili sono definite, i campi JSON sono presenti nel dataset, formatDateIT è definita (righe 36-46), progressCharts e progressErrorContainer sono inizializzati a inizio file. Non ci sono riferimenti a variabili indefinite o fetch errati nel corpo della funzione."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/progress.js",
+      "esiste": true,
+      "note": "File contiene la funzione renderStrengthChart completa da righe 262-496. Tutti i dataset, scale, plugin, tooltip e legenda sono correttamente configurati."
+    },
+    {
+      "path": "docs/progress.html",
+      "esiste": true,
+      "note": "Canvas target #chart-massimali presente a riga 87. Sezione #section-massimali (riga 80) contiene legenda con badge-reale e badge-stimato (righe 82-85). Nessuna modifica richiesta."
+    },
+    {
+      "path": "docs/css/progress.css",
+      "esiste": true,
+      "note": "Container .progress-chart-container ha altezze responsive: 320px base, 240px ≤768px, 380px ≥1280px. Nessuna modifica richiesta."
+    },
+    {
+      "path": "docs/data/measurements.json",
+      "esiste": true,
+      "note": "6 record presenti. Ultimi 5 hanno massimali_tipo='R', ultimo (2026-03-21) ha massimali_tipo='S' e squat/panca/stacco_1rm_tipo='S'. Totale_1rm già calcolato: ultimo record = 460.8 kg."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "La funzione usa un'implementazione per-elemento per opacità stimata (array di backgroundColor) che è efficiente. In alternativa avrebbe potuto usare segmentBackgroundColor (Chart.js 4.4+) ma il metodo attuale è più compatibile.",
+      "file": "docs/js/progress.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Il tooltip callback (righe 420-438) include logica per aggiungere (R)/(S) alle barre. Il codice ricerca il tipo per esercizio in maniera robusta usando Optional Chaining e fallback al massimali_tipo globale. Implementazione solida.",
+      "file": "docs/js/progress.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "L'asse Y sinistro non parte da 0 (minimo dinamico ~minSingolo - 5), asse Y destro dedicato al Totale (minTotale - 10) mantiene leggibilità della linea. Configurazione appropriata per grafici di progressione.",
+      "file": "docs/js/progress.js"
+    }
+  ]
+}

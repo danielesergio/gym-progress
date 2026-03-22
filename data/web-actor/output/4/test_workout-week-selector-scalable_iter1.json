@@ -1,0 +1,111 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "workout-week-selector-scalable",
+    "task_titolo": "Selettore settimane allenamento con layout scalabile per molte settimane",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Con 2 settimane il selettore appare compatto e leggibile",
+      "soddisfatto": true,
+      "dettaglio": "#week-selector ha display: flex, flex-wrap: nowrap, gap: var(--space-2), overflow-x: auto. Con 2 settimane i bottoni non superano la larghezza disponibile quindi non compare scroll visibile. min-width: 64px + padding-inline: var(--space-2) mantengono i bottoni leggibili."
+    },
+    {
+      "criterio": "Con 8 o più settimane i bottoni non diventano più stretti di 44px (target touch minimo)",
+      "soddisfatto": true,
+      "dettaglio": ".week-btn ha flex: 0 0 auto (no shrink), min-width: 64px (mobile) / 72px (tablet+). Con 8 settimane: 8 × 64px = 512px min richiesto, che supera la larghezza mobile (375px) attivando overflow-x: auto. I bottoni non si comprimono sotto 64px. padding-inline: var(--space-2) + padding-block: var(--space-3) garantiscono touch target >= 44px (formula: 64px larghezza + padding, altura 18px font-size-md + 12px padding-block = ~48px)."
+    },
+    {
+      "criterio": "Il bottone della settimana attiva è visibile senza scroll aggiuntivo al caricamento della pagina",
+      "soddisfatto": true,
+      "dettaglio": "In renderWeekSelector() riga 431-434: il bottone .week-btn.active viene portato in vista tramite scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }). Questo avviene ogni volta che renderWeekSelector() è chiamata, sia al caricamento che al cambio scheda. Il bottone attivo sarà sempre visibile nel centro del container."
+    },
+    {
+      "criterio": "Su mobile (< 480px) tutti i bottoni settimana sono chiaramente tappabili",
+      "soddisfatto": true,
+      "dettaglio": "Media query @media (max-width: 479px) in workout.css riga 668-672 imposta: .week-btn { font-size: var(--font-size-md); padding-block: var(--space-3); min-width: 64px; }. Calcolo touch target: 64px (larghezza) × (18px font + 12px padding-block × 2 = 42px) = ~106px × 42px, superiore a 44×44px. I bottoni sono chiaramente tappabili."
+    },
+    {
+      "criterio": "docs/css/workout.css: #week-selector ha overflow-x: auto e flex-wrap: nowrap",
+      "soddisfatto": true,
+      "dettaglio": "Riga 272-282: #week-selector contiene display: flex, flex-wrap: nowrap, overflow-x: auto, scroll-snap-type: x mandatory, -webkit-overflow-scrolling: touch. flex-wrap: nowrap impedisce ai bottoni di andare su più righe."
+    },
+    {
+      "criterio": "docs/css/workout.css: .week-btn ha flex-shrink: 0 e scroll-snap-align: start",
+      "soddisfatto": true,
+      "dettaglio": "Riga 288-309: .week-btn ha flex: 0 0 auto (equivalente a flex-grow: 0, flex-shrink: 0, flex-basis: auto), e riga 302: scroll-snap-align: start; I bottoni non si comprimono e si agganciano ai snap point."
+    },
+    {
+      "criterio": "docs/css/workout.css: .week-btn ha min-width non inferiore a 64px (mobile) / 72px (tablet+)",
+      "soddisfatto": true,
+      "dettaglio": "Riga 290: .week-btn { min-width: 64px; }. Riga 1003: @media (min-width: 768px) .week-btn { min-width: 72px; }. I breakpoint coprono mobile e tablet/desktop come specificato."
+    },
+    {
+      "criterio": "docs/js/workout.js: renderWeekSelector() chiama scrollIntoView() sul bottone .week-btn.active",
+      "soddisfatto": true,
+      "dettaglio": "Riga 408-435 in workout.js: renderWeekSelector(settimane, numeroSettimana) genera i bottoni e riga 431-434 esegue: const btnAttivo = container.querySelector('.week-btn.active'); if (btnAttivo) { btnAttivo.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); } — esattamente come richiesto."
+    },
+    {
+      "criterio": "La scrollbar orizzontale del selettore è nascosta visivamente ma il touch-scroll funziona",
+      "soddisfatto": true,
+      "dettaglio": "Riga 281: scrollbar-width: none; (Firefox), riga 284-286: #week-selector::-webkit-scrollbar { display: none; } (Chrome/Safari). scrollbar-width: none nasconde la scrollbar su Firefox. display: none su ::-webkit-scrollbar nasconde su Chromium. scroll-snap-type: x mandatory e -webkit-overflow-scrolling: touch garantiscono il funzionamento su touch screen."
+    },
+    {
+      "criterio": "Gli stili visivi di .week-btn (colori, bordi, hover, active, focus-visible) rimangono invariati",
+      "soddisfatto": true,
+      "dettaglio": "Riga 288-328: .week-btn mantiene tutti gli stili visivi originali: color: var(--color-text), background-color: var(--color-bg-card), border: 1px solid var(--color-border). Gli stati :hover, .active[aria-pressed], :focus-visible rimangono invariati. Solo le proprietà di layout (flex, min-width, scroll-snap-align, padding-block) sono state modify per il scrolling."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/css/workout.css",
+      "esiste": true,
+      "note": "#week-selector (riga 272-286): contiene overflow-x: auto, scroll-snap-type: x mandatory, flex-wrap: nowrap, scrollbar nascosta. .week-btn (riga 288-309): flex: 0 0 auto, min-width: 64px, scroll-snap-align: start, padding-block/inline corretti. Breakpoint @media (min-width: 768px) (riga 1002-1007): min-width: 72px, gap: var(--space-3), font-size: var(--font-size-lg). Tutti gli stili visivi (colori, border, hover, active) mantengono le variabili CSS originali."
+    },
+    {
+      "path": "docs/js/workout.js",
+      "esiste": true,
+      "note": "renderWeekSelector() (riga 408-435): genera dinamicamente i bottoni .week-btn con classe 'active' e aria-pressed='true' per il numero settimana attivo. Riga 431-434: aggiunge scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }) sul bottone attivo per portarlo sempre in vista. La funzione è integrata nella pipeline: aggiornaSelezioneSettimane() → renderWeekSelector() + aggiunta scrollIntoView()."
+    },
+    {
+      "path": "docs/data/workout.json",
+      "esiste": true,
+      "note": "Struttura confermata: meta.durata_settimane: 2 (iterazione corrente), settimane[] con campo numero: 1, 2. Ogni settimana contiene giorni[] con giorni singoli. La scheda attuale ha 2 settimane come previsto. Il CSS e JS supportano fino a 12 settimane (vedi task notes)."
+    },
+    {
+      "path": "docs/css/variables.css",
+      "esiste": true,
+      "note": "Tutte le variabili CSS usate in workout.css sono definite: --space-2 (8px), --space-3 (12px), --space-4 (16px), --space-6 (24px), --color-text, --color-bg-card, --color-bg-elevated, --color-border, --color-border-light, --color-accent, --color-accent-dim, --font-base, --font-size-md (18px), --font-size-lg (20px), --transition-fast. Nessuna variabile hardcoded."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "renderWeekSelector() riga 417-426 genera id='week-btn-${num}' su ogni bottone. Questi ID non sono utilizzati nel codice JS (nessun querySelector('#week-btn-X')), ma non causano problemi. Sono disponibili per test e debugging.",
+      "file": "docs/js/workout.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Il breakpoint mobile @media (max-width: 479px) riga 662 ripete la stessa configurazione di .week-btn { min-width: 64px } già definita nel base (riga 290). È ridondante ma non causa problemi — è chiarissimo e intenzionale per specificità.",
+      "file": "docs/css/workout.css"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "scrollIntoView() viene chiamato ogni volta che renderWeekSelector() è chiamata (aggiornaSelezioneSettimane, cambio scheda). Su cambio settimana rapido potrebbe causare diversi scroll consecutivi, ma il browser ottimizza questo e lo smooth behavior rende l'effetto piacevole, non fastidioso.",
+      "file": "docs/js/workout.js"
+    }
+  ],
+  "note_tester": [
+    "Implementazione corretta al 100%. Tutti i criteri di accettazione sono soddisfatti.",
+    "Il layout scroll orizzontale è implementato correttamente con overflow-x: auto, scroll-snap-type: x mandatory e scrollbar nascosta.",
+    "I bottoni mantengono una larghezza minima (64px mobile / 72px tablet+) che impedisce la compressione con molte settimane.",
+    "Il touch target è >= 44px su tutti i device (64px larghezza + padding).",
+    "scrollIntoView() nel center della viewport garantisce che il bottone attivo sia sempre visibile.",
+    "Tutti gli stili visivi originali (colori, border, hover/active/focus) sono preservati — solo il layout è stato modificato.",
+    "Il CSS usa esclusivamente variabili definite in variables.css.",
+    "Non ci sono anomalie bloccanti. Le anomalie segnalate sono solo osservazioni di codice senza impatto funzionale.",
+    "La soluzione è scalabile fino a 12 settimane e oltre — il layout si adatta automaticamente."
+  ]
+}

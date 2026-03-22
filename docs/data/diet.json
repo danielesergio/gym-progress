@@ -1,23 +1,25 @@
 {
   "meta": {
-    "data": "2026-03-21",
+    "data": "2026-03-22",
     "fase": "mantenimento",
-    "kcal_allenamento": 2875,
-    "kcal_riposo": 2601,
-    "proteine_g": 205,
-    "carboidrati_g": 308,
-    "grassi_g": 92,
-    "note_strategia": "Fase 0 — Recupero TOS (Thoracic Outlet Syndrome). Strategia di mantenimento calorico calibrato\nsul TDEE stimato di 2870 kcal (87.2 kg, attivita' moderata + 10-12k passi/die).\nNessun deficit significativo: il cut aggressivo comprometterebbe la guarigione muscolare e i\nprogressi di forza. Giorni di allenamento (+274 kcal vs riposo) con carboidrati piu' elevati\nper supportare le sessioni consentite in fase di recupero (squat, stacco, core, mobilita').\nProteine a 2.35 g/kg (~205g/die) per massimizzare la sintesi proteica durante la guarigione.\nGrassi mantenuti tra 82-92g/die, privilegiando salmone, noci e olio EVO per l'effetto\nantinfiammatorio utile alla risoluzione della TOS. Whey protein inclusa nella colazione e nella\nmerenda dei giorni di allenamento per facilitare il raggiungimento del target proteico.\nIl saldo calorico medio settimanale risulta leggermente sotto il TDEE (3 giorni allenamento\n+ 4 riposo = ~2710 kcal/die vs TDEE 2870), compensato passivamente dalla camminata 10-12k passi.\nBF attuale stimato 17.1%: monitorare vita ombelico mensilmente. Se a luglio 2026 vita > 93 cm\no BF > 17% confermato, valutare deficit moderato -300 kcal prima della fase 4 (estate).\nIdratazione: 2.5 L acqua/die nei giorni di riposo, 3 L nei giorni di allenamento.\n"
+    "fase_piano": "Fase 0 — Recupero TOS",
+    "kcal_allenamento": 2870,
+    "kcal_riposo": 2550,
+    "proteine_g": 200,
+    "carboidrati_g_allenamento": 340,
+    "carboidrati_g_riposo": 290,
+    "grassi_g": 78,
+    "note_strategia": "Fase di recupero TOS (Thoracic Outlet Syndrome). Obiettivo: mantenimento calorico al TDEE\n(~2870 kcal nei giorni di allenamento, ~2550 kcal nei giorni di riposo) per favorire la\nguarigione senza catabolismo muscolare. Proteine elevate a 2.3g/kg (200g/die) per preservare\nla massa magra durante il periodo di attività ridotta. Focus su omega-3 (salmone, trota,\ntonno) per effetto anti-infiammatorio sulla TOS. Struttura a 4 pasti come da preferenza atleta\n(colazione, pranzo, merenda, cena) con whey alla merenda per raggiungere il target proteico.\n2 pasti sgarro settimanali previsti (sabato sera pizza/hamburger) inclusi nel piano come\nGiorno Sgarro. Idratazione: almeno 2.5-3L di acqua/die, priorità nell'intorno degli\nallenamenti. Creatina 5g/die dalla Fase 1, si anticipa l'inizio già ora per massimizzare\ni benefici durante il recupero.\n"
   },
   "giorni": [
     {
-      "nome": "Giorno Allenamento",
+      "nome": "Lunedì — Allenamento",
       "tipo": "allenamento",
-      "kcal": 2875,
+      "kcal": 2871,
       "macros": {
-        "proteine": 205,
-        "carboidrati": 308,
-        "grassi": 92
+        "proteine": 202,
+        "carboidrati": 341,
+        "grassi": 78
       },
       "pasti": [
         {
@@ -25,95 +27,35 @@
           "orario": "07:30",
           "alimenti": [
             {
-              "nome": "Fiocchi d'avena",
-              "grammi": 80,
-              "kcal": 296,
-              "proteine": 10,
-              "carbo": 54,
-              "grassi": 6
-            },
-            {
-              "nome": "Latte parzialmente scremato",
-              "grammi": 250,
-              "kcal": 108,
-              "proteine": 8,
-              "carbo": 12,
-              "grassi": 3
-            },
-            {
-              "nome": "Whey protein (gusto vaniglia)",
-              "grammi": 25,
-              "kcal": 95,
-              "proteine": 20,
-              "carbo": 1,
-              "grassi": 1
-            },
-            {
-              "nome": "Banana",
-              "grammi": 100,
-              "kcal": 89,
-              "proteine": 1,
-              "carbo": 23,
-              "grassi": 0
-            },
-            {
-              "nome": "Miele",
-              "grammi": 15,
-              "kcal": 46,
-              "proteine": 0,
-              "carbo": 12,
-              "grassi": 0
-            }
-          ],
-          "totale": {
-            "kcal": 634,
-            "proteine": 39,
-            "carbo": 102,
-            "grassi": 10
-          }
-        },
-        {
-          "nome": "Spuntino mattina",
-          "orario": "10:30",
-          "alimenti": [
-            {
               "nome": "Yogurt greco 0% grassi",
-              "grammi": 200,
-              "kcal": 118,
-              "proteine": 20,
-              "carbo": 8,
+              "grammi": 150,
+              "kcal": 90,
+              "proteine": 15,
+              "carbo": 6,
               "grassi": 0
             },
             {
-              "nome": "Pane integrale",
-              "grammi": 70,
-              "kcal": 182,
-              "proteine": 6,
-              "carbo": 34,
+              "nome": "Muesli proteico",
+              "grammi": 30,
+              "kcal": 108,
+              "proteine": 9,
+              "carbo": 14,
               "grassi": 2
             },
             {
-              "nome": "Ricotta di mucca",
-              "grammi": 50,
-              "kcal": 73,
-              "proteine": 5,
-              "carbo": 2,
-              "grassi": 6
-            },
-            {
-              "nome": "Noci sgusciate",
-              "grammi": 15,
-              "kcal": 98,
-              "proteine": 2,
-              "carbo": 2,
-              "grassi": 10
+              "nome": "Banana media",
+              "grammi": 120,
+              "kcal": 107,
+              "proteine": 1,
+              "carbo": 27,
+              "grassi": 0
             }
           ],
           "totale": {
-            "kcal": 471,
-            "proteine": 33,
-            "carbo": 46,
-            "grassi": 18
+            "kcal": 305,
+            "proteine": 25,
+            "carbo": 47,
+            "grassi": 2
           }
         },
         {
@@ -121,311 +63,80 @@
           "orario": "13:00",
           "alimenti": [
             {
-              "nome": "Riso bianco (pesato crudo)",
+              "nome": "Pasta di semola (pesata cruda)",
               "grammi": 100,
-              "kcal": 352,
-              "proteine": 7,
-              "carbo": 79,
+              "kcal": 356,
+              "proteine": 12,
+              "carbo": 73,
               "grassi": 1
             },
             {
-              "nome": "Petto di pollo",
-              "grammi": 200,
-              "kcal": 220,
-              "proteine": 44,
+              "nome": "Sugo di pomodoro (passata + olio EVO)",
+              "grammi": 150,
+              "kcal": 88,
+              "proteine": 2,
+              "carbo": 10,
+              "grassi": 5
+            },
+            {
+              "nome": "Parmigiano grattugiato",
+              "grammi": 15,
+              "kcal": 62,
+              "proteine": 5,
               "carbo": 0,
               "grassi": 4
             },
             {
-              "nome": "Olio extravergine d'oliva",
-              "grammi": 12,
-              "kcal": 106,
-              "proteine": 0,
-              "carbo": 0,
-              "grassi": 12
-            },
-            {
-              "nome": "Zucchine",
-              "grammi": 200,
-              "kcal": 34,
-              "proteine": 2,
-              "carbo": 6,
-              "grassi": 0
-            }
-          ],
-          "totale": {
-            "kcal": 712,
-            "proteine": 53,
-            "carbo": 85,
-            "grassi": 17
-          }
-        },
-        {
-          "nome": "Merenda",
-          "orario": "16:30",
-          "alimenti": [
-            {
-              "nome": "Whey protein (gusto cioccolato)",
-              "grammi": 35,
-              "kcal": 133,
-              "proteine": 28,
-              "carbo": 2,
-              "grassi": 1
-            },
-            {
-              "nome": "Banana",
-              "grammi": 130,
-              "kcal": 116,
+              "nome": "Banana media",
+              "grammi": 120,
+              "kcal": 107,
               "proteine": 1,
-              "carbo": 30,
+              "carbo": 27,
               "grassi": 0
-            },
-            {
-              "nome": "Mandorle",
-              "grammi": 25,
-              "kcal": 145,
-              "proteine": 5,
-              "carbo": 5,
-              "grassi": 12
             }
           ],
           "totale": {
-            "kcal": 394,
-            "proteine": 34,
-            "carbo": 37,
-            "grassi": 13
+            "kcal": 613,
+            "proteine": 20,
+            "carbo": 110,
+            "grassi": 10
           }
         },
         {
-          "nome": "Cena",
-          "orario": "20:00",
+          "nome": "Merenda / Pre-Post Allenamento",
+          "orario": "16:30",
+          "note": "Consumare 30-40 min prima dell'allenamento o immediatamente dopo",
           "alimenti": [
             {
-              "nome": "Salmone fresco (filetto)",
-              "grammi": 200,
-              "kcal": 416,
-              "proteine": 40,
-              "carbo": 0,
-              "grassi": 26
-            },
-            {
-              "nome": "Patate",
-              "grammi": 200,
-              "kcal": 154,
-              "proteine": 4,
-              "carbo": 34,
-              "grassi": 0
-            },
-            {
-              "nome": "Olio extravergine d'oliva",
-              "grammi": 8,
-              "kcal": 71,
-              "proteine": 0,
-              "carbo": 0,
-              "grassi": 8
-            },
-            {
-              "nome": "Insalata mista (lattuga e radicchio)",
-              "grammi": 150,
-              "kcal": 23,
-              "proteine": 2,
+              "nome": "Proteine whey isolate al cioccolato",
+              "grammi": 60,
+              "kcal": 228,
+              "proteine": 48,
               "carbo": 4,
-              "grassi": 0
-            }
-          ],
-          "totale": {
-            "kcal": 664,
-            "proteine": 46,
-            "carbo": 38,
-            "grassi": 34
-          }
-        }
-      ]
-    },
-    {
-      "nome": "Giorno Riposo",
-      "tipo": "riposo",
-      "kcal": 2601,
-      "macros": {
-        "proteine": 191,
-        "carboidrati": 284,
-        "grassi": 82
-      },
-      "pasti": [
-        {
-          "nome": "Colazione",
-          "orario": "08:00",
-          "alimenti": [
-            {
-              "nome": "Fiocchi d'avena",
-              "grammi": 70,
-              "kcal": 259,
-              "proteine": 9,
-              "carbo": 48,
-              "grassi": 5
-            },
-            {
-              "nome": "Latte parzialmente scremato",
-              "grammi": 250,
-              "kcal": 108,
-              "proteine": 8,
-              "carbo": 12,
               "grassi": 3
             },
             {
-              "nome": "Uova intere",
-              "grammi": 100,
-              "kcal": 143,
-              "proteine": 13,
-              "carbo": 1,
-              "grassi": 10
-            },
-            {
-              "nome": "Miele",
-              "grammi": 10,
-              "kcal": 30,
-              "proteine": 0,
-              "carbo": 8,
-              "grassi": 0
-            },
-            {
-              "nome": "Mirtilli freschi",
-              "grammi": 100,
-              "kcal": 57,
-              "proteine": 1,
-              "carbo": 14,
-              "grassi": 0
-            }
-          ],
-          "totale": {
-            "kcal": 597,
-            "proteine": 31,
-            "carbo": 83,
-            "grassi": 18
-          }
-        },
-        {
-          "nome": "Spuntino mattina",
-          "orario": "10:30",
-          "alimenti": [
-            {
-              "nome": "Yogurt greco 0% grassi",
+              "nome": "Latte parzialmente scremato",
               "grammi": 200,
-              "kcal": 118,
-              "proteine": 20,
-              "carbo": 8,
-              "grassi": 0
-            },
-            {
-              "nome": "Pane integrale",
-              "grammi": 50,
-              "kcal": 130,
-              "proteine": 5,
-              "carbo": 24,
-              "grassi": 2
-            },
-            {
-              "nome": "Mandorle",
-              "grammi": 25,
-              "kcal": 145,
-              "proteine": 5,
-              "carbo": 5,
-              "grassi": 12
-            },
-            {
-              "nome": "Kiwi",
-              "grammi": 100,
-              "kcal": 61,
-              "proteine": 1,
-              "carbo": 15,
-              "grassi": 0
-            }
-          ],
-          "totale": {
-            "kcal": 454,
-            "proteine": 31,
-            "carbo": 52,
-            "grassi": 14
-          }
-        },
-        {
-          "nome": "Pranzo",
-          "orario": "13:00",
-          "alimenti": [
-            {
-              "nome": "Pasta integrale (pesata cruda)",
-              "grammi": 90,
-              "kcal": 322,
-              "proteine": 12,
-              "carbo": 65,
-              "grassi": 1
-            },
-            {
-              "nome": "Carne bovina magra (fesa)",
-              "grammi": 180,
-              "kcal": 225,
-              "proteine": 38,
-              "carbo": 0,
-              "grassi": 7
-            },
-            {
-              "nome": "Olio extravergine d'oliva",
-              "grammi": 10,
               "kcal": 88,
-              "proteine": 0,
-              "carbo": 0,
-              "grassi": 10
-            },
-            {
-              "nome": "Broccoli",
-              "grammi": 200,
-              "kcal": 68,
               "proteine": 6,
-              "carbo": 14,
-              "grassi": 1
+              "carbo": 10,
+              "grassi": 3
+            },
+            {
+              "nome": "Riso soffiato / wafer riso",
+              "grammi": 30,
+              "kcal": 116,
+              "proteine": 2,
+              "carbo": 26,
+              "grassi": 0
             }
           ],
           "totale": {
-            "kcal": 703,
+            "kcal": 432,
             "proteine": 56,
-            "carbo": 79,
-            "grassi": 19
-          }
-        },
-        {
-          "nome": "Merenda",
-          "orario": "16:30",
-          "alimenti": [
-            {
-              "nome": "Yogurt greco 0% grassi",
-              "grammi": 200,
-              "kcal": 118,
-              "proteine": 20,
-              "carbo": 8,
-              "grassi": 0
-            },
-            {
-              "nome": "Mela",
-              "grammi": 150,
-              "kcal": 78,
-              "proteine": 0,
-              "carbo": 21,
-              "grassi": 0
-            },
-            {
-              "nome": "Noci sgusciate",
-              "grammi": 20,
-              "kcal": 131,
-              "proteine": 4,
-              "carbo": 3,
-              "grassi": 13
-            }
-          ],
-          "totale": {
-            "kcal": 327,
-            "proteine": 24,
-            "carbo": 32,
-            "grassi": 13
+            "carbo": 40,
+            "grassi": 6
           }
         },
         {
@@ -433,19 +144,27 @@
           "orario": "20:00",
           "alimenti": [
             {
-              "nome": "Merluzzo al vapore",
+              "nome": "Petto di pollo alla griglia",
               "grammi": 200,
-              "kcal": 172,
-              "proteine": 38,
+              "kcal": 220,
+              "proteine": 46,
               "carbo": 0,
-              "grassi": 2
+              "grassi": 3
             },
             {
-              "nome": "Fagioli borlotti cotti",
-              "grammi": 150,
-              "kcal": 162,
-              "proteine": 9,
-              "carbo": 26,
+              "nome": "Riso basmati cotto",
+              "grammi": 200,
+              "kcal": 260,
+              "proteine": 5,
+              "carbo": 57,
+              "grassi": 0
+            },
+            {
+              "nome": "Verdure miste (zucchine, peperoni, spinaci)",
+              "grammi": 200,
+              "kcal": 60,
+              "proteine": 4,
+              "carbo": 10,
               "grassi": 1
             },
             {
@@ -457,19 +176,1344 @@
               "grassi": 15
             },
             {
-              "nome": "Carote",
+              "nome": "Pane integrale",
+              "grammi": 40,
+              "kcal": 95,
+              "proteine": 4,
+              "carbo": 18,
+              "grassi": 1
+            }
+          ],
+          "totale": {
+            "kcal": 768,
+            "proteine": 59,
+            "carbo": 85,
+            "grassi": 20
+          }
+        },
+        {
+          "nome": "Spuntino serale (se fabbisogno non coperto)",
+          "orario": "22:00",
+          "note": "Opzionale — consumare solo se non si è raggiunto il target calorico/proteico",
+          "alimenti": [
+            {
+              "nome": "Yogurt greco 0% grassi",
               "grammi": 150,
-              "kcal": 53,
-              "proteine": 2,
-              "carbo": 12,
+              "kcal": 90,
+              "proteine": 15,
+              "carbo": 6,
+              "grassi": 0
+            },
+            {
+              "nome": "Mirtilli freschi",
+              "grammi": 80,
+              "kcal": 46,
+              "proteine": 1,
+              "carbo": 11,
+              "grassi": 0
+            },
+            {
+              "nome": "Noci sgusciate",
+              "grammi": 20,
+              "kcal": 131,
+              "proteine": 3,
+              "carbo": 2,
+              "grassi": 13
+            }
+          ],
+          "totale": {
+            "kcal": 267,
+            "proteine": 19,
+            "carbo": 19,
+            "grassi": 13
+          }
+        }
+      ]
+    },
+    {
+      "nome": "Martedì — Riposo",
+      "tipo": "riposo",
+      "kcal": 2549,
+      "macros": {
+        "proteine": 201,
+        "carboidrati": 289,
+        "grassi": 79
+      },
+      "pasti": [
+        {
+          "nome": "Colazione",
+          "orario": "08:00",
+          "alimenti": [
+            {
+              "nome": "Yogurt greco 0% grassi",
+              "grammi": 150,
+              "kcal": 90,
+              "proteine": 15,
+              "carbo": 6,
+              "grassi": 0
+            },
+            {
+              "nome": "Muesli proteico",
+              "grammi": 30,
+              "kcal": 108,
+              "proteine": 9,
+              "carbo": 14,
+              "grassi": 2
+            },
+            {
+              "nome": "Banana media",
+              "grammi": 120,
+              "kcal": 107,
+              "proteine": 1,
+              "carbo": 27,
               "grassi": 0
             }
           ],
           "totale": {
-            "kcal": 520,
+            "kcal": 305,
+            "proteine": 25,
+            "carbo": 47,
+            "grassi": 2
+          }
+        },
+        {
+          "nome": "Pranzo",
+          "orario": "13:00",
+          "alimenti": [
+            {
+              "nome": "Pasta di semola (pesata cruda)",
+              "grammi": 90,
+              "kcal": 320,
+              "proteine": 11,
+              "carbo": 65,
+              "grassi": 1
+            },
+            {
+              "nome": "Pesto genovese (vasetto)",
+              "grammi": 40,
+              "kcal": 172,
+              "proteine": 2,
+              "carbo": 2,
+              "grassi": 18
+            },
+            {
+              "nome": "Parmigiano grattugiato",
+              "grammi": 15,
+              "kcal": 62,
+              "proteine": 5,
+              "carbo": 0,
+              "grassi": 4
+            },
+            {
+              "nome": "Banana media",
+              "grammi": 120,
+              "kcal": 107,
+              "proteine": 1,
+              "carbo": 27,
+              "grassi": 0
+            }
+          ],
+          "totale": {
+            "kcal": 661,
+            "proteine": 19,
+            "carbo": 94,
+            "grassi": 23
+          }
+        },
+        {
+          "nome": "Merenda",
+          "orario": "16:30",
+          "alimenti": [
+            {
+              "nome": "Proteine whey isolate al cioccolato",
+              "grammi": 30,
+              "kcal": 114,
+              "proteine": 24,
+              "carbo": 2,
+              "grassi": 2
+            },
+            {
+              "nome": "Latte parzialmente scremato",
+              "grammi": 200,
+              "kcal": 88,
+              "proteine": 6,
+              "carbo": 10,
+              "grassi": 3
+            },
+            {
+              "nome": "Mela media",
+              "grammi": 150,
+              "kcal": 78,
+              "proteine": 0,
+              "carbo": 20,
+              "grassi": 0
+            }
+          ],
+          "totale": {
+            "kcal": 280,
+            "proteine": 30,
+            "carbo": 32,
+            "grassi": 5
+          }
+        },
+        {
+          "nome": "Cena",
+          "orario": "20:00",
+          "alimenti": [
+            {
+              "nome": "Filetto di salmone al forno",
+              "grammi": 200,
+              "kcal": 364,
+              "proteine": 40,
+              "carbo": 0,
+              "grassi": 22
+            },
+            {
+              "nome": "Patate al forno",
+              "grammi": 200,
+              "kcal": 172,
+              "proteine": 4,
+              "carbo": 38,
+              "grassi": 0
+            },
+            {
+              "nome": "Insalata mista (rucola, pomodori)",
+              "grammi": 150,
+              "kcal": 35,
+              "proteine": 2,
+              "carbo": 5,
+              "grassi": 0
+            },
+            {
+              "nome": "Olio extravergine d'oliva",
+              "grammi": 15,
+              "kcal": 133,
+              "proteine": 0,
+              "carbo": 0,
+              "grassi": 15
+            },
+            {
+              "nome": "Pane integrale",
+              "grammi": 40,
+              "kcal": 95,
+              "proteine": 4,
+              "carbo": 18,
+              "grassi": 1
+            }
+          ],
+          "totale": {
+            "kcal": 799,
+            "proteine": 50,
+            "carbo": 61,
+            "grassi": 38
+          }
+        },
+        {
+          "nome": "Spuntino serale",
+          "orario": "22:00",
+          "alimenti": [
+            {
+              "nome": "Yogurt greco 0% grassi",
+              "grammi": 150,
+              "kcal": 90,
+              "proteine": 15,
+              "carbo": 6,
+              "grassi": 0
+            },
+            {
+              "nome": "Mandorle",
+              "grammi": 20,
+              "kcal": 123,
+              "proteine": 5,
+              "carbo": 2,
+              "grassi": 11
+            },
+            {
+              "nome": "Cachi / Pere (frutto di stagione)",
+              "grammi": 100,
+              "kcal": 61,
+              "proteine": 0,
+              "carbo": 15,
+              "grassi": 0
+            }
+          ],
+          "totale": {
+            "kcal": 274,
+            "proteine": 20,
+            "carbo": 23,
+            "grassi": 11
+          }
+        }
+      ]
+    },
+    {
+      "nome": "Mercoledì — Allenamento",
+      "tipo": "allenamento",
+      "kcal": 2872,
+      "macros": {
+        "proteine": 203,
+        "carboidrati": 338,
+        "grassi": 80
+      },
+      "pasti": [
+        {
+          "nome": "Colazione",
+          "orario": "07:30",
+          "alimenti": [
+            {
+              "nome": "Yogurt greco 0% grassi",
+              "grammi": 150,
+              "kcal": 90,
+              "proteine": 15,
+              "carbo": 6,
+              "grassi": 0
+            },
+            {
+              "nome": "Muesli proteico",
+              "grammi": 30,
+              "kcal": 108,
+              "proteine": 9,
+              "carbo": 14,
+              "grassi": 2
+            },
+            {
+              "nome": "Banana media",
+              "grammi": 120,
+              "kcal": 107,
+              "proteine": 1,
+              "carbo": 27,
+              "grassi": 0
+            }
+          ],
+          "totale": {
+            "kcal": 305,
+            "proteine": 25,
+            "carbo": 47,
+            "grassi": 2
+          }
+        },
+        {
+          "nome": "Pranzo",
+          "orario": "13:00",
+          "alimenti": [
+            {
+              "nome": "Pasta di semola (pesata cruda)",
+              "grammi": 100,
+              "kcal": 356,
+              "proteine": 12,
+              "carbo": 73,
+              "grassi": 1
+            },
+            {
+              "nome": "Sugo di pomodoro (passata + olio EVO)",
+              "grammi": 150,
+              "kcal": 88,
+              "proteine": 2,
+              "carbo": 10,
+              "grassi": 5
+            },
+            {
+              "nome": "Tonno al naturale in scatola",
+              "grammi": 80,
+              "kcal": 84,
+              "proteine": 19,
+              "carbo": 0,
+              "grassi": 1
+            },
+            {
+              "nome": "Banana media",
+              "grammi": 120,
+              "kcal": 107,
+              "proteine": 1,
+              "carbo": 27,
+              "grassi": 0
+            }
+          ],
+          "totale": {
+            "kcal": 635,
+            "proteine": 34,
+            "carbo": 110,
+            "grassi": 7
+          }
+        },
+        {
+          "nome": "Merenda / Pre-Post Allenamento",
+          "orario": "16:30",
+          "note": "Consumare 30-40 min prima dell'allenamento o immediatamente dopo",
+          "alimenti": [
+            {
+              "nome": "Proteine whey isolate al cioccolato",
+              "grammi": 60,
+              "kcal": 228,
+              "proteine": 48,
+              "carbo": 4,
+              "grassi": 3
+            },
+            {
+              "nome": "Latte parzialmente scremato",
+              "grammi": 200,
+              "kcal": 88,
+              "proteine": 6,
+              "carbo": 10,
+              "grassi": 3
+            },
+            {
+              "nome": "Riso soffiato / wafer riso",
+              "grammi": 30,
+              "kcal": 116,
+              "proteine": 2,
+              "carbo": 26,
+              "grassi": 0
+            }
+          ],
+          "totale": {
+            "kcal": 432,
+            "proteine": 56,
+            "carbo": 40,
+            "grassi": 6
+          }
+        },
+        {
+          "nome": "Cena",
+          "orario": "20:00",
+          "alimenti": [
+            {
+              "nome": "Manzo macinato magro (5% grassi) — polpette al forno",
+              "grammi": 200,
+              "kcal": 280,
+              "proteine": 42,
+              "carbo": 0,
+              "grassi": 12
+            },
+            {
+              "nome": "Patate lessate",
+              "grammi": 200,
+              "kcal": 172,
+              "proteine": 4,
+              "carbo": 38,
+              "grassi": 0
+            },
+            {
+              "nome": "Verdure al vapore (fagiolini, broccoli)",
+              "grammi": 200,
+              "kcal": 56,
+              "proteine": 5,
+              "carbo": 8,
+              "grassi": 1
+            },
+            {
+              "nome": "Olio extravergine d'oliva",
+              "grammi": 15,
+              "kcal": 133,
+              "proteine": 0,
+              "carbo": 0,
+              "grassi": 15
+            },
+            {
+              "nome": "Pane integrale",
+              "grammi": 50,
+              "kcal": 119,
+              "proteine": 5,
+              "carbo": 22,
+              "grassi": 1
+            }
+          ],
+          "totale": {
+            "kcal": 760,
+            "proteine": 56,
+            "carbo": 68,
+            "grassi": 29
+          }
+        },
+        {
+          "nome": "Spuntino serale",
+          "orario": "22:00",
+          "alimenti": [
+            {
+              "nome": "Ricotta vaccina magra",
+              "grammi": 150,
+              "kcal": 129,
+              "proteine": 15,
+              "carbo": 4,
+              "grassi": 6
+            },
+            {
+              "nome": "Miele (1 cucchiaino)",
+              "grammi": 10,
+              "kcal": 31,
+              "proteine": 0,
+              "carbo": 8,
+              "grassi": 0
+            },
+            {
+              "nome": "Noci sgusciate",
+              "grammi": 20,
+              "kcal": 131,
+              "proteine": 3,
+              "carbo": 2,
+              "grassi": 13
+            }
+          ],
+          "totale": {
+            "kcal": 291,
+            "proteine": 18,
+            "carbo": 14,
+            "grassi": 19
+          }
+        }
+      ]
+    },
+    {
+      "nome": "Giovedì — Riposo",
+      "tipo": "riposo",
+      "kcal": 2551,
+      "macros": {
+        "proteine": 200,
+        "carboidrati": 291,
+        "grassi": 78
+      },
+      "pasti": [
+        {
+          "nome": "Colazione",
+          "orario": "08:00",
+          "alimenti": [
+            {
+              "nome": "Yogurt greco 0% grassi",
+              "grammi": 150,
+              "kcal": 90,
+              "proteine": 15,
+              "carbo": 6,
+              "grassi": 0
+            },
+            {
+              "nome": "Muesli proteico",
+              "grammi": 30,
+              "kcal": 108,
+              "proteine": 9,
+              "carbo": 14,
+              "grassi": 2
+            },
+            {
+              "nome": "Banana media",
+              "grammi": 120,
+              "kcal": 107,
+              "proteine": 1,
+              "carbo": 27,
+              "grassi": 0
+            }
+          ],
+          "totale": {
+            "kcal": 305,
+            "proteine": 25,
+            "carbo": 47,
+            "grassi": 2
+          }
+        },
+        {
+          "nome": "Pranzo",
+          "orario": "13:00",
+          "alimenti": [
+            {
+              "nome": "Minestra di lenticchie rosse (secche pesate crude)",
+              "grammi": 80,
+              "kcal": 272,
+              "proteine": 21,
+              "carbo": 44,
+              "grassi": 1
+            },
+            {
+              "nome": "Carote, sedano, cipolla (per minestra)",
+              "grammi": 100,
+              "kcal": 38,
+              "proteine": 1,
+              "carbo": 8,
+              "grassi": 0
+            },
+            {
+              "nome": "Pane integrale",
+              "grammi": 60,
+              "kcal": 142,
+              "proteine": 6,
+              "carbo": 27,
+              "grassi": 1
+            },
+            {
+              "nome": "Olio extravergine d'oliva (filo a crudo)",
+              "grammi": 10,
+              "kcal": 89,
+              "proteine": 0,
+              "carbo": 0,
+              "grassi": 10
+            },
+            {
+              "nome": "Banana media",
+              "grammi": 120,
+              "kcal": 107,
+              "proteine": 1,
+              "carbo": 27,
+              "grassi": 0
+            }
+          ],
+          "totale": {
+            "kcal": 648,
+            "proteine": 29,
+            "carbo": 106,
+            "grassi": 12
+          }
+        },
+        {
+          "nome": "Merenda",
+          "orario": "16:30",
+          "alimenti": [
+            {
+              "nome": "Proteine whey isolate al cioccolato",
+              "grammi": 30,
+              "kcal": 114,
+              "proteine": 24,
+              "carbo": 2,
+              "grassi": 2
+            },
+            {
+              "nome": "Latte parzialmente scremato",
+              "grammi": 200,
+              "kcal": 88,
+              "proteine": 6,
+              "carbo": 10,
+              "grassi": 3
+            },
+            {
+              "nome": "Mela media",
+              "grammi": 150,
+              "kcal": 78,
+              "proteine": 0,
+              "carbo": 20,
+              "grassi": 0
+            }
+          ],
+          "totale": {
+            "kcal": 280,
+            "proteine": 30,
+            "carbo": 32,
+            "grassi": 5
+          }
+        },
+        {
+          "nome": "Cena",
+          "orario": "20:00",
+          "alimenti": [
+            {
+              "nome": "Trota al forno con limone e erbe aromatiche",
+              "grammi": 200,
+              "kcal": 272,
+              "proteine": 38,
+              "carbo": 0,
+              "grassi": 13
+            },
+            {
+              "nome": "Riso basmati cotto",
+              "grammi": 180,
+              "kcal": 234,
+              "proteine": 4,
+              "carbo": 51,
+              "grassi": 0
+            },
+            {
+              "nome": "Zucchine grigliate",
+              "grammi": 200,
+              "kcal": 34,
+              "proteine": 2,
+              "carbo": 6,
+              "grassi": 0
+            },
+            {
+              "nome": "Olio extravergine d'oliva",
+              "grammi": 12,
+              "kcal": 107,
+              "proteine": 0,
+              "carbo": 0,
+              "grassi": 12
+            }
+          ],
+          "totale": {
+            "kcal": 647,
+            "proteine": 44,
+            "carbo": 57,
+            "grassi": 25
+          }
+        },
+        {
+          "nome": "Spuntino serale",
+          "orario": "22:00",
+          "alimenti": [
+            {
+              "nome": "Yogurt greco 0% grassi",
+              "grammi": 150,
+              "kcal": 90,
+              "proteine": 15,
+              "carbo": 6,
+              "grassi": 0
+            },
+            {
+              "nome": "Mandorle",
+              "grammi": 20,
+              "kcal": 123,
+              "proteine": 5,
+              "carbo": 2,
+              "grassi": 11
+            },
+            {
+              "nome": "Kiwi",
+              "grammi": 100,
+              "kcal": 61,
+              "proteine": 1,
+              "carbo": 14,
+              "grassi": 0
+            },
+            {
+              "nome": "Fiocchi di latte (cottage cheese)",
+              "grammi": 100,
+              "kcal": 100,
+              "proteine": 12,
+              "carbo": 4,
+              "grassi": 3
+            }
+          ],
+          "totale": {
+            "kcal": 374,
+            "proteine": 33,
+            "carbo": 26,
+            "grassi": 14
+          }
+        }
+      ]
+    },
+    {
+      "nome": "Venerdì — Allenamento",
+      "tipo": "allenamento",
+      "kcal": 2869,
+      "macros": {
+        "proteine": 202,
+        "carboidrati": 340,
+        "grassi": 77
+      },
+      "pasti": [
+        {
+          "nome": "Colazione",
+          "orario": "07:30",
+          "alimenti": [
+            {
+              "nome": "Yogurt greco 0% grassi",
+              "grammi": 150,
+              "kcal": 90,
+              "proteine": 15,
+              "carbo": 6,
+              "grassi": 0
+            },
+            {
+              "nome": "Muesli proteico",
+              "grammi": 30,
+              "kcal": 108,
+              "proteine": 9,
+              "carbo": 14,
+              "grassi": 2
+            },
+            {
+              "nome": "Banana media",
+              "grammi": 120,
+              "kcal": 107,
+              "proteine": 1,
+              "carbo": 27,
+              "grassi": 0
+            }
+          ],
+          "totale": {
+            "kcal": 305,
+            "proteine": 25,
+            "carbo": 47,
+            "grassi": 2
+          }
+        },
+        {
+          "nome": "Pranzo",
+          "orario": "13:00",
+          "alimenti": [
+            {
+              "nome": "Pasta di semola (pesata cruda)",
+              "grammi": 100,
+              "kcal": 356,
+              "proteine": 12,
+              "carbo": 73,
+              "grassi": 1
+            },
+            {
+              "nome": "Carbonara: uova intere",
+              "grammi": 100,
+              "kcal": 155,
+              "proteine": 13,
+              "carbo": 1,
+              "grassi": 11
+            },
+            {
+              "nome": "Carbonara: guanciale (o pancetta tesa)",
+              "grammi": 30,
+              "kcal": 138,
+              "proteine": 5,
+              "carbo": 0,
+              "grassi": 13
+            },
+            {
+              "nome": "Parmigiano grattugiato",
+              "grammi": 20,
+              "kcal": 82,
+              "proteine": 7,
+              "carbo": 0,
+              "grassi": 6
+            },
+            {
+              "nome": "Banana media",
+              "grammi": 120,
+              "kcal": 107,
+              "proteine": 1,
+              "carbo": 27,
+              "grassi": 0
+            }
+          ],
+          "totale": {
+            "kcal": 838,
+            "proteine": 38,
+            "carbo": 101,
+            "grassi": 31
+          }
+        },
+        {
+          "nome": "Merenda / Pre-Post Allenamento",
+          "orario": "16:30",
+          "note": "Consumare 30-40 min prima dell'allenamento o immediatamente dopo",
+          "alimenti": [
+            {
+              "nome": "Proteine whey isolate al cioccolato",
+              "grammi": 60,
+              "kcal": 228,
+              "proteine": 48,
+              "carbo": 4,
+              "grassi": 3
+            },
+            {
+              "nome": "Latte parzialmente scremato",
+              "grammi": 200,
+              "kcal": 88,
+              "proteine": 6,
+              "carbo": 10,
+              "grassi": 3
+            },
+            {
+              "nome": "Riso soffiato / wafer riso",
+              "grammi": 30,
+              "kcal": 116,
+              "proteine": 2,
+              "carbo": 26,
+              "grassi": 0
+            }
+          ],
+          "totale": {
+            "kcal": 432,
+            "proteine": 56,
+            "carbo": 40,
+            "grassi": 6
+          }
+        },
+        {
+          "nome": "Cena",
+          "orario": "20:00",
+          "alimenti": [
+            {
+              "nome": "Branzino al forno (filetto)",
+              "grammi": 200,
+              "kcal": 206,
+              "proteine": 38,
+              "carbo": 0,
+              "grassi": 6
+            },
+            {
+              "nome": "Patate al forno con rosmarino",
+              "grammi": 250,
+              "kcal": 215,
+              "proteine": 5,
+              "carbo": 47,
+              "grassi": 0
+            },
+            {
+              "nome": "Verdure miste (pomodorini, rucola, cetrioli)",
+              "grammi": 150,
+              "kcal": 38,
+              "proteine": 2,
+              "carbo": 6,
+              "grassi": 0
+            },
+            {
+              "nome": "Olio extravergine d'oliva",
+              "grammi": 15,
+              "kcal": 133,
+              "proteine": 0,
+              "carbo": 0,
+              "grassi": 15
+            },
+            {
+              "nome": "Pane integrale",
+              "grammi": 40,
+              "kcal": 95,
+              "proteine": 4,
+              "carbo": 18,
+              "grassi": 1
+            }
+          ],
+          "totale": {
+            "kcal": 687,
             "proteine": 49,
-            "carbo": 38,
-            "grassi": 18
+            "carbo": 71,
+            "grassi": 22
+          }
+        },
+        {
+          "nome": "Spuntino serale",
+          "orario": "22:00",
+          "alimenti": [
+            {
+              "nome": "Yogurt greco 0% grassi",
+              "grammi": 150,
+              "kcal": 90,
+              "proteine": 15,
+              "carbo": 6,
+              "grassi": 0
+            },
+            {
+              "nome": "Fiocchi di latte",
+              "grammi": 100,
+              "kcal": 100,
+              "proteine": 12,
+              "carbo": 4,
+              "grassi": 3
+            },
+            {
+              "nome": "Mandorle",
+              "grammi": 15,
+              "kcal": 92,
+              "proteine": 3,
+              "carbo": 2,
+              "grassi": 8
+            },
+            {
+              "nome": "Frutti di bosco misti",
+              "grammi": 80,
+              "kcal": 43,
+              "proteine": 1,
+              "carbo": 9,
+              "grassi": 0
+            }
+          ],
+          "totale": {
+            "kcal": 325,
+            "proteine": 31,
+            "carbo": 21,
+            "grassi": 11
+          }
+        }
+      ]
+    },
+    {
+      "nome": "Sabato — Sgarro",
+      "tipo": "sgarro",
+      "kcal": 2870,
+      "note_giorno": "Pasto sgarro a cena (pizza o hamburger fuori). Colazione, pranzo e merenda restano puliti. Kcal totali mantenute al TDEE.",
+      "macros": {
+        "proteine": 185,
+        "carboidrati": 340,
+        "grassi": 90
+      },
+      "pasti": [
+        {
+          "nome": "Colazione",
+          "orario": "08:30",
+          "alimenti": [
+            {
+              "nome": "Yogurt greco 0% grassi",
+              "grammi": 150,
+              "kcal": 90,
+              "proteine": 15,
+              "carbo": 6,
+              "grassi": 0
+            },
+            {
+              "nome": "Muesli proteico",
+              "grammi": 30,
+              "kcal": 108,
+              "proteine": 9,
+              "carbo": 14,
+              "grassi": 2
+            },
+            {
+              "nome": "Banana media",
+              "grammi": 120,
+              "kcal": 107,
+              "proteine": 1,
+              "carbo": 27,
+              "grassi": 0
+            }
+          ],
+          "totale": {
+            "kcal": 305,
+            "proteine": 25,
+            "carbo": 47,
+            "grassi": 2
+          }
+        },
+        {
+          "nome": "Pranzo (leggero pre-sgarro serale)",
+          "orario": "13:00",
+          "alimenti": [
+            {
+              "nome": "Petto di pollo alla griglia",
+              "grammi": 180,
+              "kcal": 198,
+              "proteine": 42,
+              "carbo": 0,
+              "grassi": 2
+            },
+            {
+              "nome": "Riso basmati cotto",
+              "grammi": 150,
+              "kcal": 195,
+              "proteine": 4,
+              "carbo": 43,
+              "grassi": 0
+            },
+            {
+              "nome": "Verdure grigliate miste",
+              "grammi": 200,
+              "kcal": 60,
+              "proteine": 3,
+              "carbo": 10,
+              "grassi": 1
+            },
+            {
+              "nome": "Olio extravergine d'oliva",
+              "grammi": 10,
+              "kcal": 89,
+              "proteine": 0,
+              "carbo": 0,
+              "grassi": 10
+            }
+          ],
+          "totale": {
+            "kcal": 542,
+            "proteine": 49,
+            "carbo": 53,
+            "grassi": 13
+          }
+        },
+        {
+          "nome": "Merenda",
+          "orario": "16:30",
+          "alimenti": [
+            {
+              "nome": "Proteine whey isolate al cioccolato",
+              "grammi": 30,
+              "kcal": 114,
+              "proteine": 24,
+              "carbo": 2,
+              "grassi": 2
+            },
+            {
+              "nome": "Latte parzialmente scremato",
+              "grammi": 200,
+              "kcal": 88,
+              "proteine": 6,
+              "carbo": 10,
+              "grassi": 3
+            },
+            {
+              "nome": "Mela media",
+              "grammi": 150,
+              "kcal": 78,
+              "proteine": 0,
+              "carbo": 20,
+              "grassi": 0
+            }
+          ],
+          "totale": {
+            "kcal": 280,
+            "proteine": 30,
+            "carbo": 32,
+            "grassi": 5
+          }
+        },
+        {
+          "nome": "Cena — PASTO SGARRO",
+          "orario": "20:00",
+          "note": "Pasto libero fuori: pizza margherita (o con prosciutto/funghi) oppure hamburger con patatine. Scegliere un'opzione, non entrambe. Evitare super-size o dessert aggiuntivi.",
+          "alimenti": [
+            {
+              "nome": "Pizza margherita media (oppure hamburger + patatine fresche)",
+              "grammi": 500,
+              "kcal": 1200,
+              "proteine": 48,
+              "carbo": 175,
+              "grassi": 38
+            },
+            {
+              "nome": "Birra media (33cl) o acqua — opzionale",
+              "grammi": 330,
+              "kcal": 0,
+              "proteine": 0,
+              "carbo": 0,
+              "grassi": 0
+            }
+          ],
+          "totale": {
+            "kcal": 1200,
+            "proteine": 48,
+            "carbo": 175,
+            "grassi": 38
+          }
+        }
+      ]
+    },
+    {
+      "nome": "Domenica — Riposo",
+      "tipo": "riposo",
+      "kcal": 2548,
+      "macros": {
+        "proteine": 200,
+        "carboidrati": 288,
+        "grassi": 80
+      },
+      "pasti": [
+        {
+          "nome": "Colazione",
+          "orario": "09:00",
+          "alimenti": [
+            {
+              "nome": "Yogurt greco 0% grassi",
+              "grammi": 150,
+              "kcal": 90,
+              "proteine": 15,
+              "carbo": 6,
+              "grassi": 0
+            },
+            {
+              "nome": "Muesli proteico",
+              "grammi": 30,
+              "kcal": 108,
+              "proteine": 9,
+              "carbo": 14,
+              "grassi": 2
+            },
+            {
+              "nome": "Banana media",
+              "grammi": 120,
+              "kcal": 107,
+              "proteine": 1,
+              "carbo": 27,
+              "grassi": 0
+            },
+            {
+              "nome": "Uova intere strapazzate",
+              "grammi": 100,
+              "kcal": 155,
+              "proteine": 13,
+              "carbo": 1,
+              "grassi": 11
+            }
+          ],
+          "totale": {
+            "kcal": 460,
+            "proteine": 38,
+            "carbo": 48,
+            "grassi": 13
+          }
+        },
+        {
+          "nome": "Pranzo",
+          "orario": "13:30",
+          "alimenti": [
+            {
+              "nome": "Minestra di ceci con pasta (ditalini)",
+              "grammi": 80,
+              "kcal": 112,
+              "proteine": 7,
+              "carbo": 18,
+              "grassi": 1
+            },
+            {
+              "nome": "Ceci cotti (dalla minestra)",
+              "grammi": 200,
+              "kcal": 242,
+              "proteine": 16,
+              "carbo": 40,
+              "grassi": 4
+            },
+            {
+              "nome": "Passata di pomodoro",
+              "grammi": 100,
+              "kcal": 26,
+              "proteine": 1,
+              "carbo": 5,
+              "grassi": 0
+            },
+            {
+              "nome": "Olio extravergine d'oliva",
+              "grammi": 15,
+              "kcal": 133,
+              "proteine": 0,
+              "carbo": 0,
+              "grassi": 15
+            },
+            {
+              "nome": "Pane integrale",
+              "grammi": 50,
+              "kcal": 119,
+              "proteine": 5,
+              "carbo": 22,
+              "grassi": 1
+            },
+            {
+              "nome": "Banana media",
+              "grammi": 120,
+              "kcal": 107,
+              "proteine": 1,
+              "carbo": 27,
+              "grassi": 0
+            }
+          ],
+          "totale": {
+            "kcal": 739,
+            "proteine": 30,
+            "carbo": 112,
+            "grassi": 21
+          }
+        },
+        {
+          "nome": "Merenda",
+          "orario": "16:30",
+          "alimenti": [
+            {
+              "nome": "Proteine whey isolate al cioccolato",
+              "grammi": 30,
+              "kcal": 114,
+              "proteine": 24,
+              "carbo": 2,
+              "grassi": 2
+            },
+            {
+              "nome": "Latte parzialmente scremato",
+              "grammi": 200,
+              "kcal": 88,
+              "proteine": 6,
+              "carbo": 10,
+              "grassi": 3
+            },
+            {
+              "nome": "Arancia grande",
+              "grammi": 200,
+              "kcal": 94,
+              "proteine": 1,
+              "carbo": 23,
+              "grassi": 0
+            }
+          ],
+          "totale": {
+            "kcal": 296,
+            "proteine": 31,
+            "carbo": 35,
+            "grassi": 5
+          }
+        },
+        {
+          "nome": "Cena",
+          "orario": "20:00",
+          "alimenti": [
+            {
+              "nome": "Mozzarella di bufala",
+              "grammi": 125,
+              "kcal": 331,
+              "proteine": 23,
+              "carbo": 2,
+              "grassi": 26
+            },
+            {
+              "nome": "Pomodori freschi a fette",
+              "grammi": 200,
+              "kcal": 36,
+              "proteine": 2,
+              "carbo": 7,
+              "grassi": 0
+            },
+            {
+              "nome": "Tonno al naturale in scatola",
+              "grammi": 160,
+              "kcal": 168,
+              "proteine": 38,
+              "carbo": 0,
+              "grassi": 2
+            },
+            {
+              "nome": "Pane integrale",
+              "grammi": 60,
+              "kcal": 142,
+              "proteine": 6,
+              "carbo": 27,
+              "grassi": 1
+            },
+            {
+              "nome": "Olio extravergine d'oliva",
+              "grammi": 10,
+              "kcal": 89,
+              "proteine": 0,
+              "carbo": 0,
+              "grassi": 10
+            }
+          ],
+          "totale": {
+            "kcal": 766,
+            "proteine": 69,
+            "carbo": 36,
+            "grassi": 39
+          }
+        },
+        {
+          "nome": "Spuntino serale",
+          "orario": "22:00",
+          "alimenti": [
+            {
+              "nome": "Ricotta vaccina magra",
+              "grammi": 150,
+              "kcal": 129,
+              "proteine": 15,
+              "carbo": 4,
+              "grassi": 6
+            },
+            {
+              "nome": "Frutti di bosco",
+              "grammi": 80,
+              "kcal": 43,
+              "proteine": 1,
+              "carbo": 9,
+              "grassi": 0
+            },
+            {
+              "nome": "Noci sgusciate",
+              "grammi": 15,
+              "kcal": 98,
+              "proteine": 2,
+              "carbo": 2,
+              "grassi": 10
+            }
+          ],
+          "totale": {
+            "kcal": 270,
+            "proteine": 18,
+            "carbo": 15,
+            "grassi": 16
           }
         }
       ]
@@ -477,28 +1521,43 @@
   ],
   "integratori": [
     {
+      "nome": "Proteine whey isolate (gusto cioccolato)",
+      "dose": "30-60g in polvere",
+      "timing": "Merenda (tutti i giorni) e/o post-allenamento nei giorni di training",
+      "note": "Con latte parzialmente scremato (200ml) o acqua. Già incluse nel piano pasti. Nei giorni di allenamento usare la dose da 60g alla merenda pre/post workout."
+    },
+    {
       "nome": "Creatina monoidrato",
       "dose": "5g",
-      "timing": "mattino con colazione (giorni di riposo) oppure subito dopo l'allenamento (giorni di allenamento)",
-      "note": "Sciogliere in acqua o succo di frutta. Assumere tutti i giorni senza interruzioni, inclusa la fase di recupero TOS. Non necessario il loading."
+      "timing": "Ogni giorno, preferibilmente post-allenamento (nei giorni di riposo a qualsiasi pasto)",
+      "note": "Miscelata con acqua o succo di frutta. Si anticipa dalla Fase 0 per sfruttare la fase di carico e massimizzare i benefici nel recupero. Nessun effetto negativo durante la guarigione TOS."
+    },
+    {
+      "nome": "Omega-3 (EPA+DHA)",
+      "dose": "2-3g EPA+DHA/die (circa 3-4 capsule da 1g dipendendo dalla concentrazione)",
+      "timing": "Con i pasti principali (pranzo o cena)",
+      "note": "PRIORITÀ durante la fase di recupero TOS: azione anti-infiammatoria documentata. Consumo regolare di salmone/trota/tonno nel piano (2-3 porzioni/settimana) contribuisce all'apporto. Integrare con capsule nei giorni senza pesce."
     },
     {
       "nome": "Vitamina D3",
       "dose": "2000 UI",
-      "timing": "con il pranzo",
-      "note": "Importante per la guarigione muscolare e ossea durante il recupero TOS. Aumentare a 4000 UI in caso di carenza documentata (esame 25-OH vitamina D < 30 ng/mL)."
+      "timing": "Con il pasto principale che contiene grassi (pranzo o cena)",
+      "note": "Supporto al sistema immunitario e alla funzione muscolare. Particolarmente utile in inverno/primavera. Abbinare a K2 (100mcg) per ottimizzare il metabolismo del calcio."
     },
     {
-      "nome": "Omega-3 (EPA+DHA)",
-      "dose": "2-3g EPA+DHA totali",
-      "timing": "suddivisi tra pranzo e cena (es. 1g + 2g)",
-      "note": "Effetto antinfiammatorio specificamente utile per la sindrome TOS e per il recupero muscolare in generale. Scegliere prodotto con almeno 60% EPA+DHA sul totale. Assumere con i pasti grassi per migliore assorbimento."
-    },
-    {
-      "nome": "Proteina Whey",
-      "dose": "60g/die (25g colazione + 35g merenda)",
-      "timing": "colazione e post-allenamento — solo nei giorni di allenamento",
-      "note": "Nei giorni di riposo non necessaria se l'alimentazione solida raggiunge il target proteico (~191g). Preferire isolato o concentrato certificato. Controllare l'assenza di lattosio in caso di sensibilita'."
+      "nome": "Magnesio bisglicinato",
+      "dose": "300-400mg",
+      "timing": "La sera prima di dormire",
+      "note": "Supporto al recupero muscolare, qualità del sonno e riduzione crampi. Utile durante la fase di recupero TOS."
     }
-  ]
+  ],
+  "note_finali": {
+    "colazione_fissa": "La colazione yogurt greco + muesli proteico è la base fissa per tutti i giorni. Integrare con banana e/o uova nei giorni in cui serve più energia (domenica, giorni post-allenamento pesante).",
+    "pasti_sgarro": "1 pasto sgarro a settimana (sabato sera): pizza o hamburger con patatine. NON eccedere con porzioni extra o dessert aggiuntivi. Il secondo sgarro opzionale può essere una domenica a pranzo con pasta alla carbonara come da piano venerdì.",
+    "timing_proteine": "Distribuire le proteine uniformemente: ~50g a pasto nei pasti principali. Usare whey alla merenda per colmare il gap proteico senza appesantire i pasti principali.",
+    "omega3_priorita": "Con diagnosi TOS in corso: priorità agli alimenti ricchi di omega-3 (salmone, trota, tonno) almeno 3 volte/settimana. Integrare con capsule omega-3 nei giorni senza pesce.",
+    "idratazione": "2.5-3L di acqua al giorno. Aumentare a 3-3.5L nei giorni di allenamento. Evitare bevande zuccherate. Caffè (1-2 al giorno senza zucchero) accettato.",
+    "flessibilita_pranzo": "Il pranzo è flessibile: pasta al sugo / pesto / carbonara alternati a minestre di legumi. La banana post-pranzo è opzionale ma raccomandata come fonte di potassio e carboidrati a medio indice glicemico.",
+    "progressione_calorica": "Quando la TOS sarà guarita e si entrerà nella Fase 2 (mini-cut), ridurre le calorie a 2450-2550 kcal/die aumentando le proteine a 210-220g/die. La struttura dei pasti rimarrà invariata."
+  }
 }

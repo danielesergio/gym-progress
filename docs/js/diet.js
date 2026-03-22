@@ -8,7 +8,7 @@ const DATA_PATH = 'data/diet.json';
 
 // ── Stato interno ─────────────────────────────────────────
 let dietData = null;
-let currentDayType = 'allenamento'; // default: giorno allenamento
+let currentDayIndex = 0; // default: primo giorno dell'array
 
 // ── Utility ───────────────────────────────────────────────
 
@@ -38,16 +38,42 @@ function renderDietHeader(data) {
   }
 }
 
-// ── Render toggle bottoni ─────────────────────────────────
+// ── Render selettore giorni ───────────────────────────────
 
 /**
- * Aggiorna stato visivo dei bottoni toggle.
- * @param {string} dayType — 'allenamento' | 'riposo'
+ * Genera dinamicamente un bottone per ogni elemento di giorni[].
+ * Usa event delegation sul container #day-toggle.
+ * Se giorni[] è vuoto mostra messaggio empty state.
+ * @param {Array} giorni — array giorni dal diet.json
  */
-function renderToggle(dayType) {
+function renderDaySelector(giorni) {
+  const container = document.getElementById('day-toggle');
+  if (!container) return;
+
+  if (!giorni || giorni.length === 0) {
+    container.innerHTML = '<p class="diet-empty">Nessun giorno pianificato</p>';
+    return;
+  }
+
+  container.innerHTML = giorni.map((giorno, index) => {
+    const isActive = index === currentDayIndex;
+    const nome = giorno.nome ?? `Giorno ${index + 1}`;
+    return `<button
+      type="button"
+      class="diet-toggle-btn${isActive ? ' active' : ''}"
+      data-day-index="${index}"
+      aria-pressed="${isActive ? 'true' : 'false'}">${nome}</button>`;
+  }).join('');
+}
+
+/**
+ * Aggiorna lo stato visivo active/aria-pressed dei bottoni selettore.
+ * @param {number} dayIndex — indice del giorno corrente
+ */
+function renderToggle(dayIndex) {
   const btns = document.querySelectorAll('.diet-toggle-btn');
   btns.forEach(btn => {
-    const isActive = btn.dataset.dayType === dayType;
+    const isActive = parseInt(btn.dataset.dayIndex, 10) === dayIndex;
     btn.classList.toggle('active', isActive);
     btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
   });
@@ -312,7 +338,7 @@ function renderSupplements(integratori) {
 
 /**
  * Funzione principale di rendering della pagina dieta.
- * Riceve l'intero diet.json, filtra il giorno per currentDayType,
+ * Riceve l'intero diet.json, usa currentDayIndex per selezionare il giorno,
  * aggiorna tutti i blocchi della pagina.
  * @param {Object} data — dati da diet.json
  */
@@ -320,12 +346,12 @@ function renderDiet(data) {
   // Header fase
   renderDietHeader(data);
 
-  // Trova il giorno corrispondente al tipo corrente
+  // Seleziona il giorno per indice (non per tipo)
   const giorni = data?.giorni ?? [];
-  const dayData = giorni.find(g => g.tipo === currentDayType) ?? null;
+  const dayData = giorni[currentDayIndex] ?? null;
 
   // Aggiorna toggle visivo
-  renderToggle(currentDayType);
+  renderToggle(currentDayIndex);
 
   // Aggiorna macros summary
   renderMacrosSummary(dayData, data?.meta?.note_strategia ?? null);
@@ -333,23 +359,28 @@ function renderDiet(data) {
   // Aggiorna lista pasti
   renderMealsList(dayData);
 
-  // Aggiorna integratori (sempre visibili, indipendenti dal toggle)
+  // Aggiorna integratori (sempre visibili, indipendenti dal selettore)
   renderSupplements(data?.integratori ?? []);
 }
 
 // ── Entry point ───────────────────────────────────────────
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Collega i bottoni toggle (usano dietData già in memoria — no refetch)
-  const toggleBtns = document.querySelectorAll('.diet-toggle-btn');
-  toggleBtns.forEach(btn => {
-    btn.addEventListener('click', () => {
-      currentDayType = btn.dataset.dayType;
+  // Event delegation sul container #day-toggle
+  // Intercetta i click sui bottoni generati dinamicamente da renderDaySelector()
+  const dayToggleContainer = document.getElementById('day-toggle');
+  if (dayToggleContainer) {
+    dayToggleContainer.addEventListener('click', (event) => {
+      const btn = event.target.closest('.diet-toggle-btn');
+      if (!btn) return;
+      const index = parseInt(btn.dataset.dayIndex, 10);
+      if (isNaN(index)) return;
+      currentDayIndex = index;
       if (dietData) {
         renderDiet(dietData);
       }
     });
-  });
+  }
 
   try {
     const res = await fetch(DATA_PATH);
@@ -359,6 +390,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 
     dietData = await res.json();
+
+    // Genera il selettore giorni dinamico prima del rendering principale
+    renderDaySelector(dietData?.giorni ?? []);
     renderDiet(dietData);
 
   } catch (e) {

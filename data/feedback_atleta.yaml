@@ -11,9 +11,17 @@ allenamento:
   esercizi_pesanti:
   esercizi_difficili:
   note:
-
+    - richiesta dieta su 7 giorni con 4 pasti, colazione, pranzo, merenda e cena.
+    - A colazione di solito mangio 150gr di yogurt greco allo 0% con 30 gr di muslei proteico ( Muslei proteico = 108kcal, 1,65 grassi, carbo 13,6 ( zuccheri 3,3), 8.88 proteine) se necessario integra con qualcos'altro.
+    - Alla sera mi piacerebbe mangiare petto di pollo / manzo / pesce (salmone, trota, branzino, tonno (anche in scatola) / mozzarella / uova.
+    - A pranzo di solito mangio pasta (al sugo pomodoro, pesto, carbonara) alternati a giorni con minestra di verderue/piselli/lenticchie/ceci Accompagnati con una banana. è possibili avere 1 o 2 pasti sgarro (pizza, hamburger fuori)?
+    - prendo spesso proteine whey o proteine isolate al gusto cioccolato (con latte parzialmente scremato o acqua).
+    - unici integratori che voglio proteine e creatina, se necessari
+    - se serve un altro pasto aggiuntivo vorrei che fosse super semplice (frutto + proteine whey)
+    -
 dieta:
   seguita:            # si / parzialmente / no
+  kcal_media_stimata: # es. 2200 — media kcal effettive consumate al giorno (lascia vuoto se non sai)
   difficolta:
   note:
 
@@ -23,20 +31,25 @@ progressi:
 
 # Inserisci peso (kg) e reps eseguiti. Il calcolo 1RM e' automatico.
 massimali:
-  squat:  {kg: , reps: }
-  panca:  {kg: , reps: }
-  stacco: {kg: , reps: }
+  squat:  {kg: 125, reps: 5}
+  panca:  {kg: 100, reps: 5}
+  stacco: {kg: 170, reps: 5}
 
 corpo:
-  peso_kg:
+  peso_kg: 87.2
   misure:
-    vita_cm:
-    fianchi_cm:
-    petto_cm:
-    braccio_dx_cm:
-    coscia_dx_cm:
-    collo_cm:
+    vita_cm: 89
+    fianchi_cm: 100
+    petto_cm: 100
+    braccio_dx_cm: 33.5
+    coscia_dx_cm: 57
+    collo_cm: 39
 
 altro:
-  infortuni:
+  infortuni: Sindrome TOS dovuta probabilmente a infiammazione / contrattura del piccolo pettorale.
   note:
+    - Sono fermo da 3 settimane per infortunio, adesso sono in via di guarigione. fammi un programma di 2 settimane per riprendere ad allenarmi senza forzare minimamente il piccolo pettorale (dolore trazioni, panca piana, military press e altri).Evita tutti gli esercizi che possono far peggiorare la mia situazione attuale. Fare alzate laterali e frontali non mi sembra che mi causi alcun dolore.
+    - Al momentono sono in una fase di cut che vorrei protrarre per abbassare la mia body fat e poi riprendere con il bulk sempre che non sia una strategia sbagliata.
+    - Info sulla mia storai pregressa, prima di iniziare questo percorso (4 anni di allenamento) mi sono allenato tra le 4 e 5 volte a settimanana con un numero di ripetizioni totali a settimana tra 80 e 100 con i risultati che puoi vedere dai dati. Anche se per vari motivi ho avuto della discontinuità.
+    - Esercizi preferiti sono panca piana, squat, trazioni, deadlift, rematore, dip.
+    - Preferisco ripetiozioni basse mav 3, mav 1 o ramping

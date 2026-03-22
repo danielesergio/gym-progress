@@ -1,0 +1,75 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "diet-day-selector-dynamic",
+    "task_titolo": "Selettore giorni dieta generato dinamicamente dall'array giorni[]",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "La pagina Dieta mostra un bottone selettore per ogni elemento presente nell'array 'giorni' del JSON",
+      "soddisfatto": true,
+      "dettaglio": "diet.js linee 49-67: renderDaySelector() itera con .map() su giorni[] e crea un <button> per ogni elemento usando il campo 'nome' come etichetta e data-day-index come attributo."
+    },
+    {
+      "criterio": "Il numero di bottoni si adatta automaticamente: se giorni[] ha 7 elementi appaiono 7 bottoni, se ne ha 2 appaiono 2",
+      "soddisfatto": true,
+      "dettaglio": "diet.js linee 58-66: N bottoni generati tramite .map() per N elementi dell'array. diet.css linee 32-37: .diet-day-toggle ha flex-wrap: wrap che consente l'adattamento dinamico della griglia."
+    },
+    {
+      "criterio": "Selezionando un giorno specifico (es. 'Martedì - Allenamento') vengono mostrati i macros e i pasti di quel preciso giorno",
+      "soddisfatto": true,
+      "dettaglio": "diet.js linee 369-382: event delegation intercetta click su .diet-toggle-btn, legge data-day-index, aggiorna currentDayIndex. diet.js linee 345-364: renderDiet() usa giorni[currentDayIndex] per accedere al giorno specifico per indice (non per tipo). Macros e pasti del giorno selezionato vengono renderizzati."
+    },
+    {
+      "criterio": "Il primo giorno dell'array è selezionato di default al caricamento della pagina",
+      "soddisfatto": true,
+      "dettaglio": "diet.js linea 11: let currentDayIndex = 0; inizializza il primo giorno. diet.js linea 395: renderDaySelector() è chiamata prima di renderDiet(), che renderizza il giorno 0 con stato active."
+    },
+    {
+      "criterio": "I bottoni non sono hardcoded nell'HTML: nessun bottone giorno deve essere presente nel markup statico",
+      "soddisfatto": true,
+      "dettaglio": "diet.html linea 72: <section class='diet-day-toggle' id='day-toggle' aria-label='Seleziona giorno'></section> è completamente vuota nel markup. Nessun <button> con data-day-type o attributi statici presente. Tutti i bottoni sono generati da renderDaySelector() in diet.js."
+    },
+    {
+      "criterio": "Se l'array giorni[] è vuoto, la sezione mostra un messaggio 'Nessun giorno pianificato'",
+      "soddisfatto": true,
+      "dettaglio": "diet.js linee 53-56: if (!giorni || giorni.length === 0) { container.innerHTML = '<p class=\"diet-empty\">Nessun giorno pianificato</p>'; return; } Gestione dell'empty state completa con messaggio corretto."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/diet.html",
+      "esiste": true,
+      "note": "Container #day-toggle (linea 72) è vuoto, struttura corretta. Header aggiornato con aria-label='Seleziona giorno'. Nessun bottone hardcoded. Tutti gli id container (#macros-summary, #meals-list, #supplements-list, #diet-error) presenti e corretti."
+    },
+    {
+      "path": "docs/js/diet.js",
+      "esiste": true,
+      "note": "Refactor completo implementato: (1) currentDayIndex al posto di currentDayType (linea 11), (2) renderDaySelector() con generazione dinamica dei bottoni (linee 49-67), (3) renderToggle() per aggiornamento stato active (linee 73-80), (4) renderDiet() usa giorni[currentDayIndex] (linea 351), (5) event delegation su #day-toggle (linee 369-382), (6) empty state gestito. Fetch da data/diet.json presente (linea 386)."
+    },
+    {
+      "path": "docs/css/diet.css",
+      "esiste": true,
+      "note": ".diet-day-toggle (linee 32-37) ha display: flex, gap, margin-block, flex-wrap: wrap per adattamento dinamico. .diet-toggle-btn (linee 39-73) ha stili completi per stato normale, hover e .active. .diet-empty (linea 77-80) stilizzato. Nessuna modifica aggiunta ma tutte le classi CSS necessarie sono presenti e funzionali."
+    },
+    {
+      "path": "docs/data/diet.json",
+      "esiste": true,
+      "note": "Array giorni[] con 7 elementi (Lunedì-Allenamento ... Domenica-Riposo). Ogni elemento ha: nome (string completo), tipo (allenamento|riposo), kcal (number), macros {proteine, carboidrati, grassi}, pasti (array). Campo meta.note_strategia presente. Campo radice integratori presente e separato da giorni[]."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "warning",
+      "descrizione": "Edge case: se l'array giorni[] viene modificato esternamente dopo il caricamento e diventa più corto, un click su un bottone con indice fuori range causerebbe currentDayIndex > giorni.length. In questo caso giorni[currentDayIndex] restituirebbe undefined, passato a renderMacrosSummary() che gestisce il null (linea 139: if (!dayData)), ma la situazione potrebbe essere più robusta validando l'indice prima.",
+      "file": "docs/js/diet.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Nel blocco catch (linee 402-410) vengono popolati i fallback per #macros-summary, #meals-list, #supplements-list, ma non per #day-toggle. Il selettore giorni rimane vuoto in caso di errore di fetch. Non è critico perché l'errore globale in #diet-error comunica il problema, ma sarebbe coerente popolare anche il selettore con un messaggio di empty state.",
+      "file": "docs/js/diet.js"
+    }
+  ]
+}

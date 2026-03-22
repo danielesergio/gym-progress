@@ -146,8 +146,20 @@ integratori:
 - **Idratazione**: includi nota su idratazione nella sezione note_strategia se rilevante
 
 ### Criteri di qualita'
-- Le calorie totali devono essere coerenti con il TDEE calcolato in measurements.json
-- I macronutrienti devono sommare correttamente alle calorie totali (P*4 + C*4 + G*9 = kcal, con tolleranza ±50 kcal)
 - Gli alimenti devono essere realistici, facilmente reperibili e in linea con le preferenze dell'atleta
 - Se l'atleta ha segnalato difficolta' con la dieta precedente, adatta di conseguenza
 - Tutti i valori numerici (kcal, grammi, macro) devono essere numeri interi o float, NON stringhe
+
+### REGOLA CRITICA — I pasti devono coprire il fabbisogno
+
+Il processo di costruzione della dieta e' il seguente — rispettalo nell'ordine:
+
+1. **Parti dal target**: per ogni tipo di giorno (allenamento / riposo) hai un target calorico e macro da meta (kcal_allenamento, kcal_riposo, proteine_g, carboidrati_g, grassi_g).
+2. **Costruisci i pasti bottom-up**: scegli gli alimenti, assegna i grammi, calcola kcal/macro di ogni alimento con i valori nutrizionali reali (non inventarli).
+3. **Somma e verifica mentre costruisci**: dopo ogni pasto somma i totali parziali e confrontali con quanto rimane da distribuire nei pasti successivi. Aggiusta grammi o aggiungi alimenti fino a coprire il target.
+4. **Scrivi i totali come somme aritmetiche esatte**:
+   - `pasto.totale.kcal` = somma di tutti `alimento.kcal` in quel pasto (idem per proteine, carbo, grassi)
+   - `giorno.kcal` = somma di tutti `pasto.totale.kcal` del giorno
+   - `giorno.macros` = somma di tutti `pasto.totale` del giorno
+   - NON inserire mai valori "obiettivo" o approssimati: ogni numero e' una somma reale.
+5. **Verifica finale prima di scrivere il YAML**: la somma dei pasti deve essere entro ±100 kcal dal target giornaliero e i macro entro ±10g. Se non e' cosi', torna al punto 3 e correggi.

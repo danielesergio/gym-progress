@@ -1,0 +1,222 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "visual-polish-global",
+    "task_title": "Micro-miglioramenti estetici applicabili a entrambi i temi",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "visual-polish-global",
+    "type": "ux",
+    "title": "Micro-miglioramenti estetici applicabili a entrambi i temi",
+    "description": "Revisione puramente CSS/HTML di dettagli visivi che rendono il sito più professionale indipendentemente dal tema attivo. I punti da implementare (senza toccare logica JS) sono: (1) indicatore di overflow visivo sulla nav tab su mobile tramite fade-gradient sui bordi del .tab-list; (2) transizioni hover su .nav-tab e .dashboard-card leggermente più fluide (durata e easing ottimizzati); (3) aggiornamento del footer in tutte le pagine con un data-attribute HTML per la data ultima generazione o la versione scheda corrente (valore statico o placeholder, senza fetch). Il punto degli skeleton loader è escluso perché richiederebbe modifiche alla logica JS (aggiunta/rimozione classi). Tutti i miglioramenti devono funzionare con entrambi i temi: originale dark/arancio e pro steel-blue.",
+    "inputs": [
+      "ProThemeVariables",
+      "MainLayout"
+    ],
+    "outputs": [
+      "GlobalVisualPolish"
+    ],
+    "acceptance_criteria": [
+      "La nav tab su mobile mostra un indicatore visivo che ci sono più tab scorrendo lateralmente",
+      "Le transizioni hover su nav-tab e card sono fluide (no scatti visibili)",
+      "I miglioramenti sono visibili in entrambi i temi (originale e pro)",
+      "Nessuna funzionalità JS esistente è rotta dopo le modifiche"
+    ],
+    "notes": "Task puramente CSS/HTML. NON modificare alcun file JS esistente (nav.js, theme.js, dashboard.js, ecc.). L'indicatore overflow nav usa ::before/::after pseudo-elementi su .tab-list con gradiente laterale. Le transizioni hover devono usare var(--transition-normal) invece di var(--transition-fast) per maggiore fluidità. I miglioramenti al footer (data ultima generazione) vanno applicati come testo statico nel markup HTML di tutte le 6 pagine — il valore esatto della data sarà aggiornato in futuro dagli script Python se necessario."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/css/layout.css",
+        "motivo": "Aggiungere indicatore overflow fade-gradient su .tab-list (pseudo-elementi ::before/::after con gradiente laterale), migliorare transizioni hover su .nav-tab (da --transition-fast a --transition-normal, aggiungere transform lieve). Override analoghi sotto html.theme-pro.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "Aggiungere transizione hover sulle .dashboard-card (box-shadow + border-color più fluidi, con --transition-normal). Override analoghi sotto html.theme-pro per il bordo sinistro accent.",
+        "esiste": true
+      },
+      {
+        "path": "docs/dashboard.html",
+        "motivo": "Aggiornare il footer: aggiungere data-generated o testo versione scheda nel .footer-text come informazione statica utile all'utente.",
+        "esiste": true
+      },
+      {
+        "path": "docs/progress.html",
+        "motivo": "Aggiornare il footer con la stessa informazione statica coerente con dashboard.html.",
+        "esiste": true
+      },
+      {
+        "path": "docs/workout.html",
+        "motivo": "Aggiornare il footer con la stessa informazione statica coerente con dashboard.html.",
+        "esiste": true
+      },
+      {
+        "path": "docs/diet.html",
+        "motivo": "Aggiornare il footer con la stessa informazione statica coerente con dashboard.html.",
+        "esiste": true
+      },
+      {
+        "path": "docs/plan.html",
+        "motivo": "Aggiornare il footer con la stessa informazione statica coerente con dashboard.html.",
+        "esiste": true
+      },
+      {
+        "path": "docs/volume.html",
+        "motivo": "Aggiornare il footer con la stessa informazione statica coerente con dashboard.html.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/css/layout.css",
+        "motivo": "File principale da modificare. Leggere la struttura attuale di .tab-list (overflow-x: auto, scrollbar-width: none già presenti) e .nav-tab (transition: color var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast)) per sapere dove intervenire senza duplicare regole."
+      },
+      {
+        "path": "docs/css/variables.css",
+        "motivo": "Verificare i token --transition-fast (150ms ease), --transition-normal (250ms ease), --color-bg-secondary, --color-bg per costruire il gradiente di fade corretto in entrambi i temi. Verificare che html.theme-pro ridefinisca --color-bg-secondary (#161b22) per calcolare il gradiente del tema pro."
+      },
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "File da modificare. Leggere struttura .dashboard-card (background-color, border, border-radius, box-shadow, min-height) e verificare se esiste già una regola hover da estendere o se va aggiunta ex novo."
+      },
+      {
+        "path": "docs/dashboard.html",
+        "motivo": "Modello strutturale del footer — verificare il markup attuale (<p class='footer-text'>Daniele Fitness © 2026</p>) per sapere come estendere il testo senza rompere la struttura."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "styling": {
+        "nome": "CSS custom properties",
+        "versione": "CSS3",
+        "file_globali": [
+          "css/variables.css — design tokens (colori, transizioni, spaziature)",
+          "css/layout.css — struttura header/nav/main/footer, già contiene .tab-list e .nav-tab"
+        ]
+      }
+    },
+    "convenzioni": {
+      "classi_css": "kebab-case con prefisso pagina per componenti specifici; classi globali senza prefisso (es. .nav-tab, .page-footer, .tab-list)",
+      "tema_pro_pattern": "Tutti gli override del tema pro usano html.theme-pro come selettore radice — MAI nested su :root",
+      "custom_properties": "Usare sempre var(--nome) — mai valori hardcoded. Per le transizioni: var(--transition-fast) = 150ms ease, var(--transition-normal) = 250ms ease",
+      "responsive": "Mobile-first: stili base per 375px, @media (min-width: 768px) per tablet",
+      "no_inline_style": "Vietato style= inline negli HTML e innerHTML con stili inline nei JS — usare classi CSS",
+      "no_js": "Questo task è SOLO CSS/HTML — nessuna modifica a file JS"
+    },
+    "tokens_rilevanti": {
+      "transizioni": {
+        "--transition-fast": "150ms ease — attualmente usata su .nav-tab",
+        "--transition-normal": "250ms ease — da preferire per hover più fluidi",
+        "--transition-slow": "400ms ease"
+      },
+      "colori_gradiente_nav": {
+        "tema_originale_bg_secondary": "#2d2d2d (--color-bg-secondary)",
+        "tema_pro_bg_secondary": "#161b22 (override html.theme-pro)",
+        "nota": "Il gradiente fade sui bordi della nav usa il colore bg-secondary per mimetizzarsi con lo sfondo del .tab-list"
+      },
+      "ombre": {
+        "--shadow-sm": "0 1px 3px rgba(0,0,0,0.4)",
+        "--shadow-md": "0 4px 12px rgba(0,0,0,0.5) — da usare su hover card"
+      }
+    },
+    "struttura_nav_attuale": {
+      "tab_list": "overflow-x: auto; scrollbar-width: none; height: var(--nav-height); background-color: var(--color-bg-secondary)",
+      "nav_tab_transition": "transition: color var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast)",
+      "nota": "Il .tab-list è position statico. I pseudo-elementi ::before/::after con position: absolute richiedono di aggiungere position: relative al .tab-list."
+    },
+    "struttura_footer_attuale": {
+      "markup": "<footer class='page-footer' id='main-footer' role='contentinfo'><div class='container'><p class='footer-text'>Daniele Fitness © 2026</p></div></footer>",
+      "nota": "Il testo del footer è identico in tutte le 6 pagine. Aggiungere testo informativo (es. versione scheda o data ultima gen.) inline nello stesso <p> o in un secondo <span> con classe dedicata."
+    }
+  },
+  "implementazione_dettagliata": {
+    "punto_1_nav_overflow_indicator": {
+      "descrizione": "Aggiungere un fade gradient ai bordi sinistro/destro del .tab-list per segnalare visivamente che ci sono tab fuori schermo. Tecnica: pseudo-elementi ::before e ::after su .tab-list con position absolute, gradient da bg-secondary a trasparente, pointer-events none per non interferire con i click.",
+      "file": "docs/css/layout.css",
+      "requisiti_css": [
+        "Aggiungere position: relative al .tab-list (necessario per il positioning dei pseudo-elementi)",
+        ".tab-list::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 32px; background: linear-gradient(to right, var(--color-bg-secondary), transparent); pointer-events: none; z-index: 1; }",
+        ".tab-list::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 32px; background: linear-gradient(to left, var(--color-bg-secondary), transparent); pointer-events: none; z-index: 1; }",
+        "Su desktop (>= 768px) se le tab stanno tutte visibili si può nascondere l'indicatore — valutare se applicare display:none su min-width 768px",
+        "Override html.theme-pro: i colori del gradiente devono usare var(--color-bg-secondary) che il tema pro sovrascrive già a #161b22, quindi funziona automaticamente"
+      ]
+    },
+    "punto_2_transizioni_hover": {
+      "descrizione": "Rendere più fluide le transizioni hover su .nav-tab e .dashboard-card. Attualmente .nav-tab usa --transition-fast (150ms) per tutti gli stati. Portare a --transition-normal (250ms) e aggiungere eventuali proprietà transform.",
+      "file_css": ["docs/css/layout.css", "docs/css/dashboard.css"],
+      "requisiti_nav_tab": [
+        "Modificare la transition di .nav-tab: aggiungere background-color con --transition-normal invece di --transition-fast",
+        "Opzionale: aggiungere un lieve transform: translateY(-1px) sull'hover del nav-tab per un feedback più morbido — SOLO se coerente col design flat attuale"
+      ],
+      "requisiti_card": [
+        "Aggiungere una regola .dashboard-card hover che transiziona box-shadow (da --shadow-sm a --shadow-md) e border-color (da --color-border a --color-border-light) con --transition-normal",
+        "Aggiungere transition: box-shadow var(--transition-normal), border-color var(--transition-normal) alla regola base .dashboard-card",
+        "Override html.theme-pro .dashboard-card:hover deve usare il box-shadow del tema pro e mantenere il bordo sinistro accent invariato"
+      ]
+    },
+    "punto_3_footer_informativo": {
+      "descrizione": "Aggiornare il footer di tutte e 6 le pagine con informazione statica utile. Proposta: aggiungere la data di generazione del sito come testo statico (es. 'Aggiornato: 22 mar 2026') accanto al copyright, usando una classe .footer-meta per lo stile.",
+      "file_html": [
+        "docs/dashboard.html",
+        "docs/progress.html",
+        "docs/workout.html",
+        "docs/diet.html",
+        "docs/plan.html",
+        "docs/volume.html"
+      ],
+      "markup_proposto": "<p class='footer-text'>Daniele Fitness &copy; 2026 <span class='footer-sep' aria-hidden='true'>·</span> <span class='footer-meta'>Aggiornato: 22 mar 2026</span></p>",
+      "requisiti_css": [
+        "Aggiungere a docs/css/layout.css: .footer-sep { margin-inline: var(--space-2); color: var(--color-text-faint); }",
+        "Aggiungere a docs/css/layout.css: .footer-meta { font-size: var(--font-size-xs); color: var(--color-text-faint); letter-spacing: 0.04em; }"
+      ]
+    }
+  },
+  "criteri_accettazione": [
+    "La nav tab su mobile mostra un indicatore visivo (fade gradient) che ci sono più tab scorrendo lateralmente",
+    "Le transizioni hover su .nav-tab e .dashboard-card sono fluide — nessuno scatto visibile (durata >= 200ms)",
+    "I miglioramenti del gradiente nav sono visibili in entrambi i temi (il gradiente usa var(--color-bg-secondary) che il tema pro sovrascrive)",
+    "Le transizioni hover delle card funzionano sia nel tema originale che nel tema pro senza conflitti",
+    "Il footer mostra la data di aggiornamento in tutte e 6 le pagine",
+    "docs/css/layout.css contiene le regole .tab-list::before e .tab-list::after con i gradienti",
+    "docs/css/layout.css contiene .footer-sep e .footer-meta",
+    "docs/css/dashboard.css contiene una transizione hover su .dashboard-card (box-shadow e/o border-color)",
+    "Nessun file JS è stato modificato",
+    "Le pagine passano una verifica manuale del browser senza errori in console"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "theme-pro-components",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/css/variables.css",
+        "docs/css/layout.css",
+        "docs/css/dashboard.css",
+        "docs/css/progress.css",
+        "docs/css/workout.css",
+        "docs/css/diet.css",
+        "docs/css/plan.css",
+        "docs/css/volume.css"
+      ],
+      "note": "Tutti i file CSS di componenti sono presenti in docs/css/ e contengono già i blocchi html.theme-pro. Il dashboard.css contiene già override pro per .dashboard-card (bordo sinistro accent, gradient background, shadow premium)."
+    },
+    {
+      "task_id": "theme-persistence",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/js/theme.js",
+        "docs/dashboard.html",
+        "docs/progress.html",
+        "docs/workout.html",
+        "docs/diet.html",
+        "docs/plan.html",
+        "docs/volume.html"
+      ],
+      "note": "js/theme.js esiste. Tutti gli HTML di pagina includono già <script src='js/theme.js'> nel head e il pulsante #theme-toggle-btn nell'header. La persistenza localStorage è operativa."
+    }
+  ]
+}

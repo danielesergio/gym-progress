@@ -1,0 +1,126 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "project": "Daniele Fitness",
+    "goal": "Restyle professionale del sito con possibilità di tornare al tema originale tramite toggle CSS",
+    "sommario": "Il sito è già completo e funzionante (6 pagine: Dashboard, Progressi, Allenamento, Dieta, Piano, Volume). Il design attuale è dark/powerlifting con accent arancione (#ff6b35), già ben strutturato tramite CSS custom properties in variables.css. L'obiettivo richiesto è esclusivamente un restyle professionale dell'aspetto visivo, mantenendo invariate tutte le funzionalità e la struttura HTML esistente. Il requisito chiave è che l'utente possa passare dal nuovo tema al vecchio con un singolo click (toggle CSS). La strategia ottimale è: (1) creare un secondo set di variabili CSS che definisce il nuovo tema professionale, (2) aggiungere un meccanismo di toggle che applica/rimuove una classe al root element per attivare il tema alternativo, (3) persistere la preferenza dell'utente in localStorage. Nessuna pagina HTML deve essere riscritto — solo CSS e un piccolo script di toggle.",
+    "features_totali": 3,
+    "tasks_totali": 7
+  },
+  "features": [
+    {
+      "name": "Nuovo Tema Professionale",
+      "priority": 1,
+      "description": "Definizione e implementazione del nuovo design system professionale come secondo tema CSS, attivabile via classe sul root element. Il tema deve migliorare la leggibilità, la gerarchia visiva e la percepita qualità del sito senza stravolgerne la struttura.",
+      "tasks": [
+        {
+          "id": "theme-pro-variables",
+          "type": "component",
+          "title": "Variabili CSS del tema professionale",
+          "description": "Definire un set completo di custom properties CSS per il tema 'pro' che si attiva quando il root element porta la classe `.theme-pro`. Il tema professionale deve differenziarsi visivamente dall'attuale dark/arancione mantenendo l'atmosfera seria e sportiva. Suggerimenti di direzione: palette più raffinata (es. sfondo molto scuro quasi nero con accenti in un blu acciaio o verde militare oppure un bianco sporco off-white su grigio ardesia per un look premium), tipografia con maggiore gerarchia, card con bordi più sottili e ombre più sofisticate, spaziature leggermente più generose. Le variabili da sovrascrivere devono coprire almeno: tutti i colori di background, testo, accent, bordi, ombre, e i radius. Il tema originale (dark arancione) rimane invariato nel file variables.css esistente — il nuovo tema viene aggiunto come blocco `.theme-pro :root` o `[data-theme='pro']` nello stesso file o in un file separato.",
+          "inputs": ["current_design_system", "variables_css"],
+          "outputs": ["ProThemeVariables"],
+          "acceptance_criteria": [
+            "Applicando la classe `.theme-pro` all'elemento html, tutti i colori del sito cambiano visibilmente",
+            "Il nuovo tema è chiaramente diverso dall'originale (non solo una variazione di tono)",
+            "Tutti gli elementi chiave (header, nav, card, grafici, tabelle, badge, pulsanti) risultano visivamente coerenti col nuovo tema",
+            "Il testo rimane leggibile (contrasto minimo AA per WCAG) in entrambi i temi",
+            "Rimuovendo la classe, si torna esattamente al tema originale senza residui visivi"
+          ],
+          "dependencies": []
+        },
+        {
+          "id": "theme-pro-typography",
+          "type": "component",
+          "title": "Tipografia e gerarchia visiva del tema professionale",
+          "description": "Nel tema pro, migliorare la gerarchia tipografica rispetto all'attuale. Il sito usa system fonts (-apple-system, Segoe UI ecc.). Nel tema pro è possibile introdurre un font Google (es. Inter o DM Sans) tramite import per dare un'identità più riconoscibile. I titoli di sezione (h2) devono avere maggiore peso visivo. I valori numerici nei KPI (massimali, peso, BF%) devono essere in grassetto con size aumentata per immediata leggibilità. Le label descrittive devono essere più sbiadite per lasciare risaltare i valori. Questi aggiustamenti devono operare solo quando il tema pro è attivo.",
+          "inputs": ["ProThemeVariables", "current_design_system"],
+          "outputs": ["ProThemeTypography"],
+          "acceptance_criteria": [
+            "Nel tema pro, i titoli di sezione sono visivamente più prominenti rispetto al tema originale",
+            "I valori numerici nelle card (kg, %, date) sono immediatamente distinguibili dalle label",
+            "Se viene usato un font esterno, è visibile nel browser e il fallback funziona offline",
+            "Nel tema originale la tipografia rimane invariata"
+          ],
+          "dependencies": ["theme-pro-variables"]
+        },
+        {
+          "id": "theme-pro-components",
+          "type": "component",
+          "title": "Stili componenti per il tema professionale",
+          "description": "Adattare card, badge, tabelle, selettori settimana/giorno, barre macro e grafici al nuovo tema pro. Punti critici: (1) le dashboard-card devono avere uno stile più premium (es. bordo sinistro colorato o gradient sottile nell'header della card invece dell'attuale flat); (2) i badge R/S nella sezione Progressi devono essere più leggibili; (3) la tabella storico misurazioni deve avere righe alternate più distinguibili; (4) il selettore giorno nella pagina Dieta e il selettore settimana nella pagina Allenamento devono avere stato attivo più evidente; (5) la progress bar macro nella dieta deve usare i colori del tema pro per proteine/carboidrati/grassi. Tutti questi override devono essere condizionati alla presenza della classe tema pro e non devono toccare il CSS originale.",
+          "inputs": ["ProThemeVariables", "ProThemeTypography"],
+          "outputs": ["ProThemeComponentStyles"],
+          "acceptance_criteria": [
+            "Le card della dashboard hanno uno stile visivamente distinto nel tema pro rispetto all'originale",
+            "La tabella storico in Progressi è leggibile con righe alternate nel tema pro",
+            "I selettori settimana e giorno mostrano lo stato attivo in modo chiaro nel tema pro",
+            "La barra macro dieta usa colori coerenti con la palette del tema pro",
+            "Nessuno stile del tema originale viene sovrascritto globalmente (solo sotto il selettore del tema pro)"
+          ],
+          "dependencies": ["theme-pro-variables", "theme-pro-typography"]
+        }
+      ]
+    },
+    {
+      "name": "Toggle Tema",
+      "priority": 2,
+      "description": "Meccanismo interattivo che permette all'utente di passare dal tema originale al tema professionale e viceversa, con persistenza della preferenza tra sessioni e navigazione tra pagine.",
+      "tasks": [
+        {
+          "id": "theme-toggle-button",
+          "type": "component",
+          "title": "Pulsante toggle tema nell'header",
+          "description": "Aggiungere nell'header di tutte le pagine un pulsante compatto che permette di alternare tra tema originale ('Dark') e tema professionale ('Pro'). Il pulsante deve essere discreto (non dominare visivamente l'header), posizionato vicino al lato destro dell'header. Deve mostrare visivamente quale tema è attivo (es. icona sole/luna, etichetta 'Dark/Pro', o toggle switch). Il click deve: (1) aggiungere/rimuovere la classe del tema pro all'elemento html, (2) salvare la preferenza in localStorage con chiave 'fitness-theme', (3) aggiornare l'aspetto del pulsante stesso per riflettere lo stato. Tutte e 6 le pagine devono avere il pulsante.",
+          "inputs": ["ProThemeVariables", "MainLayout"],
+          "outputs": ["ThemeToggleButton"],
+          "acceptance_criteria": [
+            "Il pulsante è visibile nell'header di tutte e 6 le pagine (Dashboard, Progressi, Allenamento, Dieta, Piano, Volume)",
+            "Cliccando il pulsante, il sito cambia tema immediatamente senza ricaricare la pagina",
+            "L'aspetto del pulsante cambia per indicare il tema attivo",
+            "Il pulsante non spinge altri elementi dell'header fuori posizione su mobile",
+            "L'header rimane a una sola riga su schermi da 375px"
+          ],
+          "dependencies": ["theme-pro-variables"]
+        },
+        {
+          "id": "theme-persistence",
+          "type": "ux",
+          "title": "Persistenza preferenza tema tra pagine e sessioni",
+          "description": "La preferenza del tema scelta dall'utente deve sopravvivere alla navigazione tra le 6 pagine del sito e alla chiusura/riapertura del browser. All'avvio di ogni pagina, prima che il contenuto sia visibile, deve essere letto il localStorage e applicata la classe del tema corretto all'elemento html. Questo deve avvenire sincronicamente (non in defer) per evitare il flash del tema sbagliato (FOUC - Flash of Unstyled Content). Lo script di inizializzazione tema deve essere il più piccolo possibile (inline o separato da tutti gli altri script).",
+          "inputs": ["ThemeToggleButton"],
+          "outputs": ["ThemePersistenceLogic"],
+          "acceptance_criteria": [
+            "Selezionando il tema pro in Dashboard e navigando in Progressi, il tema pro è già attivo senza flash",
+            "Chiudendo e riaprendo il browser, il tema precedentemente scelto viene ripristinato",
+            "Non c'è un visibile 'lampo' di tema sbagliato al caricamento della pagina",
+            "Se non c'è una preferenza salvata, il sito parte con il tema originale dark/arancione"
+          ],
+          "dependencies": ["theme-toggle-button"]
+        }
+      ]
+    },
+    {
+      "name": "Rifinitura Visiva Globale",
+      "priority": 3,
+      "description": "Miglioramenti estetici che si applicano a entrambi i temi o che risolvono aspetti non ottimali del tema originale stesso, per elevare la qualità percepita complessiva del sito.",
+      "tasks": [
+        {
+          "id": "visual-polish-global",
+          "type": "ux",
+          "title": "Micro-miglioramenti estetici applicabili a entrambi i temi",
+          "description": "Revisione di dettagli visivi che rendono il sito più professionale indipendentemente dal tema attivo. Punti da valutare: (1) il footer attualmente è molto minimale — aggiungere la data dell'ultima generazione del sito o la versione della scheda corrente potrebbe dare valore informativo; (2) lo scrollbar della nav tabs su mobile è già nascosto (scrollbar-width: none) ma potrebbe beneficiare di un indicatore di overflow visivo (fade gradient sui bordi) per suggerire lo scroll; (3) i placeholder 'Caricamento…' in tutte le pagine appaiono solo per un istante ma potrebbero essere sostituiti con skeleton loader coerenti col tema; (4) le transizioni hover sui nav-tab e sulle card potrebbero essere leggermente più fluide. Solo i punti che non richiedono modifiche alla logica JS esistente devono essere inclusi in questo task — è puramente CSS/HTML.",
+          "inputs": ["ProThemeVariables", "MainLayout"],
+          "outputs": ["GlobalVisualPolish"],
+          "acceptance_criteria": [
+            "La nav tab su mobile mostra un indicatore visivo che ci sono più tab scorrendo lateralmente",
+            "Le transizioni hover su nav-tab e card sono fluide (no scatti visibili)",
+            "I miglioramenti sono visibili in entrambi i temi (originale e pro)",
+            "Nessuna funzionalità JS esistente è rotta dopo le modifiche"
+          ],
+          "dependencies": ["theme-pro-components", "theme-persistence"]
+        }
+      ]
+    }
+  ]
+}

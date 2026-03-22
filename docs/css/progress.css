@@ -259,3 +259,60 @@
     height: 380px;
   }
 }
+
+/* ============================================================
+   html.theme-pro — Override tipografici progress
+   Titolo sezione più prominente, look premium con Inter.
+   Opera SOLO sotto html.theme-pro.
+   ============================================================ */
+
+/* Titolo sezione: più grande, peso 700, letter-spacing negativo */
+html.theme-pro .progress-section__title {
+  font-size: var(--font-size-section-title, 1.5rem); /* 24px vs 20px originale */
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.01em;
+}
+
+/* Mobile: titolo sezione pro leggermente ridotto ma comunque più grande */
+@media (max-width: 768px) {
+  html.theme-pro .progress-section__title {
+    font-size: var(--font-size-xl);  /* 24px — mantiene prominenza anche su mobile */
+  }
+}
+
+/* ============================================================
+   html.theme-pro — Override componenti progress
+   Badge più leggibili su sfondo quasi-nero, tabella zebra-striped,
+   badge inline più saturi. Opera SOLO sotto html.theme-pro.
+   ============================================================ */
+
+/* Badge legenda — sfondo più opaco, bordo 2px, peso aumentato */
+html.theme-pro .badge-reale {
+  background-color: rgba(63, 185, 80, 0.25);
+  border: 2px solid var(--color-success);
+  font-weight: var(--font-weight-bold);
+}
+
+html.theme-pro .badge-stimato {
+  background-color: rgba(210, 153, 34, 0.25);
+  border: 2px solid var(--color-warning);
+  font-weight: var(--font-weight-bold);
+}
+
+/* Tabella storico — zebra-striping per distinguere le righe su sfondo scuro */
+html.theme-pro .measurements-table tbody tr:nth-child(even) td {
+  background-color: var(--color-bg-secondary);
+}
+
+/* Badge inline cella — bordo 2px, sfondo più opaco, peso aumentato */
+html.theme-pro .measurements-table .td-badge--reale {
+  background-color: rgba(63, 185, 80, 0.25);
+  border: 2px solid var(--color-success);
+  font-weight: var(--font-weight-bold);
+}
+
+html.theme-pro .measurements-table .td-badge--stimato {
+  background-color: rgba(210, 153, 34, 0.25);
+  border: 2px solid var(--color-warning);
+  font-weight: var(--font-weight-bold);
+}

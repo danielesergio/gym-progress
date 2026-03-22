@@ -1,0 +1,149 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "workout-week-selector-scalable",
+    "task_title": "Selettore settimane allenamento con layout scalabile per molte settimane",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "workout-week-selector-scalable",
+    "type": "style",
+    "title": "Selettore settimane allenamento con layout scalabile per molte settimane",
+    "description": "Il selettore settimane usa bottoni flex in riga con flex-wrap. Con schede brevi (2 settimane) funziona bene. Con schede lunghe (8-12 settimane) i bottoni diventano piccoli o si accatastano su più righe in modo non controllato su mobile. Il nuovo layout deve: (1) mantenere la leggibilità del numero di settimana anche con 10+ settimane, (2) permettere all'utente di navigare facilmente anche su touch screen con molte settimane. Il bottone settimana attivo deve essere sempre visibile senza bisogno di scroll manuale.",
+    "inputs": ["workout_data"],
+    "outputs": ["WorkoutWeekSelectorStyle"],
+    "acceptance_criteria": [
+      "Con 2 settimane il selettore appare compatto e leggibile",
+      "Con 8 o più settimane i bottoni non diventano più stretti di 44px (target touch minimo)",
+      "Il bottone della settimana attiva è visibile senza scroll aggiuntivo al caricamento della pagina",
+      "Su mobile (< 480px) tutti i bottoni settimana sono chiaramente tappabili"
+    ],
+    "notes": "La soluzione scelta è scroll orizzontale con overflow-x: auto e snap obbligatorio (scroll-snap-type: x mandatory). I bottoni hanno larghezza fissa minima (min-width: 64px su mobile, 80px su tablet/desktop) e non si comprimono (flex-shrink: 0). Il bottone attivo viene portato in vista via scrollIntoView() in workout.js — questo richiede una piccola aggiunta JS oltre al CSS. L'HTML del container #week-selector non cambia."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Ridisegnare #week-selector e .week-btn per supportare scroll orizzontale con snap. Sostituire flex-wrap con overflow-x auto + scroll-snap-type. Impostare min-width fisso sui bottoni e flex-shrink: 0 per evitare la compressione. Aggiungere breakpoint mobile (< 480px) con min-width 64px e padding adeguato per touch target 44px. Mantenere aspetto visivo invariato (colori, bordi, stati hover/active).",
+        "esiste": true
+      },
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "Aggiungere scrollIntoView() sul bottone settimana attivo dopo il render di renderWeekSelector(), per garantire che il bottone attivo sia sempre visibile senza scroll manuale dell'utente. Riga da aggiungere nel punto in cui viene impostata la classe 'active' sul bottone.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Stato attuale di #week-selector e .week-btn: display flex, flex-wrap wrap, min-width 60px, font-size, padding, breakpoint responsive esistenti. Necessario per modificare senza rompere gli stili esistenti."
+      },
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "Trovare la funzione renderWeekSelector() per capire dove viene assegnata la classe 'active' al bottone settimana corrente e dove inserire il scrollIntoView() per portarlo in vista."
+      },
+      {
+        "path": "docs/data/workout.json",
+        "motivo": "Struttura dati: array settimane[] con campo 'numero'. La scheda attuale ha durata_settimane: 2. Il CSS deve reggere fino a 12 settimane (previste in fasi future). Campi rilevanti: meta.durata_settimane, settimane[].numero."
+      },
+      {
+        "path": "docs/css/variables.css",
+        "motivo": "Variabili CSS disponibili: --space-* per padding/gap, --radius-*, --color-*, --font-size-*, --transition-*. Il CSS deve usare solo variabili già definite."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS vanilla ES2022",
+      "styling": "CSS custom properties — nessun preprocessore",
+      "grafici": "non rilevante per questo task",
+      "build": "nessuno — file modificati direttamente in docs/"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase (es. settimanaAttiva, btnAttivo)",
+      "classi_css": "kebab-case con prefisso pagina (es. .week-btn, .week-selector__scroll-container)",
+      "id_html": "kebab-case (es. #week-selector — già presente, non modificare)",
+      "no_inline_style": "vietato usare style='' nell'HTML o JS — usare classList",
+      "no_var": "usare const/let",
+      "scroll_snap": "scroll-snap-type: x mandatory sul container, scroll-snap-align: start sui bottoni",
+      "touch_target_minimo": "44px — imposto tramite min-width + padding-block su .week-btn",
+      "scrollIntoView_pattern": "btnAttivo.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' })"
+    },
+    "pagina": {
+      "nome": "Allenamento",
+      "file": "docs/workout.html",
+      "js": "docs/js/workout.js",
+      "css": "docs/css/workout.css",
+      "dati_json": ["data/workout.json"]
+    },
+    "container_selettore": {
+      "elemento_html": "<nav id='week-selector' class='week-selector'>",
+      "bottone_generato_da": "workout.js → renderWeekSelector() — già dinamico, non hardcoded nell'HTML",
+      "classe_bottone": ".week-btn",
+      "classe_attivo": ".week-btn.active e aria-pressed='true'"
+    }
+  },
+  "soluzione_tecnica": {
+    "approccio": "Scroll orizzontale con snap",
+    "motivazione": "È la soluzione più adatta a touch screen con molte settimane: i bottoni mantengono una larghezza fissa leggibile, l'utente può scorrere orizzontalmente con gesto naturale swipe, lo snap garantisce allineamento preciso. Non richiede modifiche all'HTML o alla logica JS di selezione.",
+    "alternativa_scartata_flexwrap": "flex-wrap su più righe non è controllabile sul numero di colonne e spezza la navigazione lineare delle settimane, rendendo meno intuitiva la progressione 1→2→3...",
+    "alternativa_scartata_grid": "Una griglia a N colonne è adatta per selezione non-ordinale (es. giorni della settimana), non per settimane numerate in progressione dove lo scroll lineare è più naturale.",
+    "dettaglio_implementazione": {
+      "container": {
+        "selettore": "#week-selector",
+        "modifiche": [
+          "display: flex (mantenuto)",
+          "overflow-x: auto (nuovo — abilita scroll orizzontale)",
+          "scroll-snap-type: x mandatory (nuovo — snap preciso)",
+          "-webkit-overflow-scrolling: touch (nuovo — smooth scroll iOS)",
+          "scrollbar-width: none + ::-webkit-scrollbar { display: none } (nuovo — nasconde la scrollbar visivamente)",
+          "flex-wrap: nowrap (cambia da wrap — impedisce ai bottoni di andare su righe multiple)",
+          "gap: --space-2 su mobile, --space-3 su tablet/desktop",
+          "padding-bottom: --space-2 (evita che il bordo del bottone venga tagliato)"
+        ]
+      },
+      "bottone": {
+        "selettore": ".week-btn",
+        "modifiche": [
+          "min-width: 64px su mobile (garantisce touch target >= 44px con padding)",
+          "min-width: 72px su tablet/desktop",
+          "flex-shrink: 0 (nuovo — impedisce la compressione con molti bottoni)",
+          "flex: 0 0 auto (nuovo — sostituisce flex: 1 che causava la compressione)",
+          "scroll-snap-align: start (nuovo — aggancia il bottone allo snap point)",
+          "padding-block: --space-3 su mobile (touch target ~44px con font-size-md)",
+          "padding-inline: --space-2 su mobile",
+          "font-size: --font-size-md su mobile (18px — leggibile con numero settimana)",
+          "width adattivo mantenuto su desktop dove ci sono pochi bottoni"
+        ]
+      },
+      "js_scrollIntoView": {
+        "dove": "Alla fine di renderWeekSelector(), dopo che la classe 'active' è stata impostata sul bottone attivo",
+        "codice_da_aggiungere": "const btnAttivo = weekSelector.querySelector('.week-btn.active'); if (btnAttivo) { btnAttivo.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }); }",
+        "note": "Questo garantisce che al caricamento della pagina e al cambio scheda il bottone settimana attivo sia sempre visibile, anche se si trova in posizione > 1 nella lista."
+      }
+    }
+  },
+  "criteri_accettazione": [
+    "Con 2 settimane il selettore appare compatto e leggibile (i 2 bottoni occupano la larghezza disponibile senza scroll inutile)",
+    "Con 8 o più settimane i bottoni non diventano più stretti di 44px (min-width 64px + padding-inline garantisce touch target adeguato)",
+    "Il bottone della settimana attiva è visibile senza scroll aggiuntivo al caricamento della pagina (scrollIntoView in renderWeekSelector())",
+    "Su mobile (< 480px) tutti i bottoni settimana sono chiaramente tappabili (touch target >= 44px verificato con padding-block: var(--space-3) e font-size-md)",
+    "docs/css/workout.css: #week-selector ha overflow-x: auto e flex-wrap: nowrap",
+    "docs/css/workout.css: .week-btn ha flex-shrink: 0 e scroll-snap-align: start",
+    "docs/css/workout.css: .week-btn ha min-width non inferiore a 64px (mobile) / 72px (tablet+)",
+    "docs/js/workout.js: renderWeekSelector() chiama scrollIntoView() sul bottone .week-btn.active",
+    "La scrollbar orizzontale del selettore è nascosta visivamente ma il touch-scroll funziona",
+    "Gli stili visivi di .week-btn (colori, bordi, hover, active, focus-visible) rimangono invariati"
+  ],
+  "dipendenze": [],
+  "note_developer": [
+    "Il container #week-selector in workout.html NON va modificato — è già corretto come <nav id='week-selector' class='week-selector'>.",
+    "La funzione renderWeekSelector() in workout.js genera già i bottoni dinamicamente da JS. Non aggiungere HTML hardcoded.",
+    "Con 2 settimane (caso attuale), il layout con overflow-x non mostrerà scroll visibile — i 2 bottoni occuperanno la larghezza disponibile. È il comportamento corretto.",
+    "Con 10-12 settimane (fasi future), lo scroll orizzontale si attiverà automaticamente quando i bottoni supereranno la larghezza del container.",
+    "Non modificare i valori dei colori, border-radius, transition — solo le proprietà di layout (display, flex, overflow, scroll-snap, min-width, padding).",
+    "Il selettore giorni (#day-selector / .day-btn) è trattato nel task separato workout-day-selector-scalable — NON modificarlo in questo task."
+  ]
+}

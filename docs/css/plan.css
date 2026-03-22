@@ -501,3 +501,58 @@
     font-size: var(--font-size-md);
   }
 }
+
+/* ============================================================
+   html.theme-pro — Override tipografici plan
+   Titoli sezione più prominenti, target forza in evidenza.
+   Opera SOLO sotto html.theme-pro.
+   ============================================================ */
+
+/* Titolo sezione piano: più grande, peso 700, letter-spacing negativo */
+html.theme-pro .plan-section-title {
+  font-size: var(--font-size-2xl);      /* 32px vs 24px originale */
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+}
+
+/* Sottotitolo sezione: più sbiadito per contrasto */
+html.theme-pro .plan-section-subtitle {
+  color: var(--color-text-faint);
+}
+
+/* Valori target forza nella tabella: extrabold */
+html.theme-pro .plan-targets-table tbody td {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-base);     /* 16px vs 14px originale */
+}
+
+/* Riga "Oggi" — valore extra prominente */
+html.theme-pro .plan-targets-current-row td {
+  font-weight: var(--font-weight-extrabold, 800);
+  font-size: var(--font-size-md);       /* 18px */
+}
+
+/* Riga "Lungo termine" — obiettivo massima enfasi */
+html.theme-pro .plan-targets-row-longterm td {
+  font-weight: var(--font-weight-extrabold, 800);
+  font-size: var(--font-size-md);       /* 18px */
+}
+
+/* Nome fase: più prominente */
+html.theme-pro .plan-phase-name {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-base);     /* 16px vs 14px originale */
+}
+
+/* Responsive mobile: titolo sezione pro mantiene gerarchia */
+@media (max-width: 768px) {
+  html.theme-pro .plan-section-title {
+    font-size: var(--font-size-xl);     /* 24px su mobile — ancora più grande dell'originale */
+  }
+}
+
+@media (max-width: 375px) {
+  html.theme-pro .plan-section-title {
+    font-size: var(--font-size-lg);     /* 20px su mobile small — ancora più grande dell'originale */
+  }
+}

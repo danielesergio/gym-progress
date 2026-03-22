@@ -229,6 +229,12 @@ fasi:
     note: ""
 
 strategia_nutrizionale:
+  kcal_allenamento: 2870
+  kcal_riposo: 2550
+  proteine_g: 200
+  carboidrati_g_allenamento: 340
+  carboidrati_g_riposo: 290
+  grassi_g: 78
   ora: "Mantenimento calorico durante recupero"
   trigger_cut: "BF > 15%"
   trigger_bulk: "BF < 14%"
@@ -251,3 +257,7 @@ rischi:
 5. **Infortuni e richieste dell'atleta** hanno la precedenza nella pianificazione
 6. **Il piano deve essere pratico e actionable**, non generico — ogni fase deve avere obiettivi concreti e misurabili
 7. Tutti i valori numerici (massimali, target, durata_settimane) devono essere numeri, NON stringhe
+8. **Target calorici obbligatori**: il piano DEVE sempre includere `kcal_allenamento`, `kcal_riposo`, `proteine_g`, `carboidrati_g_allenamento`, `carboidrati_g_riposo`, `grassi_g` in `strategia_nutrizionale`. Questi valori DEVONO essere corretti in base all'analisi aderenza calorica fornita dall'orchestratore:
+   - Usa il TDEE da `measurements.json` come base di partenza
+   - Applica le correzioni indicate nell'analisi (peso non sale in bulk → +150-200 kcal, BF sale troppo → -100-150 kcal, ecc.)
+   - Se l'atleta non raggiungeva le kcal target e il peso è rimasto stabile o calato, abbassa il target a un livello realisticamente raggiungibile, non mantenere il target precedente ignorando i dati

@@ -271,18 +271,27 @@
 
 #week-selector {
   display: flex;
-  gap: var(--space-3);
+  flex-wrap: nowrap;           /* Impedisce ai bottoni di andare su righe multiple */
+  gap: var(--space-2);
   margin-bottom: var(--space-6);
-  flex-wrap: wrap;
+  overflow-x: auto;            /* Scroll orizzontale quando i bottoni non ci stanno */
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: var(--space-2); /* Evita che il bordo del bottone venga tagliato */
+  scrollbar-width: none;       /* Nasconde la scrollbar su Firefox */
+}
+
+#week-selector::-webkit-scrollbar {
+  display: none;               /* Nasconde la scrollbar su Chrome/Safari */
 }
 
 .week-btn {
-  flex: 1;
-  min-width: 60px;
-  padding-block: var(--space-4);
-  padding-inline: var(--space-3);
+  flex: 0 0 auto;              /* Non si comprime, non si espande */
+  min-width: 64px;             /* Touch target minimo 44px garantito con padding */
+  padding-block: var(--space-3);
+  padding-inline: var(--space-2);
   font-family: var(--font-base);
-  font-size: var(--font-size-lg);       /* >= 1.25rem per leggibilità mobile ✓ */
+  font-size: var(--font-size-md);       /* 18px — leggibile con numero settimana su mobile */
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-muted);       /* contrasto adeguato su sfondo card */
   background-color: var(--color-bg-card);
@@ -290,6 +299,8 @@
   border-radius: var(--radius-md);
   cursor: pointer;
   text-align: center;
+  scroll-snap-align: start;    /* Aggancia il bottone allo snap point */
+  flex-shrink: 0;              /* Ridondante con flex: 0 0 auto — esplicito per leggibilità */
   transition:
     color var(--transition-fast),
     border-color var(--transition-fast),
@@ -320,18 +331,28 @@
 
 #day-selector {
   display: flex;
-  gap: var(--space-3);
+  flex-wrap: nowrap;           /* Impedisce ai bottoni di andare su righe multiple */
+  gap: var(--space-2);
   margin-bottom: var(--space-6);
-  flex-wrap: wrap;
+  overflow-x: auto;            /* Scroll orizzontale quando i bottoni non ci stanno */
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: var(--space-2); /* Evita che il bordo del bottone venga tagliato */
+  scrollbar-width: none;       /* Nasconde la scrollbar su Firefox */
+}
+
+#day-selector::-webkit-scrollbar {
+  display: none;               /* Nasconde la scrollbar su Chrome/Safari */
 }
 
 .day-btn {
-  flex: 1;
-  min-width: 60px;
-  padding-block: var(--space-4);
+  flex: 0 0 auto;              /* Non si comprime, non si espande */
+  flex-shrink: 0;              /* Ridondante con flex: 0 0 auto — esplicito per leggibilità */
+  min-width: 80px;             /* Touch target minimo 44px garantito con padding */
+  padding-block: var(--space-3);
   padding-inline: var(--space-3);
   font-family: var(--font-base);
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-base);     /* 16px su mobile — leggibile con nome giorno */
   font-weight: var(--font-weight-semibold);
   color: var(--color-text-muted);
   background-color: var(--color-bg-card);
@@ -339,6 +360,10 @@
   border-radius: var(--radius-md);
   cursor: pointer;
   text-align: center;
+  scroll-snap-align: start;    /* Aggancia il bottone allo snap point */
+  white-space: nowrap;         /* Impedisce il testo del giorno di andare su più righe */
+  overflow: hidden;            /* Tronca il testo se supera min-width */
+  text-overflow: ellipsis;     /* Mostra ... se il nome giorno è troppo lungo */
   transition:
     color var(--transition-fast),
     border-color var(--transition-fast),
@@ -611,6 +636,74 @@
 
 /* ── STATI: errore, placeholder, empty ── */
 
+/* ============================================================
+   html.theme-pro — Override tipografici workout
+   Titoli sessione e valori numerici più prominenti con Inter.
+   Opera SOLO sotto html.theme-pro.
+   ============================================================ */
+
+/* Titolo scheda/header workout: più grande, letter-spacing negativo */
+html.theme-pro .workout-header__title {
+  font-size: var(--font-size-xl);       /* 24px vs 20px originale */
+  font-weight: var(--font-weight-extrabold, 800);
+  letter-spacing: -0.01em;
+}
+
+/* Titolo giorno card: peso massimo, più grande */
+html.theme-pro .workout-giorno-card__giorno {
+  font-size: var(--font-size-xl);       /* 24px vs 20px originale */
+  font-weight: var(--font-weight-extrabold, 800);
+  letter-spacing: -0.01em;
+}
+
+/* Valori numerici (serie, reps, recupero): bold maggiore */
+html.theme-pro .workout-esercizio-row__serie,
+html.theme-pro .workout-esercizio-row__reps,
+html.theme-pro .workout-esercizio-row__recupero {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+
+/* Peso/carico: più visibile */
+html.theme-pro .workout-esercizio-row__peso {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  font-size: var(--font-size-sm);
+}
+
+/* Label settimana summary: più sbiadita */
+html.theme-pro .workout-week-summary__label {
+  color: var(--color-text-faint);
+  opacity: 0.85;
+}
+
+/* Valore intensità settimana: più bold */
+html.theme-pro .workout-week-summary__value {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-md);       /* 18px vs 16px originale */
+}
+
+/* ============================================================
+   html.theme-pro — Override componenti workout
+   Selettori settimana e giorno con stato attivo molto più evidente:
+   halo box-shadow colorata + font-weight extrabold.
+   Opera SOLO sotto html.theme-pro.
+   ============================================================ */
+
+/* Selettore settimana — stato attivo con halo accent */
+html.theme-pro .week-btn.active,
+html.theme-pro .week-btn[aria-pressed="true"] {
+  box-shadow: 0 0 0 2px var(--color-accent);
+  font-weight: var(--font-weight-extrabold, 800);
+}
+
+/* Selettore giorno — stato attivo con halo accent */
+html.theme-pro .day-btn.active,
+html.theme-pro .day-btn[aria-pressed="true"] {
+  box-shadow: 0 0 0 2px var(--color-accent);
+  font-weight: var(--font-weight-extrabold, 800);
+}
+
 .workout-error {
   padding: var(--space-4) var(--space-5);
   background-color: rgba(244, 67, 54, 0.1);
@@ -655,8 +748,15 @@
   }
 
   .week-btn {
-    font-size: var(--font-size-md);     /* >= 1.125rem > 1rem ✓ */
-    padding-block: var(--space-4);
+    font-size: var(--font-size-md);     /* 18px >= 1rem ✓ */
+    padding-block: var(--space-3);
+    min-width: 64px;
+  }
+
+  .day-btn {
+    min-width: 80px;             /* Touch target adeguato su mobile piccolo */
+    padding-block: var(--space-3);
+    font-size: var(--font-size-sm);     /* 14px — leggibile con nome giorno compatto */
   }
 
   .workout-giorno-card {
@@ -984,23 +1084,24 @@
   }
 
   #week-selector {
-    gap: var(--space-4);
+    gap: var(--space-3);
   }
 
   .week-btn {
-    min-width: 80px;
+    min-width: 72px;             /* Touch target adeguato su tablet/desktop */
     padding-block: var(--space-4);
-    font-size: var(--font-size-xl);
+    padding-inline: var(--space-3);
+    font-size: var(--font-size-lg);       /* 20px su tablet/desktop */
   }
 
   #day-selector {
-    gap: var(--space-4);
+    gap: var(--space-3);
   }
 
   .day-btn {
-    min-width: 80px;
+    min-width: 100px;            /* Bottoni più leggibili con testo lungo su tablet/desktop */
     padding-block: var(--space-4);
-    font-size: var(--font-size-xl);
+    font-size: var(--font-size-md);       /* 18px su tablet/desktop */
   }
 
   /* .workout-giorni: layout a colonna singola — la vista giorno singolo
@@ -1023,11 +1124,11 @@
   }
 
   #day-selector {
-    gap: var(--space-4);
+    gap: var(--space-3);
   }
 
   .day-btn {
-    min-width: 80px;
-    font-size: var(--font-size-xl);
+    min-width: 100px;            /* Bottoni leggibili con testo lungo su desktop */
+    font-size: var(--font-size-md);       /* 18px su desktop */
   }
 }

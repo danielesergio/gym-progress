@@ -1,0 +1,121 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "diet-day-selector-style",
+    "task_title": "Stile selettore giorni scalabile per lista variabile di giorni",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "diet-day-selector-style",
+    "type": "ux",
+    "title": "Stile selettore giorni scalabile per lista variabile di giorni",
+    "description": "Il selettore giorni attuale usa flex-wrap:wrap con bottoni pill a larghezza variabile. Con 7 giorni di nome lungo (es. 'Lunedì - Allenamento') la disposizione si spezza su più righe in modo incontrollato su mobile e può superare 1/3 dell'altezza della viewport. Il nuovo stile deve adottare scroll orizzontale senza wrap (pattern già usato in workout.css per #week-selector e #day-selector): overflow-x:auto, flex-wrap:nowrap, scroll-snap-type, bottoni a larghezza fissa leggibile. Il nome del giorno non deve essere troncato. Il giorno attivo deve essere chiaramente distinto (già funzionante con .active — da conservare).",
+    "inputs": ["DietDaySelector"],
+    "outputs": ["DietDaySelectorStyle"],
+    "acceptance_criteria": [
+      "Su mobile (< 480px) tutti i nomi dei giorni sono leggibili senza testo troncato",
+      "Con 7 giorni il selettore non occupa più di 1/3 dell'altezza della viewport",
+      "Il giorno selezionato è visivamente distinto dagli altri (colore bordo, background o font differente)",
+      "Il selettore funziona correttamente sia con 2 giorni che con 7 giorni senza overflow o layout rotto"
+    ],
+    "notes": "Task CSS-only: nessuna modifica a diet.html o diet.js. Il JS genera già i bottoni con class='diet-toggle-btn' e data-day-index. La classe .active e aria-pressed sono già gestite da renderToggle(). Il developer deve solo aggiornare le regole CSS per .diet-day-toggle e .diet-toggle-btn in docs/css/diet.css, seguendo il pattern scroll orizzontale già realizzato in workout.css (vedi #week-selector, #day-selector, .week-btn, .day-btn)."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Sostituire il layout flex-wrap:wrap di .diet-day-toggle con scroll orizzontale (overflow-x:auto, flex-wrap:nowrap, scroll-snap-type:x mandatory, scrollbar-width:none). Aggiornare .diet-toggle-btn con larghezza fissa (min-width adeguato), white-space:nowrap, scroll-snap-align:start, flex:0 0 auto — stessa strategia di .week-btn e .day-btn in workout.css.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "File da modificare — leggere sezione '── TOGGLE TIPO GIORNO ──' (righe 30-80) per sostituire esattamente le regole di .diet-day-toggle e .diet-toggle-btn senza toccare il resto del file"
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Modello stilistico di riferimento — leggere le sezioni '── SELETTORE SETTIMANE ──' e '── SELETTORE GIORNI ──' (righe 270-410 circa) per replicare il pattern scroll orizzontale già validato su #week-selector / #day-selector / .week-btn / .day-btn"
+      },
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "Verificare la struttura HTML generata dinamicamente da renderDaySelector(): classe applicata ai bottoni (.diet-toggle-btn), attributi data-day-index e aria-pressed, classe .active applicata da renderToggle() — nessuna modifica JS richiesta, solo verifica"
+      },
+      {
+        "path": "docs/data/diet.json",
+        "motivo": "Verificare il campo nome di giorni[]: i valori reali sono stringhe lunghe (es. 'Lunedì - Allenamento', 'Sabato - Sgarro') — determinare la min-width corretta per i bottoni affinché il testo sia leggibile senza troncamento"
+      },
+      {
+        "path": "docs/css/variables.css",
+        "motivo": "Consultare i token disponibili: --space-*, --radius-*, --color-*, --font-size-*, --transition-fast — usare esclusivamente questi token nelle regole CSS nuove, senza valori hardcoded (eccetto eccezioni già presenti nel file come rgba() per active hover)"
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "styling": {
+        "nome": "CSS custom properties",
+        "file_globali": ["css/variables.css", "css/layout.css"],
+        "file_pagina": "css/diet.css"
+      },
+      "grafici": null
+    },
+    "convenzioni": {
+      "classi_css": "kebab-case con prefisso pagina: .diet-day-toggle, .diet-toggle-btn",
+      "classi_css_elementi": "BEM light: .diet-toggle-btn.active (modificatore di stato, non elemento BEM)",
+      "no_inline_style": "Vietato attributo style='...' nell'HTML. Il JS usa innerHTML ma senza style inline — i nuovi stili vanno SOLO nel CSS.",
+      "variabili_js": "camelCase — nessuna modifica JS richiesta in questo task",
+      "scroll_pattern": "overflow-x:auto + flex-wrap:nowrap + scroll-snap-type:x mandatory + scrollbar-width:none — identico a workout.css #week-selector",
+      "touch_target": "min-width tale da garantire area cliccabile adeguata (>= 44px effettivi con padding). In workout.css: min-width:80px per .day-btn con nome giorno.",
+      "testo_non_troncato": "white-space:nowrap sul bottone + min-width sufficiente per la stringa più lunga del dataset (es. 'Sabato - Sgarro' = 15 caratteri, 'Giovedì - Riposo' = 17 caratteri). NON usare overflow:hidden + text-overflow:ellipsis (workout.css li usa per troncare, ma la spec dice 'senza troncamento'). Usare una min-width fissa adeguata (es. 160px-180px).",
+      "giorno_attivo": "La classe .active e il cambio aria-pressed='true' sono già gestiti da renderToggle() in diet.js. Il CSS deve solo definire le regole .diet-toggle-btn.active: background-color, border-color, color (font-weight già presente — conservare)."
+    },
+    "pagina": {
+      "nome": "Dieta",
+      "file": "docs/diet.html",
+      "js": "docs/js/diet.js",
+      "css": "docs/css/diet.css",
+      "dati_json": ["data/diet.json"]
+    },
+    "struttura_html_selettore": {
+      "container": "<section class='diet-day-toggle' id='day-toggle' aria-label='Seleziona giorno'>",
+      "bottoni": "<button type='button' class='diet-toggle-btn [active]' data-day-index='N' aria-pressed='true|false'>Nome Giorno</button>",
+      "nota": "L'HTML è generato da renderDaySelector() in diet.js — il developer non tocca diet.html né diet.js"
+    },
+    "dati_giorni": {
+      "numero_giorni": 7,
+      "nomi_esempio": [
+        "Lunedì - Allenamento",
+        "Martedì - Riposo",
+        "Mercoledì - Allenamento",
+        "Giovedì - Riposo",
+        "Venerdì - Allenamento",
+        "Sabato - Sgarro",
+        "Domenica - Riposo"
+      ],
+      "lunghezza_max": "~21 caratteri (es. 'Lunedì - Allenamento')"
+    }
+  },
+  "criteri_accettazione": [
+    "Su mobile (< 480px) tutti i nomi dei giorni sono leggibili senza testo troncato",
+    "Con 7 giorni il selettore non occupa più di 1/3 dell'altezza della viewport (indicativamente max 180-220px per 1 riga di bottoni + padding)",
+    "Il giorno selezionato è visivamente distinto: .diet-toggle-btn.active ha background-color, border-color e color differenti dagli altri bottoni",
+    "Il selettore funziona sia con 2 giorni (bottoni larghi, senza scroll necessario) che con 7 giorni (scroll orizzontale senza layout rotto)",
+    "docs/css/diet.css — .diet-day-toggle ha overflow-x:auto e flex-wrap:nowrap (non più flex-wrap:wrap)",
+    "docs/css/diet.css — .diet-toggle-btn ha flex:0 0 auto e white-space:nowrap",
+    "docs/css/diet.css — .diet-toggle-btn NON ha overflow:hidden + text-overflow:ellipsis (il testo deve restare visibile)",
+    "docs/css/diet.css — .diet-day-toggle ha scrollbar-width:none e il corrispondente ::-webkit-scrollbar { display:none }",
+    "docs/css/diet.css — .diet-day-toggle ha scroll-snap-type:x mandatory e .diet-toggle-btn ha scroll-snap-align:start",
+    "Non vengono modificati docs/diet.html, docs/js/diet.js o docs/data/diet.json"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "diet-day-selector-dynamic",
+      "stato": "completato",
+      "file_prodotti": ["docs/js/diet.js", "docs/css/diet.css"],
+      "note": "diet.js contiene renderDaySelector() che genera dinamicamente i bottoni iterando su giorni[], renderToggle() che gestisce classe .active e aria-pressed. Il CSS già definisce .diet-day-toggle e .diet-toggle-btn (incluso .active). Entrambi i file esistono in docs/."
+    }
+  ]
+}

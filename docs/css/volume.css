@@ -1,0 +1,398 @@
+/* ============================================================
+   volume.css — Stili pagina Volume di Allenamento
+   Daniele Fitness | KPI card + grafico barre + tabella dettaglio
+   ============================================================ */
+
+/* ── Sezioni pagina ── */
+.volume-section {
+  margin-bottom: var(--space-12);
+}
+
+.volume-section:last-child {
+  margin-bottom: 0;
+}
+
+.volume-section-header {
+  margin-bottom: var(--space-6);
+}
+
+.volume-section-title {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  line-height: var(--line-height-tight);
+  margin-bottom: var(--space-1);
+}
+
+.volume-section-subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+}
+
+/* ── Placeholder loading / empty state ── */
+.volume-placeholder {
+  color: var(--color-text-faint);
+  font-size: var(--font-size-sm);
+  padding: var(--space-6);
+  text-align: center;
+  background-color: var(--color-bg-card);
+  border-radius: var(--radius-md);
+  border: 1px dashed var(--color-border);
+}
+
+/* ── Messaggio errore globale ── */
+.volume-error {
+  color: var(--color-text);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-left: 3px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  padding: var(--space-4) var(--space-5);
+  margin-bottom: var(--space-6);
+  font-size: var(--font-size-sm);
+}
+
+/* ══════════════════════════════════════════
+   CARD META KPI — griglia KPI
+   ══════════════════════════════════════════ */
+.volume-meta-card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+}
+
+.volume-meta-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: var(--space-4);
+}
+
+.volume-meta-item {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+/* Elemento balance — occupa larghezza intera se serve */
+.volume-meta-item--balance {
+  align-items: flex-start;
+}
+
+.volume-meta-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.volume-meta-value {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  font-family: var(--font-mono);
+}
+
+.volume-meta-value--pull {
+  color: var(--color-accent);
+}
+
+.volume-meta-value--push {
+  color: var(--color-text-muted);
+}
+
+/* ══════════════════════════════════════════
+   BALANCE BADGE — indicatore pull/push
+   ══════════════════════════════════════════ */
+.volume-balance-badge {
+  display: inline-block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-sm);
+  padding: 3px var(--space-2);
+  text-transform: capitalize;
+  letter-spacing: 0.04em;
+  margin-top: var(--space-1);
+  white-space: nowrap;
+}
+
+.volume-balance-badge--warning {
+  background-color: rgba(255, 107, 53, 0.18);
+  color: var(--color-accent);
+  border: 1px solid rgba(255, 107, 53, 0.35);
+}
+
+.volume-balance-badge--ok {
+  background-color: rgba(76, 175, 129, 0.15);
+  color: var(--color-success, #4caf81);
+  border: 1px solid rgba(76, 175, 129, 0.3);
+}
+
+.volume-balance-badge--neutral {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+/* ══════════════════════════════════════════
+   GRAFICO — container canvas
+   ══════════════════════════════════════════ */
+.volume-chart-container {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-5);
+  /* Altezza dinamica in base al numero di muscoli (12 × ~36px) */
+  position: relative;
+  height: 520px;
+}
+
+/* ══════════════════════════════════════════
+   TABELLA DETTAGLIO — muscolo per muscolo
+   ══════════════════════════════════════════ */
+.volume-detail-container {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* Blocco singolo muscolo */
+.volume-muscle-block {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+/* Header del blocco muscolo */
+.volume-muscle-block-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-4) var(--space-5);
+  background-color: var(--color-bg-secondary);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.volume-muscle-name {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  text-transform: capitalize;
+}
+
+.volume-muscle-total {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-accent);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+}
+
+/* Wrapper con scroll orizzontale per la tabella su mobile */
+.volume-detail-table-wrap {
+  overflow-x: auto;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+
+.volume-detail-table-wrap::-webkit-scrollbar {
+  height: 4px;
+}
+
+.volume-detail-table-wrap::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.volume-detail-table-wrap::-webkit-scrollbar-thumb {
+  background-color: var(--color-border);
+  border-radius: var(--radius-full);
+}
+
+/* Tabella dettaglio esercizi */
+.volume-detail-table {
+  width: 100%;
+  min-width: 480px;
+  border-collapse: collapse;
+  font-size: var(--font-size-sm);
+}
+
+.volume-detail-table th,
+.volume-detail-table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.volume-detail-table thead th {
+  background-color: var(--color-bg-elevated);
+  color: var(--color-text-muted);
+  font-weight: var(--font-weight-semibold);
+  font-size: var(--font-size-xs);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.volume-detail-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.volume-detail-table tbody tr:hover td {
+  background-color: var(--color-bg-elevated);
+}
+
+/* Colonne numeriche — allineamento a destra */
+.volume-detail-table__num {
+  text-align: right;
+  font-family: var(--font-mono);
+  color: var(--color-text-muted);
+}
+
+/* ── Badge ruolo esercizio ── */
+.volume-ruolo-badge {
+  display: inline-block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-bold);
+  border-radius: var(--radius-sm);
+  padding: 2px 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.volume-ruolo-badge--principale {
+  background-color: rgba(255, 107, 53, 0.18);
+  color: var(--color-accent);
+  border: 1px solid rgba(255, 107, 53, 0.3);
+}
+
+.volume-ruolo-badge--secondario {
+  background-color: var(--color-bg-elevated);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+.volume-ruolo-badge--terziario {
+  background-color: var(--color-bg-card);
+  color: var(--color-text-faint);
+  border: 1px solid var(--color-border);
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE — Tablet (max-width: 1024px)
+   ══════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .volume-meta-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE — Mobile (max-width: 768px)
+   ══════════════════════════════════════════ */
+@media (max-width: 768px) {
+
+  .volume-section-title {
+    font-size: var(--font-size-lg);
+  }
+
+  .volume-meta-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-3);
+  }
+
+  .volume-chart-container {
+    height: 460px;
+    padding: var(--space-3);
+  }
+
+  .volume-muscle-block-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-1);
+  }
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE — Mobile piccolo (max-width: 375px)
+   ══════════════════════════════════════════ */
+@media (max-width: 375px) {
+  .volume-section {
+    margin-bottom: var(--space-8);
+  }
+
+  .volume-section-title {
+    font-size: var(--font-size-md);
+  }
+
+  .volume-meta-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .volume-chart-container {
+    height: 400px;
+  }
+}
+
+/* ============================================================
+   html.theme-pro — Override tipografici volume
+   Titoli sezione e KPI serie settimanali più prominenti con Inter.
+   Opera SOLO sotto html.theme-pro.
+   ============================================================ */
+
+/* Titolo sezione volume: più grande, peso 700, letter-spacing negativo */
+html.theme-pro .volume-section-title {
+  font-size: var(--font-size-2xl);      /* 32px vs 24px originale */
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.02em;
+}
+
+/* Sottotitolo sezione: più sbiadito per contrasto */
+html.theme-pro .volume-section-subtitle {
+  color: var(--color-text-faint);
+}
+
+/* Valori KPI serie settimanali: extrabold, più grandi */
+html.theme-pro .volume-meta-value {
+  font-size: var(--font-size-kpi-value, 1.625rem); /* 26px vs 20px originale */
+  font-weight: var(--font-weight-extrabold, 800);
+  letter-spacing: -0.02em;
+  font-family: var(--font-base); /* Inter invece di mono per look premium */
+}
+
+/* Label KPI: più sbiadita per lasciare risaltare il valore */
+html.theme-pro .volume-meta-label {
+  color: var(--color-text-faint);
+  opacity: 0.85;
+}
+
+/* Nome muscolo: più prominente */
+html.theme-pro .volume-muscle-name {
+  font-size: var(--font-size-lg);       /* 20px vs 18px originale */
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.01em;
+}
+
+/* Totale serie muscolo: bold maggiore */
+html.theme-pro .volume-muscle-total {
+  font-weight: var(--font-weight-bold);
+  font-size: var(--font-size-base);     /* 16px vs 14px originale */
+}
+
+/* Responsive mobile: titolo sezione pro mantiene gerarchia */
+@media (max-width: 768px) {
+  html.theme-pro .volume-section-title {
+    font-size: var(--font-size-xl);     /* 24px su mobile — ancora più grande dell'originale */
+  }
+}
+
+@media (max-width: 375px) {
+  html.theme-pro .volume-section-title {
+    font-size: var(--font-size-lg);     /* 20px su mobile small */
+  }
+
+  html.theme-pro .volume-meta-value {
+    font-size: var(--font-size-xl);     /* 24px su mobile small */
+  }
+}

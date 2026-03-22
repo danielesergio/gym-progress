@@ -861,6 +861,9 @@ def _performance_analysis_text() -> str:
 
 
 def build_plan_prompt(ctx: dict) -> str:
+    nutrition_ctx = _calc_nutrition_context(
+        ctx['measurements'], ctx['feedback_data'], ctx['plan_text'] or ""
+    )
     return f"""Sei il personal trainer certificato del progetto fitness.
 Genera il piano a lungo termine `data/output/plan.yaml` con la struttura standard.
 
@@ -869,9 +872,6 @@ Genera il piano a lungo termine `data/output/plan.yaml` con la struttura standar
 
 ## Obiettivi
 {ctx['goals_text']}
-
-## Preferenze
-{ctx['preferences_text']}
 
 ## Feedback atleta corrente (PUNTO DI PARTENZA)
 {ctx['feedback_text']}
@@ -886,6 +886,8 @@ Genera il piano a lungo termine `data/output/plan.yaml` con la struttura standar
 
 ## {_rates_text(ctx['rates'])}
 
+{nutrition_ctx}
+
 {_performance_analysis_text()}
 
 ## Istruzioni
@@ -893,6 +895,7 @@ Genera il piano a lungo termine `data/output/plan.yaml` con la struttura standar
 - La somma settimane di tutte le fasi DEVE essere esattamente 52
 - Infortuni e richieste dell'atleta hanno precedenza assoluta
 - Considera le metodologie empiricamente efficaci dal report performance (se disponibile)
+- Il piano DEVE includere `kcal_allenamento` e `kcal_riposo` corretti nella sezione `strategia_nutrizionale`, basandoti sull'analisi aderenza calorica sopra
 - Scrivi SOLO il file plan.yaml, nessun testo aggiuntivo"""
 
 
@@ -945,9 +948,120 @@ applicando TUTTI i problemi_critici e i suggerimenti indicati.
 - Profilo: data/athlete.md
 - Feedback archiviato: data/output/feedback_atleta_{ITERATION_ID}.yaml
 - Misurazioni: data/output/measurements.json
-- Obiettivi: data/goals | data/preferences
+- Obiettivi: data/goals
 
 Leggi autonomamente la review e genera la versione corretta di plan.yaml."""
+
+
+def _calc_nutrition_context(measurements: list, feedback_data: dict, plan_text: str) -> str:
+    """
+    Calcola il contesto nutrizionale da passare al piano:
+    - Delta peso e BF% rispetto alla misurazione precedente (con durata in giorni)
+    - kcal_media_stimata dal feedback atleta
+    - kcal target della dieta precedente (lette dal plan.yaml corrente)
+    - Segnali di allarme (es. BF sale troppo in bulk, peso cala in mantenimento)
+    Ritorna una stringa markdown pronta per essere inclusa nel prompt.
+    """
+    lines = ["## Analisi aderenza calorica e composizione corporea"]
+
+    # --- Delta peso e BF% ---
+    if len(measurements) >= 2:
+        prev = measurements[-2]
+        curr = measurements[-1]
+
+        peso_prev = prev.get("peso_kg")
+        peso_curr = curr.get("peso_kg")
+        bf_prev   = prev.get("body_fat_pct")
+        bf_curr   = curr.get("body_fat_pct")
+        mm_prev   = prev.get("massa_magra_kg")
+        mm_curr   = curr.get("massa_magra_kg")
+        d_prev    = prev.get("data")
+        d_curr    = curr.get("data")
+
+        # Durata periodo
+        days = None
+        if d_prev and d_curr:
+            try:
+                days = (datetime.strptime(d_curr, "%Y-%m-%d") - datetime.strptime(d_prev, "%Y-%m-%d")).days
+            except ValueError:
+                pass
+
+        periodo_str = f" in {days} giorni" if days else ""
+
+        if peso_prev is not None and peso_curr is not None:
+            delta_peso = round(peso_curr - peso_prev, 1)
+            sign = "+" if delta_peso >= 0 else ""
+            lines.append(f"- Peso: {peso_prev} → {peso_curr} kg ({sign}{delta_peso} kg{periodo_str})")
+
+        if bf_prev is not None and bf_curr is not None:
+            delta_bf = round(bf_curr - bf_prev, 1)
+            sign = "+" if delta_bf >= 0 else ""
+            lines.append(f"- Body Fat %: {bf_prev}% → {bf_curr}% ({sign}{delta_bf}%{periodo_str})")
+            # Segnale di allarme BF
+            if days and days > 0:
+                bf_rate_week = delta_bf / days * 7
+                if bf_rate_week > 0.5:
+                    lines.append(f"  ⚠ BF sta salendo a ~{bf_rate_week:.1f}%/settimana — eccessivo anche in bulk (max accettabile: ~0.3-0.5%/sett)")
+                elif bf_rate_week < -0.7:
+                    lines.append(f"  ⚠ BF sta scendendo a ~{abs(bf_rate_week):.1f}%/settimana — rischio catabolismo muscolare se in cut aggressivo")
+
+        if mm_prev is not None and mm_curr is not None:
+            delta_mm = round(mm_curr - mm_prev, 1)
+            sign = "+" if delta_mm >= 0 else ""
+            lines.append(f"- Massa magra: {mm_prev} → {mm_curr} kg ({sign}{delta_mm} kg{periodo_str})")
+    else:
+        lines.append("- (storico insufficiente per calcolare delta composizione corporea)")
+
+    # --- kcal media effettiva dal feedback ---
+    dieta_feedback = (feedback_data or {}).get("dieta", {}) or {}
+    kcal_media = dieta_feedback.get("kcal_media_stimata")
+    kcal_media_val = None
+    if kcal_media and str(kcal_media).strip() not in ("", "null", "None"):
+        try:
+            kcal_media_val = float(kcal_media)
+            lines.append(f"- kcal effettive medie dichiarate dall'atleta: {int(kcal_media_val)} kcal/giorno")
+        except (ValueError, TypeError):
+            pass
+    else:
+        lines.append("- kcal effettive medie: non dichiarate dall'atleta")
+
+    # --- kcal target dalla dieta precedente (da plan.yaml) ---
+    import re as _re
+    kcal_all_match = _re.search(r"kcal_allenamento:\s*(\d+)", plan_text or "")
+    kcal_rip_match = _re.search(r"kcal_riposo:\s*(\d+)", plan_text or "")
+    if kcal_all_match or kcal_rip_match:
+        targets = []
+        if kcal_all_match:
+            targets.append(f"allenamento={kcal_all_match.group(1)} kcal")
+        if kcal_rip_match:
+            targets.append(f"riposo={kcal_rip_match.group(1)} kcal")
+        lines.append(f"- kcal target piano precedente: {', '.join(targets)}")
+
+        # Scarto tra effettivo e target
+        if kcal_media_val and kcal_all_match:
+            target_all = float(kcal_all_match.group(1))
+            scarto = int(kcal_media_val - target_all)
+            sign = "+" if scarto >= 0 else ""
+            lines.append(f"- Scarto kcal effettive vs target allenamento: {sign}{scarto} kcal/giorno")
+            if abs(scarto) > 200:
+                lines.append(f"  ⚠ Scarto significativo: adegua il target calorico nel nuovo piano")
+
+    # --- Indicazione per il piano ---
+    lines.append("")
+    lines.append("### Istruzioni per la correzione calorica nel nuovo piano")
+    lines.append("Basandoti sui dati sopra, correggi `kcal_allenamento` e `kcal_riposo` nel piano secondo queste regole:")
+    lines.append("- **Bulk**: peso deve salire ~0.2-0.4 kg/sett, BF non deve salire >0.3-0.5%/sett.")
+    lines.append("  - Se peso non sale → aumenta kcal di 150-200")
+    lines.append("  - Se BF sale troppo velocemente → riduci kcal di 100-150 o sposta carbo nei giorni allenamento")
+    lines.append("- **Mantenimento**: peso deve restare stabile (±0.5 kg/mese), BF stabile.")
+    lines.append("  - Se peso scende → aumenta kcal di 100-200")
+    lines.append("  - Se peso sale con BF in aumento → riduci kcal di 100-150")
+    lines.append("- **Cut**: peso deve scendere ~0.3-0.5 kg/sett, massa magra deve restare stabile o calare minimamente.")
+    lines.append("  - Se peso non scende → riduci kcal di 150-200")
+    lines.append("  - Se massa magra scende troppo → aumenta proteine, riduci deficit")
+    lines.append("- Se l'atleta non riesce a mangiare le kcal target (scarto > 200 kcal): considera di semplificare i pasti o ridurre il target temporaneamente")
+
+    return "\n".join(lines)
 
 
 def _calc_efficacia_context(measurements: list, feedback_text: str) -> str:
@@ -1208,7 +1322,6 @@ def load_all_data() -> dict:
     athlete_text    = read_text(DATA_DIR / "athlete.md")
     feedback_path   = DATA_DIR / "feedback_atleta.yaml"
     goals_text      = _read_path_or_dir(DATA_DIR / "goals")
-    preferences_text = _read_path_or_dir(DATA_DIR / "preferences")
     measurements_path = OUTPUT_DIR / "measurements.json"
     if not measurements_path.exists():
         OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -1246,7 +1359,6 @@ def load_all_data() -> dict:
         "feedback_data":    feedback_data,
         "feedback_text":    feedback_path.read_text(encoding="utf-8") if feedback_path.exists() else "",
         "goals_text":       goals_text,
-        "preferences_text": preferences_text,
         "measurements":     measurements,
         "plan_text":        plan_text,
         "rates":            {},   # compilato in fase 2

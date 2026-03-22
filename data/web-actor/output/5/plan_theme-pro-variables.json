@@ -1,0 +1,137 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "theme-pro-variables",
+    "task_title": "Variabili CSS del tema professionale",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "theme-pro-variables",
+    "type": "component",
+    "title": "Variabili CSS del tema professionale",
+    "description": "Definire un set completo di custom properties CSS per il tema 'pro' che si attiva quando il root element porta la classe `.theme-pro`. Il tema professionale deve differenziarsi visivamente dall'attuale dark/arancione mantenendo l'atmosfera seria e sportiva. Suggerimenti di direzione: palette più raffinata (es. sfondo molto scuro quasi nero con accenti in un blu acciaio o verde militare oppure un bianco sporco off-white su grigio ardesia per un look premium), tipografia con maggiore gerarchia, card con bordi più sottili e ombre più sofisticate, spaziature leggermente più generose. Le variabili da sovrascrivere devono coprire almeno: tutti i colori di background, testo, accent, bordi, ombre, e i radius. Il tema originale (dark arancione) rimane invariato nel file variables.css esistente — il nuovo tema viene aggiunto come blocco `html.theme-pro` nello stesso file.",
+    "inputs": [
+      "current_design_system",
+      "variables_css"
+    ],
+    "outputs": [
+      "ProThemeVariables"
+    ],
+    "acceptance_criteria": [
+      "Applicando la classe `.theme-pro` all'elemento html, tutti i colori del sito cambiano visibilmente",
+      "Il nuovo tema è chiaramente diverso dall'originale (non solo una variazione di tono)",
+      "Tutti gli elementi chiave (header, nav, card, grafici, tabelle, badge, pulsanti) risultano visivamente coerenti col nuovo tema",
+      "Il testo rimane leggibile (contrasto minimo AA per WCAG) in entrambi i temi",
+      "Rimuovendo la classe, si torna esattamente al tema originale senza residui visivi"
+    ],
+    "dependencies": [],
+    "notes": "Questo task è la fondazione assoluta del restyle: NESSUN altro task del nuovo tema può essere iniziato prima che questo sia completato. L'unico file da modificare è docs/css/variables.css. Il blocco di override va scritto con il selettore `html.theme-pro` (NON `:root`) subito dopo il blocco `:root` esistente. Il tema originale (:root) deve rimanere intatto, parola per parola."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/css/variables.css",
+        "motivo": "Aggiungere il blocco `html.theme-pro { ... }` con override completo di tutte le custom properties di colore, ombre e radius. Il blocco va posto subito dopo il blocco :root esistente (riga 87). Le variabili di tipografia, spaziature, transizioni e breakpoint NON vanno toccate in questo task — verranno gestite in theme-pro-typography.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/css/variables.css",
+        "motivo": "File chiave del task: contiene tutte le custom properties del tema originale (:root). Il developer deve conoscere ogni variabile esistente per decidere il valore di override nel tema pro. In particolare: --color-bg (#1a1a1a), --color-bg-secondary (#2d2d2d), --color-bg-card (#242424), --color-bg-elevated (#333333), --color-text (#f0f0f0), --color-text-muted (#a0a0a0), --color-text-faint (#666666), --color-accent (#ff6b35), --color-accent-hover (#e55a24), --color-accent-dim (rgba(255,107,53,0.15)), --color-border (#3a3a3a), --color-border-light (#444444), --color-success (#4caf50), --color-warning (#ffc107), --color-danger (#f44336), --shadow-sm/md/lg, --radius-sm/md/lg/xl/full."
+      },
+      {
+        "path": "docs/dashboard.html",
+        "motivo": "Mostra la struttura HTML delle pagine: header.page-header, nav.tab-list, .dashboard-card. Utile per capire quali elementi useranno le variabili CSS e verificare che il selettore `html.theme-pro` agisca correttamente sul markup reale."
+      },
+      {
+        "path": "docs/css/layout.css",
+        "motivo": "Rivela come header, nav e container usano le variabili. Importante per capire quali token di colore e ombra vengono applicati agli elementi strutturali condivisi (page-header, tab-list, nav-tab, page-footer)."
+      },
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "Mostra come le card usano i token (background-color, border, box-shadow) — conferma che i token da sovrascrivere nel tema pro siano esattamente quelli di variables.css, senza hardcoded values."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "styling": {
+        "nome": "CSS custom properties",
+        "versione": "CSS3",
+        "file_globali": [
+          "docs/css/variables.css — design tokens (l'unico file da modificare in questo task)",
+          "docs/css/layout.css — usa i token ma non va modificato in questo task"
+        ]
+      }
+    },
+    "tema": {
+      "originale": {
+        "attivazione": "Nessuna classe — stili definiti in :root di variables.css",
+        "palette_base": "Background #1a1a1a, accent #ff6b35, testo #f0f0f0"
+      },
+      "pro": {
+        "selettore": "html.theme-pro",
+        "pattern_css": "html.theme-pro { --color-bg: ...; --color-accent: ...; ... }",
+        "posizione": "Blocco aggiunto subito dopo il blocco :root in docs/css/variables.css",
+        "nota_critica": "MAI sovrascrivere :root — solo html.theme-pro. MAI modificare i valori dentro :root esistente."
+      },
+      "localStorage": {
+        "chiave": "fitness-theme",
+        "valori": ["original", "pro"],
+        "default": "original",
+        "nota": "La logica JS di toggle viene implementata nel task theme-toggle-button / theme-persistence — questo task riguarda SOLO le variabili CSS."
+      }
+    },
+    "convenzioni": {
+      "tema_pro_pattern": "Tutti gli override del tema pro usano html.theme-pro come selettore radice — MAI nested su :root",
+      "custom_properties": "Per valori condivisi usare sempre var(--nome) — mai valori hardcoded nel CSS di pagina se esiste già un token in variables.css",
+      "no_inline_style": "Vietato style= inline negli HTML"
+    },
+    "variabili_da_sovrascrivere_obbligatorie": [
+      "--color-bg",
+      "--color-bg-secondary",
+      "--color-bg-card",
+      "--color-bg-elevated",
+      "--color-text",
+      "--color-text-muted",
+      "--color-text-faint",
+      "--color-accent",
+      "--color-accent-hover",
+      "--color-accent-dim",
+      "--color-border",
+      "--color-border-light",
+      "--color-success",
+      "--color-warning",
+      "--color-danger",
+      "--shadow-sm",
+      "--shadow-md",
+      "--shadow-lg",
+      "--radius-sm",
+      "--radius-md",
+      "--radius-lg",
+      "--radius-xl",
+      "--radius-full"
+    ],
+    "direzioni_palette_pro": {
+      "opzione_a": "Dark steel-blue: sfondo quasi-nero (#0d1117 / #161b22), accent blu acciaio (#4a9eff o #58a6ff), testo bianco caldo (#e6edf3) — evoca high-tech / strength athlete premium",
+      "opzione_b": "Slate military: sfondo grigio ardesia scuro (#1c2333), accent verde militare (#39d353 o #3fb950), testo off-white (#cdd9e5) — atletismo serio e misurato",
+      "opzione_c": "Off-white premium: sfondo grigio chiaro (#f4f5f7 / #eaecef), accent blu navy (#1a237e) o grafite (#37474f), testo quasi-nero (#1a1a2e) — look corporate/premium invertito",
+      "nota": "Il developer sceglie liberamente la direzione purché il nuovo tema sia visivamente distinto e soddisfi il contrasto WCAG AA (rapporto minimo 4.5:1 per testo normale, 3:1 per testo grande)"
+    }
+  },
+  "criteri_accettazione": [
+    "Applicando la classe `.theme-pro` all'elemento <html>, tutti i colori del sito cambiano visibilmente",
+    "Il nuovo tema è chiaramente diverso dall'originale (non solo una variazione di tono dello stesso accent arancione)",
+    "Tutti gli elementi chiave (header, nav, card, badge, pulsanti) risultano visivamente coerenti col nuovo tema",
+    "Il testo rimane leggibile in entrambi i temi (contrasto minimo WCAG AA: 4.5:1 per testo normale, 3:1 per testo grande)",
+    "Rimuovendo la classe .theme-pro da <html>, si torna esattamente al tema originale dark/arancione senza residui",
+    "Il file docs/css/variables.css contiene il blocco `html.theme-pro { ... }` posizionato dopo il blocco `:root { ... }`",
+    "Il blocco `html.theme-pro` sovrascrive almeno le variabili: --color-bg, --color-bg-secondary, --color-bg-card, --color-bg-elevated, --color-text, --color-text-muted, --color-text-faint, --color-accent, --color-accent-hover, --color-accent-dim, --color-border, --color-border-light, --color-success, --color-warning, --color-danger, --shadow-sm, --shadow-md, --shadow-lg, --radius-sm, --radius-md, --radius-lg, --radius-xl",
+    "Il blocco `:root { ... }` originale rimane invariato (nessuna riga modificata o rimossa)",
+    "Il selettore usato è `html.theme-pro` e non `:root`, `body.theme-pro`, `[data-theme='pro']` o altri equivalenti non previsti dall'architettura"
+  ],
+  "dipendenze": []
+}

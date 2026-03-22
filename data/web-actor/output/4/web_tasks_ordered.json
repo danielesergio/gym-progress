@@ -1,0 +1,95 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "project": "Daniele Fitness — Sito Statico",
+    "anomalie": []
+  },
+  "tasks": [
+    {
+      "ordine": 1,
+      "id": "diet-day-selector-dynamic",
+      "title": "Selettore giorni dieta generato dinamicamente dall'array giorni[]",
+      "type": "bugfix",
+      "feature": "Dieta — Selezione Giorno Dinamica",
+      "feature_priority": 1,
+      "motivazione_ordine": "Bug critico priority 1 senza dipendenze: il selettore giorni è hardcoded su 2 bottoni mentre il JSON contiene 7 giorni distinti, rendendo inaccessibili 5 giorni. Sblocca 2 task successivi (diet-day-selector-style e dynamic-lists-audit). Implementazione immediata.",
+      "dependencies_resolved": [],
+      "sblocca": [
+        "diet-day-selector-style",
+        "dynamic-lists-audit"
+      ]
+    },
+    {
+      "ordine": 2,
+      "id": "progress-big3-bar-line-chart",
+      "title": "Grafico misto barre+linea per Massimali Big 3 e Totale",
+      "type": "component",
+      "feature": "Progressi — Grafico Massimali Big 3 con Barre e Totale",
+      "feature_priority": 4,
+      "motivazione_ordine": "Componente indipendente e isolato senza dipendenze: implementazione parallela mentre diet-day-selector-dynamic viene ultimato. Completa la visualizzazione dei dati di progressione senza bloccare altri task critici.",
+      "dependencies_resolved": [],
+      "sblocca": []
+    },
+    {
+      "ordine": 3,
+      "id": "dynamic-lists-audit",
+      "title": "Verifica e fix di tutte le sezioni che costruiscono liste da array in modo statico",
+      "type": "bugfix",
+      "feature": "Generalizzazione Rendering Liste Dinamiche",
+      "feature_priority": 2,
+      "motivazione_ordine": "Bugfix con dipendenza completata (diet-day-selector-dynamic). Priority 2 rende questo principio trasversale prioritario rispetto agli style task. Verifica conformità dinamica su tutte le pagine, allineando il pattern di rendering stabilito dalla Dieta.",
+      "dependencies_resolved": [
+        "diet-day-selector-dynamic"
+      ],
+      "sblocca": []
+    },
+    {
+      "ordine": 4,
+      "id": "workout-week-selector-scalable",
+      "title": "Selettore settimane allenamento con layout scalabile per molte settimane",
+      "type": "style",
+      "feature": "Allenamento — Selettori Settimana e Giorno Scalabili",
+      "feature_priority": 3,
+      "motivazione_ordine": "Task style con priority 3 e 0 dipendenze: stabilisce il layout base per i selettori settimanali. Sblocca il task giorno successivo (workout-day-selector-scalable) che richiede il contesto del selettore settimana. Quick win che migliora l'usabilità mobile.",
+      "dependencies_resolved": [],
+      "sblocca": [
+        "workout-day-selector-scalable"
+      ]
+    },
+    {
+      "ordine": 5,
+      "id": "workout-day-selector-scalable",
+      "title": "Selettore giorni allenamento con layout scalabile per molti giorni",
+      "type": "style",
+      "feature": "Allenamento — Selettori Settimana e Giorno Scalabili",
+      "feature_priority": 3,
+      "motivazione_ordine": "Task style con dipendenza completata (workout-week-selector-scalable). Completa la soluzione di scalabilità della pagina Allenamento per touch screen. Richiede il contesto stilistico del selettore settimane.",
+      "dependencies_resolved": [
+        "workout-week-selector-scalable"
+      ],
+      "sblocca": []
+    },
+    {
+      "ordine": 6,
+      "id": "diet-day-selector-style",
+      "title": "Stile selettore giorni scalabile per lista variabile di giorni",
+      "type": "ux",
+      "feature": "Dieta — Selezione Giorno Dinamica",
+      "feature_priority": 1,
+      "motivazione_ordine": "Task UX di rifinimento dipendente da diet-day-selector-dynamic (completato al passo 1). Posizionato per ultimo perché ottimizza l'esperienza del selettore dinamico già implementato, non aggiunge nuova funzionalità critica. La logica dinamica viene prima dello stile.",
+      "dependencies_resolved": [
+        "diet-day-selector-dynamic"
+      ],
+      "sblocca": []
+    }
+  ],
+  "summary": {
+    "ordine_implementazione": "diet-day-selector-dynamic → progress-big3-bar-line-chart → dynamic-lists-audit → workout-week-selector-scalable → workout-day-selector-scalable → diet-day-selector-style",
+    "total_tasks": 6,
+    "cicli_dipendenze": 0,
+    "criticitaMassima": "Bugfix priority 1 (Dieta) sbloccante per 2 task successivi — implementare per primo",
+    "paralelizzabili": [
+      "diet-day-selector-dynamic e progress-big3-bar-line-chart possono procedere in parallelo nei primi 2 step"
+    ]
+  }
+}

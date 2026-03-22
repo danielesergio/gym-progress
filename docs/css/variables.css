@@ -3,6 +3,9 @@
    Daniele Fitness | Tema powerlifting: scuro, alto contrasto
    ============================================================ */
 
+/* ── Google Fonts — Inter (solo tema pro; fallback system font offline) ── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
+
 :root {
   /* ── Palette colori ── */
   --color-bg:           #1a1a1a;
@@ -84,4 +87,69 @@
   --container-max-width: 1280px;
   --header-height: 64px;
   --nav-height: 48px;
+}
+
+/* ============================================================
+   html.theme-pro — Tema professionale "Dark Steel-Blue"
+   Palette: sfondo quasi-nero GitHub-style + accento blu acciaio
+   Attivazione: aggiungere la classe .theme-pro all'elemento <html>
+   WCAG AA: testo #e6edf3 su #0d1117 → contrasto ~12:1 (AAA)
+   ============================================================ */
+
+html.theme-pro {
+  /* ── Background ── */
+  --color-bg:           #0d1117;   /* quasi-nero, evoca high-tech */
+  --color-bg-secondary: #161b22;   /* livello secondario, header/nav */
+  --color-bg-card:      #1c2128;   /* card e pannelli */
+  --color-bg-elevated:  #21262d;   /* elementi sovrapposti, dropdown */
+
+  /* ── Testo ── */
+  --color-text:         #e6edf3;   /* bianco caldo, contrasto ~12:1 su bg */
+  --color-text-muted:   #8b949e;   /* testo secondario, contrasto ~4.7:1 su bg */
+  --color-text-faint:   #484f58;   /* testo terziario / placeholder */
+
+  /* ── Accent — blu acciaio ── */
+  --color-accent:       #58a6ff;   /* accent principale, contrasto ~5.9:1 su bg-card */
+  --color-accent-hover: #79b8ff;   /* hover più luminoso */
+  --color-accent-dim:   rgba(88, 166, 255, 0.15); /* sfondo accent dimmed */
+
+  /* ── Bordi ── */
+  --color-border:       #30363d;   /* bordo standard */
+  --color-border-light: #3d444d;   /* bordo meno prominente */
+
+  /* ── Stato: success / warning / danger ── */
+  --color-success:      #3fb950;   /* verde militare premium */
+  --color-warning:      #d29922;   /* ambra raffinata */
+  --color-danger:       #f85149;   /* rosso GitHub-style */
+
+  /* ── Ombre — più sottili, con tinta blu scura ── */
+  --shadow-sm: 0 1px 3px rgba(1, 4, 9, 0.6);
+  --shadow-md: 0 4px 12px rgba(1, 4, 9, 0.7);
+  --shadow-lg: 0 8px 24px rgba(1, 4, 9, 0.8);
+
+  /* ── Border radius — leggermente più contenuti, look premium ── */
+  --radius-sm:   3px;
+  --radius-md:   6px;
+  --radius-lg:   10px;
+  --radius-xl:   14px;
+  --radius-full: 9999px;
+}
+
+/* ============================================================
+   html.theme-pro — Tipografia professionale (Inter)
+   Aggiunge gerarchia visiva: font Inter + scale aumentata KPI
+   Opra in CODA al blocco html.theme-pro — NON modifica :root
+   ============================================================ */
+
+html.theme-pro {
+  /* ── Font base: Inter con system-font fallback per offline ── */
+  --font-base: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+               Roboto, Helvetica, Arial, sans-serif;
+
+  /* ── Pesi extra disponibili con Inter ── */
+  --font-weight-extrabold: 800;
+
+  /* ── Scale dimensioni KPI aumentata per look premium ── */
+  --font-size-kpi-value: 1.625rem;   /* 26px — tra lg (20) e xl (24) + upgrade */
+  --font-size-section-title: 1.5rem; /* 24px = --font-size-xl */
 }

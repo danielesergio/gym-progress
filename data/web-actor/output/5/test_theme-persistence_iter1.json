@@ -1,0 +1,94 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "theme-persistence",
+    "task_titolo": "Persistenza preferenza tema tra pagine e sessioni",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Selezionando il tema pro in Dashboard e navigando in Progressi, il tema pro è già attivo senza flash visibile",
+      "soddisfatto": true,
+      "dettaglio": "docs/js/theme.js contiene initTheme() chiamata sincrona alla riga 39 (fuori da DOMContentLoaded). localStorage.getItem('fitness-theme') === 'pro' applica classList.add('theme-pro') a document.documentElement. Tutte e 6 le pagine HTML includono <script src='js/theme.js'> senza defer nel <head> alla riga 7, PRIMA dei link CSS, garantendo esecuzione sincrona anti-FOUC."
+    },
+    {
+      "criterio": "Chiudendo e riaprendo il browser, il tema precedentemente scelto viene ripristinato",
+      "soddisfatto": true,
+      "dettaglio": "toggleTheme() alla riga 32-36 di theme.js inverte classList.toggle('theme-pro') e salva il nuovo stato in localStorage.setItem('fitness-theme', isPro ? 'pro' : 'original'). localStorage persiste oltre la chiusura del browser. initTheme() chiamata sincrona a ogni caricamento legge localStorage e ripristina lo stato."
+    },
+    {
+      "criterio": "Non c'è un visibile 'lampo' di tema sbagliato al caricamento della pagina",
+      "soddisfatto": true,
+      "dettaglio": "initTheme() è chiamata immediatamente alla riga 39 senza DOMContentLoaded. theme.js è caricato sincrono nel <head> alla riga 7 (senza defer) PRIMA dei link CSS. Browser applica la classe html.theme-pro PRIMA di renderizzare il body (pattern anti-FOUC corretto)."
+    },
+    {
+      "criterio": "Se non c'è una preferenza salvata, il sito parte con il tema originale dark/arancione",
+      "soddisfatto": true,
+      "dettaglio": "initTheme() alle righe 8-13 esegue: const saved = localStorage.getItem('fitness-theme'); if (saved === 'pro') { ... }. Se nessuna chiave 'fitness-theme' in localStorage, nessuna classe viene aggiunta. Default: nessuna classe = tema originale."
+    },
+    {
+      "criterio": "docs/js/theme.js contiene la funzione initTheme() chiamata sincrona FUORI da DOMContentLoaded",
+      "soddisfatto": true,
+      "dettaglio": "Funzione initTheme() definita alle righe 8-13. Chiamata sincrona alla riga 39 nel body del file, fuori da DOMContentLoaded wrapper. Garantisce esecuzione PRIMA che il DOM sia fully parsed."
+    },
+    {
+      "criterio": "docs/js/theme.js contiene la funzione toggleTheme() che salva in localStorage",
+      "soddisfatto": true,
+      "dettaglio": "Funzione toggleTheme() definita alle righe 32-36. Riga 33: classList.toggle('theme-pro'). Riga 34: localStorage.setItem('fitness-theme', isPro ? 'pro' : 'original'). Riga 35: updateToggleBtn(isPro)."
+    },
+    {
+      "criterio": "Tutte e 6 le pagine HTML contengono <script src='js/theme.js'> nel <head> senza attributo defer",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in TUTTE e 6 le pagine alla riga 7 del <head>: (1) dashboard.html riga 7, (2) progress.html riga 7, (3) workout.html riga 7, (4) diet.html riga 7, (5) plan.html riga 7, (6) volume.html riga 7. Nessun attributo defer presente. Tutti gli script sono <script src='js/theme.js'> (sincroni)."
+    },
+    {
+      "criterio": "Tutte e 6 le pagine HTML contengono il pulsante <button id='theme-toggle-btn' class='theme-toggle-btn'> nell'header",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in TUTTE e 6 le pagine nell'<header>: (1) dashboard.html righe 27-30, (2) progress.html righe 28-31, (3) workout.html righe 27-30, (4) diet.html righe 27-30, (5) plan.html righe 27-30, (6) volume.html righe 28-31. Tutti contengono: <button id='theme-toggle-btn' class='theme-toggle-btn' aria-label='Attiva tema professionale'> con span child per icon e label."
+    },
+    {
+      "criterio": "Il listener click su #theme-toggle-btn è agganciato con addEventListener (non con onclick= inline)",
+      "soddisfatto": true,
+      "dettaglio": "DOMContentLoaded listener alle righe 42-49 di theme.js aggancia il click con: btn.addEventListener('click', toggleTheme) alla riga 45. Nessun onclick= inline presente nei 6 HTML. Pattern corretto."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/theme.js",
+      "esiste": true,
+      "note": "File core. Contiene: initTheme() (righe 8-13), updateToggleBtn(isPro) (righe 16-29), toggleTheme() (righe 32-36), initTheme() chiamata sincrona (riga 39), DOMContentLoaded listener (righe 42-49). Tutto conforme alle specifiche."
+    },
+    {
+      "path": "docs/dashboard.html",
+      "esiste": true,
+      "note": "Script theme.js presente riga 7, senza defer, PRIMA dei CSS. Pulsante #theme-toggle-btn presente righe 27-30 nell'header."
+    },
+    {
+      "path": "docs/progress.html",
+      "esiste": true,
+      "note": "Script theme.js presente riga 7, senza defer, PRIMA dei CSS. Pulsante #theme-toggle-btn presente righe 28-31 nell'header."
+    },
+    {
+      "path": "docs/workout.html",
+      "esiste": true,
+      "note": "Script theme.js presente riga 7, senza defer, PRIMA dei CSS. Pulsante #theme-toggle-btn presente righe 27-30 nell'header."
+    },
+    {
+      "path": "docs/diet.html",
+      "esiste": true,
+      "note": "Script theme.js presente riga 7, senza defer, PRIMA dei CSS. Pulsante #theme-toggle-btn presente righe 27-30 nell'header."
+    },
+    {
+      "path": "docs/plan.html",
+      "esiste": true,
+      "note": "Script theme.js presente riga 7, senza defer, PRIMA dei CSS. Pulsante #theme-toggle-btn presente righe 27-30 nell'header."
+    },
+    {
+      "path": "docs/volume.html",
+      "esiste": true,
+      "note": "Script theme.js presente riga 7, senza defer, PRIMA dei CSS. Pulsante #theme-toggle-btn presente righe 28-31 nell'header."
+    }
+  ],
+  "anomalie": []
+}

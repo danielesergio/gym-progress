@@ -1,0 +1,502 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "sommario": "Il sito è già completo e funzionante con 6 pagine (Dashboard, Progressi, Allenamento, Dieta, Piano, Volume) + index.html come redirect. L'obiettivo attuale è un restyle professionale con toggle CSS tra tema originale (dark/arancio) e tema pro, con persistenza in localStorage. Lo stack esistente — plain HTML + CSS custom properties + JS vanilla + Chart.js via CDN + fetch() — è pienamente adeguato e NON va modificato. L'architettura viene confermata e documentata in dettaglio per guidare il developer nei task di restyle.",
+    "motivazione_stack": "Dashboard dati personali per un singolo atleta, deploy su GitHub Pages, nessun team frontend: plain HTML/JS/CSS è la scelta ottimale. Chart.js via CDN è già in uso per i grafici. Nessun bundler, nessun framework, zero dipendenze npm. La semplicità massimizza manutenibilità e velocità di deploy.",
+    "vincoli_ricevuti": [
+      "Nessun build step (no webpack, no npm run build)",
+      "Deploy su GitHub Pages, cartella docs/",
+      "HTML, CSS e JS scritti direttamente dal developer in docs/",
+      "I soli file generati da script Python sono i JSON in docs/data/ — il developer non li tocca",
+      "Compatibile con fetch() da file statici (no SSR)"
+    ],
+    "anomalie": []
+  },
+  "stack": {
+    "framework": {
+      "nome": "plain HTML/JS",
+      "versione": "ES2022",
+      "motivazione": "Dashboard personale, deploy statico GitHub Pages, nessun routing complesso, nessun team. Vanilla JS con DOMContentLoaded + fetch() copre tutti i requisiti senza overhead. Lo stack è già in uso e funzionante."
+    },
+    "styling": {
+      "nome": "CSS custom properties",
+      "versione": "CSS3",
+      "motivazione": "Le custom properties (variabili CSS) consentono il tema switching (tema originale vs tema pro) tramite override su .theme-pro senza JavaScript extra. Già in uso in variables.css. Nessun preprocessore necessario.",
+      "cdn": null,
+      "file_globali": [
+        "css/variables.css — design tokens (colori, tipografia, spaziature, breakpoint)",
+        "css/layout.css — layout globale (header, nav, container, footer, responsive)"
+      ],
+      "file_per_pagina": [
+        "css/dashboard.css",
+        "css/progress.css",
+        "css/workout.css",
+        "css/diet.css",
+        "css/plan.css",
+        "css/volume.css"
+      ]
+    },
+    "grafici": {
+      "nome": "Chart.js",
+      "versione": "4.x",
+      "cdn": "https://cdn.jsdelivr.net/npm/chart.js",
+      "uso": "Grafici line (peso, massimali, circonferenze in progress.html) e bar (volume per muscolo in volume.html). Caricato solo nelle pagine che lo usano tramite <script> nel <head> con defer."
+    },
+    "dati": {
+      "formato": "JSON statici in docs/data/",
+      "fonte": "fetch() da ogni pagina HTML tramite percorso relativo (es. 'data/measurements.json')",
+      "aggiornamento": "Script Python (source/) — il developer non tocca mai i file in docs/data/",
+      "policy_null": "Valori null o assenti → mostrare '—' nel rendering, mai stringa 'null' o 'undefined'"
+    },
+    "build": {
+      "tool": "nessuno",
+      "output_dir": "docs/",
+      "motivazione": "GitHub Pages serve direttamente da docs/ su branch main. Nessun passaggio di compilazione. Il developer crea/modifica file HTML/CSS/JS direttamente in docs/."
+    },
+    "deploy": {
+      "target": "GitHub Pages",
+      "branch": "main",
+      "cartella": "docs/",
+      "url_base": "https://<username>.github.io/<repo>/",
+      "note": "index.html in docs/ esegue redirect immediato a dashboard.html via meta refresh + JS. Non è necessario configurare routing."
+    },
+    "dipendenze_esterne": [
+      {
+        "nome": "Chart.js",
+        "versione": "4.x",
+        "uso": "Grafici line e bar nelle pagine progress.html e volume.html",
+        "cdn": "https://cdn.jsdelivr.net/npm/chart.js",
+        "caricamento": "<script src=\"https://cdn.jsdelivr.net/npm/chart.js\" defer> — solo nelle pagine che lo usano"
+      }
+    ]
+  },
+  "struttura": {
+    "root": "docs/",
+    "descrizione": "Tutto il sito statico risiede in docs/. Le sottocartelle css/, js/ e data/ separano responsabilità. Il developer scrive in docs/ escluso data/ che è gestito da script Python.",
+    "albero": [
+      {
+        "path": "index.html",
+        "tipo": "file",
+        "descrizione": "Entry point: redirect immediato a dashboard.html tramite meta http-equiv refresh + window.location.replace(). Non contiene contenuto funzionale.",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "dati_json": []
+      },
+      {
+        "path": "dashboard.html",
+        "tipo": "file",
+        "descrizione": "Pagina principale: KPI atleta (peso, BF%, massimali), fase corrente programma, target progressivi. Struttura a 4 card (card-stato, card-massimali, card-fase, card-target).",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "dati_json": ["data/measurements.json", "data/plan.json", "data/workout.json"]
+      },
+      {
+        "path": "progress.html",
+        "tipo": "file",
+        "descrizione": "Pagina progressi: 3 grafici Chart.js (peso+BF%, massimali Big 3, circonferenze) + tabella storico misurazioni con badge R/S.",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "dati_json": ["data/measurements.json"]
+      },
+      {
+        "path": "workout.html",
+        "tipo": "file",
+        "descrizione": "Scheda allenamento: selettore fase/scheda, selettore settimana, selettore giorno, dettaglio esercizi con serie/reps/carico/RPE. Banner avviso infortuni condizionale.",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "dati_json": ["data/workout.json"]
+      },
+      {
+        "path": "diet.html",
+        "tipo": "file",
+        "descrizione": "Piano dieta: selettore giorno settimana, riepilogo macros con barra proporzionale (P/C/F/kcal), lista pasti con dettaglio alimenti, sezione integratori.",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "dati_json": ["data/diet.json"]
+      },
+      {
+        "path": "plan.html",
+        "tipo": "file",
+        "descrizione": "Piano annuale: timeline fasi (10 fasi a scorrimento orizzontale), target di forza progressivi Big 3, strategia nutrizionale per fase.",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "dati_json": ["data/plan.json"]
+      },
+      {
+        "path": "volume.html",
+        "tipo": "file",
+        "descrizione": "Volume di allenamento: KPI meta (serie totali settimanali), grafico Chart.js a barre orizzontali per gruppo muscolare, tabella dettaglio esercizi con contributo %.",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "dati_json": ["data/volume.json"]
+      },
+      {
+        "path": "css/",
+        "tipo": "directory",
+        "descrizione": "Fogli di stile CSS: 2 file globali (variables.css, layout.css) + 1 file per pagina. Ogni pagina include tutti e 3 nell'ordine: variables → layout → [pagina].css.",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true
+      },
+      {
+        "path": "css/variables.css",
+        "tipo": "file",
+        "descrizione": "Design tokens globali: palette colori tema originale (:root), tipografia, spaziature, border-radius, ombre, transizioni, breakpoint di riferimento. Il tema pro aggiunge override su html.theme-pro.",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "dati_json": []
+      },
+      {
+        "path": "css/layout.css",
+        "tipo": "file",
+        "descrizione": "Layout strutturale condiviso: .page-header, .tab-list, .nav-tab, .container, .page-footer, media query responsive (mobile 375px, tablet 768px, desktop 1280px).",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "dati_json": []
+      },
+      {
+        "path": "css/dashboard.css",
+        "tipo": "file",
+        "descrizione": "Stili specifici Dashboard: .dashboard-grid, .dashboard-card, .dashboard-card__*, .kpi-*, .badge-*, classi tema pro sotto html.theme-pro.",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "dati_json": []
+      },
+      {
+        "path": "css/progress.css",
+        "tipo": "file",
+        "descrizione": "Stili specifici Progressi: .progress-section, .progress-chart-container, .progress-table-container, .badge-reale, .badge-stimato, .progress-error.",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "dati_json": []
+      },
+      {
+        "path": "css/workout.css",
+        "tipo": "file",
+        "descrizione": "Stili specifici Allenamento: .workout-schema-selector, .week-selector, .day-selector, .workout-header, .workout-detail, .workout-tos-banner, .workout-error.",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "dati_json": []
+      },
+      {
+        "path": "css/diet.css",
+        "tipo": "file",
+        "descrizione": "Stili specifici Dieta: .diet-day-toggle, .diet-macros-summary, .diet-meals-list, .diet-supplements, .diet-error, .diet-loading-placeholder.",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "dati_json": []
+      },
+      {
+        "path": "css/plan.css",
+        "tipo": "file",
+        "descrizione": "Stili specifici Piano: .plan-section, .plan-timeline-scroll, .plan-phase-cards, .plan-targets-container, .plan-nutrition-container.",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "dati_json": []
+      },
+      {
+        "path": "css/volume.css",
+        "tipo": "file",
+        "descrizione": "Stili specifici Volume: .volume-section, .volume-meta-card, .volume-chart-container, .volume-detail-container, .volume-error.",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "dati_json": []
+      },
+      {
+        "path": "js/",
+        "tipo": "directory",
+        "descrizione": "Script JavaScript: 1 file condiviso (nav.js) + 1 file per pagina. Ogni pagina include nav.js prima dello script pagina, entrambi con defer.",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true
+      },
+      {
+        "path": "js/nav.js",
+        "tipo": "file",
+        "descrizione": "Script condiviso navigazione: setActiveNav() legge window.location.pathname e applica .active + aria-current='page' al nav-tab corrispondente. Incluso in tutte le pagine con defer.",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "dati_json": []
+      },
+      {
+        "path": "js/theme.js",
+        "tipo": "file",
+        "descrizione": "Script condiviso tema: initTheme() legge preferenza da localStorage ('fitness-theme') e applica/rimuove classe html.theme-pro. toggleTheme() inverte lo stato e aggiorna localStorage. Da includere INLINE o come primo <script> nel <head> (prima del CSS) per evitare FOUC. Gestisce anche il pulsante toggle nell'header.",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "note": "Deve eseguire PRIMA del rendering del DOM per prevenire il flash of unstyled content. Caricamento inline nel <head> o come script senza defer.",
+        "dati_json": []
+      },
+      {
+        "path": "js/dashboard.js",
+        "tipo": "file",
+        "descrizione": "Logica Dashboard: fetch parallela di measurements.json + plan.json + workout.json, poi renderDashboard(). Funzioni: renderHeaderDate(), renderCardStato(), renderCardMassimali(), renderCardFase(), renderCardTarget().",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "dati_json": ["data/measurements.json", "data/plan.json", "data/workout.json"]
+      },
+      {
+        "path": "js/progress.js",
+        "tipo": "file",
+        "descrizione": "Logica Progressi: fetch measurements.json, poi renderProgress(). Funzioni: renderChartPesoBf(), renderChartMassimali(), renderChartCirconferenze(), renderTabellaStorico(). Usa Chart.js.",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "dati_json": ["data/measurements.json"]
+      },
+      {
+        "path": "js/workout.js",
+        "tipo": "file",
+        "descrizione": "Logica Allenamento: fetch workout.json, poi renderWorkout(). Funzioni: renderSchemaSelector(), renderWeekSelector(), renderDaySelector(), renderWorkoutDetail(), renderTosBanner().",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "dati_json": ["data/workout.json"]
+      },
+      {
+        "path": "js/diet.js",
+        "tipo": "file",
+        "descrizione": "Logica Dieta: fetch diet.json, poi renderDiet(). Funzioni: renderDayToggle(), renderMacrosSummary(), renderMealsList(), renderSupplements().",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "dati_json": ["data/diet.json"]
+      },
+      {
+        "path": "js/plan.js",
+        "tipo": "file",
+        "descrizione": "Logica Piano: fetch plan.json, poi renderPlan(). Funzioni: renderTimeline(), renderStrengthTargets(), renderNutritionStrategy().",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "dati_json": ["data/plan.json"]
+      },
+      {
+        "path": "js/volume.js",
+        "tipo": "file",
+        "descrizione": "Logica Volume: fetch volume.json, poi renderVolume(). Funzioni: renderMetaCard(), renderChartVolumeMuscoli(), renderVolumeDetail(). Usa Chart.js.",
+        "scritto_da": "gym-web-developer",
+        "obbligatorio": true,
+        "dati_json": ["data/volume.json"]
+      },
+      {
+        "path": "data/",
+        "tipo": "directory",
+        "descrizione": "JSON generati esclusivamente da script Python (source/). Il developer NON deve mai modificare questi file manualmente.",
+        "scritto_da": "scripts Python (source/)",
+        "obbligatorio": true
+      },
+      {
+        "path": "data/measurements.json",
+        "tipo": "file",
+        "descrizione": "Array di misurazioni: peso_kg, vita_cm, fianchi_cm, petto_cm, collo_cm, braccio_dx_cm, coscia_dx_cm, squat_1rm, panca_1rm, stacco_1rm, massimali_tipo (R/S), body_fat_pct, massa_magra_kg, ffmi_adj, bmr_kcal, tdee_kcal.",
+        "scritto_da": "scripts Python",
+        "obbligatorio": true
+      },
+      {
+        "path": "data/workout.json",
+        "tipo": "file",
+        "descrizione": "Scheda allenamento corrente: fasi, settimane, giorni, esercizi con serie/reps/carico/%1RM/RPE/note. Include eventuali avvisi infortuni (TOS).",
+        "scritto_da": "scripts Python",
+        "obbligatorio": true
+      },
+      {
+        "path": "data/diet.json",
+        "tipo": "file",
+        "descrizione": "Piano dieta settimanale: giorni, pasti, alimenti con macros (proteine/carboidrati/grassi/kcal), integratori.",
+        "scritto_da": "scripts Python",
+        "obbligatorio": true
+      },
+      {
+        "path": "data/plan.json",
+        "tipo": "file",
+        "descrizione": "Piano annuale: fasi con date, obiettivi, target di forza progressivi Big 3, strategia nutrizionale per fase.",
+        "scritto_da": "scripts Python",
+        "obbligatorio": true
+      },
+      {
+        "path": "data/volume.json",
+        "tipo": "file",
+        "descrizione": "Volume di allenamento settimanale: serie per gruppo muscolare, dettaglio esercizi con ruolo (primario/secondario) e contributo.",
+        "scritto_da": "scripts Python",
+        "obbligatorio": true
+      },
+      {
+        "path": "data/feedback.json",
+        "tipo": "file",
+        "descrizione": "Feedback atleta: soggettività allenamenti, RPE percepito, note. Usato da script Python per analisi progressione.",
+        "scritto_da": "scripts Python",
+        "obbligatorio": false
+      },
+      {
+        "path": "data/workout_history.json",
+        "tipo": "file",
+        "descrizione": "Storico sessioni di allenamento registrate. Usato da script Python per analisi performance.",
+        "scritto_da": "scripts Python",
+        "obbligatorio": false
+      }
+    ]
+  },
+  "tema": {
+    "descrizione": "Il sito supporta due temi CSS: originale (dark arancio — default) e pro (tema professionale alternativo). Il toggle avviene tramite classe html.theme-pro. La preferenza è persistita in localStorage con chiave 'fitness-theme'.",
+    "tema_originale": {
+      "attivazione": "Nessuna classe aggiuntiva — stili in :root di variables.css",
+      "palette_base": "Background #1a1a1a, accent #ff6b35, testo #f0f0f0"
+    },
+    "tema_pro": {
+      "attivazione": "Classe html.theme-pro — override delle custom properties in variables.css",
+      "pattern_css": "html.theme-pro { --color-bg: ...; --color-accent: ...; ... }",
+      "note": "Gli override del tema pro stanno in variables.css (variabili globali) e nei CSS di pagina (componenti specifici) SOLO sotto il selettore html.theme-pro — mai sovrascrivere :root"
+    },
+    "localStorage": {
+      "chiave": "fitness-theme",
+      "valori": ["original", "pro"],
+      "default": "original",
+      "init": "js/theme.js esegue prima del DOM per applicare html.theme-pro senza FOUC"
+    },
+    "toggle_button": {
+      "posizione": "Header, accanto a .header-meta",
+      "id": "theme-toggle-btn",
+      "classi": "theme-toggle-btn",
+      "aria": "aria-label dinamico: 'Attiva tema professionale' / 'Attiva tema originale'",
+      "note": "Il pulsante deve essere presente in tutti e 6 gli HTML di pagina. Stili in layout.css per consistenza cross-page."
+    }
+  },
+  "convenzioni": {
+    "naming": {
+      "file_html": "kebab-case, es. workout.html, progress.html — corrispondenza 1:1 con il nome del tab nav",
+      "file_css": "kebab-case corrispondente alla pagina, es. dashboard.css, workout.css",
+      "file_js": "kebab-case corrispondente alla pagina, es. dashboard.js, workout.js — 1 file per pagina + nav.js + theme.js condivisi",
+      "file_json": "snake_case, es. measurements.json, workout_history.json",
+      "variabili_js": "camelCase, es. lastMeasurement, totalVolume",
+      "costanti_js": "UPPER_SNAKE_CASE per path dati e costanti globali, es. DATA_PATH_MEASUREMENTS",
+      "classi_css": "kebab-case con prefisso pagina per componenti specifici, es. .dashboard-card, .progress-section, .workout-header; classi globali senza prefisso, es. .nav-tab, .page-header",
+      "id_html": "kebab-case con prefisso pagina, es. #chart-peso-bf, #card-stato, #day-selector; eccezioni: #main-header, #nav-tabs, #page-content, #main-footer (globali)"
+    },
+    "css": {
+      "ordine_import": "1. variables.css → 2. layout.css → 3. [pagina].css — sempre in questo ordine nel <head>",
+      "tema_pro_pattern": "Tutti gli override del tema pro usano html.theme-pro come selettore radice — MAI nested su :root",
+      "no_inline_style": "Vietato style= inline negli HTML e innerHTML con stili inline nei JS — usare classi CSS",
+      "custom_properties": "Per valori condivisi usare sempre var(--nome) — mai valori hardcoded nel CSS di pagina se esiste già un token in variables.css",
+      "responsive": "Mobile-first: stili base per 375px, @media (min-width: 768px) per tablet, @media (min-width: 1280px) per desktop"
+    },
+    "javascript": {
+      "struttura_file": "Ogni file JS segue l'ordine: (1) costanti DATA_PATH_*, (2) funzioni utility pure, (3) funzioni render*, (4) funzione init/renderPagina principale, (5) addEventListener DOMContentLoaded",
+      "pattern_fetch": "try { const data = await fetch(path).then(r => r.json()); renderPagina(data); } catch (e) { showError(container, e); }",
+      "async_await": "Usare async/await — non .then().catch() annidati",
+      "fetch_parallela": "Se una pagina legge più JSON, usare Promise.all() per fetch parallele",
+      "gestione_errori": "Ogni pagina ha un div#[pagina]-error con role='alert' aria-live='polite' hidden. showError() lo mostra e scrive 'Dati non disponibili'. Sempre console.error con prefisso [nomefile.js]",
+      "valori_null": "Usare optional chaining (?.) e nullish coalescing (??) — mai accesso diretto a proprietà di oggetti potenzialmente null",
+      "no": "no jQuery, no lodash, no framework non listati, no var (usare const/let), no inline event handler (no onclick=), no alert()/confirm()/prompt()"
+    },
+    "dati": {
+      "formato_date": "ISO 8601: YYYY-MM-DD nei JSON. Rendering in italiano con toLocaleDateString('it-IT', {day:'2-digit', month:'short', year:'numeric'})",
+      "valori_null": "null o undefined → mostrare '—' (trattino em), mai stringa 'null', 'undefined' o stringa vuota",
+      "unita_misura": "kg per pesi e massimali, cm per misure corporee, % per percentuali",
+      "arrotondamento": "1 decimale per kg/% (toFixed(1)), intero per kcal/serie/reps (Math.round o toFixed(0))",
+      "massimali_tipo": "R = Reale (misurato in gara o test), S = Stimato (calcolato da formula Epley su set allenamento)"
+    },
+    "html": {
+      "struttura_pagina": "<head> con meta charset+viewport+title+CSS → <body> con <header> + <nav> + <main> + <footer> + <script> in fondo",
+      "script_order": "<script src='js/theme.js'> nel <head> senza defer (anti-FOUC) → <script src='js/nav.js' defer> + <script src='js/[pagina].js' defer> prima di </body>",
+      "accessibilita": "header role='banner', nav role='tablist' con aria-label, nav-tab role='tab' con aria-current='page' sull'attivo, main role implicito con aria-label, footer role='contentinfo', sezioni con aria-labelledby, canvas con role='img' + aria-label",
+      "chart_js_caricamento": "Solo nelle pagine che usano grafici (progress.html, volume.html): <script src='https://cdn.jsdelivr.net/npm/chart.js' defer> nel <head>"
+    },
+    "pagine": [
+      {
+        "nome": "Dashboard",
+        "file_html": "docs/dashboard.html",
+        "file_js": "docs/js/dashboard.js",
+        "file_css": "docs/css/dashboard.css",
+        "dati_json": ["data/measurements.json", "data/plan.json", "data/workout.json"],
+        "usa_chartjs": false,
+        "responsabilita": "KPI atleta (peso attuale, BF%, massimali Big 3, fase corrente, target progressivi). 4 card: card-stato, card-massimali, card-fase, card-target.",
+        "funzione_principale": "renderDashboard(measurements, plan, workout)"
+      },
+      {
+        "nome": "Progressi",
+        "file_html": "docs/progress.html",
+        "file_js": "docs/js/progress.js",
+        "file_css": "docs/css/progress.css",
+        "dati_json": ["data/measurements.json"],
+        "usa_chartjs": true,
+        "responsabilita": "3 grafici Chart.js (peso+BF%, massimali Big 3, circonferenze nel tempo) + tabella storico misurazioni con badge R/S.",
+        "funzione_principale": "renderProgress(measurements)"
+      },
+      {
+        "nome": "Allenamento",
+        "file_html": "docs/workout.html",
+        "file_js": "docs/js/workout.js",
+        "file_css": "docs/css/workout.css",
+        "dati_json": ["data/workout.json"],
+        "usa_chartjs": false,
+        "responsabilita": "Selettore fase/scheda, selettore settimana, selettore giorno, dettaglio esercizi con serie/reps/carico/RPE/note. Banner infortuni condizionale.",
+        "funzione_principale": "renderWorkout(workout)"
+      },
+      {
+        "nome": "Dieta",
+        "file_html": "docs/diet.html",
+        "file_js": "docs/js/diet.js",
+        "file_css": "docs/css/diet.css",
+        "dati_json": ["data/diet.json"],
+        "usa_chartjs": false,
+        "responsabilita": "Selettore giorno settimana, riepilogo macros con barra P/C/F, lista pasti con alimenti e macros, sezione integratori.",
+        "funzione_principale": "renderDiet(diet)"
+      },
+      {
+        "nome": "Piano",
+        "file_html": "docs/plan.html",
+        "file_js": "docs/js/plan.js",
+        "file_css": "docs/css/plan.css",
+        "dati_json": ["data/plan.json"],
+        "usa_chartjs": false,
+        "responsabilita": "Timeline 10 fasi a scorrimento orizzontale, tabella target di forza progressivi Big 3, strategia nutrizionale per fase.",
+        "funzione_principale": "renderPlan(plan)"
+      },
+      {
+        "nome": "Volume",
+        "file_html": "docs/volume.html",
+        "file_js": "docs/js/volume.js",
+        "file_css": "docs/css/volume.css",
+        "dati_json": ["data/volume.json"],
+        "usa_chartjs": true,
+        "responsabilita": "KPI meta (serie settimanali totali), grafico Chart.js a barre orizzontali volume per gruppo muscolare, tabella dettaglio esercizi con contributo %.",
+        "funzione_principale": "renderVolume(volume)"
+      },
+      {
+        "nome": "Index (redirect)",
+        "file_html": "docs/index.html",
+        "file_js": null,
+        "file_css": null,
+        "dati_json": [],
+        "usa_chartjs": false,
+        "responsabilita": "Entry point GitHub Pages: redirect immediato a dashboard.html via meta http-equiv refresh + window.location.replace(). Nessun contenuto funzionale.",
+        "funzione_principale": null
+      }
+    ]
+  },
+  "task_correnti": {
+    "obiettivo": "Restyle professionale con toggle CSS tra tema originale e tema pro",
+    "ordine_implementazione": [
+      "1. theme-pro-variables — Variabili CSS tema pro in variables.css (html.theme-pro override)",
+      "2. theme-pro-typography — Tipografia tema pro: font size, weight, gerarchia",
+      "3. theme-toggle-button — Pulsante toggle nell'header (tutti e 6 gli HTML + js/theme.js + layout.css)",
+      "4. theme-pro-components — Stili componenti specifici per tema pro (card, tabelle, badge, selettori, barre macro)",
+      "5. theme-persistence — Persistenza localStorage in js/theme.js: initTheme() al boot senza FOUC",
+      "6. visual-polish-global — Micro-miglioramenti globali: nav scroll indicator, transizioni hover, compatibili con entrambi i temi"
+    ],
+    "file_da_creare": [
+      "docs/js/theme.js — script anti-FOUC, initTheme(), toggleTheme(), gestione pulsante"
+    ],
+    "file_da_modificare": [
+      "docs/css/variables.css — aggiungere blocco html.theme-pro { ... } con override palette",
+      "docs/css/layout.css — stili .theme-toggle-btn, eventuale nav scroll indicator",
+      "docs/css/dashboard.css — stili componenti dashboard nel tema pro",
+      "docs/css/progress.css — stili componenti progress nel tema pro",
+      "docs/css/workout.css — stili componenti workout nel tema pro",
+      "docs/css/diet.css — stili componenti diet nel tema pro",
+      "docs/css/plan.css — stili componenti plan nel tema pro",
+      "docs/css/volume.css — stili componenti volume nel tema pro",
+      "docs/dashboard.html — aggiungere <script src='js/theme.js'> nel head + pulsante toggle nell'header",
+      "docs/progress.html — aggiungere <script src='js/theme.js'> nel head + pulsante toggle nell'header",
+      "docs/workout.html — aggiungere <script src='js/theme.js'> nel head + pulsante toggle nell'header",
+      "docs/diet.html — aggiungere <script src='js/theme.js'> nel head + pulsante toggle nell'header",
+      "docs/plan.html — aggiungere <script src='js/theme.js'> nel head + pulsante toggle nell'header",
+      "docs/volume.html — aggiungere <script src='js/theme.js'> nel head + pulsante toggle nell'header"
+    ]
+  }
+}

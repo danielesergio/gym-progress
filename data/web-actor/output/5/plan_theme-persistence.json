@@ -1,0 +1,205 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "theme-persistence",
+    "task_title": "Persistenza preferenza tema tra pagine e sessioni",
+    "bloccato": false,
+    "motivo_blocco": null,
+    "nota_stato": "Il task è SOSTANZIALMENTE GIÀ IMPLEMENTATO dal task theme-toggle-button. js/theme.js esiste, contiene tutta la logica anti-FOUC e localStorage, ed è incluso in tutte e 6 le pagine senza defer. Il developer deve eseguire una verifica/audit dei criteri di accettazione e sistemare eventuali piccoli gap."
+  },
+  "task": {
+    "id": "theme-persistence",
+    "type": "ux",
+    "title": "Persistenza preferenza tema tra pagine e sessioni",
+    "description": "La preferenza del tema scelta dall'utente deve sopravvivere alla navigazione tra le 6 pagine del sito e alla chiusura/riapertura del browser. All'avvio di ogni pagina, prima che il contenuto sia visibile, deve essere letto il localStorage e applicata la classe del tema corretto all'elemento html. Questo deve avvenire sincronicamente (non in defer) per evitare il flash del tema sbagliato (FOUC - Flash of Unstyled Content). Lo script di inizializzazione tema deve essere il più piccolo possibile (inline o separato da tutti gli altri script).",
+    "inputs": ["ThemeToggleButton"],
+    "outputs": ["ThemePersistenceLogic"],
+    "acceptance_criteria": [
+      "Selezionando il tema pro in Dashboard e navigando in Progressi, il tema pro è già attivo senza flash",
+      "Chiudendo e riaprendo il browser, il tema precedentemente scelto viene ripristinato",
+      "Non c'è un visibile 'lampo' di tema sbagliato al caricamento della pagina",
+      "Se non c'è una preferenza salvata, il sito parte con il tema originale dark/arancione"
+    ],
+    "dependencies": ["theme-toggle-button"],
+    "notes": "STATO ATTUALE: js/theme.js è già completo e funzionante. initTheme() viene chiamata immediatamente (riga 39, senza DOMContentLoaded), legge localStorage('fitness-theme'), applica html.theme-pro se serve. toggleTheme() salva in localStorage. Tutte e 6 le pagine includono <script src='js/theme.js'> nel <head> senza defer. Il developer deve fare una verifica (audit) dei criteri e non una implementazione da zero."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/theme.js",
+        "motivo": "VERIFICA: controllare che initTheme() sia chiamata prima di DOMContentLoaded (già corretto a riga 39), che localStorage.getItem('fitness-theme') === 'pro' applichi correttamente html.theme-pro, che il valore default (nessuna chiave) lasci il tema originale. Se tutto è corretto, nessuna modifica necessaria.",
+        "esiste": true,
+        "priorita": "ALTA — file core della feature"
+      }
+    ],
+    "da_verificare_solo_lettura": [
+      {
+        "path": "docs/dashboard.html",
+        "verifica": "<script src='js/theme.js'> presente nel <head> SENZA attributo defer. Già confermato alla riga 7.",
+        "esiste": true,
+        "stato": "OK"
+      },
+      {
+        "path": "docs/progress.html",
+        "verifica": "<script src='js/theme.js'> presente nel <head> SENZA defer. Già confermato alla riga 7.",
+        "esiste": true,
+        "stato": "OK"
+      },
+      {
+        "path": "docs/workout.html",
+        "verifica": "<script src='js/theme.js'> presente nel <head> SENZA defer. Già confermato alla riga 7.",
+        "esiste": true,
+        "stato": "OK"
+      },
+      {
+        "path": "docs/diet.html",
+        "verifica": "<script src='js/theme.js'> presente nel <head> SENZA defer. Già confermato alla riga 7.",
+        "esiste": true,
+        "stato": "OK"
+      },
+      {
+        "path": "docs/plan.html",
+        "verifica": "<script src='js/theme.js'> presente nel <head> SENZA defer. Già confermato alla riga 7.",
+        "esiste": true,
+        "stato": "OK"
+      },
+      {
+        "path": "docs/volume.html",
+        "verifica": "<script src='js/theme.js'> presente nel <head> SENZA defer. Già confermato alla riga 7.",
+        "esiste": true,
+        "stato": "OK"
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/js/theme.js",
+        "motivo": "File principale del task. Leggere per verificare: (1) initTheme() è chiamata a riga 39 senza wrapper DOMContentLoaded — ANTI-FOUC OK; (2) localStorage.getItem('fitness-theme') === 'pro' → classList.add('theme-pro') su documentElement; (3) nessun valore → nessuna classe aggiunta (default tema originale); (4) toggleTheme() salva 'pro' o 'original' in localStorage; (5) DOMContentLoaded aggancia listener e sincronizza btn."
+      },
+      {
+        "path": "docs/dashboard.html",
+        "motivo": "Modello strutturale — verifica posizione <script src='js/theme.js'> nel <head> e presenza pulsante #theme-toggle-btn nell'header."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "javascript": "Vanilla JS ES2022, nessun framework",
+      "storage": "localStorage — chiave 'fitness-theme', valori ['original', 'pro'], default: 'original' (nessuna chiave)"
+    },
+    "convenzioni": {
+      "script_order_html": "<script src='js/theme.js'> nel <head> SENZA defer (anti-FOUC) — va prima di tutti gli altri script e dei link CSS; poi <script src='js/nav.js' defer> e <script src='js/[pagina].js' defer> in fondo al body",
+      "tema_attivazione": "Aggiungere classe 'theme-pro' a document.documentElement (elemento <html>) — MAI a <body> o altri elementi",
+      "localStorage_chiave": "fitness-theme",
+      "localStorage_valori": "Valore 'pro' per tema pro, 'original' per tema originale",
+      "localStorage_default": "Nessuna chiave = tema originale (nessuna classe html.theme-pro aggiunta)",
+      "anti_fouc_pattern": "initTheme() DEVE essere chiamata immediatamente nel body del file JS (non dentro DOMContentLoaded), poiché il file è caricato sincrono nel <head>. Il browser applica la classe prima di renderizzare il body.",
+      "variabili_js": "camelCase",
+      "no_defer": "theme.js NON deve avere l'attributo defer — deve bloccare il parsing HTML per applicare il tema PRIMA del paint"
+    },
+    "tema": {
+      "chiave_localStorage": "fitness-theme",
+      "classe_html_pro": "theme-pro",
+      "default": "original (nessuna classe)",
+      "pattern_init": "if (localStorage.getItem('fitness-theme') === 'pro') { document.documentElement.classList.add('theme-pro'); }",
+      "pattern_toggle": "const isPro = document.documentElement.classList.toggle('theme-pro'); localStorage.setItem('fitness-theme', isPro ? 'pro' : 'original');"
+    }
+  },
+  "analisi_implementazione_esistente": {
+    "js_theme_js": {
+      "esiste": true,
+      "path": "docs/js/theme.js",
+      "funzioni_presenti": [
+        "initTheme() — riga 8: legge localStorage('fitness-theme'), applica classList.add('theme-pro') se === 'pro'",
+        "updateToggleBtn(isPro) — riga 16: aggiorna aria-label, innerHTML e classe --active del pulsante",
+        "toggleTheme() — riga 32: classList.toggle('theme-pro'), salva in localStorage, chiama updateToggleBtn()",
+        "initTheme() CHIAMATA IMMEDIATA — riga 39: eseguita senza DOMContentLoaded (ANTI-FOUC CORRETTO)",
+        "DOMContentLoaded listener — riga 42: aggancia click su #theme-toggle-btn, sincronizza stato pulsante"
+      ],
+      "criteri_soddisfatti": [
+        "Anti-FOUC: initTheme() sincrona alla riga 39 — SODDISFATTO",
+        "Persistenza navigazione: localStorage letto a ogni boot — SODDISFATTO",
+        "Persistenza sessione: localStorage persiste oltre chiusura browser — SODDISFATTO",
+        "Default tema originale: nessuna chiave → nessuna classe aggiunta — SODDISFATTO",
+        "Caricamento senza defer in tutte le pagine — SODDISFATTO (confermato in tutti e 6 gli HTML)"
+      ],
+      "gap_da_verificare": [
+        "Verificare che il pulsante #theme-toggle-btn sia presente nell'HTML di TUTTE e 6 le pagine (già confermato visivamente nelle prime righe lette)",
+        "Verificare che toggleTheme() sia agganciato correttamente tramite addEventListener e non onclick= inline"
+      ]
+    },
+    "html_pages": {
+      "dashboard.html": { "script_theme_presente": true, "senza_defer": true, "pulsante_presente": true },
+      "progress.html": { "script_theme_presente": true, "senza_defer": true, "pulsante_presente": true },
+      "workout.html": { "script_theme_presente": true, "senza_defer": true, "pulsante_presente": true },
+      "diet.html": { "script_theme_presente": true, "senza_defer": true, "pulsante_presente": true },
+      "plan.html": { "script_theme_presente": true, "senza_defer": true, "pulsante_presente": true },
+      "volume.html": { "script_theme_presente": true, "senza_defer": true, "pulsante_presente": true }
+    }
+  },
+  "istruzioni_developer": {
+    "scenario": "Il task è già implementato nella sua interezza. Il tuo ruolo è fare un AUDIT di verifica.",
+    "passi": [
+      {
+        "step": 1,
+        "azione": "Leggi docs/js/theme.js e verifica che la struttura sia: (a) initTheme() definita, (b) updateToggleBtn(isPro) definita, (c) toggleTheme() definita, (d) initTheme() chiamata IMMEDIATAMENTE senza DOMContentLoaded wrapper, (e) DOMContentLoaded agganciato per il listener click e la sincronizzazione pulsante.",
+        "esito_atteso": "Tutto già corretto — nessuna modifica necessaria."
+      },
+      {
+        "step": 2,
+        "azione": "Per ogni pagina HTML (dashboard, progress, workout, diet, plan, volume), verifica che <script src='js/theme.js'> sia nel <head> SENZA defer e PRIMA dei <link> CSS.",
+        "nota": "ATTENZIONE: L'architettura dice che theme.js deve stare PRIMA del CSS. Nelle pagine attuali è effettivamente alla riga 7 (prima dei link CSS). Verifica che sia così in tutte.",
+        "esito_atteso": "Tutte le pagine già corrette — nessuna modifica necessaria."
+      },
+      {
+        "step": 3,
+        "azione": "Verifica che il pulsante #theme-toggle-btn esista nell'header di ogni pagina e abbia: id='theme-toggle-btn', class='theme-toggle-btn', aria-label='Attiva tema professionale' (stato default), span.theme-toggle-icon e span.theme-toggle-label.",
+        "esito_atteso": "Tutti i pulsanti già presenti — nessuna modifica necessaria."
+      },
+      {
+        "step": 4,
+        "azione": "SE durante la verifica trovi un gap (es. una pagina senza il pulsante, o theme.js con defer per errore), correggi solo quel gap specifico.",
+        "esito_atteso": "Correzione mirata — non riscrivere codice già funzionante."
+      },
+      {
+        "step": 5,
+        "azione": "Testa mentalmente il flusso: utente apre dashboard.html → browser esegue theme.js sincrono → initTheme() legge localStorage → se 'pro', aggiunge html.theme-pro → il CSS variables.css con html.theme-pro è già applicato PRIMA del paint del body. Naviga a progress.html → stesso processo. Chiude e riapre browser → localStorage persiste → stesso processo.",
+        "esito_atteso": "Flusso anti-FOUC corretto senza modifiche."
+      }
+    ],
+    "cosa_NON_fare": [
+      "Non riscrivere theme.js — è già completo",
+      "Non aggiungere defer a <script src='js/theme.js'> — romperebbe l'anti-FOUC",
+      "Non spostare initTheme() dentro DOMContentLoaded — romperebbe l'anti-FOUC",
+      "Non usare inline script per initTheme quando il file separato già funziona",
+      "Non modificare la chiave localStorage ('fitness-theme') — è già usata correttamente in tutto il codice"
+    ]
+  },
+  "criteri_accettazione": [
+    "Selezionando il tema pro in Dashboard e navigando in Progressi, il tema pro è già attivo senza flash visibile",
+    "Chiudendo e riaprendo il browser, il tema precedentemente scelto viene ripristinato (localStorage persiste tra sessioni)",
+    "Non c'è un visibile 'lampo' di tema sbagliato al caricamento della pagina (initTheme sincrona garantisce questo)",
+    "Se non c'è una preferenza salvata (nessuna chiave 'fitness-theme' in localStorage), il sito parte con il tema originale dark/arancione (nessuna classe html.theme-pro)",
+    "docs/js/theme.js contiene la funzione initTheme() chiamata sincrona FUORI da DOMContentLoaded",
+    "docs/js/theme.js contiene la funzione toggleTheme() che salva in localStorage",
+    "Tutte e 6 le pagine HTML contengono <script src='js/theme.js'> nel <head> senza attributo defer",
+    "Tutte e 6 le pagine HTML contengono il pulsante <button id='theme-toggle-btn' class='theme-toggle-btn'> nell'header",
+    "Il listener click su #theme-toggle-btn è agganciato con addEventListener (non con onclick= inline)"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "theme-toggle-button",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/js/theme.js",
+        "docs/dashboard.html (pulsante #theme-toggle-btn)",
+        "docs/progress.html (pulsante #theme-toggle-btn)",
+        "docs/workout.html (pulsante #theme-toggle-btn)",
+        "docs/diet.html (pulsante #theme-toggle-btn)",
+        "docs/plan.html (pulsante #theme-toggle-btn)",
+        "docs/volume.html (pulsante #theme-toggle-btn)"
+      ],
+      "note": "Il task theme-toggle-button ha già implementato tutto: theme.js con initTheme() sincrona anti-FOUC, toggleTheme() con localStorage, updateToggleBtn(). Tutte le pagine hanno il pulsante e includono theme.js senza defer. Il task theme-persistence è de facto già soddisfatto."
+    }
+  ]
+}

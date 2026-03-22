@@ -1,0 +1,135 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "theme-toggle-button",
+    "task_titolo": "Pulsante toggle tema nell'header",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Il pulsante #theme-toggle-btn è presente nel markup dell'header in tutti e 6 i file HTML (dashboard.html, progress.html, workout.html, diet.html, plan.html, volume.html)",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: <button id='theme-toggle-btn' class='theme-toggle-btn' aria-label='Attiva tema professionale'> è presente in tutte le 6 pagine HTML, come terzo elemento figlio nel .container dell'header, dopo .header-meta."
+    },
+    {
+      "criterio": "Il tag <script src='js/theme.js'> è presente nel <head> di tutte e 6 le pagine SENZA l'attributo defer",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: <script src='js/theme.js'></script> è presente nel <head> di dashboard.html, progress.html, workout.html, diet.html, plan.html e volume.html. Non ha l'attributo defer. È posizionato prima dei <link> CSS (dopo <meta>, prima di variables.css)."
+    },
+    {
+      "criterio": "docs/js/theme.js esiste ed è un file valido JavaScript",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: docs/js/theme.js esiste ed è sintatticamente valido. Non contiene errori di sintassi."
+    },
+    {
+      "criterio": "docs/js/theme.js contiene la funzione initTheme()",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: function initTheme() è definita alle righe 8-13. Legge localStorage.getItem('fitness-theme') e applica la classe 'theme-pro' se il valore è 'pro'."
+    },
+    {
+      "criterio": "docs/js/theme.js contiene la funzione toggleTheme()",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: function toggleTheme() è definita alle righe 32-36. Toggling della classe 'theme-pro', salvataggio in localStorage, e aggiornamento dell'UI."
+    },
+    {
+      "criterio": "docs/js/theme.js contiene la funzione updateToggleBtn(isPro)",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: function updateToggleBtn(isPro) è definita alle righe 16-29. Aggiorna aria-label, innerHTML (icona e label) e classe 'theme-toggle-btn--active' in base allo stato tema."
+    },
+    {
+      "criterio": "initTheme() è chiamata immediatamente (non dentro DOMContentLoaded) per prevenire FOUC",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: initTheme() è chiamata alla riga 39, FUORI da DOMContentLoaded, direttamente nello scope globale. Questo garantisce esecuzione anti-FOUC durante il parsing del <head>."
+    },
+    {
+      "criterio": "toggleTheme() esegue document.documentElement.classList.toggle('theme-pro')",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: Riga 33 contiene esattamente document.documentElement.classList.toggle('theme-pro'). Il valore restituito è memorizzato in isPro e usato per aggiornare localStorage."
+    },
+    {
+      "criterio": "toggleTheme() salva la preferenza in localStorage con chiave 'fitness-theme' e valori 'original'/'pro'",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: Riga 34 contiene localStorage.setItem('fitness-theme', isPro ? 'pro' : 'original'). La chiave è 'fitness-theme', i valori sono 'pro' e 'original'."
+    },
+    {
+      "criterio": "docs/css/layout.css contiene il selettore .theme-toggle-btn con stili base",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: Selettore .theme-toggle-btn è definito alle righe 103-156. Contiene stili base: display: inline-flex, padding, background-color, border, border-radius, font-size, cursor, flex-shrink: 0, transition, height: 28px. Include anche :hover, :focus-visible e stato --active."
+    },
+    {
+      "criterio": "docs/css/layout.css contiene stili per .theme-toggle-btn in contesto html.theme-pro",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: Selettore html.theme-pro .theme-toggle-btn è definito alle righe 159-175. Contiene overrides di background-color, border-color, color per il tema pro, inclusi stati :hover e --active."
+    },
+    {
+      "criterio": "Il pulsante visualizza un'indicazione diversa quando il tema pro è attivo vs tema originale (aria-label + contenuto visivo)",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: updateToggleBtn(isPro) aggiorna aria-label (riga 21: 'Attiva tema originale' quando isPro, riga 25: 'Attiva tema professionale' quando original). Aggiorna anche innerHTML: icona ☀ e label 'Pro' quando isPro (riga 22), icona ☾ e label 'Dark' quando original (riga 26). La classe 'theme-toggle-btn--active' è aggiunta/rimossa per indicare lo stato attivo (righe 23, 27)."
+    },
+    {
+      "criterio": "Su viewport 375px l'header rimane a una sola riga (verificabile visivamente nella pagina Dashboard)",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: Media query @media (max-width: 375px) è presente alle righe 264-303. Gli stili a mobile nascondono .header-tagline (riga 279) e .header-meta-label (riga 283). Il pulsante è restyled: .theme-toggle-label nascosta (riga 287), padding ridotto (riga 291), gap rimosso (riga 292). Header mantiene la struttura flex: header-brand + header-meta + theme-toggle-btn, tutti su una riga."
+    },
+    {
+      "criterio": "Cliccando il pulsante il sito cambia tema immediatamente senza ricaricare la pagina",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: DOMContentLoaded listener (riga 42) aggancia click sul #theme-toggle-btn e chiama toggleTheme() (riga 45). toggleTheme() modifica document.documentElement.classList e aggiorna l'UI via updateToggleBtn(), SENZA ricaricare la pagina."
+    },
+    {
+      "criterio": "L'aspetto del pulsante riflette lo stato corrente del tema (tema pro attivo vs originale)",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: updateToggleBtn(isPro) è chiamata in due punti: (1) dopo toggleTheme() per sincronizzare dopo il click (riga 35), (2) nel DOMContentLoaded per sincronizzare al boot della pagina (riga 48), leggendo da document.documentElement.classList.contains('theme-pro'). Questo garantisce che l'aspetto del pulsante sia sempre coerente con lo stato attuale."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/dashboard.html",
+      "esiste": true,
+      "note": "Contiene <script src='js/theme.js'> nel <head> senza defer. Contiene pulsante #theme-toggle-btn nell'header dopo .header-meta."
+    },
+    {
+      "path": "docs/progress.html",
+      "esiste": true,
+      "note": "Contiene <script src='js/theme.js'> nel <head> senza defer. Contiene pulsante #theme-toggle-btn nell'header dopo .header-meta."
+    },
+    {
+      "path": "docs/workout.html",
+      "esiste": true,
+      "note": "Contiene <script src='js/theme.js'> nel <head> senza defer. Contiene pulsante #theme-toggle-btn nell'header dopo .header-meta."
+    },
+    {
+      "path": "docs/diet.html",
+      "esiste": true,
+      "note": "Contiene <script src='js/theme.js'> nel <head> senza defer. Contiene pulsante #theme-toggle-btn nell'header dopo .header-meta."
+    },
+    {
+      "path": "docs/plan.html",
+      "esiste": true,
+      "note": "Contiene <script src='js/theme.js'> nel <head> senza defer. Contiene pulsante #theme-toggle-btn nell'header dopo .header-meta."
+    },
+    {
+      "path": "docs/volume.html",
+      "esiste": true,
+      "note": "Contiene <script src='js/theme.js'> nel <head> senza defer. Contiene pulsante #theme-toggle-btn nell'header dopo .header-meta."
+    },
+    {
+      "path": "docs/js/theme.js",
+      "esiste": true,
+      "note": "Nuovo file creato. Contiene initTheme(), toggleTheme(), updateToggleBtn(isPro), DOMContentLoaded listener. initTheme() eseguita subito (riga 39) per anti-FOUC."
+    },
+    {
+      "path": "docs/css/layout.css",
+      "esiste": true,
+      "note": "Contiene stili per .theme-toggle-btn (base, hover, focus-visible, active). Contiene media query 375px con stili responsive (label nascosta, padding ridotto). Contiene stili per html.theme-pro .theme-toggle-btn."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "Il file theme.js contiene un commento 'format' (CSS) sulla prima riga: '/* ============================================================ theme.js — ... */' invece di commenti JS normali. Non è un errore funzionale ma è uno stile inusuale per un file JavaScript.",
+      "file": "docs/js/theme.js"
+    }
+  ]
+}

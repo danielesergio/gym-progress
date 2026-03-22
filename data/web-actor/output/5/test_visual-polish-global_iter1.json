@@ -1,0 +1,115 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "visual-polish-global",
+    "task_titolo": "Micro-miglioramenti estetici applicabili a entrambi i temi",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "La nav tab su mobile mostra un indicatore visivo che ci sono più tab scorrendo lateralmente",
+      "soddisfatto": true,
+      "dettaglio": "layout.css contiene .tab-list::before (linea 202) e .tab-list::after (linea 208) con linear-gradient e position absolute. Il .tab-list ha position: relative (linea 187). Su mobile (< 768px) i gradienti sono visibili; su desktop sono nascosti con display: none (@media min-width: 768px, linea 216)."
+    },
+    {
+      "criterio": "Le transizioni hover su nav-tab e card sono fluide (no scatti visibili)",
+      "soddisfatto": true,
+      "dettaglio": "layout.css: .nav-tab usa transition con var(--transition-normal) per color, border-color e background-color (righe 241-242). dashboard.css: .dashboard-card ha transition su box-shadow e border-color con var(--transition-normal) (riga 22); hover su .dashboard-card:hover cambia box-shadow e border-color (righe 25-28)."
+    },
+    {
+      "criterio": "I miglioramenti sono visibili in entrambi i temi (originale e pro)",
+      "soddisfatto": true,
+      "dettaglio": "I gradienti del .tab-list usano var(--color-bg-secondary) che è automaticamente overridato dal tema pro (#161b22). Le transizioni hover su .nav-tab e .dashboard-card mantengono lo stesso token var(--transition-normal) in entrambi i temi. Override pro su .dashboard-card (html.theme-pro .dashboard-card:hover, righe 538-541 in dashboard.css) usa var(--shadow-lg) e var(--color-accent-hover)."
+    },
+    {
+      "criterio": "Nessuna funzionalità JS esistente è rotta dopo le modifiche",
+      "soddisfatto": true,
+      "dettaglio": "Nessun file JS è stato modificato. I file nav.js, theme.js, dashboard.js, progress.js, workout.js, diet.js, plan.js, volume.js rimangono intatti. Le modifiche sono puramente CSS/HTML."
+    },
+    {
+      "criterio": "Il footer mostra la data di aggiornamento in tutte e 6 le pagine",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.html, progress.html, workout.html, diet.html, plan.html, volume.html contengono tutti: <span class=\"footer-generated\" data-generated=\"2026-03-22\">— Scheda aggiornata: 22 mar 2026</span>. Il CSS .footer-generated (layout.css, riga 294) stilizza il testo con opacity: 0.7 e white-space: nowrap."
+    },
+    {
+      "criterio": "docs/css/layout.css contiene le regole .tab-list::before e .tab-list::after con i gradienti",
+      "soddisfatto": true,
+      "dettaglio": "layout.css righe 191-210: .tab-list::before e .tab-list::after con position absolute, width 32px, pointer-events none, z-index 1. ::before ha linear-gradient(to right, var(--color-bg-secondary), transparent). ::after ha linear-gradient(to left, var(--color-bg-secondary), transparent)."
+    },
+    {
+      "criterio": "docs/css/layout.css contiene transizioni hover fluide su .nav-tab",
+      "soddisfatto": true,
+      "dettaglio": "layout.css righe 241-242: .nav-tab ha transition con var(--transition-normal) per color, border-color, background-color. .nav-tab:hover (righe 246-249) cambia color e background-color con fluidità."
+    },
+    {
+      "criterio": "docs/css/dashboard.css contiene una transizione hover su .dashboard-card (box-shadow e/o border-color)",
+      "soddisfatto": true,
+      "dettaglio": "dashboard.css riga 22: .dashboard-card ha 'transition: box-shadow var(--transition-normal), border-color var(--transition-normal)'. Hover (righe 25-28) cambia box-shadow a var(--shadow-md) e border-color a var(--color-border-light)."
+    },
+    {
+      "criterio": "Nessun file JS è stato modificato",
+      "soddisfatto": true,
+      "dettaglio": "Verifica manuale: tutti i file JS rimangono unchanged. Il task è puramente CSS/HTML."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/css/layout.css",
+      "esiste": true,
+      "note": "Contiene indicatori overflow (::before/::after), transizioni hover aggiornate su .nav-tab, footer styling."
+    },
+    {
+      "path": "docs/css/dashboard.css",
+      "esiste": true,
+      "note": "Contiene transizioni hover fluide su .dashboard-card con var(--transition-normal), override pro con shadow-lg e accent-hover."
+    },
+    {
+      "path": "docs/css/variables.css",
+      "esiste": true,
+      "note": "Contiene i token var(--transition-fast) = 150ms ease e var(--transition-normal) = 250ms ease. Tema pro define var(--color-bg-secondary) = #161b22."
+    },
+    {
+      "path": "docs/dashboard.html",
+      "esiste": true,
+      "note": "Footer aggiornato con <span class=\"footer-generated\" data-generated=\"2026-03-22\">— Scheda aggiornata: 22 mar 2026</span>."
+    },
+    {
+      "path": "docs/progress.html",
+      "esiste": true,
+      "note": "Footer aggiornato con <span class=\"footer-generated\" data-generated=\"2026-03-22\">— Scheda aggiornata: 22 mar 2026</span>."
+    },
+    {
+      "path": "docs/workout.html",
+      "esiste": true,
+      "note": "Footer aggiornato con <span class=\"footer-generated\" data-generated=\"2026-03-22\">— Scheda aggiornata: 22 mar 2026</span>."
+    },
+    {
+      "path": "docs/diet.html",
+      "esiste": true,
+      "note": "Footer aggiornato con <span class=\"footer-generated\" data-generated=\"2026-03-22\">— Scheda aggiornata: 22 mar 2026</span>."
+    },
+    {
+      "path": "docs/plan.html",
+      "esiste": true,
+      "note": "Footer aggiornato con <span class=\"footer-generated\" data-generated=\"2026-03-22\">— Scheda aggiornata: 22 mar 2026</span>."
+    },
+    {
+      "path": "docs/volume.html",
+      "esiste": true,
+      "note": "Footer aggiornato con <span class=\"footer-generated\" data-generated=\"2026-03-22\">— Scheda aggiornata: 22 mar 2026</span>."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "Il piano diceva di aggiungere .footer-sep (separatore '·') e .footer-meta come classi separate nel markup. L'implementazione usa solo .footer-generated. Non è bloccante perché il testo di aggiornamento è presente e visibile, ma la struttura HTML è leggermente diversa da quella proposta nel piano dettagliato.",
+      "file": "docs/*.html (tutti gli HTML)"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "I gradienti fade-gradient su .tab-list potrebbero avere una larghezza di 32px leggermente aggressiva su schermi molto piccoli (< 320px), ma il CSS è corretto e rispetta le convenzioni del progetto.",
+      "file": "docs/css/layout.css"
+    }
+  ]
+}

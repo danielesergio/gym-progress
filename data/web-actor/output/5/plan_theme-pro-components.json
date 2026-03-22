@@ -1,0 +1,212 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "theme-pro-components",
+    "task_title": "Stili componenti per il tema professionale",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "theme-pro-components",
+    "type": "component",
+    "title": "Stili componenti per il tema professionale",
+    "description": "Adattare card, badge, tabelle, selettori settimana/giorno, barre macro e grafici al nuovo tema pro. Punti critici: (1) le dashboard-card devono avere uno stile più premium (bordo sinistro colorato o gradient sottile nell'header della card); (2) i badge R/S nella sezione Progressi devono essere più leggibili; (3) la tabella storico misurazioni deve avere righe alternate più distinguibili; (4) il selettore giorno nella pagina Dieta e il selettore settimana nella pagina Allenamento devono avere stato attivo più evidente; (5) la progress bar macro nella dieta deve usare i colori del tema pro per proteine/carboidrati/grassi. Tutti questi override devono essere condizionati alla presenza della classe tema pro e non devono toccare il CSS originale.",
+    "inputs": [
+      "ProThemeVariables",
+      "ProThemeTypography"
+    ],
+    "outputs": [
+      "ProThemeComponentStyles"
+    ],
+    "acceptance_criteria": [
+      "Le card della dashboard hanno uno stile visivamente distinto nel tema pro rispetto all'originale",
+      "La tabella storico in Progressi è leggibile con righe alternate nel tema pro",
+      "I selettori settimana e giorno mostrano lo stato attivo in modo chiaro nel tema pro",
+      "La barra macro dieta usa colori coerenti con la palette del tema pro",
+      "Nessuno stile del tema originale viene sovrascritto globalmente (solo sotto il selettore del tema pro)"
+    ],
+    "notes": "I task theme-pro-variables e theme-pro-typography sono già stati completati. In variables.css esiste il blocco html.theme-pro con la palette (accent #58a6ff, bg-card #1c2128, ecc.) e le custom properties tipografiche (--font-size-kpi-value, --font-weight-extrabold). In dashboard.css, progress.css, workout.css e diet.css esistono già SEZIONI html.theme-pro con override tipografici. Questo task aggiunge SEZIONI di override COMPONENTI (non tipografici) sotto lo stesso selettore, IN CODA a ciascun file CSS, senza mai modificare :root o gli stili originali. Nessun file HTML da toccare: questo è un task puramente CSS."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "Aggiungere in coda al blocco html.theme-pro esistente (riga ~463): (1) bordo sinistro colorato su .dashboard-card con border-left: 3px solid var(--color-accent); (2) sottile gradient nell'header della card (se esiste .dashboard-card__title: aggiungere padding-bottom e un border-bottom accent più visibile); (3) ombra più marcata per depth premium. Tutto sotto html.theme-pro.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/progress.css",
+        "motivo": "Aggiungere in coda al blocco html.theme-pro esistente (riga ~270): (1) righe alternate sulla tabella storico .measurements-table tbody tr:nth-child(even) con background diverso; (2) badge .badge-reale e .badge-stimato con contrasto aumentato e border più spessi nel tema pro; (3) badge inline .td-badge--reale e .td-badge--stimato con colori più saturi. Tutto sotto html.theme-pro.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Aggiungere in coda al blocco html.theme-pro esistente (riga ~640): override per .week-btn.active con box-shadow colorata e font-weight extrabold; override per .day-btn.active con box-shadow colorata e font-weight extrabold — stato attivo molto più evidente nel tema pro. Tutto sotto html.theme-pro.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Aggiungere in coda al blocco html.theme-pro esistente (riga ~515): (1) override .diet-toggle-btn.active con box-shadow colorata e font-weight extrabold; (2) override colori segmenti barra macro: .diet-macros-proportion-bar__segment--proteine, --carbo, --grassi con i colori della palette pro (es. proteine: #58a6ff, carbo: #d29922, grassi: #3fb950); (3) aggiornare i ::before delle legend items di conseguenza. Tutto sotto html.theme-pro.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/css/variables.css",
+        "motivo": "Palette tema pro già definita: --color-accent #58a6ff, --color-bg-card #1c2128, --color-bg-elevated #21262d, --color-border #30363d, --color-success #3fb950, --color-warning #d29922, --shadow-md/lg con tinta blu. Custom properties tipografiche: --font-weight-extrabold: 800. Usare esclusivamente var() — mai valori hardcoded nei CSS di pagina se esiste il token."
+      },
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "Verificare struttura esistente: .dashboard-card (background, border, border-radius, padding, box-shadow), .dashboard-card__title. Il blocco html.theme-pro esiste già alle righe 456-510 — aggiungere gli override componenti IN CODA a questo blocco."
+      },
+      {
+        "path": "docs/css/progress.css",
+        "motivo": "Verificare: .badge-reale, .badge-stimato (righe 40-63), .measurements-table tbody (righe 124-138), .td-badge--reale, .td-badge--stimato (righe 190-200). Il blocco html.theme-pro esiste già alle righe 263-281 — aggiungere IN CODA."
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Verificare: .week-btn.active (righe 317-323) — usa color-accent + accent-dim + border-accent. .day-btn.active (righe 380-386) — stessa struttura. Il blocco html.theme-pro esiste già alle righe 640+ — aggiungere IN CODA."
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Verificare: .diet-toggle-btn.active (righe 81-86) — usa color-accent-dim + color-accent. .diet-macros-proportion-bar__segment--proteine/--carbo/--grassi (righe 214-223) — colori hardcoded: #4dabf7, #ffd43b, #ff8787. Legenda ::before alle righe 251-260. Il blocco html.theme-pro esiste già alle righe 514-553 — aggiungere IN CODA."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "styling": {
+        "nome": "CSS custom properties",
+        "versione": "CSS3",
+        "nota": "Override componenti tema pro tramite selettore html.theme-pro. Usare var() con i token definiti in variables.css — MAI valori hardcoded se esiste già un token."
+      }
+    },
+    "tema_pro": {
+      "attivazione": "Classe html.theme-pro su <html> — gestita da js/theme.js al boot",
+      "pattern_css": "html.theme-pro .nome-classe { ... }",
+      "regola_fondamentale": "MAI sovrascrivere :root o selettori globali senza html.theme-pro. MAI modificare le regole originali esistenti. Aggiungere SOLO in coda ai blocchi html.theme-pro già presenti nei rispettivi file CSS.",
+      "palette_pro_disponibile": {
+        "--color-bg": "#0d1117",
+        "--color-bg-secondary": "#161b22",
+        "--color-bg-card": "#1c2128",
+        "--color-bg-elevated": "#21262d",
+        "--color-text": "#e6edf3",
+        "--color-text-muted": "#8b949e",
+        "--color-text-faint": "#484f58",
+        "--color-accent": "#58a6ff",
+        "--color-accent-hover": "#79b8ff",
+        "--color-accent-dim": "rgba(88, 166, 255, 0.15)",
+        "--color-border": "#30363d",
+        "--color-border-light": "#3d444d",
+        "--color-success": "#3fb950",
+        "--color-warning": "#d29922",
+        "--color-danger": "#f85149",
+        "--shadow-sm": "0 1px 3px rgba(1, 4, 9, 0.6)",
+        "--shadow-md": "0 4px 12px rgba(1, 4, 9, 0.7)",
+        "--shadow-lg": "0 8px 24px rgba(1, 4, 9, 0.8)",
+        "--font-weight-extrabold": "800"
+      }
+    },
+    "convenzioni_css": {
+      "ordine_import": "1. variables.css → 2. layout.css → 3. [pagina].css — invariato",
+      "tema_pro_pattern": "Tutti gli override del tema pro usano html.theme-pro come selettore radice — MAI nested su :root",
+      "no_inline_style": "Vietato style= inline negli HTML — usare classi CSS",
+      "custom_properties": "Per valori condivisi usare sempre var(--nome) — mai valori hardcoded se esiste già un token in variables.css",
+      "classi_css": "kebab-case con prefisso pagina, es. .dashboard-card, .progress-section, .workout-header"
+    },
+    "dettaglio_componenti_da_adattare": {
+      "dashboard_card": {
+        "classi": [".dashboard-card"],
+        "stato_attuale": "background-color: var(--color-bg-card); border: 1px solid var(--color-border); border-radius: var(--radius-lg); box-shadow: var(--shadow-sm)",
+        "override_pro_suggeriti": "Aggiungere border-left: 3px solid var(--color-accent) per il look premium. Aumentare box-shadow a var(--shadow-md). Opzionale: leggero background gradient da bg-card a bg-elevated.",
+        "file_css": "docs/css/dashboard.css"
+      },
+      "badge_rs_legenda": {
+        "classi": [".badge-reale", ".badge-stimato"],
+        "stato_attuale": "badge-reale: rgba(76,175,80,0.2) bg + color-success border; badge-stimato: rgba(255,193,7,0.15) bg + color-warning border",
+        "override_pro_suggeriti": "Aumentare opacity sfondo (0.25), aumentare font-weight a 700, border più spesso (2px) per leggibilità su sfondo scuro quasi-nero del tema pro.",
+        "file_css": "docs/css/progress.css"
+      },
+      "badge_rs_inline": {
+        "classi": [".td-badge--reale", ".td-badge--stimato"],
+        "stato_attuale": "Stessa struttura dei badge legenda ma con font-size 10px",
+        "override_pro_suggeriti": "Stessi override: opacity sfondo aumentata, border 2px, font-weight 700.",
+        "file_css": "docs/css/progress.css"
+      },
+      "tabella_storico": {
+        "classi": [".measurements-table tbody tr:nth-child(even)"],
+        "stato_attuale": "Nessuna riga alternata: solo hover su var(--color-bg-elevated). Le righe sono indistinguibili su sfondo quasi-nero del tema pro.",
+        "override_pro_suggeriti": "Aggiungere background-color: var(--color-bg-secondary) alle righe pari per zebra-striping visibile nel tema pro.",
+        "file_css": "docs/css/progress.css"
+      },
+      "selettore_settimana": {
+        "classi": [".week-btn.active", ".week-btn[aria-pressed='true']"],
+        "stato_attuale": "color-accent + accent-dim + border-accent — usa custom properties, già si adatta al tema pro automaticamente via variabili",
+        "override_pro_suggeriti": "Aggiungere box-shadow: 0 0 0 2px var(--color-accent) per un halo visibile. Impostare font-weight: var(--font-weight-extrabold, 800) per massimo contrasto.",
+        "file_css": "docs/css/workout.css"
+      },
+      "selettore_giorno_workout": {
+        "classi": [".day-btn.active", ".day-btn[aria-pressed='true']"],
+        "stato_attuale": "Identico a week-btn: color-accent + accent-dim + border-accent + font-weight-bold",
+        "override_pro_suggeriti": "Stessi override di week-btn: box-shadow halo + font-weight extrabold.",
+        "file_css": "docs/css/workout.css"
+      },
+      "selettore_giorno_dieta": {
+        "classi": [".diet-toggle-btn.active"],
+        "stato_attuale": "accent-dim bg + color-accent border + color-accent text + font-weight-semibold",
+        "override_pro_suggeriti": "Aggiungere box-shadow: 0 0 0 2px var(--color-accent) halo + font-weight extrabold.",
+        "file_css": "docs/css/diet.css"
+      },
+      "barra_macro_colori": {
+        "classi": [
+          ".diet-macros-proportion-bar__segment--proteine",
+          ".diet-macros-proportion-bar__segment--carbo",
+          ".diet-macros-proportion-bar__segment--grassi",
+          ".diet-macros-proportion-bar__legend-item--proteine::before",
+          ".diet-macros-proportion-bar__legend-item--carbo::before",
+          ".diet-macros-proportion-bar__legend-item--grassi::before"
+        ],
+        "stato_attuale": "Colori hardcoded: proteine #4dabf7, carbo #ffd43b, grassi #ff8787 — ben leggibili sul tema originale scuro/arancio",
+        "override_pro_suggeriti": "Nel tema pro usare colori allineati alla palette steel-blue: proteine #58a6ff (accent pro), carbo #d29922 (warning pro), grassi #3fb950 (success pro). Aggiornare sia i segmenti che i ::before delle legend items.",
+        "nota": "Questi colori sono hardcoded nel CSS originale (non usano var()). Il developer deve usare html.theme-pro per sovrascriverli senza toccare le regole originali.",
+        "file_css": "docs/css/diet.css"
+      }
+    }
+  },
+  "criteri_accettazione": [
+    "Le card della dashboard hanno uno stile visivamente distinto nel tema pro rispetto all'originale (es. bordo sinistro accent o shadow aumentata)",
+    "La tabella storico in Progressi mostra righe alternate distinguibili nel tema pro (.measurements-table tbody tr:nth-child(even) con sfondo diverso)",
+    "I selettori settimana (.week-btn.active) e giorno (.day-btn.active, .diet-toggle-btn.active) mostrano lo stato attivo in modo chiaramente più evidente nel tema pro (es. halo/box-shadow colorata)",
+    "La barra macro dieta usa colori coerenti con la palette pro (proteine: #58a6ff, carbo: #d29922, grassi: #3fb950)",
+    "I badge R/S (.badge-reale, .badge-stimato, .td-badge--reale, .td-badge--stimato) sono più leggibili nel tema pro (border più spessa, sfondo più opaco)",
+    "Nessuno stile del tema originale viene sovrascritto globalmente: tutti gli override stanno SOLO sotto html.theme-pro",
+    "Il file docs/css/dashboard.css contiene html.theme-pro .dashboard-card { con border-left o box-shadow aumentata",
+    "Il file docs/css/progress.css contiene html.theme-pro .measurements-table tbody tr:nth-child(even)",
+    "Il file docs/css/progress.css contiene html.theme-pro .badge-reale e html.theme-pro .badge-stimato",
+    "Il file docs/css/workout.css contiene html.theme-pro .week-btn.active e html.theme-pro .day-btn.active",
+    "Il file docs/css/diet.css contiene html.theme-pro .diet-toggle-btn.active",
+    "Il file docs/css/diet.css contiene html.theme-pro .diet-macros-proportion-bar__segment--proteine, --carbo, --grassi",
+    "Rimuovendo la classe html.theme-pro, tutti i componenti tornano agli stili originali senza residui visivi"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "theme-pro-variables",
+      "stato": "completato",
+      "file_prodotti": ["docs/css/variables.css"],
+      "note": "Il blocco html.theme-pro { ... } con la palette completa (accent #58a6ff, bg-card #1c2128, ecc.) è presente in docs/css/variables.css righe 99-155. I token --color-success, --color-warning, --color-danger pro sono definiti e usabili."
+    },
+    {
+      "task_id": "theme-pro-typography",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/css/variables.css",
+        "docs/css/dashboard.css",
+        "docs/css/progress.css",
+        "docs/css/workout.css",
+        "docs/css/diet.css"
+      ],
+      "note": "Il secondo blocco html.theme-pro in variables.css (righe 144-155) definisce --font-base Inter, --font-weight-extrabold: 800, --font-size-kpi-value, --font-size-section-title. I blocchi html.theme-pro tipografici sono presenti in tutti e 4 i file CSS di pagina (dashboard.css r.463, progress.css r.270, workout.css r.640, diet.css r.515). Questo task si aggancia aggiungendo override componenti IN CODA a quei blocchi."
+    }
+  ]
+}

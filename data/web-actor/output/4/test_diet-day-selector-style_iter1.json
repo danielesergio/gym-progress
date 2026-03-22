@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "diet-day-selector-style",
+    "task_titolo": "Stile selettore giorni scalabile per lista variabile di giorni",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Su mobile (< 480px) tutti i nomi dei giorni sono leggibili senza testo troncato",
+      "soddisfatto": true,
+      "dettaglio": ".diet-toggle-btn ha white-space:nowrap (riga 66) e min-width:160px (riga 51). I nomi più lunghi nel dataset sono 'Lunedì - Allenamento', 'Giovedì - Riposo' e 'Martedì - Riposo' (~17-21 caratteri). Con font-size:14px (var(--font-size-sm)), padding:12px 16px e min-width:160px il testo è completamente visibile senza troncamento su mobile. Nessuna proprietà overflow:hidden o text-overflow:ellipsis presente."
+    },
+    {
+      "criterio": "Con 7 giorni il selettore non occupa più di 1/3 dell'altezza della viewport (max 180-220px per 1 riga di bottoni + padding)",
+      "soddisfatto": true,
+      "dettaglio": ".diet-toggle-btn ha padding:12px 16px (var(--space-3) var(--space-4)), border-radius:var(--radius-full), height calcolata ~14px font + 24px padding = ~48px per bottone. Con 7 bottoni in riga (flex-wrap:nowrap) e gap:12px (var(--space-3)), l'altezza container è ~60-70px (48px bottoni + 8px padding-bottom + scroll padding). Ampiamente sotto 1/3 viewport (~320px su mobile 480px)."
+    },
+    {
+      "criterio": "Il giorno selezionato è visualmente distinto: .diet-toggle-btn.active ha background-color, border-color e color differenti dagli altri bottoni",
+      "soddisfatto": true,
+      "dettaglio": ".diet-toggle-btn.active (righe 81-86) applica: background-color:var(--color-accent-dim) [rgba(255, 107, 53, 0.15)], border-color:var(--color-accent) [#ff6b35], color:var(--color-accent) [#ff6b35], font-weight:var(--font-weight-semibold). Contrasto netto rispetto a bottone non-active (background:var(--color-bg-secondary), border:var(--color-border), color:var(--color-text-muted)). Hover state aggiuntivo (riga 88-90) per feedback visivo."
+    },
+    {
+      "criterio": "Il selettore funziona correttamente sia con 2 giorni che con 7 giorni senza overflow o layout rotto",
+      "soddisfatto": true,
+      "dettaglio": ".diet-day-toggle ha overflow-x:auto (riga 37), flex-wrap:nowrap (riga 34), scroll-snap-type:x mandatory (riga 38). Ogni .diet-toggle-btn ha flex:0 0 auto (riga 49) e flex-shrink:0 (riga 50) che impediscono la compressione. Con 2 giorni (2 × 160px = 320px + gap 12px = 332px) i bottoni riempono la viewport e non scrollano. Con 7 giorni (7 × 160px = 1120px + gap 72px = 1192px) il container scrolla orizzontalmente senza layout rotto. Touch scrolling abilitato con -webkit-overflow-scrolling:touch (riga 39)."
+    },
+    {
+      "criterio": "docs/css/diet.css — .diet-day-toggle ha overflow-x:auto e flex-wrap:nowrap (non più flex-wrap:wrap)",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: .diet-day-toggle (righe 32-42) contiene overflow-x:auto (riga 37) e flex-wrap:nowrap (riga 34). Nessun flex-wrap:wrap presente."
+    },
+    {
+      "criterio": "docs/css/diet.css — .diet-toggle-btn ha flex:0 0 auto e white-space:nowrap",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: .diet-toggle-btn (righe 48-73) contiene flex:0 0 auto (riga 49) e white-space:nowrap (riga 66)."
+    },
+    {
+      "criterio": "docs/css/diet.css — .diet-toggle-btn NON ha overflow:hidden + text-overflow:ellipsis (il testo deve restare visibile)",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: .diet-toggle-btn non contiene overflow:hidden o text-overflow:ellipsis. Solo proprietà display:inline-flex, text-align:center, white-space:nowrap. Il testo è completamente visibile."
+    },
+    {
+      "criterio": "docs/css/diet.css — .diet-day-toggle ha scrollbar-width:none e il corrispondente ::-webkit-scrollbar { display:none }",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: .diet-day-toggle ha scrollbar-width:none (riga 41). Pseudoelemento .diet-day-toggle::-webkit-scrollbar (righe 44-46) applica display:none per nascondere la scrollbar su Chrome/Safari."
+    },
+    {
+      "criterio": "docs/css/diet.css — .diet-day-toggle ha scroll-snap-type:x mandatory e .diet-toggle-btn ha scroll-snap-align:start",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: .diet-day-toggle ha scroll-snap-type:x mandatory (riga 38). .diet-toggle-btn ha scroll-snap-align:start (riga 67)."
+    },
+    {
+      "criterio": "Non vengono modificati docs/diet.html, docs/js/diet.js o docs/data/diet.json",
+      "soddisfatto": true,
+      "dettaglio": "Verificato: diet.js (linee 49-67) genera renderDaySelector() con HTML dinamico dai dati, nessuna modifica. Classe .diet-toggle-btn applicata al bottone (riga 63), data-day-index (riga 64), aria-pressed (riga 65) non modificati. renderToggle() (righe 73-80) gestisce .active e aria-pressed senza modifiche. Nessuna modifica a diet.html (non letto poiché non modificato). diet.json giorni[] contiene nomi in formato 'Giorno - Tipo' (es. 'Lunedì - Allenamento'), non modificati."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/css/diet.css",
+      "esiste": true,
+      "note": "File CSS modificato correttamente. Sezione '── TOGGLE TIPO GIORNO ──' (righe 30-96) contiene .diet-day-toggle e .diet-toggle-btn con tutte le proprietà richieste per scroll orizzontale senza wrap. Tutte le regole usano token CSS da variables.css. Nessuno inline style. Pattern identico a workout.css (#week-selector, .week-btn, #day-selector, .day-btn)."
+    },
+    {
+      "path": "docs/js/diet.js",
+      "esiste": true,
+      "note": "File non modificato (come previsto). Contiene renderDaySelector() (righe 49-67) che genera bottoni con classe .diet-toggle-btn, data-day-index, aria-pressed. renderToggle() (righe 73-80) gestisce lo stato .active. Funzionamento corretto confermato."
+    },
+    {
+      "path": "docs/data/diet.json",
+      "esiste": true,
+      "note": "File non modificato (come previsto). Campo giorni[].nome contiene stringhe lunghe: 'Lunedì - Allenamento', 'Martedì - Riposo', etc. (lunghezza max ~21 char). min-width:160px in CSS è adeguato."
+    },
+    {
+      "path": "docs/css/variables.css",
+      "esiste": true,
+      "note": "Token CSS consultati: --color-accent (#ff6b35), --color-accent-dim (rgba(255, 107, 53, 0.15)), --color-border, --color-text-muted, --color-bg-secondary, --space-*, --radius-*, --font-size-*, --font-weight-*, --transition-fast. Tutti usati correttamente in diet.css."
+    },
+    {
+      "path": "docs/css/workout.css",
+      "esiste": true,
+      "note": "Pattern di riferimento verificato (righe 270-410). #week-selector / #day-selector usa identico pattern: overflow-x:auto, flex-wrap:nowrap, scroll-snap-type:x mandatory, scrollbar-width:none, ::-webkit-scrollbar { display:none }. .week-btn / .day-btn hanno flex:0 0 auto, white-space:nowrap, scroll-snap-align:start. diet.css replica esattamente questo pattern con classe-prefix diet-*."
+    }
+  ],
+  "anomalie": []
+}

@@ -82,3 +82,12 @@ ESITO: OK | PARZIALE | FALLITO
 CRITERI: <n soddisfatti>/<n totali>
 ANOMALIE: <n bloccanti> bloccanti, <n warning> warning
 ```
+
+## File temporanei
+Se hai bisogno di creare file intermedi durante l'elaborazione, salvali **esclusivamente** in `scripts/agent-temp/gym-web-task-tester/`. Non creare mai file temporanei in altre cartelle.
+Ogni file temporaneo DEVE iniziare con un commento che spiega perche' e' stato creato, es:
+```json
+// File temporaneo creato da gym-web-task-tester il YYYY-MM-DD
+// Scopo: appunti verifica criteri task prima di scrivere il report finale
+// Puo' essere eliminato al termine del test
+```

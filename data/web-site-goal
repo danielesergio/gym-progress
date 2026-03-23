@@ -1,2 +1,5 @@
 Implementa solo i seguenti miglioramenti/fix:
-- fai un restyle del sito perche sia + professionale. Deve essere possibile cambiare e tornare a quella vecchia premendo un tasto (cambio css)
+- fix il volume è settimanele, non del mesociclo
+- feature - visualizza riscaldamente e defaticamento in Allenamento
+- rivedere strategia nutrizionale con nuove strutture dati
+- feature - esporta dieta in csv

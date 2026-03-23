@@ -219,7 +219,7 @@ function aggiornaSelezioneSettimane(data) {
 
   // Recupera i giorni della settimana attiva per il selettore giorni
   const settimanaCorrente = settimane.find(s => s.numero === settimanaAttiva) ?? null;
-  const giorniCorrente = settimanaCorrente?.giorni ?? [];
+  const giorniCorrente = settimanaCorrente?.palestra ?? [];
 
   // Render selettore giorni + dettaglio giorno singolo
   renderDaySelector(giorniCorrente, data, settimanaAttiva);
@@ -252,7 +252,7 @@ function aggiornaSelezioneSettimane(data) {
 
     // Recupera giorni della nuova settimana
     const settimanaTarget = (data?.settimane ?? []).find(s => s.numero === settimanaAttiva) ?? null;
-    const giorniTarget = settimanaTarget?.giorni ?? [];
+    const giorniTarget = settimanaTarget?.palestra ?? [];
 
     renderDaySelector(giorniTarget, data, settimanaAttiva);
     renderGiornoSingolo(data, settimanaAttiva, giornoAttivoIndex);
@@ -523,7 +523,7 @@ function renderGiornoSingolo(data, numeroSettimana, giornoIndex) {
 
   const intensita = settimana.intensita_target ?? '—';
   const note = settimana.note_settimana ?? '';
-  const giorni = settimana.giorni ?? [];
+  const giorni = settimana.palestra ?? [];
 
   if (giorni.length === 0) {
     container.innerHTML = `
@@ -579,7 +579,7 @@ function renderWorkoutDetail(data, numeroSettimana) {
 
   const intensita = settimana.intensita_target ?? '—';
   const note = settimana.note_settimana ?? '';
-  const giorni = settimana.giorni ?? [];
+  const giorni = settimana.palestra ?? [];
 
   // Costruisce le card delle sessioni giornaliere
   const giorniHtml = giorni.length > 0

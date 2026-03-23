@@ -143,3 +143,12 @@ Questo è sbagliato perché descrive l'implementazione, non il requisito.
 - Se un dato è presente nei file ma scarso (es. solo 2 misurazioni), segnalalo nella `description` del task
 - Le `acceptance_criteria` devono essere verificabili guardando il sito nel browser, non leggendo il codice
 - Al termine stampa un sommario testuale: numero feature, numero task totali, elenco feature con task count
+
+## File temporanei
+Se hai bisogno di creare file intermedi durante l'elaborazione, salvali **esclusivamente** in `scripts/agent-temp/gym-web-analyst/`. Non creare mai file temporanei in altre cartelle.
+Ogni file temporaneo DEVE iniziare con un commento che spiega perche' e' stato creato, es:
+```json
+// File temporaneo creato da gym-web-analyst il YYYY-MM-DD
+// Scopo: bozza lista feature prima di consolidare l'output finale
+// Puo' essere eliminato al termine dell'analisi
+```

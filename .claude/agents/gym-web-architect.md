@@ -186,3 +186,12 @@ Scrivi il file JSON nel percorso indicato dal prompt usando il tool Write.
 - Se lo stack esistente è già adeguato, confermalo e motiva perché non cambia
 - Se trovi inconsistenze tra i file letti e i vincoli ricevuti, segnalale nel campo `meta.sommario`
 - Al termine stampa un sommario testuale: stack scelto, numero pagine definite, vincoli applicati
+
+## File temporanei
+Se hai bisogno di creare file intermedi durante l'elaborazione, salvali **esclusivamente** in `scripts/agent-temp/gym-web-architect/`. Non creare mai file temporanei in altre cartelle.
+Ogni file temporaneo DEVE iniziare con un commento che spiega perche' e' stato creato, es:
+```json
+// File temporaneo creato da gym-web-architect il YYYY-MM-DD
+// Scopo: bozza struttura cartelle prima di consolidare l'architettura finale
+// Puo' essere eliminato al termine della definizione architettura
+```

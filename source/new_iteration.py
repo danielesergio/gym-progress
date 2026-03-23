@@ -16,12 +16,22 @@ Flusso:
   1. [Python] Legge tutti i file in data/
   2. [Python] Calcola rate progressione storica e body composition
   3. [Python] Aggiorna measurements.json con nuova entry
-  4. [LLM] gym-personal-trainer genera plan.yaml
+  4. [LLM] gym-pt-macro genera plan.yaml
   5. [Loop] gym-pt-senior-reviewer valuta piano (max N iter)
   6. [LLM] gym-personal-trainer genera feedback_coach_(data).md
-  7. [LLM x2 parallelo] gym-dietologo + gym-personal-trainer -> diet + workout
-  8. [Loop] gym-pt-senior-reviewer valuta scheda (max N iter)
-  9. [Python] Archivia file, crea nuovo feedback_atleta.yaml vuoto
+  7. [Python] Seleziona mesociclo attivo da plan.yaml e agente pt-micro corrispondente
+  8. [LLM x2 parallelo] gym-dietologo + pt-micro selezionato -> diet + workout
+  9. [Loop] gym-pt-senior-reviewer valuta scheda (max N iter)
+ 10. [Python] Archivia file, crea nuovo feedback_atleta.yaml vuoto
+
+Mappa tipo_fase (vocabolario fisso gym-pt-macro) -> agente micro:
+  REHAB            -> gym-pt-micro-rehab
+  Ramp-up          -> gym-pt-micro-rehab
+  Accumulo         -> gym-pt-micro-accumulo
+  Mini-cut         -> gym-pt-micro-mini-cut
+  Intensificazione -> gym-pt-micro-intensificazione
+  Peaking          -> gym-pt-micro-peaking
+  Tapering & Test  -> gym-pt-micro-tapering
 
 Uso:
     python source/new_iteration.py
@@ -132,6 +142,93 @@ def _read_path_or_dir(p: Path) -> str:
 # ---------------------------------------------------------------------------
 # Feedback parsing (Python puro, nessun LLM)
 # ---------------------------------------------------------------------------
+
+# MET (Metabolic Equivalent of Task) per tipo di attivita' e intensita'
+# kcal bruciate = MET * peso_kg * ore
+_MET_TABLE = {
+    "corsa":      {"bassa": 6.0, "media": 9.0, "alta": 12.0},
+    "ciclismo":   {"bassa": 5.0, "media": 7.5, "alta": 10.0},
+    "nuoto":      {"bassa": 5.0, "media": 7.0, "alta": 9.5},
+    "camminata":  {"bassa": 2.8, "media": 3.5, "alta": 4.5},
+    "sport":      {"bassa": 5.0, "media": 7.0, "alta": 10.0},
+    "yoga":       {"bassa": 2.0, "media": 2.5, "alta": 3.0},
+    "altro":      {"bassa": 3.5, "media": 5.0, "alta": 7.0},
+}
+
+
+def calc_kcal_extra_attivita(altre_attivita: list, peso_kg: float) -> dict:
+    """
+    Calcola il dispendio calorico settimanale e giornaliero medio
+    dalle attivita' aggiuntive dichiarate nel feedback.
+
+    Ritorna un dict con:
+      - kcal_extra_settimana: totale kcal extra a settimana
+      - kcal_extra_giorno_medio: media giornaliera (su 7 giorni)
+      - dettaglio: lista con kcal per ogni attivita'
+    """
+    if not altre_attivita or not peso_kg:
+        return {"kcal_extra_settimana": 0, "kcal_extra_giorno_medio": 0, "dettaglio": []}
+
+    dettaglio = []
+    totale_settimana = 0
+
+    for att in (altre_attivita or []):
+        if not isinstance(att, dict):
+            continue
+        tipo       = str(att.get("tipo") or "altro").lower().strip()
+        durata_min = att.get("durata_min")
+        volte      = att.get("volte_settimana")
+        intensita  = str(att.get("intensita") or "media").lower().strip()
+        nome       = att.get("nome") or tipo
+
+        try:
+            durata_min = float(durata_min)
+            volte      = float(volte)
+        except (TypeError, ValueError):
+            continue
+        if durata_min <= 0 or volte <= 0:
+            continue
+
+        met_map = _MET_TABLE.get(tipo, _MET_TABLE["altro"])
+        met = met_map.get(intensita, met_map["media"])
+
+        ore_sessione  = durata_min / 60
+        kcal_sessione = round(met * peso_kg * ore_sessione)
+        kcal_settimana = round(kcal_sessione * volte)
+
+        dettaglio.append({
+            "nome":            nome,
+            "tipo":            tipo,
+            "met":             met,
+            "kcal_sessione":   kcal_sessione,
+            "volte_settimana": int(volte),
+            "kcal_settimana":  kcal_settimana,
+        })
+        totale_settimana += kcal_settimana
+
+    kcal_giorno_medio = round(totale_settimana / 7)
+    return {
+        "kcal_extra_settimana":  totale_settimana,
+        "kcal_extra_giorno_medio": kcal_giorno_medio,
+        "dettaglio": dettaglio,
+    }
+
+
+def format_attivita_extra(kcal_extra: dict) -> str:
+    """Formatta il risultato di calc_kcal_extra_attivita per i prompt."""
+    if not kcal_extra or kcal_extra["kcal_extra_settimana"] == 0:
+        return "(nessuna attivita' aggiuntiva dichiarata)"
+    lines = []
+    for d in kcal_extra["dettaglio"]:
+        lines.append(
+            f"  - {d['nome']} ({d['tipo']}, MET {d['met']}): "
+            f"{d['kcal_sessione']} kcal/sessione x {d['volte_settimana']}/sett "
+            f"= {d['kcal_settimana']} kcal/sett"
+        )
+    lines.append(f"  Totale extra: {kcal_extra['kcal_extra_settimana']} kcal/sett "
+                 f"({kcal_extra['kcal_extra_giorno_medio']} kcal/die in media)")
+    return "\n".join(lines)
+
 
 def parse_feedback(feedback_data: dict) -> dict:
     """
@@ -774,6 +871,17 @@ corpo:
     coscia_dx_cm:
     collo_cm:
 
+altre_attivita:
+  # Attivita' svolte OLTRE all'allenamento in palestra (corsa, ciclismo, nuoto, sport, ecc.)
+  # tipo: corsa / ciclismo / nuoto / camminata / sport / yoga / altro
+  - tipo:               # es. corsa
+    nome:               # es. "Corsa lenta"
+    durata_min:         # durata in minuti per sessione
+    volte_settimana:    # numero di sessioni a settimana
+    intensita:          # bassa / media / alta
+    note:
+  # Aggiungi altre righe se necessario (copia il blocco sopra)
+
 altro:
   infortuni:
   note:
@@ -844,6 +952,75 @@ def _latest_file(pattern: str) -> str:
     return read_text(files[0]) if files else ""
 
 
+def _extract_fase_from_plan() -> str:
+    """Estrae fase_corrente (cut/bulk/mantenimento) da strategia_nutrizionale nel plan.yaml."""
+    plan_path = OUTPUT_DIR / "plan.yaml"
+    if not plan_path.exists():
+        return "mantenimento"
+    try:
+        import yaml as _yaml
+        data = _yaml.safe_load(plan_path.read_text(encoding="utf-8")) or {}
+        fase = (data.get("strategia_nutrizionale", {}) or {}).get("fase_corrente", "")
+        if fase and str(fase).lower() in ("cut", "bulk", "mantenimento"):
+            return str(fase).lower()
+        log("WARN", "plan.yaml: fase_corrente mancante o non valida, uso 'mantenimento'")
+        return "mantenimento"
+    except Exception:
+        return "mantenimento"
+
+
+def run_kcal_adjust(ctx: dict) -> str:
+    """
+    Esegue scripts/kcal_adjust.py e ritorna l'output testuale.
+    Ricava fase e kcal_attuali dal piano e dal contesto.
+    In caso di errore ritorna una stringa vuota.
+    """
+    fase = _extract_fase_from_plan()
+
+    # Kcal attuali: prendi da plan.yaml se presenti, altrimenti dal TDEE
+    kcal_attuali = None
+    plan_path = OUTPUT_DIR / "plan.yaml"
+    if plan_path.exists():
+        try:
+            import yaml as _yaml
+            data = _yaml.safe_load(plan_path.read_text(encoding="utf-8")) or {}
+            sn = data.get("strategia_nutrizionale", {}) or {}
+            kal = sn.get("kcal_allenamento")
+            krip = sn.get("kcal_riposo")
+            if kal and krip:
+                kcal_attuali = int((int(kal) + int(krip)) / 2)
+        except Exception:
+            pass
+    if kcal_attuali is None and ctx.get("measurements"):
+        tdee = ctx["measurements"][-1].get("tdee_kcal")
+        if tdee:
+            kcal_attuali = int(tdee)
+    if kcal_attuali is None:
+        log("WARN", "kcal_adjust: impossibile determinare kcal_attuali, skip")
+        return ""
+
+    script = SCRIPTS_DIR / "kcal_adjust.py"
+    cmd = [sys.executable, str(script), "--fase", fase, "--kcal-attuali", str(kcal_attuali)]
+    kcal_extra = ctx.get("kcal_extra", {})
+    if kcal_extra.get("kcal_extra_settimana", 0) > 0:
+        cmd += ["--kcal-extra-settimana", str(kcal_extra["kcal_extra_settimana"])]
+    log("ACTION", f"kcal_adjust: fase={fase}, kcal_attuali={kcal_attuali}, "
+                  f"kcal_extra_sett={kcal_extra.get('kcal_extra_settimana', 0)}")
+    try:
+        result = subprocess.run(
+            cmd, capture_output=True, text=True,
+            encoding="utf-8", errors="replace",
+            cwd=PROJECT_ROOT, timeout=30,
+        )
+        output = result.stdout.strip()
+        if result.returncode != 0:
+            log("WARN", f"kcal_adjust rc={result.returncode}: {result.stderr[:200]}")
+        return output
+    except Exception as e:
+        log("WARN", f"kcal_adjust errore: {e}")
+        return ""
+
+
 def _schema_pt() -> str:
     """Ritorna lo schema JSON del review PT da includere nei prompt."""
     schema_path = PROJECT_ROOT / "source" / "schemas" / "review_pt.schema.json"
@@ -870,9 +1047,6 @@ Genera il piano a lungo termine `data/output/plan.yaml` con la struttura standar
 ## Profilo atleta
 {ctx['athlete_text']}
 
-## Obiettivi
-{ctx['goals_text']}
-
 ## Feedback atleta corrente (PUNTO DI PARTENZA)
 {ctx['feedback_text']}
 
@@ -886,16 +1060,81 @@ Genera il piano a lungo termine `data/output/plan.yaml` con la struttura standar
 
 ## {_rates_text(ctx['rates'])}
 
+## Altre attivita' (oltre all'allenamento in palestra)
+{format_attivita_extra(ctx.get('kcal_extra', {}))}
+
 {nutrition_ctx}
 
 {_performance_analysis_text()}
 
+## Schema YAML obbligatorio
+
+```yaml
+meta:
+  data_aggiornamento: "YYYY-MM-DD"
+  atleta: "Daniele"
+situazione:
+  infortunio: "..."    # o 'nessuno'
+  note: "..."
+massimali_attuali:
+  squat: 0.0           # float kg
+  panca: 0.0
+  stacco: 0.0
+target:                # 4 voci: 3 mesi, 6 mesi, 12 mesi, Lungo termine
+  - orizzonte: "3 mesi"
+    data: "YYYY-MM"
+    squat: 0.0
+    panca: 0.0
+    stacco: 0.0
+    note: "..."
+macrocicli:
+  - numero: 1
+    nome: "..."
+    data_inizio: "YYYY-MM"
+    data_fine: "YYYY-MM"
+    durata_settimane: 52    # somma mesocicli DEVE corrispondere
+    obiettivo: "..."
+    note: "..."
+    mesocicli:
+      - numero: 1
+        nome: "..."
+        tipo: "Forza"       # Recupero | Forza | Ipertrofia | Volume | Intensita'
+        fase_nutrizionale: "mantenimento"   # cut | bulk | mantenimento
+        data_inizio: "YYYY-MM"
+        durata_settimane: 8
+        obiettivo: "..."
+        metodologia: "..."
+        note: "..."
+        incrocio_stimolo_ambiente: "..."
+macrocicli_futuri:          # solo se orizzonte > primo macrociclo
+  - numero: 2
+    orizzonte: "Anno 2 (YYYY-YYYY)"
+    obiettivo_indicativo: "..."
+    note: "..."
+strategia_nutrizionale:
+  fase_corrente: "mantenimento"   # OBBLIGATORIO: cut | bulk | mantenimento
+  sessioni_allenamento_settimana: 4
+  note: "..."
+rischi:
+  - area: "..."
+    livello: "alto"         # alto | medio | basso
+    azione: "..."
+proiezione_obiettivi:
+  timeframe_desiderato: "..."
+  stima_raggiungimento_anni:
+    min: 3.0
+    max: 5.0
+  fattibilita: "FATTIBILE"  # FATTIBILE | OTTIMISTICO | IRREALISTICO
+  motivazione: "..."
+```
+
 ## Istruzioni
-- I target a 3/6/12 mesi DEVONO usare i rate corretti sopra -mai proiettare di piu'
-- La somma settimane di tutte le fasi DEVE essere esattamente 52
-- Infortuni e richieste dell'atleta hanno precedenza assoluta
-- Considera le metodologie empiricamente efficaci dal report performance (se disponibile)
-- Il piano DEVE includere `kcal_allenamento` e `kcal_riposo` corretti nella sezione `strategia_nutrizionale`, basandoti sull'analisi aderenza calorica sopra
+- La somma di `durata_settimane` dei mesocicli DEVE corrispondere a quella del macrociclo
+- Target a 3/6/12 mesi: usa i rate corretti sopra, mai proiettare di piu'
+- `incrocio_stimolo_ambiente`: spiega la razionale abbinamento tipo-allenamento x fase-nutrizionale
+- `strategia_nutrizionale`: NON definire kcal, macro o trigger — competenza del dietologo
+- Infortuni e richieste atleta hanno precedenza assoluta
+- Considera metodologie efficaci dal report performance (se disponibile)
 - Scrivi SOLO il file plan.yaml, nessun testo aggiuntivo"""
 
 
@@ -938,7 +1177,7 @@ Regole:
 
 
 def build_plan_regen_prompt(ctx: dict) -> str:
-    return f"""Sei il personal trainer certificato. Il piano e' stato bocciato.
+    return f"""Sei il personal trainer senior specializzato in pianificazione macroperiodica. Il piano e' stato bocciato.
 Leggi `data/output/review/pt/review_plan_{ITERATION_ID}.json` e correggi `data/output/plan.yaml`
 applicando TUTTI i problemi_critici e i suggerimenti indicati.
 
@@ -948,7 +1187,6 @@ applicando TUTTI i problemi_critici e i suggerimenti indicati.
 - Profilo: data/athlete.md
 - Feedback archiviato: data/output/feedback_atleta_{ITERATION_ID}.yaml
 - Misurazioni: data/output/measurements.json
-- Obiettivi: data/goals
 
 Leggi autonomamente la review e genera la versione corretta di plan.yaml."""
 
@@ -1174,35 +1412,127 @@ Formato Markdown, tono professionale ma diretto."""
 
 def build_diet_prompt(ctx: dict) -> str:
     last_diet = _latest_file("diet_*.yaml")
+    kcal_adjust_output = run_kcal_adjust(ctx)
+    kcal_adjust_section = f"""## Analisi adattamento calorico (script automatico)
+L'analisi seguente e' calcolata da Python in base a misurazioni, aderenza dieta e fase.
+Usala come punto di partenza: puoi modificare i valori se hai motivazioni cliniche o nutrizionali,
+ma devi **spiegare esplicitamente** nel campo `note_strategia` perche' ti discosti dal suggerimento.
+
+```
+{kcal_adjust_output}
+```
+""" if kcal_adjust_output else "## Analisi adattamento calorico\n(non disponibile — calcola autonomamente dal TDEE)\n"
+
     return f"""Sei il dietologo del progetto fitness.
 Genera la dieta settimanale `data/output/diet_{ITERATION_ID}.yaml`.
 
 ## Profilo atleta
 {ctx['athlete_text']}
 
-## Obiettivi e preferenze alimentari
-{ctx['goals_text']}
-{ctx['preferences_text']}
-
 ## Feedback atleta (aderenza dieta, difficolta')
 {ctx['feedback_text']}
 
-## Piano approvato (fase e fabbisogno)
+## Piano approvato (fase corrente e contesto sportivo)
 {read_text(OUTPUT_DIR / 'plan.yaml')}
+
+## Altre attivita' (oltre all'allenamento in palestra)
+{format_attivita_extra(ctx.get('kcal_extra', {}))}
+
+## TDEE attuale
+TDEE ultima misurazione: {ctx['measurements'][-1].get('tdee_kcal', 'N/D')} kcal/die (BMR {ctx['measurements'][-1].get('bmr_kcal', 'N/D')} kcal x 1.55).
 
 ## Ultime 2 misurazioni (BMR/TDEE)
 ```json
 {_last_n_measurements(ctx['measurements'], 2)}
 ```
 
+{kcal_adjust_section}
 ## Dieta precedente (riferimento)
 {last_diet if last_diet else '(nessuna dieta precedente)'}
 
 ## Istruzioni
-- Adatta apporto calorico alla fase del piano (recupero / forza / ipertrofia / cut)
-- Rispetta preferenze e difficolta' riportate
-- Struttura: meta, giorni (7), integratori
+- **Parti dall'analisi adattamento calorico** per determinare kcal_allenamento e kcal_riposo
+- Puoi modificare i valori suggeriti se hai motivazioni nutrizionali fondate, ma devi **motivare esplicitamente** in `note_strategia`
+- Differenzia le kcal per tipologia di giorno: allenamento pesi, corsa/cardio, riposo (e altri se presenti nel piano)
+- Per ogni tipologia di giorno spiega in `note_strategia` perche' hai scelto quel fabbisogno calorico
+- Rispetta preferenze e difficolta' riportate nel feedback
+- Struttura: meta, giorni, integratori
 - **Usa il tool Write per salvare il file** `data/output/diet_{ITERATION_ID}.yaml` sul disco. Non stampare il contenuto su stdout."""
+
+
+def select_active_mesociclo() -> Optional[dict]:
+    """
+    Legge plan.yaml e restituisce il mesociclo attivo in base alla data odierna.
+    Scorre i mesocicli in ordine e restituisce il primo il cui intervallo
+    [data_inizio, data_inizio + durata_settimane) copre TODAY.
+    Se nessuno copre today, restituisce l'ultimo mesociclo del piano.
+    """
+    plan_path = OUTPUT_DIR / "plan.yaml"
+    if not plan_path.exists():
+        return None
+    try:
+        import yaml as _yaml
+        data = _yaml.safe_load(plan_path.read_text(encoding="utf-8")) or {}
+        macrocicli = data.get("macrocicli") or []
+        all_meso = []
+        for mac in macrocicli:
+            for m in (mac.get("mesocicli") or []):
+                all_meso.append(m)
+
+        for meso in all_meso:
+            start_str = str(meso.get("data_inizio", ""))
+            weeks     = int(meso.get("durata_settimane") or 0)
+            if not start_str or not weeks:
+                continue
+            # data_inizio e' nel formato YYYY-MM
+            start = datetime.strptime(start_str + "-01", "%Y-%m-%d").date()
+            end   = start + __import__("datetime").timedelta(weeks=weeks)
+            if start <= TODAY < end:
+                return meso
+
+        # Fallback: ultimo mesociclo del piano
+        return all_meso[-1] if all_meso else None
+    except Exception as e:
+        log("WARN", f"select_active_mesociclo: errore lettura plan.yaml: {e}")
+        return None
+
+
+# Mappa tipo_fase mesociclo (da plan.yaml, vocabolario fisso gym-pt-macro) -> agente pt-micro
+_TIPO_TO_MICRO_AGENT = {
+    "REHAB":            "gym-pt-micro-rehab",
+    "Ramp-up":          "gym-pt-micro-rehab",
+    "Accumulo":         "gym-pt-micro-accumulo",
+    "Mini-cut":         "gym-pt-micro-mini-cut",
+    "Intensificazione": "gym-pt-micro-intensificazione",
+    "Peaking":          "gym-pt-micro-peaking",
+    "Tapering & Test":  "gym-pt-micro-tapering",
+}
+
+
+def select_micro_agent(meso: Optional[dict]) -> str:
+    """
+    Restituisce il nome dell'agente pt-micro corretto in base a tipo_fase del mesociclo.
+    Fallback: gym-personal-trainer se il tipo non e' riconosciuto.
+    """
+    if not meso:
+        log("WARN", "Nessun mesociclo attivo trovato -uso gym-personal-trainer come fallback")
+        return "gym-personal-trainer"
+    tipo = str(meso.get("tipo_fase") or "").strip()
+    agent = _TIPO_TO_MICRO_AGENT.get(tipo)
+    if not agent:
+        log("WARN", f"tipo_fase '{tipo}' non mappato -uso gym-personal-trainer come fallback")
+        return "gym-personal-trainer"
+    return agent
+
+
+def _format_meso_context(meso: Optional[dict]) -> str:
+    """Formatta il mesociclo attivo come sezione markdown da iniettare nel prompt."""
+    if not meso:
+        return "## Mesociclo attivo\n(non determinato — segui il piano generale)"
+    lines = ["## Mesociclo attivo (da rispettare OBBLIGATORIAMENTE)"]
+    for k, v in meso.items():
+        lines.append(f"- **{k}**: {v}")
+    return "\n".join(lines)
 
 
 def build_workout_prompt(ctx: dict) -> str:
@@ -1213,15 +1543,15 @@ def build_workout_prompt(ctx: dict) -> str:
     ) or "(nessuna scheda precedente)"
 
     last_coach = _latest_file("feedback_coach_*.md")
+    meso       = ctx.get("active_meso")
+    meso_ctx   = _format_meso_context(meso)
 
-    return f"""Sei il personal trainer certificato. Genera la scheda `data/output/workout_data_{ITERATION_ID}.yaml`.
+    return f"""Genera la scheda `data/output/workout_data_{ITERATION_ID}.yaml` per il mesociclo indicato sotto.
+
+{meso_ctx}
 
 ## Profilo atleta
 {ctx['athlete_text']}
-
-## Obiettivi e preferenze
-{ctx['goals_text']}
-{ctx['preferences_text']}
 
 ## Feedback atleta corrente (PUNTO DI PARTENZA -infortuni hanno precedenza assoluta)
 {ctx['feedback_text']}
@@ -1229,10 +1559,13 @@ def build_workout_prompt(ctx: dict) -> str:
 ## Feedback coach del mese
 {last_coach if last_coach else '(nessuno)'}
 
-## Piano annuale approvato
+## Piano annuale completo
 {read_text(OUTPUT_DIR / 'plan.yaml')}
 
 ## {_rates_text(ctx['rates'])}
+
+## Altre attivita' (oltre all'allenamento in palestra)
+{format_attivita_extra(ctx.get('kcal_extra', {}))}
 
 ## Ultime 3 misurazioni (massimali reali)
 ```json
@@ -1245,11 +1578,12 @@ def build_workout_prompt(ctx: dict) -> str:
 {_performance_analysis_text()}
 
 ## Istruzioni
+- RISPETTA il mesociclo attivo indicato sopra: tipo, metodologia, durata e obiettivo sono vincolanti
 - Infortuni -> escludi TUTTI gli esercizi che coinvolgono le aree interessate
-- Test Day OBBLIGATORIO: ultimo giorno dell'ultima settimana con protocolli Squat/Panca/Stacco
 - Aggiorna EXERCISE_MUSCLES in scripts/volume_calc.py per ogni nuovo esercizio
 - Carichi basati sui massimali reali in measurements.json
-- Privilegia le metodologie empiricamente efficaci dal report performance (se disponibile)"""
+- Privilegia le metodologie empiricamente efficaci dal report performance (se disponibile)
+- ITERATION_ID per il nome del file: {ITERATION_ID}"""
 
 
 def build_workout_review_prompt(ctx: dict, numero_review: int = 1) -> str:
@@ -1296,9 +1630,12 @@ Regole:
 
 
 def build_workout_regen_prompt(ctx: dict) -> str:
-    return f"""Sei il personal trainer certificato. La scheda e' stata bocciata.
+    meso_ctx = _format_meso_context(ctx.get("active_meso"))
+    return f"""La scheda e' stata bocciata.
 Leggi `data/output/review/pt/review_workout_{ITERATION_ID}.json` e correggi `data/output/workout_data_{ITERATION_ID}.yaml`
 applicando TUTTI i problemi_critici e i suggerimenti indicati.
+
+{meso_ctx}
 
 ## {_rates_text(ctx['rates'])}
 
@@ -1308,7 +1645,7 @@ applicando TUTTI i problemi_critici e i suggerimenti indicati.
 - Piano: data/output/plan.yaml
 - Misurazioni: data/output/measurements.json
 
-Leggi autonomamente la review. Mantieni il Test Day nell'ultima settimana."""
+Leggi autonomamente la review. Rispetta il mesociclo attivo indicato sopra."""
 
 
 # ---------------------------------------------------------------------------
@@ -1321,7 +1658,6 @@ def load_all_data() -> dict:
 
     athlete_text    = read_text(DATA_DIR / "athlete.md")
     feedback_path   = DATA_DIR / "feedback_atleta.yaml"
-    goals_text      = _read_path_or_dir(DATA_DIR / "goals")
     measurements_path = OUTPUT_DIR / "measurements.json"
     if not measurements_path.exists():
         OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
@@ -1351,17 +1687,24 @@ def load_all_data() -> dict:
     else:
         log("WARN", "feedback_atleta.yaml non trovato")
 
+    # Calcola kcal extra da altre attivita'
+    altre_attivita = (feedback_data.get("altre_attivita") or []) if feedback_data else []
+    ultimo_peso = measurements[-1].get("peso_kg") if measurements else None
+    kcal_extra = calc_kcal_extra_attivita(altre_attivita, ultimo_peso or 80.0)
+
     log("INFO", f"  {len(measurements)} misurazioni storiche")
     log("INFO", f"  feedback_atleta.yaml: {len(feedback_data)} sezioni")
+    log("INFO", f"  altre_attivita: {len(altre_attivita)} attivita', "
+                f"{kcal_extra['kcal_extra_settimana']} kcal/sett extra")
 
     return {
         "athlete_text":     athlete_text,
         "feedback_data":    feedback_data,
         "feedback_text":    feedback_path.read_text(encoding="utf-8") if feedback_path.exists() else "",
-        "goals_text":       goals_text,
         "measurements":     measurements,
         "plan_text":        plan_text,
         "rates":            {},   # compilato in fase 2
+        "kcal_extra":       kcal_extra,
     }
 
 
@@ -1553,30 +1896,26 @@ def main() -> None:
     elif RESUME and plan_file.exists():
         log("INFO", "plan.yaml esistente, nessuna review trovata -inizio revisione")
     else:
-        log("ACTION", "gym-personal-trainer -> plan.yaml")
-        log_context("gym-personal-trainer [build_plan]", [
+        log("ACTION", "gym-pt-macro -> plan.yaml")
+        log_context("gym-pt-macro [build_plan]", [
             ("data/athlete.md",           "incorporato"),
-            ("data/goals",                "incorporato"),
-            ("data/preferences",          "incorporato"),
             ("data/feedback_atleta.yaml",   "incorporato"),
             ("data/output/plan.yaml",     "incorporato"),
             ("data/output/performance_analysis.yaml", "incorporato"),
         ], ["Misurazioni storiche (ultime 5) — tabella markdown",
             "Rate progressione corretti per eta'/infortuni/stallo"])
-        run_agent("gym-personal-trainer", build_plan_prompt(ctx))
+        run_agent("gym-pt-macro", build_plan_prompt(ctx))
 
     if not plan_approved:
         if plan_need_regen:
             log("WARN", f"Rigenerazione piano prima di review {plan_start_iter}")
-            log_context("gym-personal-trainer [regen_plan]", [
+            log_context("gym-pt-macro [regen_plan]", [
                 (OUTPUT_DIR / f"review/pt/review_plan_{ITERATION_ID}.json", "obbligatorio"),
                 ("data/output/plan.yaml",                                   "obbligatorio"),
                 ("data/athlete.md",                                         "discrezione"),
                 (OUTPUT_DIR / f"feedback_atleta_{ITERATION_ID}.md",        "discrezione"),
-                ("data/goals",                                              "discrezione"),
-                ("data/preferences",                                        "discrezione"),
             ], ["Rate progressione corretti per eta'/infortuni/stallo"])
-            run_agent("gym-personal-trainer", build_plan_regen_prompt(ctx))
+            run_agent("gym-pt-macro", build_plan_regen_prompt(ctx))
 
         for i in range(plan_start_iter, MAX_ITER + 1):
             separator(f"FASE 3b-loop -Revisione piano ({i}/{MAX_ITER})")
@@ -1601,7 +1940,7 @@ def main() -> None:
 
             if i < MAX_ITER:
                 log("WARN", f"Piano BOCCIATO -rigenerazione (iter {i + 1}/{MAX_ITER})")
-                run_agent("gym-personal-trainer", build_plan_regen_prompt(ctx))
+                run_agent("gym-pt-macro", build_plan_regen_prompt(ctx))
 
         if not plan_approved:
             log("WARN", f"Piano non approvato dopo {MAX_ITER} iterazioni -procedo con ultima versione")
@@ -1626,9 +1965,24 @@ def main() -> None:
     save_workout_history(workout_history)
 
     # ──────────────────────────────────────────────────────────────────
-    # FASE 3d+3e -Dieta + Scheda in parallelo
+    # FASE 3d -Selezione mesociclo attivo e agente micro
     # ──────────────────────────────────────────────────────────────────
-    separator("FASE 3d+3e -Dieta e scheda allenamento (parallelo)")
+    separator("FASE 3d -Selezione mesociclo attivo")
+    active_meso  = select_active_mesociclo()
+    micro_agent  = select_micro_agent(active_meso)
+    ctx["active_meso"] = active_meso
+
+    if active_meso:
+        log("OK",   f"Mesociclo attivo: [{active_meso.get('numero')}] {active_meso.get('nome')} "
+                    f"(tipo_fase={active_meso.get('tipo_fase')}, {active_meso.get('durata_settimane')} sett)")
+    else:
+        log("WARN", "Nessun mesociclo attivo trovato nel piano -agente fallback attivo")
+    log("INFO", f"Agente micro selezionato: {micro_agent}")
+
+    # ──────────────────────────────────────────────────────────────────
+    # FASE 3e+3f -Dieta + Scheda in parallelo
+    # ──────────────────────────────────────────────────────────────────
+    separator("FASE 3e+3f -Dieta e scheda allenamento (parallelo)")
     diet_file       = OUTPUT_DIR / f"diet_{ITERATION_ID}.yaml"
     workout_file_de = OUTPUT_DIR / f"workout_data_{ITERATION_ID}.yaml"
     tasks = []
@@ -1636,39 +1990,40 @@ def main() -> None:
         log("SKIP", f"diet_{ITERATION_ID}.yaml esistente -dietologo saltato")
     else:
         log_context("gym-dietologo [build_diet]", [
-            ("data/athlete.md",           "incorporato"),
-            ("data/goals",                "incorporato"),
-            ("data/preferences",          "incorporato"),
-            ("data/feedback_atleta.yaml",   "incorporato"),
-            ("data/output/plan.yaml",     "incorporato"),
-            (OUTPUT_DIR / "diet_*.yaml",  "incorporato"),
-        ], ["Misurazioni storiche (ultime 2) — tabella markdown"])
+            ("data/athlete.md",                "incorporato"),
+            ("data/feedback_atleta.yaml",      "incorporato"),
+            ("data/output/plan.yaml",          "incorporato"),
+            (OUTPUT_DIR / "diet_*.yaml",       "incorporato"),
+            ("scripts/kcal_adjust.py",         "eseguito — output incorporato"),
+        ], ["Misurazioni storiche (ultime 2) — tabella markdown",
+            "Analisi adattamento calorico (fase, attendibilita', raccomandazione)"])
         tasks.append(("gym-dietologo", build_diet_prompt(ctx)))
     if RESUME and workout_file_de.exists():
-        log("SKIP", f"workout_data_{ITERATION_ID}.yaml esistente -personal trainer saltato")
+        log("SKIP", f"workout_data_{ITERATION_ID}.yaml esistente -micro agent saltato")
     else:
-        log_context("gym-personal-trainer [build_workout]", [
+        meso_info = (f"mesociclo {active_meso.get('numero')} '{active_meso.get('nome')}' "
+                     f"tipo_fase={active_meso.get('tipo_fase')}") if active_meso else "nessun mesociclo"
+        log_context(f"{micro_agent} [build_workout]", [
             ("data/athlete.md",                    "incorporato"),
-            ("data/goals",                         "incorporato"),
-            ("data/preferences",                   "incorporato"),
-            ("data/feedback_atleta.yaml",            "incorporato"),
+            ("data/feedback_atleta.yaml",          "incorporato"),
             (OUTPUT_DIR / "feedback_coach_*.md",   "incorporato"),
             ("data/output/plan.yaml",              "incorporato"),
             (OUTPUT_DIR / "workout_data_*.yaml",   "incorporato"),
             ("data/output/performance_analysis.yaml", "incorporato"),
         ], ["Misurazioni storiche (ultime 3) — tabella markdown",
-            "Rate progressione corretti per eta'/infortuni/stallo"])
-        tasks.append(("gym-personal-trainer", build_workout_prompt(ctx)))
+            "Rate progressione corretti per eta'/infortuni/stallo",
+            f"Mesociclo attivo iniettato nel prompt: {meso_info}"])
+        tasks.append((micro_agent, build_workout_prompt(ctx)))
     if tasks:
         log("ACTION", f"Agenti da eseguire: {', '.join(t[0] for t in tasks)}")
         run_agents_parallel(tasks, timeout=1200)
     else:
-        log("INFO", "Dieta e scheda gia' presenti -fase 3d+3e saltata")
+        log("INFO", "Dieta e scheda gia' presenti -fase 3e+3f saltata")
 
     # ──────────────────────────────────────────────────────────────────
-    # FASE 3f -Loop revisione scheda
+    # FASE 3g -Loop revisione scheda
     # ──────────────────────────────────────────────────────────────────
-    separator("FASE 3f -Revisione scheda")
+    separator("FASE 3g -Revisione scheda")
     workout_file = OUTPUT_DIR / f"workout_data_{ITERATION_ID}.yaml"
     workout_start_iter = 1
     workout_need_regen = False
@@ -1676,7 +2031,7 @@ def main() -> None:
     if RESUME and workout_file.exists() and workout_review_path.exists():
         approved, score, problems, num_rev = parse_review(workout_review_path)
         if approved:
-            log("OK", f"Scheda gia' APPROVATA (review {num_rev}, {score}/10) -3f saltata")
+            log("OK", f"Scheda gia' APPROVATA (review {num_rev}, {score}/10) -3g saltata")
             workout_approved = True
         else:
             workout_start_iter = num_rev + 1
@@ -1690,7 +2045,7 @@ def main() -> None:
     if not workout_approved:
         if workout_need_regen:
             log("WARN", f"Rigenerazione scheda prima di review {workout_start_iter}")
-            log_context("gym-personal-trainer [regen_workout]", [
+            log_context(f"{micro_agent} [regen_workout]", [
                 (OUTPUT_DIR / f"review/pt/review_workout_{ITERATION_ID}.json", "obbligatorio"),
                 (OUTPUT_DIR / f"workout_data_{ITERATION_ID}.yaml",            "obbligatorio"),
                 ("data/athlete.md",                                            "discrezione"),
@@ -1698,16 +2053,16 @@ def main() -> None:
                 ("data/output/plan.yaml",                                      "discrezione"),
                 ("data/output/measurements.json",                              "discrezione"),
             ], ["Rate progressione corretti per eta'/infortuni/stallo"])
-            run_agent("gym-personal-trainer", build_workout_regen_prompt(ctx))
+            run_agent(micro_agent, build_workout_regen_prompt(ctx))
 
         for i in range(workout_start_iter, MAX_ITER + 1):
-            separator(f"FASE 3f-loop -Revisione scheda ({i}/{MAX_ITER})")
+            separator(f"FASE 3g-loop -Revisione scheda ({i}/{MAX_ITER})")
             log("ACTION", "gym-pt-senior-reviewer -> review_workout")
             log_context("gym-pt-senior-reviewer [review_workout]", [
                 (OUTPUT_DIR / f"workout_data_{ITERATION_ID}.yaml", "incorporato"),
                 ("data/output/plan.yaml",                          "incorporato"),
                 ("data/athlete.md",                                "incorporato"),
-                ("data/feedback_atleta.yaml",                        "incorporato"),
+                ("data/feedback_atleta.yaml",                      "incorporato"),
                 ("data/output/performance_analysis.yaml",          "incorporato"),
             ], ["Misurazioni storiche (ultime 3) — tabella markdown",
                 "Rate progressione corretti per eta'/infortuni/stallo",
@@ -1725,7 +2080,7 @@ def main() -> None:
 
             if i < MAX_ITER:
                 log("WARN", f"Scheda BOCCIATA -rigenerazione (iter {i + 1}/{MAX_ITER})")
-                run_agent("gym-personal-trainer", build_workout_regen_prompt(ctx))
+                run_agent(micro_agent, build_workout_regen_prompt(ctx))
 
     if not workout_approved:
         log("WARN", f"Scheda non approvata dopo {MAX_ITER} iterazioni -procedo con ultima versione")

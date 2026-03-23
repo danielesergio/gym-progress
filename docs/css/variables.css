@@ -25,6 +25,7 @@
   --color-border-light: #444444;
 
   --color-success:      #4caf50;
+  --color-success-dim:  rgba(76, 175, 80, 0.15);
   --color-warning:      #ffc107;
   --color-danger:       #f44336;
 
@@ -119,6 +120,7 @@ html.theme-pro {
 
   /* ── Stato: success / warning / danger ── */
   --color-success:      #3fb950;   /* verde militare premium */
+  --color-success-dim:  rgba(63, 185, 80, 0.15);  /* sfondo pill delta done */
   --color-warning:      #d29922;   /* ambra raffinata */
   --color-danger:       #f85149;   /* rosso GitHub-style */
 

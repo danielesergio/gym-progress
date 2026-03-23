@@ -78,6 +78,15 @@ Leggi i file in `docs/data/`:
 - Il messaggio di **loading** ("Caricamento...") e' adeguato?
 - Gli **errori di fetch** (`.catch(...)`) mostrano messaggi utili?
 
+## File temporanei
+Se hai bisogno di creare file di analisi intermedi o appunti durante l'elaborazione, salvali **esclusivamente** in `scripts/agent-temp/gym-ux-reviewer/`. Non creare mai file temporanei in altre cartelle.
+Ogni file temporaneo DEVE iniziare con un commento che spiega perche' e' stato creato, es:
+```
+# File temporaneo creato da gym-ux-reviewer il YYYY-MM-DD
+# Scopo: annotazioni intermedie analisi pagina dashboard prima di scrivere il report finale
+# Puo' essere eliminato al termine della review
+```
+
 ## Output
 
 Scrivi `data/output/review/web-site/review_ux_YYYY-MM-DD.md` (usa la data odierna) con questa struttura:

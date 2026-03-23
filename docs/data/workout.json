@@ -1,381 +1,1670 @@
 {
   "meta": {
-    "titolo": "Scheda di Allenamento — Fase 0: Recupero TOS",
-    "data": "2026-03-21",
-    "tipo_fase": "Recupero / Ripresa Graduale",
+    "titolo": "Rehab TOS Fase 1 — Recupero Attivo",
+    "data": "2026-03-23",
+    "tipo_fase": "Rehab",
     "periodo": "2026-03 / 2026-04",
-    "durata_settimane": 2,
+    "durata_settimane": 5,
     "frequenza_settimanale": 3,
-    "obiettivo": "Riprendere il movimento dopo 3 settimane di stop da Sindrome TOS. Mantenere forza su lower body e schiena neutra. ZERO sollecitazione del piccolo pettorale, spalla e movimenti overhead."
+    "obiettivo": "Recuperare mobilita' e funzionalita' della spalla/piccolo pettorale. Mantenere forza residua con esercizi compatibili. Zero dolore come criterio guida."
+  },
+  "diagnosi_programmazione": {
+    "infortunio": "Sindrome TOS (Thoracic Outlet Syndrome) — probabile infiammazione e contrattura del piccolo pettorale. Fermo da 3 settimane, in fase di guarigione.",
+    "dolore_iniziale": 0,
+    "approccio_prime_settimane": "Nelle settimane 1-2 il piccolo pettorale non viene coinvolto in nessun esercizio. Si lavora esclusivamente su mobilita' scapolare attiva e rinforzo della cuffia dei rotatori con elastici e cavi leggeri. Squat e stacco con bilanciere sono permessi a RPE 5 (circa 65% 1RM) perche' non coinvolgono la struttura infortunata. Il criterio guida e' assenza totale di dolore: qualsiasi comparsa di fastidio al piccolo pettorale impone regressione immediata dell'esercizio o stop della sessione.",
+    "strutture_da_evitare": [
+      "piccolo pettorale",
+      "grande pettorale (trazioni, dip, panca in qualsiasi variante)",
+      "deltoide anteriore sotto carico overhead (military press, overhead press)",
+      "gran dorsale con trazione verticale (lat machine, trazioni)"
+    ],
+    "varianti_scelte": [
+      "Squat con bilanciere (permesso — non coinvolge piccolo pettorale)",
+      "Stacco da terra convenzionale (permesso — non coinvolge piccolo pettorale)",
+      "Leg press (supplemento squat se necessario)",
+      "Alzate laterali con manubri (permesse — nessun dolore riferito)",
+      "Alzate frontali con manubri (permesse — nessun dolore riferito)",
+      "Face pull con elastico o cavo basso (rinforzo cuffia rotatori)",
+      "Band pull-apart con elastico (mobilita' scapolare)",
+      "Wall slide (mobilita' scapolare)",
+      "External rotation con elastico (cuffia rotatori)",
+      "Shoulder CARs — Controlled Articular Rotations (mobilita' articolare)"
+    ],
+    "uso_bfr": false,
+    "note_fisioterapiche": "ATTENZIONE: il piccolo pettorale compresso nella TOS e' sensibile a qualsiasi esercizio che porta le braccia in adduzione orizzontale o in flessione con carico. Vietati categoricamente: panca piana (qualsiasi variante), trazioni, lat machine, military press, dip, croci con manubri o cavi. Il rematore con manubri a presa neutra e' da verificare con cautela (non previsto in questa fase). Se compare dolore su alzate laterali o frontali: ridurre il carico a 5 kg o eliminare. Consultare il fisioterapista di riferimento prima di introdurre qualsiasi variante non prevista in questa scheda."
+  },
+  "criteri_passaggio": {
+    "da_rehab_a_rampup": [
+      "Dolore 0/10 al piccolo pettorale a riposo e durante tutti gli esercizi di questa scheda per almeno 1 settimana consecutiva (7 giorni)",
+      "Mobilita' scapolare ripristinata: range completo in band pull-apart, wall slide e shoulder CARs senza compensi (elevazione della spalla, inclinazione del tronco)",
+      "External rotation con elastico eseguita senza dolore e con ROM simmetrico bilateralmente",
+      "Squat e stacco completati a RPE 6-7 (settimane 4-5) senza dolore riferito durante e nelle 24h successive"
+    ],
+    "da_rampup_ad_accumulo": [
+      "Completato il Test Tecnico (settimana 5, sabato): squat singola RPE 6-7 e stacco singola RPE 6-7 senza dolore",
+      "Nessun fastidio nelle 24h successive a ogni sessione delle ultime 2 settimane",
+      "Mobilita' scapolare completamente ripristinata — confermata dal fisioterapista o dall'automonitoraggio con criteri sopra",
+      "Assenza di dolore al piccolo pettorale a riposo e sotto carico moderato per almeno 1 settimana consecutiva"
+    ]
   },
   "mesociclo": {
-    "nome": "Recupero TOS — Fase 0",
-    "durata": "2 settimane",
-    "metodologia": "Allenamento adattato full lower + schiena neutra. Carichi al 60-65% 1RM, RPE massimo 7. Nessun esercizio che coinvolge pettorale, spalla in adduzione/abduzione, overhead o trazioni.",
-    "frequenza": "3 sessioni/settimana",
-    "obiettivo": "Riprendere il pattern motorio dei compound lower body, mantenere la forza neurale, proteggere la guarigione della TOS.",
+    "nome": "Rehab TOS Fase 1 — Recupero Attivo",
+    "durata": "5 settimane",
+    "metodologia": "Recupero dolore-guidato. Progressione dei carichi su squat e stacco condizionata all'assenza di dolore nelle 24h successive. Mobilita' scapolare e rinforzo cuffia rotatori obbligatori ogni sessione. Nessun esercizio che coinvolge il piccolo pettorale.",
+    "frequenza": "3 sessioni/settimana — Lunedi, Mercoledi, Sabato",
+    "obiettivo": "Eliminare ogni dolore residuo, ripristinare la mobilita' scapolare completa, mantenere la forza su squat e stacco con progressione molto cauta",
     "logica": [
-      "FASE DI RECUPERO: la priorita' assoluta e' la guarigione del piccolo pettorale. Qualsiasi dolore a spalla/petto/collo = fine seduta immediata.",
-      "Lower body e schiena neutra sono completamente liberi da coinvolgimento TOS: squat, stacco, leg press, stacco rumeno, core work.",
-      "Il rematore con busto basso (non oltre 45 gradi) coinvolge la schiena senza caricare la spalla in posizioni pericolose — incluso in forma leggera.",
-      "Carichi al 60-65% per permettere il riapprendimento del pattern motorio senza stress articolare eccessivo dopo 3 settimane di inattivita'.",
-      "Nessun test massimali in questa fase: la forza verra' testata al termine della Fase 6 (Peaking), come da piano annuale.",
-      "Volume moderato: 3 serie per esercizio principale. L'obiettivo non e' stimolare adattamenti massimali ma mantenere il segnale neurale e rientrare senza infortuni.",
-      "Il rematore deve avere il busto a max 30-45 gradi: evita la posizione orizzontale che aumenta il carico sulla spalla e aggrava la TOS."
+      "S1-S2: adattamento iniziale — squat e stacco a RPE 5, mobilita' e cuffia ogni sessione, alzate laterali e frontali a 8 kg",
+      "S3-S4: progressione leggera — squat RPE 6, stacco RPE 6, alzate a 10 kg, stesso schema mobilita'",
+      "S5: consolidamento — sessioni 1-2 a RPE 6-7, ultima sessione (sabato) = TEST DAY funzionale su mobilita' + squat singola + stacco singola"
     ]
   },
   "riscaldamento": [
-    "5 min cyclette a bassa resistenza (RPE 3-4) — nessun movimento overhead",
-    "Mobilita' anche: world lunges 10 per lato, hip circle 10 per lato",
-    "Mobilita' caviglie: ankle circles 15 per lato, dorsiflession stretch 30s per lato",
-    "Mobilita' toracica: foam roller sulla colonna toracica 60s — non pressare la spalla",
-    "Attivazione glutei: glute bridge bodyweight 2x15",
-    "2 serie leggere (40% 1RM) del primo esercizio compound della sessione"
+    "5 min cardio leggero (cyclette o camminata sul tapis roulant)",
+    "Mobilita' articolare specifica spalla e scapola: 10 ripetizioni shoulder CARs per lato, 10 wall slide, 15 band pull-apart con elastico leggero",
+    "Attivazione cuffia rotatori: 15 external rotation con elastico per lato",
+    "2 serie di riscaldamento molto leggere del primo esercizio della sessione (50% del peso di lavoro)"
   ],
   "defaticamento": [
-    "Stretching statico 30s per gruppo muscolare allenato (quadricipiti, femorali, glutei)",
-    "Stretching pettorale piccolo: corner stretch o doorway stretch 2x30s DELICATAMENTE senza dolore",
-    "Stretching mobilita' toracica: cat-cow 10 reps, foam roller toracico 60s",
-    "Foam rolling quadricipiti e femorali 60s per lato",
-    "5 min camminata leggera per abbassare la frequenza cardiaca"
+    "Stretching statico 45 secondi per quadricipiti, femorali, glutei e polpacci",
+    "Doorway stretch SOLO se non doloroso (senza forzare la posizione): 30 secondi per lato",
+    "Annotare livello di dolore al piccolo pettorale immediatamente dopo la sessione (scala 0-10)",
+    "Annotare livello di dolore nelle 24h successive (controllo mattina seguente)",
+    "Se dolore > 0/10 nelle 24h: non aumentare carico nella sessione successiva — mantieni o riduci"
   ],
   "note_generali": [
-    "INFORTUNIO TOS ATTIVO: sono esclusi TUTTI gli esercizi che coinvolgono pettorale, spalla (adduzione/abduzione), overhead press, trazioni alla sbarra, dip, panca piana. Non fare eccezioni.",
-    "Segnale di stop immediato: qualsiasi dolore, formicolio o sensazione anomala alla spalla/braccio/collo/petto = fine allenamento. Senza eccezioni.",
-    "Massimali di riferimento per i calcoli percentuali: Squat 145.8 kg | Stacco 198.3 kg",
-    "60% 1RM Squat = ~87 kg | 65% 1RM Squat = ~95 kg",
-    "60% 1RM Stacco = ~119 kg | 65% 1RM Stacco = ~129 kg",
-    "RPE target massimo 7: devi sempre avere almeno 3 reps in riserva. Non andare mai vicino al cedimento.",
-    "Il rematore con bilanciere va eseguito con busto a MAX 30-45 gradi dall'orizzontale. Busto piu' verticale = meno stress sulla spalla.",
-    "Strategia nutrizionale fase 0: mantenimento calorico TDEE ~2870 kcal. NON fare deficit in questa fase — rallenta la guarigione e accelera il catabolismo muscolare. Proteine minimo 200g/die (2.3g/kg).",
-    "Fisioterapia raccomandata: almeno 3-4 sessioni per il piccolo pettorale e rinforzo stabilizzatori spalla (serratus anterior, trapezio inferiore, rotatori).",
-    "Omega-3 2-3g EPA+DHA/die per effetto anti-infiammatorio. Creatina monoidrato 5g/die (sicura anche durante il recupero).",
-    "Nessun Test Day in questa fase: i massimali vengono testati nella Fase 6 del piano annuale (Peaking), come pianificato."
+    "REGOLA DELLE 24 ORE: aumenta carico o volume SOLO se nelle 24 ore successive all'allenamento non si registrano fastidi, gonfiore o infiammazione al piccolo pettorale. In caso di risposta negativa: mantieni o riduci il carico.",
+    "DOLORE DURANTE L'ESERCIZIO: se compare dolore > 0/10 su un qualsiasi esercizio che coinvolge la spalla, interrompi immediatamente l'esercizio. Non superare mai 2/10 su nessun esercizio.",
+    "MAI cedimento muscolare in nessuna sessione. RPE massimo 7 (solo nelle ultime settimane su squat e stacco). RPE 5-6 nelle prime settimane.",
+    "BEACH VOLLEY GIOVEDI': attivita' permessa ma monitora il dolore durante il gioco. Se il beach volley causa dolore alla spalla o al piccolo pettorale, sospendilo e consulta il fisioterapista.",
+    "PRIORITA' ASSOLUTA: il recupero dal TOS ha la precedenza su qualsiasi obiettivo di performance. Se i criteri di passaggio non sono soddisfatti a fine settimana 5, la fase rehab si estende.",
+    "AVVISO: la Sindrome TOS e' una condizione che puo' richiedere valutazione medica specialistica. Prima di modificare qualsiasi esercizio o aumentare il carico oltre quanto previsto, consultare il fisioterapista o il medico di riferimento."
   ],
   "settimane": [
     {
       "numero": 1,
-      "intensita_target": "60% 1RM — RPE 6-7",
-      "note_settimana": "Settimana di reingresso. Carichi conservativi, focus sulla tecnica e sulla sensazione. Il corpo torna a muoversi dopo 3 settimane di stop: non forzare nulla.",
-      "giorni": [
+      "intensita_target": "RPE 5 su squat e stacco — adattamento iniziale",
+      "note_settimana": "Prima settimana di rientro. Priorita' assoluta: zero dolore. Valuta la risposta del piccolo pettorale agli esercizi di mobilita' scapolare. Se alzate laterali o frontali causano dolore anche minimo, eliminarle e segnalare.",
+      "palestra": [
         {
           "giorno": "Lunedi",
-          "tipo": "Lower A — Squat Focus",
-          "note_sessione": "Prima sessione di rientro: tecnica prima di tutto. Se senti fastidio alla spalla durante il rematore o qualsiasi esercizio, salta quell'esercizio e segnalalo.",
+          "tipo": "Rehab — Squat + Mobilita' Scapolare + Cuffia Rotatori",
+          "note_sessione": "Prima sessione post-infortunio. Carico squat conservativo. Monitora qualsiasi sensazione alla spalla durante e dopo. Dolore 0/10 su tutto.",
           "esercizi": [
             {
-              "nome": "squat con bilanciere",
-              "serie": 3,
-              "reps": "5",
-              "peso": "87 kg (60% 1RM)",
+              "nome": "Squat con bilanciere",
+              "serie": 4,
+              "reps": "4",
+              "peso": "95 kg",
               "recupero": "3 min",
-              "gruppo": "Quadricipiti / Glutei",
-              "principale": true
+              "gruppo": "Quadricipiti",
+              "principale": true,
+              "tempo": "3-1-2",
+              "rpe": 5,
+              "note": "65% 1RM (145.8 kg). Discesa controllata 3 secondi, pausa 1s in buca, risalita 2s. RPE target 5: deve sembrare facile. Fermarsi se compare qualsiasi dolore alla spalla."
             },
             {
-              "nome": "stacco rumeno",
-              "serie": 3,
-              "reps": "8",
-              "peso": "80 kg (40% 1RM stacco)",
-              "recupero": "2 min",
-              "gruppo": "Femorali / Glutei",
-              "principale": false
-            },
-            {
-              "nome": "leg press",
+              "nome": "Leg press",
               "serie": 3,
               "reps": "10",
               "peso": "120 kg",
               "recupero": "2 min",
               "gruppo": "Quadricipiti",
-              "principale": false
+              "principale": false,
+              "tempo": "2-0-2",
+              "rpe": 4,
+              "note": "Supplemento leggero. Focus su quadricipiti. Nessuno stress sulla spalla."
             },
             {
-              "nome": "rematore con bilanciere",
+              "nome": "Leg curl sdraiato",
               "serie": 3,
-              "reps": "8",
-              "peso": "60 kg (busto a 30-45 gradi, presa prona)",
-              "recupero": "2 min",
-              "gruppo": "Dorsali / Trapezi",
-              "principale": false
+              "reps": "12",
+              "peso": "35 kg",
+              "recupero": "90 sec",
+              "gruppo": "Femorali",
+              "principale": false,
+              "tempo": "2-0-2",
+              "rpe": 4,
+              "note": "Femorali isolati. Nessuno stress sulla spalla."
             },
             {
-              "nome": "plank",
+              "nome": "Band pull-apart",
               "serie": 3,
-              "reps": "30 sec",
-              "peso": "corpo libero",
+              "reps": "15",
+              "peso": "Elastico leggero",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 2,
+              "note": "Mobilita' scapolare. Braccia parallele al suolo, aprire lentamente. Dolore 0/10."
+            },
+            {
+              "nome": "Wall slide",
+              "serie": 3,
+              "reps": "10",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "3-1-3",
+              "rpe": 2,
+              "note": "Schiena e braccia a contatto con il muro. Scivolare lentamente verso l'alto senza perdere il contatto. Se compare dolore: fermarsi e segnalare."
+            },
+            {
+              "nome": "External rotation con elastico",
+              "serie": 3,
+              "reps": "15",
+              "peso": "Elastico leggero",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 2,
+              "note": "Gomito a 90 gradi, incollato al fianco. Rotazione esterna lenta. Eseguire per entrambi i lati. Dolore 0/10."
+            },
+            {
+              "nome": "Alzate laterali con manubri",
+              "serie": 3,
+              "reps": "15",
+              "peso": "8 kg",
+              "recupero": "90 sec",
+              "gruppo": "Deltoidi mediali",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 3,
+              "note": "Controllo totale. Fermarsi a 90 gradi (parallelo al suolo). Se compare dolore anche minimo al piccolo pettorale: ridurre a 5 kg o eliminare l'esercizio."
+            },
+            {
+              "nome": "Plank",
+              "serie": 3,
+              "reps": "30s",
+              "peso": "Bodyweight",
               "recupero": "60 sec",
               "gruppo": "Core",
-              "principale": false
+              "principale": false,
+              "tempo": "30s hold",
+              "rpe": 3,
+              "note": "Core neutro. Nessuno stress sulla spalla se correttamente eseguito in posizione di appoggio sugli avambracci."
             }
-          ]
+          ],
+          "attivita_extra": []
         },
         {
           "giorno": "Mercoledi",
-          "tipo": "Lower B — Stacco Focus",
-          "note_sessione": "Focus sul pattern motorio dello stacco dopo 3 settimane di stop. Carichi molto conservativi per riabituare la catena posteriore.",
+          "tipo": "Rehab — Stacco + Mobilita' Scapolare + Spalle Leggere",
+          "note_sessione": "Stacco conservativo. Stesso protocollo di monitoraggio del dolore. Alzate frontali al posto delle laterali oggi.",
           "esercizi": [
             {
-              "nome": "stacco da terra convenzionale",
+              "nome": "Stacco da terra convenzionale",
               "serie": 3,
-              "reps": "5",
-              "peso": "119 kg (60% 1RM)",
+              "reps": "3",
+              "peso": "130 kg",
               "recupero": "3 min",
-              "gruppo": "Femorali / Glutei / Erettori",
-              "principale": true
-            },
-            {
-              "nome": "leg press",
-              "serie": 3,
-              "reps": "12",
-              "peso": "110 kg",
-              "recupero": "90 sec",
-              "gruppo": "Quadricipiti",
-              "principale": false
-            },
-            {
-              "nome": "leg curl sdraiato",
-              "serie": 3,
-              "reps": "10",
-              "peso": "RPE 6-7 (regola il macchinario)",
-              "recupero": "90 sec",
               "gruppo": "Femorali",
-              "principale": false
+              "principale": true,
+              "tempo": "2-0-1",
+              "rpe": 5,
+              "note": "66% 1RM (198.3 kg). Tecnica pulita, schiena neutra. RPE 5: deve sembrare gestibile senza sforzo. Nessuno stress sulla spalla se la presa e' corretta."
             },
             {
-              "nome": "face pull al cavo",
-              "serie": 3,
-              "reps": "15",
-              "peso": "RPE 5-6 (carico molto leggero)",
-              "recupero": "60 sec",
-              "gruppo": "Deltoidi posteriori / Cuffia rotatori",
-              "principale": false
-            },
-            {
-              "nome": "dead bug",
-              "serie": 3,
-              "reps": "8 per lato",
-              "peso": "corpo libero",
-              "recupero": "60 sec",
-              "gruppo": "Core",
-              "principale": false
-            }
-          ]
-        },
-        {
-          "giorno": "Venerdi",
-          "tipo": "Lower C — Full Lower + Core",
-          "note_sessione": "Sessione mista per chiudere la settimana. Volume moderato, tecnica curata.",
-          "esercizi": [
-            {
-              "nome": "squat con bilanciere",
-              "serie": 3,
-              "reps": "6",
-              "peso": "85 kg (58% 1RM)",
-              "recupero": "3 min",
-              "gruppo": "Quadricipiti / Glutei",
-              "principale": true
-            },
-            {
-              "nome": "stacco rumeno",
-              "serie": 3,
-              "reps": "10",
-              "peso": "75 kg",
-              "recupero": "2 min",
-              "gruppo": "Femorali / Glutei",
-              "principale": false
-            },
-            {
-              "nome": "cable row presa neutra (cavo basso)",
-              "serie": 3,
-              "reps": "10",
-              "peso": "RPE 6 (busto eretto, presa neutra)",
-              "recupero": "90 sec",
-              "gruppo": "Dorsali / Trapezi",
-              "principale": false
-            },
-            {
-              "nome": "ab wheel rollout",
+              "nome": "Stacco rumeno",
               "serie": 3,
               "reps": "8",
-              "peso": "corpo libero",
-              "recupero": "60 sec",
-              "gruppo": "Core",
-              "principale": false
+              "peso": "70 kg",
+              "recupero": "2 min",
+              "gruppo": "Femorali",
+              "principale": false,
+              "tempo": "3-1-1",
+              "rpe": 4,
+              "note": "Complementare allo stacco. Discesa lenta, stop a meta' tibia. Rinforzo catena posteriore senza stress sulla spalla."
             },
             {
-              "nome": "calf raise in piedi",
+              "nome": "Shoulder CARs",
+              "serie": 2,
+              "reps": "5",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "10s per ripetizione",
+              "rpe": 2,
+              "note": "Controlled Articular Rotations. Rotazione lenta e controllata della spalla in tutto il range disponibile SENZA dolore. Se il ROM e' ridotto in qualche direzione: fermarsi in quel punto. 5 rotazioni per lato."
+            },
+            {
+              "nome": "Band pull-apart",
               "serie": 3,
               "reps": "15",
-              "peso": "60 kg (o macchinario RPE 6)",
+              "peso": "Elastico leggero",
               "recupero": "60 sec",
-              "gruppo": "Polpacci",
-              "principale": false
+              "gruppo": "Deltoidi posteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 2,
+              "note": "Come lunedi'. Mobilita' scapolare. Dolore 0/10."
+            },
+            {
+              "nome": "External rotation con elastico",
+              "serie": 3,
+              "reps": "15",
+              "peso": "Elastico leggero",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 2,
+              "note": "Come lunedi'. Entrambi i lati. Dolore 0/10."
+            },
+            {
+              "nome": "Alzate frontali con manubri",
+              "serie": 3,
+              "reps": "15",
+              "peso": "8 kg",
+              "recupero": "90 sec",
+              "gruppo": "Deltoidi anteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 3,
+              "note": "Alzata fino a 90 gradi (parallelo al suolo). Nessun dondolio. Se compare dolore: ridurre a 5 kg o eliminare."
+            },
+            {
+              "nome": "Dead bug",
+              "serie": 3,
+              "reps": "8",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Core",
+              "principale": false,
+              "tempo": "3-1-3",
+              "rpe": 3,
+              "note": "Lombare incollata al suolo. Estendere braccio e gamba opposti lentamente. 8 ripetizioni per lato."
             }
-          ]
+          ],
+          "attivita_extra": []
+        },
+        {
+          "giorno": "Sabato",
+          "tipo": "Rehab — Squat + Stacco Leggero + Mobilita' + Tricipiti",
+          "note_sessione": "Sessione piu' completa della settimana. Volume basso, RPE conservativo. Tricipiti ai cavi senza stress sul pettorale.",
+          "esercizi": [
+            {
+              "nome": "Squat con bilanciere",
+              "serie": 4,
+              "reps": "4",
+              "peso": "95 kg",
+              "recupero": "3 min",
+              "gruppo": "Quadricipiti",
+              "principale": true,
+              "tempo": "3-1-2",
+              "rpe": 5,
+              "note": "Stesso carico di lunedi'. Valuta come ti senti rispetto a inizio settimana. Se va bene, segnalalo come feedback per aumentare a settimana 3."
+            },
+            {
+              "nome": "Stacco da terra convenzionale",
+              "serie": 2,
+              "reps": "3",
+              "peso": "130 kg",
+              "recupero": "3 min",
+              "gruppo": "Femorali",
+              "principale": true,
+              "tempo": "2-0-1",
+              "rpe": 5,
+              "note": "Volume ridotto rispetto a mercoledi' (2 serie invece di 3). Serve per valutare la risposta cumulativa della settimana."
+            },
+            {
+              "nome": "Wall slide",
+              "serie": 3,
+              "reps": "10",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "3-1-3",
+              "rpe": 2,
+              "note": "Come lunedi'. Controlla il ROM rispetto all'inizio della settimana: sta migliorando?"
+            },
+            {
+              "nome": "Shoulder CARs",
+              "serie": 2,
+              "reps": "5",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "10s per ripetizione",
+              "rpe": 2,
+              "note": "5 rotazioni per lato. Valuta il ROM disponibile."
+            },
+            {
+              "nome": "Band pull-apart",
+              "serie": 3,
+              "reps": "15",
+              "peso": "Elastico leggero",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 2,
+              "note": "Mobilita' scapolare. Dolore 0/10."
+            },
+            {
+              "nome": "Face pull al cavo",
+              "serie": 3,
+              "reps": "15",
+              "peso": "10 kg",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 3,
+              "note": "Cavo all'altezza degli occhi. Presa con corda, gomiti alti, tirare verso la faccia con rotazione esterna finale. Ottimo per la cuffia dei rotatori. Se compare dolore: ridurre peso o eliminare."
+            },
+            {
+              "nome": "Pushdown al cavo (corda)",
+              "serie": 3,
+              "reps": "12",
+              "peso": "15 kg",
+              "recupero": "75 sec",
+              "gruppo": "Tricipiti",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 4,
+              "note": "Gomiti vicini al corpo e fissi. Nessun carico sul pettorale. Verifica assenza di dolore prima di eseguire."
+            },
+            {
+              "nome": "Plank",
+              "serie": 3,
+              "reps": "30s",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Core",
+              "principale": false,
+              "tempo": "30s hold",
+              "rpe": 3,
+              "note": "Appoggio sugli avambracci. Core stabile."
+            }
+          ],
+          "attivita_extra": []
+        }
+      ],
+      "attivita_extra": [
+        {
+          "giorno": "Giovedi",
+          "tipo": "sport",
+          "durata": "90 min",
+          "intensita": "media",
+          "note": "Beach Volley. Monitorare la spalla durante il gioco. Se compare dolore al piccolo pettorale durante i salti o i colpi: ridurre l'intensita' o sospendere e riferire."
         }
       ]
     },
     {
       "numero": 2,
-      "intensita_target": "65% 1RM — RPE 7",
-      "note_settimana": "Settimana di consolidamento. Aumento leggero dei carichi solo se la S1 e' andata bene SENZA alcun sintomo TOS. Se hai avuto fastidi alla spalla, mantieni i carichi della S1.",
-      "giorni": [
+      "intensita_target": "RPE 5 su squat e stacco — consolidamento adattamento",
+      "note_settimana": "Se la settimana 1 ha dato risposta positiva (dolore 0/10 nelle 24h dopo ogni sessione): mantieni gli stessi carichi. Se c'e' stato dolore anche minimo: mantieni o riduci. NON aumentare i carichi questa settimana.",
+      "palestra": [
         {
           "giorno": "Lunedi",
-          "tipo": "Lower A — Squat Focus",
-          "note_sessione": "Leggero aumento del carico rispetto alla settimana 1. Tecnica ancora prioritaria.",
+          "tipo": "Rehab — Squat + Mobilita' Scapolare + Cuffia Rotatori",
+          "note_sessione": "Stessi carichi della settimana 1 se la risposta e' stata positiva. Aumenta la qualita' dell'esecuzione, non il peso.",
           "esercizi": [
             {
-              "nome": "squat con bilanciere",
+              "nome": "Squat con bilanciere",
               "serie": 4,
               "reps": "4",
-              "peso": "95 kg (65% 1RM)",
+              "peso": "95 kg",
               "recupero": "3 min",
-              "gruppo": "Quadricipiti / Glutei",
-              "principale": true
+              "gruppo": "Quadricipiti",
+              "principale": true,
+              "tempo": "3-1-2",
+              "rpe": 5,
+              "note": "Stesso carico S1. Tecnica impeccabile. Se RPE percepita scende a 4, segnalalo: a S3 si aumenta."
             },
             {
-              "nome": "stacco rumeno",
+              "nome": "Leg press",
+              "serie": 3,
+              "reps": "10",
+              "peso": "120 kg",
+              "recupero": "2 min",
+              "gruppo": "Quadricipiti",
+              "principale": false,
+              "tempo": "2-0-2",
+              "rpe": 4,
+              "note": "Supplemento leggero. Nessuno stress sulla spalla."
+            },
+            {
+              "nome": "Leg curl sdraiato",
+              "serie": 3,
+              "reps": "12",
+              "peso": "35 kg",
+              "recupero": "90 sec",
+              "gruppo": "Femorali",
+              "principale": false,
+              "tempo": "2-0-2",
+              "rpe": 4,
+              "note": "Stesso carico S1."
+            },
+            {
+              "nome": "Alzate laterali con manubri",
+              "serie": 3,
+              "reps": "15",
+              "peso": "8 kg",
+              "recupero": "90 sec",
+              "gruppo": "Deltoidi mediali",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 3,
+              "note": "Stesso carico S1. Se S1 non ha causato dolore: procedi normalmente. Se ha causato anche minimo fastidio: elimina e riferisci."
+            },
+            {
+              "nome": "Band pull-apart",
+              "serie": 3,
+              "reps": "15",
+              "peso": "Elastico leggero",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 2,
+              "note": "Mobilita' scapolare. Valuta se il ROM e' migliorato rispetto a S1."
+            },
+            {
+              "nome": "Wall slide",
+              "serie": 3,
+              "reps": "10",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "3-1-3",
+              "rpe": 2,
+              "note": "Controlla il ROM disponibile rispetto a S1."
+            },
+            {
+              "nome": "External rotation con elastico",
+              "serie": 3,
+              "reps": "15",
+              "peso": "Elastico leggero",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 2,
+              "note": "Entrambi i lati. Valuta la simmetria del ROM."
+            },
+            {
+              "nome": "Plank",
+              "serie": 3,
+              "reps": "35s",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Core",
+              "principale": false,
+              "tempo": "35s hold",
+              "rpe": 3,
+              "note": "5 secondi in piu' rispetto a S1 — unica progressione di questa settimana."
+            }
+          ],
+          "attivita_extra": []
+        },
+        {
+          "giorno": "Mercoledi",
+          "tipo": "Rehab — Stacco + Mobilita' Scapolare + Spalle Leggere",
+          "note_sessione": "Stesso schema di mercoledi' S1. Mantenere qualita' di esecuzione alta.",
+          "esercizi": [
+            {
+              "nome": "Stacco da terra convenzionale",
+              "serie": 3,
+              "reps": "3",
+              "peso": "130 kg",
+              "recupero": "3 min",
+              "gruppo": "Femorali",
+              "principale": true,
+              "tempo": "2-0-1",
+              "rpe": 5,
+              "note": "Stesso carico S1. Tecnica impeccabile. Se RPE percepita scende a 4: segnalalo per aumentare a S3."
+            },
+            {
+              "nome": "Stacco rumeno",
               "serie": 3,
               "reps": "8",
-              "peso": "90 kg",
+              "peso": "70 kg",
               "recupero": "2 min",
-              "gruppo": "Femorali / Glutei",
-              "principale": false
+              "gruppo": "Femorali",
+              "principale": false,
+              "tempo": "3-1-1",
+              "rpe": 4,
+              "note": "Catena posteriore. Stesso carico S1."
             },
             {
-              "nome": "leg press",
+              "nome": "Shoulder CARs",
+              "serie": 2,
+              "reps": "5",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "10s per ripetizione",
+              "rpe": 2,
+              "note": "5 rotazioni per lato. Cerca di ampliare il ROM rispetto a S1 solo SE non compare dolore."
+            },
+            {
+              "nome": "Band pull-apart",
+              "serie": 3,
+              "reps": "15",
+              "peso": "Elastico leggero",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 2,
+              "note": "Mobilita' scapolare. Dolore 0/10."
+            },
+            {
+              "nome": "Alzate frontali con manubri",
+              "serie": 3,
+              "reps": "15",
+              "peso": "8 kg",
+              "recupero": "90 sec",
+              "gruppo": "Deltoidi anteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 3,
+              "note": "Stesso carico S1. Se non ha causato dolore in S1: procedi normalmente."
+            },
+            {
+              "nome": "External rotation con elastico",
+              "serie": 3,
+              "reps": "15",
+              "peso": "Elastico leggero",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 2,
+              "note": "Entrambi i lati. Dolore 0/10."
+            },
+            {
+              "nome": "Dead bug",
+              "serie": 3,
+              "reps": "8",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Core",
+              "principale": false,
+              "tempo": "3-1-3",
+              "rpe": 3,
+              "note": "8 ripetizioni per lato. Core stabile."
+            }
+          ],
+          "attivita_extra": []
+        },
+        {
+          "giorno": "Sabato",
+          "tipo": "Rehab — Squat + Stacco Leggero + Mobilita' + Tricipiti",
+          "note_sessione": "Fine settimana 2. Valutazione soggettiva: hai sentito dolore in qualsiasi momento questa settimana? Se no: S3 si puo' aumentare i carichi. Se si: estendere S2.",
+          "esercizi": [
+            {
+              "nome": "Squat con bilanciere",
+              "serie": 4,
+              "reps": "4",
+              "peso": "95 kg",
+              "recupero": "3 min",
+              "gruppo": "Quadricipiti",
+              "principale": true,
+              "tempo": "3-1-2",
+              "rpe": 5,
+              "note": "Stesso carico. Fine S2: se RPE e' sceso a 4 e zero dolore per tutta S2, sei pronto per il passaggio a 100 kg a S3."
+            },
+            {
+              "nome": "Stacco da terra convenzionale",
+              "serie": 2,
+              "reps": "3",
+              "peso": "130 kg",
+              "recupero": "3 min",
+              "gruppo": "Femorali",
+              "principale": true,
+              "tempo": "2-0-1",
+              "rpe": 5,
+              "note": "2 serie come sabato S1. Valutazione cumulativa."
+            },
+            {
+              "nome": "Wall slide",
+              "serie": 3,
+              "reps": "10",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "3-1-3",
+              "rpe": 2,
+              "note": "Valuta miglioramento ROM rispetto a inizio S1."
+            },
+            {
+              "nome": "Shoulder CARs",
+              "serie": 2,
+              "reps": "5",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "10s per ripetizione",
+              "rpe": 2,
+              "note": "5 rotazioni per lato."
+            },
+            {
+              "nome": "Band pull-apart",
+              "serie": 3,
+              "reps": "15",
+              "peso": "Elastico leggero",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 2,
+              "note": "Mobilita' scapolare."
+            },
+            {
+              "nome": "Face pull al cavo",
+              "serie": 3,
+              "reps": "15",
+              "peso": "10 kg",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 3,
+              "note": "Rinforzo cuffia rotatori. Stesso carico S1."
+            },
+            {
+              "nome": "Pushdown al cavo (corda)",
+              "serie": 3,
+              "reps": "12",
+              "peso": "15 kg",
+              "recupero": "75 sec",
+              "gruppo": "Tricipiti",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 4,
+              "note": "Gomiti fissi al fianco. Nessuno stress sul pettorale."
+            },
+            {
+              "nome": "Plank",
+              "serie": 3,
+              "reps": "35s",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Core",
+              "principale": false,
+              "tempo": "35s hold",
+              "rpe": 3,
+              "note": "Core stabile."
+            }
+          ],
+          "attivita_extra": []
+        }
+      ],
+      "attivita_extra": [
+        {
+          "giorno": "Giovedi",
+          "tipo": "sport",
+          "durata": "90 min",
+          "intensita": "media",
+          "note": "Beach Volley. Monitorare la spalla. Se ha causato dolore in S1: riferirlo e valutare con il fisioterapista se continuare."
+        }
+      ]
+    },
+    {
+      "numero": 3,
+      "intensita_target": "RPE 6 su squat e stacco — progressione leggera",
+      "note_settimana": "PREREQUISITO: zero dolore nelle 24h dopo ogni sessione di S1 e S2. Se il prerequisito e' soddisfatto: aumenta squat a 100 kg e stacco a 135 kg. Alzate laterali e frontali salgono a 10 kg. Se il prerequisito NON e' soddisfatto: ripeti S2.",
+      "palestra": [
+        {
+          "giorno": "Lunedi",
+          "tipo": "Rehab — Squat Progressione + Mobilita' Scapolare",
+          "note_sessione": "Prima sessione a RPE 6 sullo squat. Aumento carico da 95 a 100 kg. Mantieni la stessa qualita' tecnica.",
+          "esercizi": [
+            {
+              "nome": "Squat con bilanciere",
+              "serie": 4,
+              "reps": "4",
+              "peso": "100 kg",
+              "recupero": "3 min",
+              "gruppo": "Quadricipiti",
+              "principale": true,
+              "tempo": "3-1-2",
+              "rpe": 6,
+              "note": "69% 1RM. Prima progressione del carico. RPE 6: deve essere gestibile ma sentirsi un minimo piu' impegnato di S1-S2. Tecnica impeccabile: se la tecnica degrada, era troppo presto."
+            },
+            {
+              "nome": "Leg press",
               "serie": 3,
               "reps": "10",
               "peso": "130 kg",
               "recupero": "2 min",
               "gruppo": "Quadricipiti",
-              "principale": false
+              "principale": false,
+              "tempo": "2-0-2",
+              "rpe": 5,
+              "note": "Leggero aumento rispetto a S1-S2."
             },
             {
-              "nome": "rematore con bilanciere",
+              "nome": "Leg curl sdraiato",
               "serie": 3,
-              "reps": "8",
-              "peso": "65 kg (busto a 30-45 gradi, presa prona)",
-              "recupero": "2 min",
-              "gruppo": "Dorsali / Trapezi",
-              "principale": false
+              "reps": "12",
+              "peso": "37.5 kg",
+              "recupero": "90 sec",
+              "gruppo": "Femorali",
+              "principale": false,
+              "tempo": "2-0-2",
+              "rpe": 4,
+              "note": "Leggero aumento se possibile."
             },
             {
-              "nome": "plank",
+              "nome": "Alzate laterali con manubri",
               "serie": 3,
-              "reps": "40 sec",
-              "peso": "corpo libero",
+              "reps": "12",
+              "peso": "10 kg",
+              "recupero": "90 sec",
+              "gruppo": "Deltoidi mediali",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 4,
+              "note": "Aumento da 8 a 10 kg. Riduci le reps da 15 a 12 per gestire il carico maggiore. Dolore 0/10."
+            },
+            {
+              "nome": "Band pull-apart",
+              "serie": 3,
+              "reps": "15",
+              "peso": "Elastico medio",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 3,
+              "note": "Puoi aumentare la resistenza dell'elastico se disponibile."
+            },
+            {
+              "nome": "Wall slide",
+              "serie": 3,
+              "reps": "12",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "3-1-3",
+              "rpe": 2,
+              "note": "2 reps in piu' rispetto a S1-S2."
+            },
+            {
+              "nome": "External rotation con elastico",
+              "serie": 3,
+              "reps": "15",
+              "peso": "Elastico leggero",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 2,
+              "note": "Entrambi i lati. Dolore 0/10."
+            },
+            {
+              "nome": "Plank",
+              "serie": 3,
+              "reps": "40s",
+              "peso": "Bodyweight",
               "recupero": "60 sec",
               "gruppo": "Core",
-              "principale": false
+              "principale": false,
+              "tempo": "40s hold",
+              "rpe": 3,
+              "note": "Progressione a 40 secondi."
             }
-          ]
+          ],
+          "attivita_extra": []
         },
         {
           "giorno": "Mercoledi",
-          "tipo": "Lower B — Stacco Focus",
-          "note_sessione": "Riportare lo stacco verso i carichi di lavoro normali in modo graduale. 65% e' ancora conservativo ma abbastanza da stimolare la catena posteriore.",
+          "tipo": "Rehab — Stacco Progressione + Mobilita' + Spalle",
+          "note_sessione": "Stacco sale a 135 kg. Alzate frontali a 10 kg. Stesso schema mobilita'.",
           "esercizi": [
             {
-              "nome": "stacco da terra convenzionale",
-              "serie": 4,
+              "nome": "Stacco da terra convenzionale",
+              "serie": 3,
               "reps": "4",
-              "peso": "129 kg (65% 1RM)",
+              "peso": "135 kg",
               "recupero": "3 min",
-              "gruppo": "Femorali / Glutei / Erettori",
-              "principale": true
-            },
-            {
-              "nome": "leg press",
-              "serie": 3,
-              "reps": "12",
-              "peso": "120 kg",
-              "recupero": "90 sec",
-              "gruppo": "Quadricipiti",
-              "principale": false
-            },
-            {
-              "nome": "leg curl sdraiato",
-              "serie": 3,
-              "reps": "10",
-              "peso": "RPE 7 (aggiungi un po' rispetto alla S1)",
-              "recupero": "90 sec",
               "gruppo": "Femorali",
-              "principale": false
+              "principale": true,
+              "tempo": "2-0-1",
+              "rpe": 6,
+              "note": "68% 1RM. Aumento sia del carico (da 130 a 135 kg) sia delle reps (da 3 a 4). RPE 6. Tecnica impeccabile: schiena neutra, spinte a terra con i piedi."
             },
             {
-              "nome": "face pull al cavo",
+              "nome": "Stacco rumeno",
+              "serie": 3,
+              "reps": "8",
+              "peso": "75 kg",
+              "recupero": "2 min",
+              "gruppo": "Femorali",
+              "principale": false,
+              "tempo": "3-1-1",
+              "rpe": 5,
+              "note": "Leggero aumento rispetto a S1-S2."
+            },
+            {
+              "nome": "Shoulder CARs",
+              "serie": 2,
+              "reps": "6",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "10s per ripetizione",
+              "rpe": 2,
+              "note": "6 rotazioni per lato (aumento da 5). Cerca il massimo ROM disponibile senza dolore."
+            },
+            {
+              "nome": "Band pull-apart",
               "serie": 3,
               "reps": "15",
-              "peso": "RPE 6 (carico leggero, focalizzati sulla retrazione scapolare)",
+              "peso": "Elastico medio",
               "recupero": "60 sec",
-              "gruppo": "Deltoidi posteriori / Cuffia rotatori",
-              "principale": false
+              "gruppo": "Deltoidi posteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 3,
+              "note": "Mobilita' scapolare."
             },
             {
-              "nome": "dead bug",
+              "nome": "Alzate frontali con manubri",
               "serie": 3,
-              "reps": "10 per lato",
-              "peso": "corpo libero",
+              "reps": "12",
+              "peso": "10 kg",
+              "recupero": "90 sec",
+              "gruppo": "Deltoidi anteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 4,
+              "note": "Aumento da 8 a 10 kg. Reps da 15 a 12. Dolore 0/10."
+            },
+            {
+              "nome": "External rotation con elastico",
+              "serie": 3,
+              "reps": "15",
+              "peso": "Elastico leggero",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 2,
+              "note": "Entrambi i lati. Dolore 0/10."
+            },
+            {
+              "nome": "Dead bug",
+              "serie": 3,
+              "reps": "10",
+              "peso": "Bodyweight",
               "recupero": "60 sec",
               "gruppo": "Core",
-              "principale": false
+              "principale": false,
+              "tempo": "3-1-3",
+              "rpe": 3,
+              "note": "10 ripetizioni per lato (aumento da 8)."
             }
-          ]
+          ],
+          "attivita_extra": []
         },
         {
-          "giorno": "Venerdi",
-          "tipo": "Lower C — Verifica Tecnica",
-          "note_sessione": "Sessione conclusiva della Fase 0. Valuta come ti senti. Se la TOS ha migliorato, sei pronto per la Fase 1. Se hai ancora sintomi, ripeti la Fase 0 per altri 3-5 giorni prima di procedere.",
+          "giorno": "Sabato",
+          "tipo": "Rehab — Squat + Stacco + Mobilita' + Tricipiti",
+          "note_sessione": "Fine S3. Valutazione: come hai risposto all'aumento di carico? Dolore nelle 24h? Se no: S4 si consolida a questi carichi con volume leggermente maggiore.",
           "esercizi": [
             {
-              "nome": "squat con bilanciere",
-              "serie": 3,
+              "nome": "Squat con bilanciere",
+              "serie": 4,
               "reps": "5",
-              "peso": "92 kg (63% 1RM)",
+              "peso": "100 kg",
               "recupero": "3 min",
-              "gruppo": "Quadricipiti / Glutei",
-              "principale": true
+              "gruppo": "Quadricipiti",
+              "principale": true,
+              "tempo": "3-1-2",
+              "rpe": 6,
+              "note": "100 kg con 5 reps invece di 4. Piccolo aumento di volume. RPE 6."
             },
             {
-              "nome": "stacco da terra convenzionale",
+              "nome": "Stacco da terra convenzionale",
+              "serie": 2,
+              "reps": "4",
+              "peso": "135 kg",
+              "recupero": "3 min",
+              "gruppo": "Femorali",
+              "principale": true,
+              "tempo": "2-0-1",
+              "rpe": 6,
+              "note": "2 serie di verifica. Risposta al carico rispetto a mercoledi'."
+            },
+            {
+              "nome": "Wall slide",
+              "serie": 3,
+              "reps": "12",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "3-1-3",
+              "rpe": 2,
+              "note": "12 reps."
+            },
+            {
+              "nome": "Shoulder CARs",
+              "serie": 2,
+              "reps": "6",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "10s per ripetizione",
+              "rpe": 2,
+              "note": "6 rotazioni per lato."
+            },
+            {
+              "nome": "Band pull-apart",
+              "serie": 3,
+              "reps": "15",
+              "peso": "Elastico medio",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 3,
+              "note": "Mobilita' scapolare."
+            },
+            {
+              "nome": "Face pull al cavo",
+              "serie": 3,
+              "reps": "15",
+              "peso": "12 kg",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 3,
+              "note": "Leggero aumento rispetto a S1-S2. Cuffia rotatori."
+            },
+            {
+              "nome": "Pushdown al cavo (corda)",
+              "serie": 3,
+              "reps": "12",
+              "peso": "17.5 kg",
+              "recupero": "75 sec",
+              "gruppo": "Tricipiti",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 4,
+              "note": "Leggero aumento rispetto a S1-S2."
+            },
+            {
+              "nome": "Plank",
+              "serie": 3,
+              "reps": "40s",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Core",
+              "principale": false,
+              "tempo": "40s hold",
+              "rpe": 3,
+              "note": "40 secondi."
+            }
+          ],
+          "attivita_extra": []
+        }
+      ],
+      "attivita_extra": [
+        {
+          "giorno": "Giovedi",
+          "tipo": "sport",
+          "durata": "90 min",
+          "intensita": "media",
+          "note": "Beach Volley. Monitorare la spalla dopo il primo aumento di carico in palestra questa settimana."
+        }
+      ]
+    },
+    {
+      "numero": 4,
+      "intensita_target": "RPE 6 su squat e stacco — consolidamento progressione",
+      "note_settimana": "PREREQUISITO: zero dolore dopo le sessioni di S3. Se soddisfatto: squat sale a 105 kg, stacco a 140 kg, alzate a 10 kg confermati ma reps crescono. Se non soddisfatto: ripeti S3.",
+      "palestra": [
+        {
+          "giorno": "Lunedi",
+          "tipo": "Progressione — Squat + Mobilita' Scapolare",
+          "note_sessione": "Squat a 105 kg. Avvicinarsi al range RPE 6-7 nelle ultime settimane.",
+          "esercizi": [
+            {
+              "nome": "Squat con bilanciere",
+              "serie": 4,
+              "reps": "5",
+              "peso": "105 kg",
+              "recupero": "3 min",
+              "gruppo": "Quadricipiti",
+              "principale": true,
+              "tempo": "3-1-2",
+              "rpe": 6,
+              "note": "72% 1RM. Aumento da 100 a 105 kg. 4x5. RPE 6. Tecnica impeccabile."
+            },
+            {
+              "nome": "Leg press",
+              "serie": 3,
+              "reps": "12",
+              "peso": "140 kg",
+              "recupero": "2 min",
+              "gruppo": "Quadricipiti",
+              "principale": false,
+              "tempo": "2-0-2",
+              "rpe": 5,
+              "note": "Aumento volume (12 reps) e carico."
+            },
+            {
+              "nome": "Leg curl sdraiato",
+              "serie": 3,
+              "reps": "12",
+              "peso": "40 kg",
+              "recupero": "90 sec",
+              "gruppo": "Femorali",
+              "principale": false,
+              "tempo": "2-0-2",
+              "rpe": 5,
+              "note": "Progressione rispetto a S3."
+            },
+            {
+              "nome": "Alzate laterali con manubri",
+              "serie": 3,
+              "reps": "15",
+              "peso": "10 kg",
+              "recupero": "90 sec",
+              "gruppo": "Deltoidi mediali",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 4,
+              "note": "10 kg confermati, reps risalgono a 15. Dolore 0/10."
+            },
+            {
+              "nome": "Band pull-apart",
+              "serie": 3,
+              "reps": "20",
+              "peso": "Elastico medio",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 3,
+              "note": "Aumento reps a 20."
+            },
+            {
+              "nome": "Wall slide",
+              "serie": 3,
+              "reps": "12",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "3-1-3",
+              "rpe": 2,
+              "note": "12 reps. Controlla il ROM: deve essere quasi completo entro questa settimana."
+            },
+            {
+              "nome": "External rotation con elastico",
+              "serie": 3,
+              "reps": "15",
+              "peso": "Elastico leggero-medio",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 3,
+              "note": "Puoi aumentare la resistenza dell'elastico se il movimento e' facile e senza dolore."
+            },
+            {
+              "nome": "Plank",
+              "serie": 3,
+              "reps": "45s",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Core",
+              "principale": false,
+              "tempo": "45s hold",
+              "rpe": 3,
+              "note": "45 secondi."
+            }
+          ],
+          "attivita_extra": []
+        },
+        {
+          "giorno": "Mercoledi",
+          "tipo": "Progressione — Stacco + Mobilita' + Spalle",
+          "note_sessione": "Stacco a 140 kg. Alzate frontali a 10 kg confermati.",
+          "esercizi": [
+            {
+              "nome": "Stacco da terra convenzionale",
               "serie": 3,
               "reps": "4",
-              "peso": "125 kg (63% 1RM)",
+              "peso": "140 kg",
               "recupero": "3 min",
-              "gruppo": "Femorali / Glutei / Erettori",
-              "principale": false
+              "gruppo": "Femorali",
+              "principale": true,
+              "tempo": "2-0-1",
+              "rpe": 6,
+              "note": "71% 1RM. Aumento da 135 a 140 kg. 3x4. RPE 6. Tecnica prioritaria."
             },
             {
-              "nome": "cable row presa neutra (cavo basso)",
+              "nome": "Stacco rumeno",
               "serie": 3,
               "reps": "10",
-              "peso": "RPE 7 (busto eretto)",
+              "peso": "80 kg",
+              "recupero": "2 min",
+              "gruppo": "Femorali",
+              "principale": false,
+              "tempo": "3-1-1",
+              "rpe": 5,
+              "note": "Progressione rispetto a S3."
+            },
+            {
+              "nome": "Shoulder CARs",
+              "serie": 2,
+              "reps": "6",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "10s per ripetizione",
+              "rpe": 2,
+              "note": "6 rotazioni per lato. Il ROM deve essere quasi completo."
+            },
+            {
+              "nome": "Band pull-apart",
+              "serie": 3,
+              "reps": "20",
+              "peso": "Elastico medio",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 3,
+              "note": "20 reps."
+            },
+            {
+              "nome": "Alzate frontali con manubri",
+              "serie": 3,
+              "reps": "15",
+              "peso": "10 kg",
               "recupero": "90 sec",
-              "gruppo": "Dorsali / Trapezi",
-              "principale": false
+              "gruppo": "Deltoidi anteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 4,
+              "note": "10 kg confermati, reps risalgono a 15. Dolore 0/10."
             },
             {
-              "nome": "ab wheel rollout",
+              "nome": "External rotation con elastico",
+              "serie": 3,
+              "reps": "15",
+              "peso": "Elastico leggero-medio",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 3,
+              "note": "Entrambi i lati. Valuta simmetria ROM."
+            },
+            {
+              "nome": "Dead bug",
               "serie": 3,
               "reps": "10",
-              "peso": "corpo libero",
+              "peso": "Bodyweight",
               "recupero": "60 sec",
               "gruppo": "Core",
-              "principale": false
+              "principale": false,
+              "tempo": "3-1-3",
+              "rpe": 3,
+              "note": "10 reps per lato."
+            }
+          ],
+          "attivita_extra": []
+        },
+        {
+          "giorno": "Sabato",
+          "tipo": "Progressione — Squat + Stacco + Mobilita' + Tricipiti",
+          "note_sessione": "Fine S4. Valutazione pre-Test Day: sei pronto per S5? Dolore 0/10 in tutta la settimana = si. Controlla il ROM scapolare: e' quasi completo?",
+          "esercizi": [
+            {
+              "nome": "Squat con bilanciere",
+              "serie": 4,
+              "reps": "5",
+              "peso": "105 kg",
+              "recupero": "3 min",
+              "gruppo": "Quadricipiti",
+              "principale": true,
+              "tempo": "3-1-2",
+              "rpe": 6,
+              "note": "105 kg, 4x5. Controlla come ti senti: se RPE e' 5 o meno, sei pronto per aumentare a S5."
             },
             {
-              "nome": "pallof press al cavo",
+              "nome": "Stacco da terra convenzionale",
+              "serie": 2,
+              "reps": "4",
+              "peso": "140 kg",
+              "recupero": "3 min",
+              "gruppo": "Femorali",
+              "principale": true,
+              "tempo": "2-0-1",
+              "rpe": 6,
+              "note": "2 serie di verifica. RPE 6."
+            },
+            {
+              "nome": "Wall slide",
               "serie": 3,
-              "reps": "10 per lato",
-              "peso": "RPE 6",
+              "reps": "12",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "3-1-3",
+              "rpe": 2,
+              "note": "Valuta ROM finale S4. Deve essere quasi completo senza compensi."
+            },
+            {
+              "nome": "Shoulder CARs",
+              "serie": 2,
+              "reps": "6",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "10s per ripetizione",
+              "rpe": 2,
+              "note": "6 rotazioni per lato."
+            },
+            {
+              "nome": "Band pull-apart",
+              "serie": 3,
+              "reps": "20",
+              "peso": "Elastico medio",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 3,
+              "note": "20 reps."
+            },
+            {
+              "nome": "Face pull al cavo",
+              "serie": 3,
+              "reps": "15",
+              "peso": "12 kg",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 3,
+              "note": "Cuffia rotatori. Stesso carico S3."
+            },
+            {
+              "nome": "Pushdown al cavo (corda)",
+              "serie": 3,
+              "reps": "15",
+              "peso": "17.5 kg",
+              "recupero": "75 sec",
+              "gruppo": "Tricipiti",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 4,
+              "note": "Aumento reps a 15. Gomiti fissi."
+            },
+            {
+              "nome": "Plank",
+              "serie": 3,
+              "reps": "45s",
+              "peso": "Bodyweight",
               "recupero": "60 sec",
               "gruppo": "Core",
-              "principale": false
+              "principale": false,
+              "tempo": "45s hold",
+              "rpe": 3,
+              "note": "45 secondi."
             }
-          ]
+          ],
+          "attivita_extra": []
+        }
+      ],
+      "attivita_extra": [
+        {
+          "giorno": "Giovedi",
+          "tipo": "sport",
+          "durata": "90 min",
+          "intensita": "media",
+          "note": "Beach Volley. E' la penultima settimana prima del Test Day. Monitora la spalla attentamente."
+        }
+      ]
+    },
+    {
+      "numero": 5,
+      "intensita_target": "RPE 6-7 nelle prime 2 sessioni — Test Day nell'ultima sessione",
+      "note_settimana": "PREREQUISITO: zero dolore in tutta S4. Se soddisfatto: squat a 110 kg (RPE 6-7), stacco a 145 kg (RPE 6-7). Il sabato e' il TEST DAY: valutazione funzionale con singola squat e singola stacco a RPE 6-7. NON test massimale. NO test panca.",
+      "palestra": [
+        {
+          "giorno": "Lunedi",
+          "tipo": "Pre-Test — Squat + Mobilita' Scapolare",
+          "note_sessione": "Prima sessione S5. Leggero aumento per avvicinarsi ai pesi del Test Day. Mantieni il volume basso per arrivare fresco al sabato.",
+          "esercizi": [
+            {
+              "nome": "Squat con bilanciere",
+              "serie": 3,
+              "reps": "3",
+              "peso": "110 kg",
+              "recupero": "3 min",
+              "gruppo": "Quadricipiti",
+              "principale": true,
+              "tempo": "3-1-2",
+              "rpe": 6,
+              "note": "75% 1RM. Volume ridotto (3x3) per conservare le energie per il Test Day di sabato. RPE 6. Come ti senti a questo peso?"
+            },
+            {
+              "nome": "Leg press",
+              "serie": 2,
+              "reps": "10",
+              "peso": "140 kg",
+              "recupero": "2 min",
+              "gruppo": "Quadricipiti",
+              "principale": false,
+              "tempo": "2-0-2",
+              "rpe": 4,
+              "note": "Volume ridotto (2 serie invece di 3). Conservazione energie per Test Day."
+            },
+            {
+              "nome": "Alzate laterali con manubri",
+              "serie": 3,
+              "reps": "15",
+              "peso": "10 kg",
+              "recupero": "90 sec",
+              "gruppo": "Deltoidi mediali",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 4,
+              "note": "Stesso schema S4. Dolore 0/10."
+            },
+            {
+              "nome": "Band pull-apart",
+              "serie": 3,
+              "reps": "20",
+              "peso": "Elastico medio",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 3,
+              "note": "Mobilita' scapolare."
+            },
+            {
+              "nome": "Wall slide",
+              "serie": 3,
+              "reps": "12",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "3-1-3",
+              "rpe": 2,
+              "note": "ROM valutato: deve essere completo senza compensi."
+            },
+            {
+              "nome": "External rotation con elastico",
+              "serie": 3,
+              "reps": "15",
+              "peso": "Elastico leggero-medio",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 3,
+              "note": "Entrambi i lati. Dolore 0/10."
+            },
+            {
+              "nome": "Plank",
+              "serie": 3,
+              "reps": "45s",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Core",
+              "principale": false,
+              "tempo": "45s hold",
+              "rpe": 3,
+              "note": "45 secondi."
+            }
+          ],
+          "attivita_extra": []
+        },
+        {
+          "giorno": "Mercoledi",
+          "tipo": "Pre-Test — Stacco + Mobilita' + Spalle",
+          "note_sessione": "Volume ridotto per arrivare fresco al Test Day di sabato. Stacco leggero di preparazione.",
+          "esercizi": [
+            {
+              "nome": "Stacco da terra convenzionale",
+              "serie": 2,
+              "reps": "3",
+              "peso": "145 kg",
+              "recupero": "3 min",
+              "gruppo": "Femorali",
+              "principale": true,
+              "tempo": "2-0-1",
+              "rpe": 6,
+              "note": "73% 1RM. Volume ridotto (2x3) per conservare le energie. Come ti senti a questo peso? Segnala RPE percepita."
+            },
+            {
+              "nome": "Shoulder CARs",
+              "serie": 2,
+              "reps": "6",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "10s per ripetizione",
+              "rpe": 2,
+              "note": "Valutazione finale ROM. Deve essere completo bilateralmente senza compensi."
+            },
+            {
+              "nome": "Band pull-apart",
+              "serie": 3,
+              "reps": "20",
+              "peso": "Elastico medio",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 3,
+              "note": "Mobilita' scapolare."
+            },
+            {
+              "nome": "Alzate frontali con manubri",
+              "serie": 3,
+              "reps": "15",
+              "peso": "10 kg",
+              "recupero": "90 sec",
+              "gruppo": "Deltoidi anteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 4,
+              "note": "Stessa progressione S4. Dolore 0/10."
+            },
+            {
+              "nome": "External rotation con elastico",
+              "serie": 3,
+              "reps": "15",
+              "peso": "Elastico leggero-medio",
+              "recupero": "60 sec",
+              "gruppo": "Cuffia dei rotatori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 3,
+              "note": "Valutazione finale simmetria ROM."
+            },
+            {
+              "nome": "Face pull al cavo",
+              "serie": 3,
+              "reps": "15",
+              "peso": "12 kg",
+              "recupero": "60 sec",
+              "gruppo": "Deltoidi posteriori",
+              "principale": false,
+              "tempo": "2-1-2",
+              "rpe": 3,
+              "note": "Rinforzo cuffia. Ultimo allenamento prima del Test Day."
+            },
+            {
+              "nome": "Dead bug",
+              "serie": 3,
+              "reps": "10",
+              "peso": "Bodyweight",
+              "recupero": "60 sec",
+              "gruppo": "Core",
+              "principale": false,
+              "tempo": "3-1-3",
+              "rpe": 3,
+              "note": "10 reps per lato."
+            }
+          ],
+          "attivita_extra": []
+        },
+        {
+          "giorno": "Sabato",
+          "tipo": "TEST DAY — Valutazione Funzionale Mobilita' + Squat + Stacco",
+          "note_sessione": "NOTA: questo NON e' un test massimale. E' una valutazione funzionale. Obiettivo: verificare ROM scapolare completo, eseguire una singola squat a RPE 6-7 e una singola stacco a RPE 6-7 senza dolore. NO test panca — il piccolo pettorale non e' ancora autorizzato. Se compare dolore durante il Test Day: fermarsi immediatamente, la fase rehab si estende.",
+          "protocolli": [
+            {
+              "nome": "Protocollo 1 — Valutazione Mobilita' Scapolare",
+              "target": "ROM completo in band pull-apart, wall slide e shoulder CARs senza compensi e senza dolore. Simmetria bilaterale.",
+              "serie": [
+                {
+                  "set": "Valutazione Band Pull-Apart",
+                  "peso": "Elastico medio",
+                  "reps": 20,
+                  "note": "Esegui 20 reps. Valuta: range completo? Dolore 0/10? Simmetria?",
+                  "tentativo": false
+                },
+                {
+                  "set": "Valutazione Wall Slide",
+                  "peso": "Bodyweight",
+                  "reps": 12,
+                  "note": "Schiena al muro. ROM completo verso l'alto senza sollevare la schiena? Compensi? Dolore 0/10?",
+                  "tentativo": false
+                },
+                {
+                  "set": "Valutazione Shoulder CARs",
+                  "peso": "Bodyweight",
+                  "reps": 6,
+                  "note": "6 rotazioni per lato. ROM massimo disponibile. Simmetria destra/sinistra. Dolore 0/10?",
+                  "tentativo": true
+                }
+              ]
+            },
+            {
+              "nome": "Protocollo 2 — Squat Test Funzionale",
+              "target": "Singola squat a RPE 6-7 (~115-120 kg) senza dolore. Tecnica valutata. Non un test massimale.",
+              "serie": [
+                {
+                  "set": "Riscaldamento 1",
+                  "peso": "60 kg",
+                  "reps": 5,
+                  "note": "Riscaldamento leggero. Tecnica e mobilita' lombare.",
+                  "tentativo": false
+                },
+                {
+                  "set": "Riscaldamento 2",
+                  "peso": "85 kg",
+                  "reps": 3,
+                  "note": "Avvicinamento al peso di test.",
+                  "tentativo": false
+                },
+                {
+                  "set": "Riscaldamento 3",
+                  "peso": "100 kg",
+                  "reps": 2,
+                  "note": "Quasi al peso di test. Come ti senti?",
+                  "tentativo": false
+                },
+                {
+                  "set": "Singola di Valutazione",
+                  "peso": "115 kg",
+                  "reps": 1,
+                  "note": "RPE target 6-7. Tecnica impeccabile. Dolore 0/10. Se RPE supera 8 o compare qualsiasi dolore alla spalla: fermarsi. Questo e' il Test: osserva profondita', posizione della schiena e stabilita' del core.",
+                  "tentativo": true
+                }
+              ]
+            },
+            {
+              "nome": "Protocollo 3 — Stacco Test Funzionale",
+              "target": "Singola stacco a RPE 6-7 (~155-165 kg) senza dolore. Tecnica valutata. Non un test massimale.",
+              "serie": [
+                {
+                  "set": "Riscaldamento 1",
+                  "peso": "80 kg",
+                  "reps": 5,
+                  "note": "Riscaldamento leggero. Impostazione posizione iniziale.",
+                  "tentativo": false
+                },
+                {
+                  "set": "Riscaldamento 2",
+                  "peso": "120 kg",
+                  "reps": 3,
+                  "note": "Avvicinamento al peso di test.",
+                  "tentativo": false
+                },
+                {
+                  "set": "Riscaldamento 3",
+                  "peso": "145 kg",
+                  "reps": 1,
+                  "note": "Quasi al peso di test.",
+                  "tentativo": false
+                },
+                {
+                  "set": "Singola di Valutazione",
+                  "peso": "160 kg",
+                  "reps": 1,
+                  "note": "RPE target 6-7. Tecnica impeccabile: schiena neutra, scapole retratte, spinta a terra con i piedi. Dolore 0/10. Se RPE supera 8 o compare qualsiasi dolore: fermarsi. Osserva: lockout completo, posizione della schiena, velocita' della sbarra.",
+                  "tentativo": true
+                }
+              ]
+            },
+            {
+              "nome": "Protocollo 4 — Valutazione Finale Cuffia Rotatori",
+              "target": "External rotation con elastico senza dolore e ROM simmetrico. Conferma criterio di avanzamento al mesociclo 2.",
+              "serie": [
+                {
+                  "set": "External Rotation Lato Destro",
+                  "peso": "Elastico leggero-medio",
+                  "reps": 15,
+                  "note": "ROM completo. Dolore 0/10.",
+                  "tentativo": false
+                },
+                {
+                  "set": "External Rotation Lato Sinistro",
+                  "peso": "Elastico leggero-medio",
+                  "reps": 15,
+                  "note": "ROM completo. Confronta con lato destro: simmetria? Se c'e' differenza significativa: segnala al fisioterapista.",
+                  "tentativo": true
+                }
+              ]
+            }
+          ],
+          "attivita_extra": []
+        }
+      ],
+      "attivita_extra": [
+        {
+          "giorno": "Giovedi",
+          "tipo": "sport",
+          "durata": "90 min",
+          "intensita": "media",
+          "note": "Beach Volley. Penultimo allenamento prima del Test Day di sabato. Mantieni intensita' media, non forzare salti o colpi potenti per arrivare fresco al test."
         }
       ]
     }

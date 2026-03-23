@@ -70,6 +70,15 @@ Considera che:
 - Un solo dato e' un'osservazione, non una prova — la confidenza deve riflettere il numero di campioni
 - Periodi di allenamento discontinuo (es. cambi casa, viaggi) devono essere pesati meno
 
+### File temporanei
+Se hai bisogno di creare script di calcolo, file di verifica, o qualsiasi file intermedio durante l'elaborazione, salvali **esclusivamente** in `scripts/agent-temp/gym-performance-analyst/`. Non creare mai file temporanei in altre cartelle.
+Ogni file temporaneo DEVE iniziare con un commento che spiega perche' e' stato creato, es:
+```python
+# File temporaneo creato da gym-performance-analyst il YYYY-MM-DD
+# Scopo: calcolo intermedio delta 1RM per periodo 2024-01 / 2024-06
+# Puo' essere eliminato al termine dell'analisi
+```
+
 ### Step 4 — Scrivi il report
 
 Scrivi il file `data/output/performance_analysis.yaml` con questa struttura:

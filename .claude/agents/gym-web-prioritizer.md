@@ -111,3 +111,12 @@ TASK ORDINATI: <n>
 ANOMALIE: <n>
 ORDINE: layout-root → measurements-data → navbar → ...
 ```
+
+## File temporanei
+Se hai bisogno di creare file intermedi durante l'elaborazione, salvali **esclusivamente** in `scripts/agent-temp/gym-web-prioritizer/`. Non creare mai file temporanei in altre cartelle.
+Ogni file temporaneo DEVE iniziare con un commento che spiega perche' e' stato creato, es:
+```json
+// File temporaneo creato da gym-web-prioritizer il YYYY-MM-DD
+// Scopo: bozza ordinamento task prima di produrre la lista finale
+// Puo' essere eliminato al termine della prioritizzazione
+```

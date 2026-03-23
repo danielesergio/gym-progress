@@ -162,3 +162,12 @@ FILE DA MODIFICARE: <n>
 FILE DA LEGGERE: <n>
 DIPENDENZE: <n completate>/<n totali>
 ```
+
+## File temporanei
+Se hai bisogno di creare file intermedi durante l'elaborazione, salvali **esclusivamente** in `scripts/agent-temp/gym-web-planner/`. Non creare mai file temporanei in altre cartelle.
+Ogni file temporaneo DEVE iniziare con un commento che spiega perche' e' stato creato, es:
+```json
+// File temporaneo creato da gym-web-planner il YYYY-MM-DD
+// Scopo: bozza piano implementazione task prima di produrre il pacchetto finale
+// Puo' essere eliminato al termine della pianificazione
+```

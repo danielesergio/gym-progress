@@ -77,3 +77,12 @@ ANOMALIE:
 ```
 
 Se il task non è implementabile come descritto, non inventare: segnalalo nelle anomalie e implementa la versione più fedele possibile con i dati reali disponibili.
+
+## File temporanei
+Se hai bisogno di creare file intermedi durante l'elaborazione, salvali **esclusivamente** in `scripts/agent-temp/gym-web-developer/`. Non creare mai file temporanei in altre cartelle.
+Ogni file temporaneo DEVE iniziare con un commento che spiega perche' e' stato creato, es:
+```javascript
+// File temporaneo creato da gym-web-developer il YYYY-MM-DD
+// Scopo: prototipo funzione rendering chart prima di integrare nel file finale
+// Puo' essere eliminato al termine del task
+```

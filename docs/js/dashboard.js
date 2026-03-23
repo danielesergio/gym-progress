@@ -170,10 +170,23 @@ function renderStrengthSummaryCard(last, plan) {
   const exercisesHtml = exercises.map(ex => {
     const valoreStr = ex.valore != null ? `${ex.valore.toFixed(1)}<span class="strength-card__unit">kg</span>` : '—';
     const targetStr = ex.target != null ? `→ ${ex.target.toFixed(1)} kg` : '—';
+
+    // Calcolo delta: target 12 mesi − massimale corrente, clampato a >= 0
+    let deltaHtml = '';
+    if (ex.target != null && ex.valore != null) {
+      const delta = ex.target - ex.valore;
+      if (delta > 0) {
+        deltaHtml = `<span class="strength-card__delta">+${delta.toFixed(1)} kg</span>`;
+      } else {
+        deltaHtml = `<span class="strength-card__delta strength-card__delta--done">✓</span>`;
+      }
+    }
+
     return `
       <div class="strength-card__exercise">
         <span class="strength-card__name">${ex.nome}</span>
         <span class="strength-card__value">${valoreStr}</span>
+        ${deltaHtml}
         <span class="strength-card__target">${targetStr}</span>
       </div>`;
   }).join('');
@@ -216,7 +229,7 @@ function renderProgramPhaseCard(plan) {
   // Campi con fallback '—'
   const numero  = faseCorrente?.numero  != null ? `Fase ${faseCorrente.numero}` : '—';
   const nome    = faseCorrente?.nome    ?? '—';
-  const periodo = faseCorrente?.periodo_indicativo ?? '—';
+  const periodo = faseCorrente?.periodo_indicativo ?? faseCorrente?.data_inizio ?? '—';
   const obiettivo = faseCorrente?.obiettivo ?? '—';
 
   // Calcolo totale settimane: somma dinamica da tutte le fasi del piano

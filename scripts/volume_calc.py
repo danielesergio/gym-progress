@@ -200,6 +200,106 @@ EXERCISE_MUSCLES = {
         "secondario": ["bicipiti", "deltoidi posteriori"],
         "terziario": ["erettori spinali"],
     },
+    "stacco rumeno": {
+        "principale": ["femorali", "glutei"],
+        "secondario": ["erettori spinali"],
+        "terziario": ["dorsali"],
+    },
+    "lat pulldown presa neutra": {
+        "principale": ["dorsali"],
+        "secondario": ["bicipiti"],
+        "terziario": ["deltoidi posteriori"],
+    },
+    "alzate frontali con manubri": {
+        "principale": ["deltoidi anteriori"],
+        "secondario": [],
+        "terziario": [],
+    },
+    "pushdown al cavo (corda)": {
+        "principale": ["tricipiti"],
+        "secondario": [],
+        "terziario": [],
+    },
+    "pushdown al cavo": {
+        "principale": ["tricipiti"],
+        "secondario": [],
+        "terziario": [],
+    },
+    "romanian deadlift (stacco rumeno)": {
+        "principale": ["femorali", "glutei"],
+        "secondario": ["erettori spinali"],
+        "terziario": ["dorsali"],
+    },
+    "alzate laterali con manubri": {
+        "principale": ["deltoidi mediali"],
+        "secondario": [],
+        "terziario": [],
+    },
+    "alzate frontali con manubri": {
+        "principale": ["deltoidi anteriori"],
+        "secondario": [],
+        "terziario": [],
+    },
+    "curl a martello con manubri": {
+        "principale": ["bicipiti", "brachiale"],
+        "secondario": [],
+        "terziario": [],
+    },
+    "calf raise in piedi": {
+        "principale": ["polpacci"],
+        "secondario": [],
+        "terziario": [],
+    },
+    "bulgarian split squat": {
+        "principale": ["quadricipiti", "glutei"],
+        "secondario": ["femorali"],
+        "terziario": [],
+    },
+    "hip thrust con bilanciere": {
+        "principale": ["glutei"],
+        "secondario": ["femorali"],
+        "terziario": ["core"],
+    },
+    "stacco da terra convenzionale": {
+        "principale": ["femorali", "glutei", "erettori spinali"],
+        "secondario": ["quadricipiti", "dorsali", "trapezi"],
+        "terziario": ["core", "avambracci"],
+    },
+    "squat con bilanciere": {
+        "principale": ["quadricipiti", "glutei"],
+        "secondario": ["femorali", "core"],
+        "terziario": ["erettori spinali"],
+    },
+    "rematore con bilanciere": {
+        "principale": ["dorsali", "trapezi"],
+        "secondario": ["bicipiti", "deltoidi posteriori"],
+        "terziario": ["erettori spinali"],
+    },
+    "wall slide": {
+        "principale": ["cuffia dei rotatori", "trapezi"],
+        "secondario": ["deltoidi posteriori"],
+        "terziario": [],
+    },
+    "external rotation con elastico": {
+        "principale": ["cuffia dei rotatori"],
+        "secondario": ["deltoidi posteriori"],
+        "terziario": [],
+    },
+    "shoulder cars": {
+        "principale": ["cuffia dei rotatori"],
+        "secondario": ["deltoidi posteriori", "trapezi"],
+        "terziario": [],
+    },
+    "stacco rumeno": {
+        "principale": ["femorali", "glutei"],
+        "secondario": ["erettori spinali"],
+        "terziario": ["dorsali"],
+    },
+    "pushdown al cavo (corda)": {
+        "principale": ["tricipiti"],
+        "secondario": [],
+        "terziario": [],
+    },
 }
 
 

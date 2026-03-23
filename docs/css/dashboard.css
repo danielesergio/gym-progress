@@ -206,8 +206,8 @@
 /* Riga singolo esercizio */
 .strength-card__exercise {
   display: grid;
-  grid-template-columns: 1fr auto auto;
-  align-items: baseline;
+  grid-template-columns: 1fr auto auto auto;
+  align-items: center;
   gap: var(--space-3);
   padding: var(--space-2) 0;
   border-bottom: 1px solid var(--color-border);
@@ -249,6 +249,42 @@
   color: var(--color-accent);
   white-space: nowrap;
   opacity: 0.85;
+}
+
+/* Delta: differenza tra target 12 mesi e massimale corrente */
+/* Trattato come badge pill — elemento separato e positivo (distanza da colmare) */
+.strength-card__delta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-accent);
+  background-color: var(--color-accent-dim);
+  border-radius: var(--radius-full);
+  padding: 2px var(--space-3);
+  white-space: nowrap;
+  line-height: var(--line-height-tight);
+}
+
+/* Freccia direzionale preposta — indica direzione di miglioramento */
+.strength-card__delta::before {
+  content: '↑';
+  font-size: var(--font-size-xs);
+  line-height: 1;
+  opacity: 0.9;
+}
+
+/* Variante: obiettivo già raggiunto (delta <= 0) */
+.strength-card__delta--done {
+  color: var(--color-success);
+  background-color: var(--color-success-dim);
+}
+
+/* Freccia non necessaria per lo stato done (✓ già comunicativo) */
+.strength-card__delta--done::before {
+  content: '';
+  display: none;
 }
 
 /* ── Card fase programma ── */

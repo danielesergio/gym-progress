@@ -70,8 +70,8 @@ def latest_file(prefix: str, exts: list) -> str | None:
     """Trova il file piu' recente con il prefisso dato tra piu' estensioni."""
     all_files = []
     for ext in exts:
-        pattern_root = os.path.join(DATA_OUT, f"{prefix}_[0-9]*{ext}")
-        pattern_hist = os.path.join(DATA_OUT, "history", "**", f"{prefix}_[0-9]*{ext}")
+        pattern_root = os.path.join(DATA_OUT, f"{prefix}_*{ext}")
+        pattern_hist = os.path.join(DATA_OUT, "history", "**", f"{prefix}_*{ext}")
         all_files.extend(globmod.glob(pattern_root) + globmod.glob(pattern_hist, recursive=True))
     return sorted(all_files)[-1] if all_files else None
 
@@ -314,10 +314,12 @@ def compute_volume(workout_data: dict) -> list:
     """Restituisce lista ordinata di {muscolo, serie_pesate, dettaglio[]}."""
     volume: dict = {}
     settimane = workout_data.get("settimane", [])
+    print(settimane)
+
     main_week = settimane[0] if settimane else {}
     unmatched = []
 
-    for i, giorno in enumerate(main_week.get("giorni", [])):
+    for i, giorno in enumerate(main_week.get("palestra", [])):
         day_label = giorno.get("giorno", f"Giorno {i+1}")
         for ex in giorno.get("esercizi", []):
             muscles = match_exercise(ex["nome"])
@@ -450,42 +452,75 @@ def enrich_volume(volume: list) -> list:
     }
 
 
+def extract_mesocicli(plan_data: dict) -> list:
+    """
+    Estrae tutti i mesocicli dalla struttura macrocicli[].mesocicli[] e li appiattisce
+    in una lista piatta compatibile con la vecchia struttura 'fasi'.
+    Aggiunge 'periodo_indicativo' sintetico da data_inizio + durata_settimane se assente.
+    """
+    import datetime
+    mesocicli = []
+    for macrociclo in plan_data.get("macrocicli", []):
+        mac_nome = macrociclo.get("nome", "")
+        for meso in macrociclo.get("mesocicli", []):
+            meso_copy = dict(meso)
+            meso_copy["macrociclo"] = mac_nome
+            # Costruisce periodo_indicativo da data_inizio se non presente
+            if "periodo_indicativo" not in meso_copy and meso_copy.get("data_inizio"):
+                start_str = meso_copy["data_inizio"]
+                meso_copy["periodo_indicativo"] = start_str
+            mesocicli.append(meso_copy)
+    return mesocicli
+
+
 def enrich_plan_fasi(fasi: list) -> list:
     """
-    Arricchisce le fasi del piano aggiungendo il campo 'stato':
-      - 'corrente' : la fase attiva oggi (basata su periodo_indicativo o numero=0 come fallback)
+    Arricchisce le fasi/mesocicli del piano aggiungendo il campo 'stato':
+      - 'corrente' : la fase attiva oggi
       - 'completata': fasi già terminate
       - 'futura'   : fasi non ancora iniziate
 
-    Il campo 'periodo_indicativo' ha formato "YYYY-MM / YYYY-MM (...)" o "YYYY-MM (...)".
-    Estrae il primo YYYY-MM come data di inizio e il secondo come data di fine (se presente).
-    Se il campo manca o non è parsabile, usa il numero della fase come ordine relativo.
+    Supporta sia il campo 'periodo_indicativo' (vecchio formato) sia 'data_inizio' (nuovo).
     """
     import datetime
     today = datetime.date.today()
     today_ym = (today.year, today.month)
 
-    def parse_periodo(periodo_indicativo: str):
-        """Restituisce (anno_inizio, mese_inizio, anno_fine, mese_fine) o None."""
-        if not periodo_indicativo:
+    def parse_ym(s: str):
+        """Estrae (anno, mese) da stringa YYYY-MM."""
+        if not s:
             return None
-        # Cerca tutti i pattern YYYY-MM nel testo
-        matches = re.findall(r"(\d{4})-(\d{2})", periodo_indicativo)
-        if not matches:
-            return None
-        start = (int(matches[0][0]), int(matches[0][1]))
-        end = (int(matches[-1][0]), int(matches[-1][1])) if len(matches) > 1 else start
-        return start, end
+        m = re.search(r"(\d{4})-(\d{2})", s)
+        return (int(m.group(1)), int(m.group(2))) if m else None
+
+    def get_start_end(fase: dict):
+        """Ricava (start_ym, end_ym) dalla fase, usando data_inizio+durata o periodo_indicativo."""
+        # Prova data_inizio + durata_settimane
+        start_ym = parse_ym(fase.get("data_inizio", ""))
+        if start_ym:
+            durata = fase.get("durata_settimane", 4)
+            start_date = datetime.date(start_ym[0], start_ym[1], 1)
+            end_date = start_date + datetime.timedelta(weeks=durata)
+            end_ym = (end_date.year, end_date.month)
+            return start_ym, end_ym
+        # Fallback: periodo_indicativo "YYYY-MM / YYYY-MM (...)"
+        periodo = fase.get("periodo_indicativo", "")
+        if periodo:
+            matches = re.findall(r"(\d{4})-(\d{2})", periodo)
+            if matches:
+                start_ym = (int(matches[0][0]), int(matches[0][1]))
+                end_ym = (int(matches[-1][0]), int(matches[-1][1])) if len(matches) > 1 else start_ym
+                return start_ym, end_ym
+        return None, None
 
     enriched = []
     current_assigned = False
 
-    for i, fase in enumerate(fasi):
+    for fase in fasi:
         fase_copy = dict(fase)
-        periodo = parse_periodo(fase_copy.get("periodo_indicativo", ""))
+        start_ym, end_ym = get_start_end(fase_copy)
 
-        if periodo:
-            start_ym, end_ym = periodo
+        if start_ym and end_ym:
             if end_ym < today_ym:
                 fase_copy["stato"] = "completata"
             elif start_ym <= today_ym <= end_ym:
@@ -494,7 +529,6 @@ def enrich_plan_fasi(fasi: list) -> list:
             else:
                 fase_copy["stato"] = "futura"
         else:
-            # Nessun periodo: fallback basato sull'ordine
             fase_copy["stato"] = "futura"
 
         enriched.append(fase_copy)
@@ -563,8 +597,14 @@ def main():
     plan_html = os.path.join(DATA_OUT, "plan.html")
     if os.path.exists(plan_yaml):
         plan_data = read_yaml(plan_yaml)
-        if isinstance(plan_data, dict) and "fasi" in plan_data:
-            plan_data["fasi"] = enrich_plan_fasi(plan_data["fasi"])
+        if isinstance(plan_data, dict):
+            # Nuova struttura: macrocicli[].mesocicli[] -> estrai lista piatta in "fasi"
+            if "macrocicli" in plan_data:
+                fasi = extract_mesocicli(plan_data)
+                plan_data["fasi"] = enrich_plan_fasi(fasi)
+            # Vecchia struttura: fasi[] diretta
+            elif "fasi" in plan_data:
+                plan_data["fasi"] = enrich_plan_fasi(plan_data["fasi"])
         write_json(os.path.join(out, "plan.json"), plan_data)
     elif os.path.exists(plan_html):
         write_json(os.path.join(out, "plan.json"), {"html": read_text(plan_html)})

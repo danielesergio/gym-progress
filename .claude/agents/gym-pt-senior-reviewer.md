@@ -162,9 +162,11 @@ Quando l'orchestratore ti chiede di revisionare il **piano a lungo termine** (in
 ### Checklist piano
 
 #### 1. Struttura e completezza
-- [ ] Presenti tutte le sezioni obbligatorie: `meta`, `situazione`, `massimali_attuali`, `target`, `fasi`, `strategia_nutrizionale`, `rischi`
-- [ ] La somma delle `durata_settimane` di tutte le fasi e' esattamente 52
-- [ ] Ogni fase ha `obiettivo`, `metodologia` e `note` concreti e misurabili
+- [ ] Presenti tutte le sezioni obbligatorie: `meta`, `situazione`, `massimali_attuali`, `target`, `macrocicli`, `strategia_nutrizionale`, `rischi`
+- [ ] `strategia_nutrizionale.fase_corrente` presente e con valore esattamente uno tra: `cut`, `bulk`, `mantenimento`
+- [ ] La somma delle `durata_settimane` dei mesocicli di ogni macrociclo corrisponde alla `durata_settimane` del macrociclo
+- [ ] Ogni mesociclo ha `obiettivo`, `metodologia`, `tipo`, `fase_nutrizionale` e `incrocio_stimolo_ambiente` concreti
+- [ ] `macrocicli_futuri` presente se l'orizzonte totale supera il primo macrociclo
 
 #### 2. Target e rate di progressione
 - [ ] I target a 6 e 12 mesi sono basati sui rate di progressione storica (non ottimistici)
@@ -181,16 +183,27 @@ Quando l'orchestratore ti chiede di revisionare il **piano a lungo termine** (in
 - [ ] Le richieste specifiche dell'atleta sono integrate
 - [ ] La fase iniziale del piano e' coerente con lo stato attuale (energia, stress, aderenza)
 
-#### 5. Periodizzazione
-- [ ] La sequenza dei macrocicli ha una logica di progressione chiara
-- [ ] Le transizioni tra macrocicli sono graduali
-- [ ] I periodi di scarico/recupero sono previsti
+#### 5. Periodizzazione e logica stimolo/ambiente
+- [ ] La sequenza dei mesocicli ha una logica di progressione chiara all'interno di ogni macrociclo
+- [ ] L'abbinamento tipo mesociclo x fase nutrizionale e' razionale (es. Ipertrofia in Bulk, Intensita' in Cut)
+- [ ] `incrocio_stimolo_ambiente` di ogni mesociclo spiega il perche' dell'abbinamento
+- [ ] Le transizioni tra mesocicli sono graduali (no salti bruschi di intensita' o volume)
+- [ ] I periodi di scarico/recupero sono previsti all'interno dei macrocicli
 - [ ] La periodizzazione e' appropriata per il livello dell'atleta
 
 #### 6. Praticita'
 - [ ] Il piano e' actionable, non generico
-- [ ] Ogni fase ha indicazioni concrete su metodologie, volume, intensita'
+- [ ] Ogni mesociclo ha indicazioni concrete su metodologie, volume, intensita'
 - [ ] I rischi identificati hanno strategie preventive concrete
+
+### File temporanei
+Se hai bisogno di creare script di calcolo, file di verifica, o qualsiasi file intermedio durante l'elaborazione, salvali **esclusivamente** in `scripts/agent-temp/gym-pt-senior-reviewer/`. Non creare mai file temporanei in altre cartelle.
+Ogni file temporaneo DEVE iniziare con un commento che spiega perche' e' stato creato, es:
+```python
+# File temporaneo creato da gym-pt-senior-reviewer il YYYY-MM-DD
+# Scopo: verifica calcolo percentuali 1RM settimana 4 prima di applicare correzioni
+# Puo' essere eliminato al termine della revisione
+```
 
 ### Output revisione piano
 

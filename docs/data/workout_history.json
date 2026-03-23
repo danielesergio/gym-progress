@@ -1,8 +1,8 @@
 [
   {
-    "id": "aab49981",
-    "start": "f2b9186b",
-    "end": "3f92c4d1",
+    "id": "eb99d6a2",
+    "start": "6fac6629",
+    "end": "c1a9b4d6",
     "delta_squat_kg": 9,
     "delta_panca_kg": 7,
     "delta_stacco_kg": 14,
@@ -16,9 +16,9 @@
     "note": "Allenamento in casa"
   },
   {
-    "id": "aa5f07fe",
-    "start": "3f92c4d1",
-    "end": "f7f2c485",
+    "id": "0ff7d112",
+    "start": "c1a9b4d6",
+    "end": "99478b1d",
     "delta_squat_kg": 12,
     "delta_panca_kg": 10,
     "delta_stacco_kg": 20,
@@ -32,9 +32,9 @@
     "note": "Allenamento in casa"
   },
   {
-    "id": "86e0ad83",
-    "start": "f7f2c485",
-    "end": "1af80808",
+    "id": "56fc1bcb",
+    "start": "99478b1d",
+    "end": "1b5adb6f",
     "delta_squat_kg": 12,
     "delta_panca_kg": 10,
     "delta_stacco_kg": 25,
@@ -48,9 +48,9 @@
     "note": "Australia - allenamento discontinuo per cambio casa e per partenza dall'italia"
   },
   {
-    "id": "30d1f290",
-    "start": "1af80808",
-    "end": "af420662",
+    "id": "e91605e0",
+    "start": "1b5adb6f",
+    "end": "20d0305d",
     "delta_squat_kg": 16,
     "delta_panca_kg": 0,
     "delta_stacco_kg": 25,
@@ -64,24 +64,24 @@
     "note": "Australia - allenamento discontinuo per cambii casa multipli"
   },
   {
-    "id": "b77984ed",
-    "start": "af420662",
-    "end": "3a6a7aad",
+    "id": "020b6e28",
+    "start": "20d0305d",
+    "end": "acdf8cc9",
     "delta_squat_kg": 0.8,
     "delta_panca_kg": 1.7,
     "delta_stacco_kg": -1.7,
     "delta_totale_kg": null,
-    "delta_weight_kg": -2.2,
-    "duration_days": 170,
+    "delta_weight_kg": -3.5,
+    "duration_days": 172,
     "delta_bf_pct": -0.7,
-    "delta_mm_kg": -1.2,
+    "delta_mm_kg": -2.3,
     "fase_teorica": "cut",
     "efficacia_workout": 5,
     "note": "Toranato in italia il 2025-07-01, perso allenamenti per viaggio e iscrizione nuova palestra"
   },
   {
-    "id": "8dabc4c5",
-    "start": "3a6a7aad",
+    "id": "ac429d60",
+    "start": "acdf8cc9",
     "end": null,
     "delta_squat_kg": null,
     "delta_panca_kg": null,

@@ -13,7 +13,7 @@
   },
   "giorni": [
     {
-      "nome": "Lunedi - Allenamento Pesi",
+      "nome": "Lunedi - Gym",
       "tipo": "allenamento",
       "kcal": 2842,
       "macros": {
@@ -225,7 +225,7 @@
       ]
     },
     {
-      "nome": "Martedi - Riposo",
+      "nome": "Martedi - Rest",
       "tipo": "riposo",
       "kcal": 2677,
       "macros": {
@@ -437,7 +437,7 @@
       ]
     },
     {
-      "nome": "Mercoledi - Allenamento Pesi",
+      "nome": "Mercoledi - Gym",
       "tipo": "allenamento",
       "kcal": 2849,
       "macros": {
@@ -861,7 +861,7 @@
       ]
     },
     {
-      "nome": "Venerdi - Allenamento Pesi",
+      "nome": "Venerdi - Gym",
       "tipo": "allenamento",
       "kcal": 2861,
       "macros": {
@@ -1065,7 +1065,7 @@
       ]
     },
     {
-      "nome": "Sabato - Riposo (Sgarro)",
+      "nome": "Sabato - Rest (Sgarro)",
       "tipo": "riposo_sgarro",
       "kcal": 2747,
       "macros": {
@@ -1245,7 +1245,7 @@
       ]
     },
     {
-      "nome": "Domenica - Riposo",
+      "nome": "Domenica - Rest",
       "tipo": "riposo",
       "kcal": 2624,
       "macros": {

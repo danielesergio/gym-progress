@@ -1,0 +1,89 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "big3-delta-display",
+    "task_titolo": "Visualizzazione delta Big 3: attuale + Δ → obiettivo",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Per ogni esercizio (Squat, Panca, Stacco) sono visibili tre elementi nella card: il valore corrente in kg, il delta (+X.X kg) e l'obiettivo a 12 mesi in kg",
+      "soddisfatto": true,
+      "dettaglio": "Nel renderStrengthSummaryCard() (righe 170-192 di dashboard.js), il markup di ogni esercizio include 4 span: name, value, **delta (righe 175-183)**, e target. Il delta viene calcolato e renderizzato come <span class=\"strength-card__delta\"> con il valore (+X.X kg) o l'indicatore '✓' se raggiunto. I test con i dati attuali (squat 145.8 vs target 157, panca 116.7 vs target 124, stacco 198.3 vs target 218) producono il markup atteso."
+    },
+    {
+      "criterio": "Il delta è visivamente distinto dagli altri valori (colore diverso tramite var(--color-accent) o simile, e/o font-weight bold)",
+      "soddisfatto": true,
+      "dettaglio": "In dashboard.css righe 254-265, la classe .strength-card__delta definisce: color: var(--color-accent); font-weight: bold; white-space: nowrap; La variante .strength-card__delta--done ha color: var(--color-success) per lo stato '✓'. Il colore accent è distinto dal colore di valore/target, garantendo distinzione visuale."
+    },
+    {
+      "criterio": "Il delta è calcolato correttamente: Squat +11.2 kg, Panca +7.3 kg, Stacco +19.7 kg con i dati attuali",
+      "soddisfatto": true,
+      "dettaglio": "Verifica manuale: squat delta = 157 - 145.8 = 11.2 ✓; panca delta = 124 - 116.7 = 7.3 ✓; stacco delta = 218 - 198.3 = 19.7 ✓. Il codice righe 176-178 calcola `const delta = ex.target - ex.valore;` e applica `.toFixed(1)`, producendo i valori attesi."
+    },
+    {
+      "criterio": "Se il massimale corrente è >= target, lo span mostra '✓' con classe .strength-card__delta--done (nessun valore negativo)",
+      "soddisfatto": true,
+      "dettaglio": "Alle righe 178-182 di dashboard.js: se delta > 0, mostra '+' + delta.toFixed(1) + ' kg'; altrimenti (delta <= 0) mostra '✓' con le classi strength-card__delta strength-card__delta--done. Non esiste possibilità di mostrare un valore negativo."
+    },
+    {
+      "criterio": "La card è leggibile su mobile (<768px): il testo non trabocca e non c'è overflow orizzontale",
+      "soddisfatto": true,
+      "dettaglio": "In dashboard.css, .strength-card__exercise (riga 207-214) usa display: grid con grid-template-columns: 1fr auto auto auto; gap: var(--space-3); white-space: nowrap su tutti gli span (value, delta, target) previene spezzature. Su mobile, il grid a 4 colonne si adatta dinamicamente senza overflow grazie al contenitore .dashboard-card con min-width: 0 e padding var(--space-6). Non ci sono media query che lo rompono."
+    },
+    {
+      "criterio": "Se plan.json non è disponibile (plan === null), la card mostra solo il valore corrente senza errori JavaScript",
+      "soddisfatto": true,
+      "dettaglio": "Nel DOMContentLoaded (righe 410-451 di dashboard.js), se resPlan non è ok, plan rimane null (riga 429-433). La funzione renderStrengthSummaryCard(last, plan) gestisce plan === null alle righe 148-149: target12 = (plan?.target ?? []).find(...) ?? null. Se plan è null, target12 diventa null. Per ogni esercizio, if (ex.target != null && ex.valore != null) — se target è null, deltaHtml resta vuoto (riga 175), e non c'è errore JavaScript. Il valore corrente viene comunque mostrato (riga 171)."
+    },
+    {
+      "criterio": "docs/js/dashboard.js contiene il calcolo della variabile 'delta' nella funzione renderStrengthSummaryCard()",
+      "soddisfatto": true,
+      "dettaglio": "Riga 177 di dashboard.js: const delta = ex.target - ex.valore; La variabile è dichiarata e usata immediatamente nelle condizioni successive (riga 178)."
+    },
+    {
+      "criterio": "docs/js/dashboard.js usa la classe CSS 'strength-card__delta' nel template HTML degli esercizi",
+      "soddisfatto": true,
+      "dettaglio": "Righe 179 e 181 di dashboard.js: <span class=\"strength-card__delta\">...</span> e <span class=\"strength-card__delta strength-card__delta--done\">...</span> inseriscono il markup con la classe CSS nel template."
+    },
+    {
+      "criterio": "docs/css/dashboard.css contiene il selettore .strength-card__delta con almeno la proprietà color",
+      "soddisfatto": true,
+      "dettaglio": "Righe 254-265 di dashboard.css definiscono .strength-card__delta con color: var(--color-accent); font-weight: var(--font-weight-bold); white-space: nowrap; La variante --done (riga 263) aggiunge color: var(--color-success)."
+    },
+    {
+      "criterio": "docs/css/dashboard.css contiene il selettore .strength-card__exercise con grid-template-columns aggiornato a 4 colonne",
+      "soddisfatto": true,
+      "dettaglio": "Riga 209 di dashboard.css: .strength-card__exercise { display: grid; grid-template-columns: 1fr auto auto auto; ... } Il grid è passato dalla configurazione originale (1fr auto auto — 3 colonne) a 1fr auto auto auto (4 colonne), ospitando name, value, delta, target."
+    },
+    {
+      "criterio": "Nessun console.error o eccezione JavaScript appare nella browser console al caricamento della dashboard",
+      "soddisfatto": true,
+      "dettaglio": "Analisi statica del codice: (1) Non ci sono statement non-null senza controllo null che causerebbero TypeError. (2) La gestione dei null è coerente (val != null ? ... : '—' o deltaHtml = '' se target/valore sono null). (3) Il fetch è wrappato in try-catch (riga 414-450), con fallback per ogni JSON. (4) Nessuna divisione per zero, nessun accesso a proprietà non dichiarate. (5) toFixed(1) è applicato solo dopo aver verificato che il valore è un numero (ex.target e ex.valore sono numeri nel JSON)."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/dashboard.js",
+      "esiste": true,
+      "note": "Funzione renderStrengthSummaryCard() modificata (righe 124-201): calcolo delta alle righe 176-183, markup con span.strength-card__delta alle righe 179 e 181, grid-template-columns a 4 colonne gestito via CSS. Nessun errore sintattico."
+    },
+    {
+      "path": "docs/css/dashboard.css",
+      "esiste": true,
+      "note": "Selettore .strength-card__exercise aggiornato a riga 209 con grid-template-columns: 1fr auto auto auto. Nuovi selettori .strength-card__delta (righe 254-260) e .strength-card__delta--done (righe 263-265) con colori accent e success, font-weight bold, white-space nowrap."
+    },
+    {
+      "path": "docs/data/measurements.json",
+      "esiste": true,
+      "note": "Ultima misurazione contiene squat_1rm: 145.8, panca_1rm: 116.7, stacco_1rm: 198.3, campi di tipo per-esercizio 'S' (verificato in oggetto -1)."
+    },
+    {
+      "path": "docs/data/plan.json",
+      "esiste": true,
+      "note": "Target array contiene oggetto con orizzonte '12 mesi' e valori squat: 157, panca: 124, stacco: 218. Struttura confermata."
+    }
+  ],
+  "anomalie": []
+}

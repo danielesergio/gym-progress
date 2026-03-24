@@ -1,0 +1,50 @@
+{
+  "meta": {
+    "data": "2026-03-23",
+    "tipo": "plan",
+    "valutazione": 9,
+    "esito": "APPROVATA",
+    "numero_review": 2
+  },
+  "correzioni_applicate": [
+    {
+      "id": "C1",
+      "descrizione": "Corretto stima_raggiungimento_anni.max da 4.5 a 5.0: la panca richiede 4.9 anni al rate corretto, quindi 4.5 era ottimistico",
+      "valore_errato": "4.5 anni",
+      "valore_corretto": "5.0 anni",
+      "dove": "proiezione_obiettivi.stima_raggiungimento_anni.max",
+      "formula": "Panca: (150 - 116.7) / 6.8 = 33.3 / 6.8 = 4.90 anni. Il max deve coprire il lift piu' lento, arrotondato a 5.0"
+    }
+  ],
+  "problemi_critici": [],
+  "suggerimenti": [
+    {
+      "id": "S1",
+      "descrizione": "Peaking di 6 settimane e' lungo rispetto allo standard (2-3 settimane)",
+      "motivazione": "Un peaking di 6 settimane con intensita' sopra il 90% e volume minimo rischia di causare affaticamento del SNC e stagnazione neurale. Lo standard in powerlifting e' 2-3 settimane di peaking vero (singole e doppie sopra il 90%), precedute da intensificazione che gia' porta i carichi all'85-92%. Con 6 settimane di intensificazione (meso 5) che arriva gia' al 92%, il peaking puo' essere piu' breve.",
+      "proposta": "Considerare la riduzione del peaking a 3-4 settimane, ridistribuendo 2-3 settimane all'accumulo (portandolo a 12-13 settimane) per massimizzare l'adattamento ipertrofico. Alternativa: strutturare il meso 6 come 3 settimane di pre-peaking (85-90%) + 3 settimane di peaking vero (90%+), chiarendo nel campo metodologia la progressione interna."
+    },
+    {
+      "id": "S2",
+      "descrizione": "Data fine macrociclo 1 (2026-12) non copre il tapering che termina a inizio gennaio 2027",
+      "motivazione": "Il macrociclo 1 inizia a marzo 2026 e dura 40 settimane = ~10 mesi, quindi termina a inizio gennaio 2027. La data_fine '2026-12' e' leggermente imprecisa: il tapering (meso 7, 2 settimane) parte a dicembre e il Test Day cade a meta'/fine dicembre o inizio gennaio.",
+      "proposta": "Correggere data_fine a '2027-01' oppure specificare nelle note che il Test Day cade nell'ultima settimana di dicembre 2026, con la settimana buffer gia' in gennaio 2027."
+    },
+    {
+      "id": "S3",
+      "descrizione": "Mancano indicazioni sulla frequenza di monitoraggio composizione corporea durante il macrociclo",
+      "motivazione": "Il piano prevede transizioni nutrizionali importanti (mantenimento -> cut -> bulk -> mantenimento) ma non specifica quando misurare peso, BF%, circonferenze per verificare che la composizione corporea si muova nella direzione attesa. Il rischio 'Perdita di massa magra durante cut' menziona monitoraggio mensile, ma non e' formalizzato nel piano principale.",
+      "proposta": "Aggiungere una sezione 'monitoraggio' o una nota nella strategia_nutrizionale che indichi: pesata settimanale (media mobile), misurazioni circonferenze ogni 4 settimane, stima BF% ogni 8 settimane. Questi dati alimentano le decisioni sui criteri di avanzamento tra mesocicli."
+    }
+  ],
+  "punti_di_forza": [
+    "Tutte le correzioni della review 1 sono state applicate correttamente: target numerici allineati ai rate corretti, tapering ridotto a 2 settimane, tipo Mini-Cut corretto, criteri di avanzamento aggiunti a tutti i mesocicli, beach volley menzionato nel mini-cut, push-up decline rimosso dalle alternative sicure.",
+    "Eccellente gestione della fase rehab con 2 mesocicli dedicati e criteri dolore-guidati chiari. La sospensione del cut durante il rehab e' una decisione saggia e ben motivata fisiologicamente.",
+    "Incrocio stimolo-ambiente argomentato con rigore per ogni mesociclo: ogni abbinamento tipo/fase_nutrizionale ha una motivazione fisiologica specifica e non generica.",
+    "Criteri di avanzamento quantitativi e misurabili per ogni transizione tra mesocicli: panca al 70% senza dolore (meso 2->3), massimali entro -5% (meso 3->4), volume target per 2+ settimane (meso 4->5), nuovo 5RM (meso 5->6).",
+    "Gestione rischi completa con 5 aree identificate, incluso il rischio specifico di stagnazione panca post-TOS con alternative concrete e sicure (floor press, chest press machine, push-up su rialzo).",
+    "Rispetto delle preferenze dell'atleta: ripetizioni basse mantenute nell'accumulo con heavy-light approach, beach volley integrato nel calendario settimanale.",
+    "Somma durate mesocicli (5+5+6+10+6+6+2=40) coerente con durata macrociclo dichiarata.",
+    "Target futuri del macrociclo 2 ora correttamente allineati al rate corretto (squat ~168-169 kg) con nota esplicita sulla possibile revisione se i fattori correttivi migliorano."
+  ]
+}

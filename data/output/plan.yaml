@@ -1,0 +1,179 @@
+meta:
+  data_aggiornamento: "2026-03-23"
+  atleta: "Daniele"
+
+situazione:
+  infortunio: "Sindrome TOS (Thoracic Outlet Syndrome) da probabile infiammazione/contrattura del piccolo pettorale. Fermo da 3 settimane, in fase di guarigione. Limitazioni: panca piana, trazioni, military press, dip, lat machine. Non compromessi: alzate laterali e frontali."
+  note: "Atleta in rientro da infortunio. I primi 2 mesocicli sono dedicati alla riabilitazione e rampa con carico ridotto. La fase nutrizionale durante il rehab passa a mantenimento (no cut) per preservare massa magra e favorire la guarigione."
+
+massimali_attuali:
+  squat: 145.8
+  panca: 116.7
+  stacco: 198.3
+
+target:
+  - orizzonte: "3 mesi"
+    data: "2026-06"
+    squat: 148.0
+    panca: 118.0
+    stacco: 203.0
+    note: "Periodo dominato dal rehab TOS. Progressione attesa minima sui fondamentali compromessi (panca). Squat e stacco reintrodotti progressivamente nella fase ramp-up. I target sono conservativi considerando 6-8 settimane di rehab."
+
+  - orizzonte: "6 mesi"
+    data: "2026-09"
+    squat: 151.5
+    panca: 120.1
+    stacco: 208.3
+    note: "Post-rehab completo. Prima fase di Accumulo e Intensificazione completabili. Progressione basata su rate corretti annui prorati a 6 mesi: squat 145.8 + 11.4/2 = 151.5, panca 116.7 + 6.8/2 = 120.1, stacco 198.3 + 19.9/2 = 208.3. Target conservativi considerando che i primi 2.5 mesi sono rehab con progressione minima."
+
+  - orizzonte: "12 mesi"
+    data: "2027-03"
+    squat: 157.2
+    panca: 123.5
+    stacco: 218.2
+    note: "Rate corretti annui applicati: squat 145.8 + 11.4 = 157.2, panca 116.7 + 6.8 = 123.5, stacco 198.3 + 19.9 = 218.2. Target coerenti con rate corretti (gia' penalizzati per infortunio -30% e eta' -10%)."
+
+  - orizzonte: "Lungo termine"
+    data: "2029-03"
+    squat: 200.0
+    panca: 150.0
+    stacco: 250.0
+    note: "Obiettivi dichiarati dall'atleta. Raggiungibili in 3-4 anni dall'oggi con programmazione corretta, salute mantenuta e aderenza costante."
+
+macrocicli:
+  - numero: 1
+    nome: "Rientro e Prima Fondazione"
+    data_inizio: "2026-03"
+    data_fine: "2026-12"
+    durata_settimane: 40
+    obiettivo: "Recupero completo dal TOS, reintroduzione progressiva dei fondamentali, costruzione solida base di forza e volume. Transizione da mantenimento a bulk moderato nella seconda metà del macrociclo."
+    note: "Struttura: 2 mesocicli rehab/ramp-up (mantenimento calorico) + 1 mini-cut breve + 1 accumulo + 1 intensificazione + 1 peaking + 1 tapering/test. Durate: 5+5+6+10+6+6+2 = 40 settimane. L'Accumulo è esteso a 10 settimane (maggior volume per atleta con storico ad alto volume) e il Peaking a 6 settimane (progressione più graduale verso le singole massimali). Il Tapering è compresso a 2 settimane per evitare detraining. Il volume settimanale sale da ~30 rep totali a ~80-100 rep nella fase accumulo, in linea con la storia pregressa dell'atleta."
+    mesocicli:
+      - numero: 1
+        nome: "Rehab TOS Fase 1 — Recupero Attivo"
+        tipo: "Recupero"
+        fase_nutrizionale: "mantenimento"
+        data_inizio: "2026-03"
+        durata_settimane: 5
+        obiettivo: "Recuperare mobilità e funzionalità della spalla/piccolo pettorale. Mantenere forza residua con esercizi compatibili. Zero dolore come criterio guida."
+        metodologia: "Lavoro unilaterale leggero, esercizi di mobilità scapolare, rinforzo cuffia dei rotatori. Squat e stacco con bilanciere a buffer alto (RPE 5-6). Panca, trazioni, dip, military press e lat machine VIETATI. Alzate laterali e frontali permesse."
+        note: "3 sessioni/settimana. Volume totale basso (~30-40 rep fondamentali). Priorità assoluta: no dolore."
+        criteri_avanzamento: "Assenza totale di dolore al piccolo pettorale a riposo e sotto carico moderato per almeno 1 settimana consecutiva. Mobilità scapolare ripristinata (range completo senza compensi)."
+        incrocio_stimolo_ambiente: "Mantenimento calorico durante rehab: garantisce substrato proteico per riparazione tissutale senza creare deficit che accelererebbe il catabolismo della massa magra. L'assenza di surplus evita accumulo di grasso in un periodo di bassa spesa energetica da palestra."
+
+      - numero: 2
+        nome: "Rehab TOS Fase 2 — Ramp-up e Reintroduzione"
+        tipo: "Recupero"
+        fase_nutrizionale: "mantenimento"
+        data_inizio: "2026-04"
+        durata_settimane: 5
+        obiettivo: "Reintrodurre progressivamente gli esercizi compromessi dal TOS con carichi molto leggeri. Consolidare il pattern motorio dei fondamentali. Raggiungere 4 sessioni/settimana."
+        metodologia: "Reintroduzione graduale panca piana con manubri prima, poi bilanciere leggero (50-60% del massimale pre-infortunio). Trazioni assistite o lat machine leggera. Squat e stacco portati a RPE 6-7. Progressione dolore-guidata: se compare dolore, regredire."
+        note: "Test finale mesociclo: eseguire serie di panca con bilanciere a ~70% senza dolore come criterio di avanzamento. Beach volley giovedì rimane, conteggiatlo come attività aerobica/sport 1x/sett."
+        criteri_avanzamento: "Serie di panca con bilanciere a ~70% del massimale pre-infortunio eseguita senza dolore. RPE percepita stabile su squat e stacco (RPE 6-7 a carichi pre-infortunio). Almeno 4 sessioni/settimana completate nelle ultime 2 settimane."
+        incrocio_stimolo_ambiente: "Mantenimento calorico nella fase ramp-up: l'apporto proteico adeguato supporta l'adattamento neuromuscolare durante la riapprendimento dei pattern motori. Un deficit calorico comprometterebbe il recupero e la qualità delle sessioni leggere."
+
+      - numero: 3
+        nome: "Mini-Cut Post-Rehab"
+        tipo: "Mini-Cut"
+        fase_nutrizionale: "cut"
+        data_inizio: "2026-05"
+        durata_settimane: 6
+        obiettivo: "Riprendere il percorso di riduzione del body fat (da 17.1% verso 14-15%) in una fase di forza moderata. Mantenere i massimali appena recuperati. Deficit calorico controllato."
+        metodologia: "Intensità alta sui fondamentali (80-85% / RPE 7-8), volume ridotto rispetto al futuro accumulo (~50-60 rep/sett totali). Focus sui fondamentali: squat, stacco e progressiva reintroduzione panca. Esercizi accessori mantenuti per stimolo ipertrofico minimo."
+        note: "Volume ridotto del 30-40% rispetto al futuro accumulo. Test di mantenimento finale (singola a RPE 8) per verificare che i massimali non abbiano subito regressioni significative prima di entrare nell'accumulo. Beach volley giovedì mantenuto: considerare il TDEE aumentato nelle giornate con doppia attività per evitare deficit eccessivo. Se fatica eccessiva, ridurre intensità beach volley."
+        criteri_avanzamento: "Massimali mantenuti entro -5% del pre-cut su squat, panca e stacco al test finale (singola RPE 8). Assenza di dolore TOS ricorrente. Perdita di massa magra < 1 kg nelle ultime 4 settimane."
+        incrocio_stimolo_ambiente: "Mini-Cut + deficit moderato: con deficit moderato (-300/-400 kcal) si mantiene intensità elevata che preserva i massimali. L'alta intensità sui fondamentali è il segnale più potente per il mantenimento della forza in ipocalorica. Il volume ridotto limita il cortisolo da allenamento in un contesto già catabolicante."
+
+      - numero: 4
+        nome: "Accumulo — Volume e Ipertrofia"
+        tipo: "Ipertrofia"
+        fase_nutrizionale: "bulk"
+        data_inizio: "2026-07"
+        durata_settimane: 10
+        obiettivo: "Massimizzare lo stimolo ipertrofico e accumulare volume di lavoro. Progressione graduale dei carichi. Portare il volume settimanale a 80-100 rep totali, in linea con la storia pregressa."
+        metodologia: "MAV (Massimo Volume Adattativo) con progressione lineare a RPE, 3-5x6-10 reps sui fondamentali con bilanciere. Wave loading 3-2-1 su squat e stacco per mantenere stimolo di forza nell'ipertrofia. Preferenza atleta per basse reps: mantenere serie da 3-6 anche nell'accumulo (heavy-light approach). Deload settimana 9 (-30% volume), AMRAP test settimana 10."
+        note: "4 sessioni/settimana. Beach volley rimane come attività aggiuntiva. Tenere conto del TDEE aumentato nelle settimane con 4+1 attività."
+        criteri_avanzamento: "Volume target (~80-100 rep/sett fondamentali) raggiunto e mantenuto per almeno 2 settimane consecutive. Progressione dei carichi confermata su tutti e 3 i fondamentali. AMRAP test settimana 10 con RPE percepita ≤9."
+        incrocio_stimolo_ambiente: "Ipertrofia + bulk: il surplus calorico (+200/+300 kcal sopra TDEE) fornisce substrato energetico per la sintesi proteica muscolare e il recupero da volumi elevati. L'eccesso moderato minimizza l'accumulo adiposo mentre massimizza l'anabolismo."
+
+      - numero: 5
+        nome: "Intensificazione — Forza Massimale"
+        tipo: "Forza"
+        fase_nutrizionale: "bulk"
+        data_inizio: "2026-09"
+        durata_settimane: 6
+        obiettivo: "Convertire il volume accumulato in forza massimale. Intensità 80-92% / RPE 8-9. Stimare nuovi massimali con test 3RM o 5RM a fine mesociclo."
+        metodologia: "Wave loading 3-2-1 con intensità crescente, Ciclo Russo Fase 2 su squat. Singole a RPE 8-9 nelle ultime settimane. Volume ridotto del 30-40% rispetto all'accumulo. Deload attivo settimana 5, test 5RM settimana 6."
+        note: "Atleta preferisce ripetizioni basse: questo mesociclo è ideale per le sue preferenze. RPE auto-regolato per gestire accumulo di fatica da beach volley estivo."
+        criteri_avanzamento: "Nuovo 5RM stabilito e confermato su almeno 2 dei 3 fondamentali al test di fine mesociclo. RPE auto-riferita stabile (non in aumento) nelle ultime 2 settimane. Assenza di sovra-fatica acuta (qualità del sonno, livelli energetici nella norma)."
+        incrocio_stimolo_ambiente: "Forza + bulk: con surplus calorico moderato il sistema nervoso centrale ha pieno recupero tra sessioni ad alta intensità. Il surplus supporta le adattazioni neurali e strutturali (tendini, legamenti) richieste dal carico sub-massimale frequente."
+
+      - numero: 6
+        nome: "Peaking — Massimizzazione Performance"
+        tipo: "Forza"
+        fase_nutrizionale: "mantenimento"
+        data_inizio: "2026-10"
+        durata_settimane: 6
+        obiettivo: "Portare l'atleta al picco di performance neurale. Intensità sopra 90% / RPE 9-9.5. Preparazione al Test Day finale del macrociclo."
+        metodologia: "Singole e doppie a RPE 9+, triple a 85-92%. Volume ridotto al minimo. Recuperi estesi (5-8 min). Focus esclusivo su squat, panca e stacco. Nessun esercizio accessorio faticante."
+        note: "3 sessioni/settimana max. Beach volley sospeso o ridotto a impegno molto leggero durante il peaking."
+        criteri_avanzamento: "Singole a RPE 9+ eseguite su tutti e 3 i fondamentali con tecnica stabile. Recupero completo percepito prima del Test Day (almeno 48-72h di riposo post-ultima sessione pesante)."
+        incrocio_stimolo_ambiente: "Forza massimale + mantenimento calorico: il ritorno al mantenimento evita il 'pump' subcutaneo da surplus e ottimizza la composizione per le singole massimali. La nutrizione di mantenimento con carbo alti nei giorni allenamento massimizza la performance neurale senza accumulo adiposo."
+
+      - numero: 7
+        nome: "Tapering e Test Day"
+        tipo: "Forza"
+        fase_nutrizionale: "mantenimento"
+        data_inizio: "2026-12"
+        durata_settimane: 2
+        obiettivo: "Scarico progressivo, supercompensazione e misurazione dei nuovi massimali. Protocollo 3 tentativi per squat, panca e stacco."
+        metodologia: "Settimana 1: volume -50%, intensità ~80% (tapering). Settimana 2: 2-3 giorni di riposo (lunedì-mercoledì) + Test Day (giovedì o venerdì) con protocollo classico powerlifting (Opener 90-92%, Secondo 98-102%, Terzo 103-105%+). Riscaldamento specifico, gestione recuperi tra tentativi, mental coaching."
+        note: "La settimana buffer post-test (analisi dati, pianificazione macrociclo 2) è conteggiata come prima settimana del macrociclo 2, non inclusa in questo mesociclo. I nuovi massimali alimenteranno il piano dell'anno successivo."
+        criteri_avanzamento: "N/A — fine macrociclo 1. Nuovi massimali misurati e registrati. Pianificazione macrociclo 2 avviata."
+        incrocio_stimolo_ambiente: "Tapering + mantenimento: la riduzione del volume in mantenimento calorico crea supercompensazione glicogenetica e riduzione della fatica accumulata, massimizzando la forza espressa nel test day. Carbo-loading leggero (carboidrati alti) nelle 48h pre-test."
+
+macrocicli_futuri:
+  - numero: 2
+    orizzonte: "Anno 2 (2027-2027)"
+    obiettivo_indicativo: "Consolidamento forza su livelli avanzati. Squat ~168-169 kg (157.2 + 11.4 rate corretto), panca 128-132 kg, stacco 235-240 kg. Eventuale mini-cut per ottimizzare body fat se non raggiunto nell'anno 1. Introduzione tecniche avanzate di periodizzazione (conjugate, block periodization). Nota: se a fine anno 1 i fattori correttivi (infortunio -30%, età -10%) sono migliorati significativamente, il target squat potrà essere rivisto verso l'alto con motivazione esplicita."
+    note: "Struttura da ridefinire a fine anno 1 sulla base dei nuovi massimali misurati, stato di salute, aderenza e feedback atleta. Potrebbe includere un secondo ciclo accumulo-intensificazione più lungo (12-14 settimane totali) se i progressi giustificano maggiore volume."
+
+  - numero: 3
+    orizzonte: "Anno 3-4 (2028-2029)"
+    obiettivo_indicativo: "Raggiungimento obiettivi dichiarati: squat 200 kg, panca 150 kg, stacco 250 kg, peso 95 kg con BF ≤13%. Livello avanzato. Periodizzazione su base annuale con più fasi di peaking e deload strategici."
+    note: "La fattibilità dipende dalla continuità dell'allenamento, assenza di nuovi infortuni e aderenza nutrizionale. Con rate di progressione correnti e salute mantenuta, gli obiettivi sono raggiungibili entro il 2029."
+
+strategia_nutrizionale:
+  fase_corrente: "mantenimento"
+  sessioni_allenamento_settimana: 3
+  note: "FASE CORRENTE (Mesocicli 1-2, rehab): Mantenimento calorico per favorire guarigione TOS e preservare massa magra. Proteine alte priorità assoluta. Creatina monoidrata mantenuta durante tutto il percorso. Whey proteine come supporto al raggiungimento del target proteico giornaliero. Progressione pianificata: mantenimento (rehab) → cut moderato (mini-cut, meso 3) → bulk moderato (accumulo-intensificazione, meso 4-5) → mantenimento (peaking-test, meso 6-7). Dettagli kcal, macro e trigger giornalieri sono di competenza esclusiva del dietologo."
+
+rischi:
+  - area: "Infortunio TOS ricorrente"
+    livello: "alto"
+    azione: "Progressione dolore-guidata in tutti i mesocicli. Zero tolleranza per dolore al piccolo pettorale. Regressione immediata se compare sintomatologia. Consultare fisioterapista prima di reintrodurre esercizi overhead pesanti."
+
+  - area: "Discontinuità allenamento (storico)"
+    livello: "medio"
+    azione: "Piano flessibile con criteri chiari di avanzamento tra mesocicli. Sessioni minime a 3/sett garantiscono progressione. Periodi di vita intensa (viaggi, lavoro) gestiti con versioni compresse del programma (2-3 esercizi fondamentali)."
+
+  - area: "Perdita di massa magra durante cut in combinazione con recupero infortuno"
+    livello: "medio"
+    azione: "Cut posticipato al mesociclo 3 (post-rehab completo). Proteine alte mantenute in tutte le fasi. Monitoraggio mensile della massa magra. Se scende >1 kg in 4 settimane durante cut: sospendere e tornare a mantenimento."
+
+  - area: "Sovrallenamento da beach volley + palestra"
+    livello: "basso"
+    azione: "Giovedì è giorno fisso beach volley, mai sovrapporre con sessioni pesanti di squat/stacco. Nelle settimane con 5 sessioni palestra ridurre volume beach volley o viceversa. Monitorare qualità del sonno e livelli energetici."
+
+  - area: "Stagnazione panca piana post-TOS"
+    livello: "medio"
+    azione: "Reintroduzione molto graduale con manubri prima del bilanciere. Non forzare la progressione su panca nelle prime 12 settimane. Esercizi alternativi sicuri per TOS: floor press con manubri, push-up a presa larga su rialzo (mani elevate), chest press machine a presa neutra, croci leggere con manubri. Evitare push-up decline (stress eccessivo sul piccolo pettorale in posizione accorciata sotto carico, può aggravare TOS)."
+
+proiezione_obiettivi:
+  timeframe_desiderato: "Il tempo necessario"
+  stima_raggiungimento_anni:
+    min: 3.0
+    max: 5.0
+  fattibilita: "FATTIBILE"
+  motivazione: "Obiettivi ambiziosi ma coerenti con il profilo dell'atleta: 4 anni di palestra, base atletica da 30 anni di sport, rate di progressione storici positivi anche con discontinuità. Squat 200 kg richiede +54 kg dai massimali attuali (145.8 kg): a rate corretta di 11.4 kg/anno sono ~4.7 anni, ma il rate post-rehab potrebbe migliorare. Panca 150 kg richiede +33 kg (116.7 attuale): a 6.8 kg/anno sono ~4.9 anni, il più lento e il più penalizzato dal TOS. Stacco 250 kg richiede +52 kg (198.3 attuale): a 19.9 kg/anno sono ~2.6 anni, il più rapido. Peso 95 kg con BF ≤13%: con bulk controllato e cicli periodici di cut, raggiungibile in 2-3 anni. Il fattore critico è l'infortunio TOS: una guarigione completa e stabile è prerequisito per la progressione della panca. Con salute mantenuta e aderenza costante, gli obiettivi sono FATTIBILI entro il 2029-2030."

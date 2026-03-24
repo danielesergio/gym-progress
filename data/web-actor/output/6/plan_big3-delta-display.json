@@ -1,0 +1,116 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "big3-delta-display",
+    "task_title": "Visualizzazione delta Big 3: attuale + Δ → obiettivo",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "big3-delta-display",
+    "type": "component",
+    "title": "Visualizzazione delta Big 3: attuale + Δ → obiettivo",
+    "description": "Modifica la funzione renderStrengthSummaryCard() in docs/js/dashboard.js per aggiungere, su ogni riga Big 3, un terzo elemento visivo: il delta tra il target 12 mesi e il massimale corrente (es. '+11.2 kg'). Il layout di ogni riga passa da 2 colonne (nome | valore attuale → target) a 3 elementi distinti: valore attuale — delta evidenziato — obiettivo. Il delta deve essere visivamente distinto (colore accent / badge) e non negativo: se il massimale supera già il target, il delta mostra '✓' o '0'. Il CSS per lo stile visivo del delta è separato nel task successivo big3-delta-style, ma questo task introduce già la classe e il markup HTML necessari.",
+    "inputs": [
+      "measurements_data",
+      "plan_data_target_12m"
+    ],
+    "outputs": [
+      "Big3CardWithDelta"
+    ],
+    "acceptance_criteria": [
+      "Per ogni esercizio (Squat, Panca, Stacco) sono visibili tre elementi: il valore corrente in kg, il delta (+X.X kg) e l'obiettivo a 12 mesi in kg",
+      "Il delta è visivamente distinto dagli altri valori (es. colore diverso, grassetto o badge)",
+      "Il delta è calcolato correttamente come differenza tra target 12 mesi e massimale corrente (arrotondato a 1 decimale)",
+      "Se il massimale corrente è già uguale o superiore al target, il delta non mostra un valore negativo ma un'indicazione neutra o positiva (es. '✓' o '0')",
+      "La card rimane leggibile e non sovraffollata su mobile e desktop",
+      "Se i dati del target a 12 mesi non sono disponibili, la card mostra il massimale corrente senza errori"
+    ],
+    "notes": "La funzione da modificare è renderStrengthSummaryCard(last, plan) in docs/js/dashboard.js, righe 124-188. Il markup HTML attuale di ogni esercizio usa un grid a 3 colonne (1fr auto auto) con classi .strength-card__name, .strength-card__value, .strength-card__target. Il task introduce un quarto span con classe .strength-card__delta tra il valore e il target, e aggiusta il grid-template-columns da '1fr auto auto' a '1fr auto auto auto'. Lo stile definitivo del delta (colore, peso, eventuale badge) è responsabilità del task successivo big3-delta-style, ma un colore inline di base (es. var(--color-accent)) garantisce che il delta sia già visivamente distinto alla consegna di questo task. I dati confermati: squat_1rm 145.8, panca_1rm 116.7, stacco_1rm 198.3 (ultima misurazione 2026-03-22, tipo S); target 12 mesi squat 157, panca 124, stacco 218 (da plan.json, orizzonte '12 mesi'). Delta attesi: Squat +11.2, Panca +7.3, Stacco +19.7."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/dashboard.js",
+        "motivo": "Modificare la funzione renderStrengthSummaryCard() (righe 124-188): aggiungere il calcolo del delta (target12 - valore, clampato a >= 0), aggiungere un <span class='strength-card__delta'> nel markup di ogni esercizio con il delta formattato (+X.X kg oppure '✓'), e aggiornare il grid-template-columns da '1fr auto auto' a '1fr auto auto auto' per ospitare il quarto elemento.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "Aggiungere la regola base per .strength-card__delta (colore distinto, es. var(--color-accent), font-weight bold, white-space nowrap) e la variante .strength-card__delta--done per il caso 'obiettivo raggiunto'. Anche il selettore .strength-card__exercise va aggiornato con grid-template-columns: 1fr auto auto auto.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/js/dashboard.js",
+        "motivo": "File da modificare — leggere l'intera funzione renderStrengthSummaryCard() (righe 116-188) per capire il markup HTML corrente di ogni riga esercizio, la logica di calcolo del target, la gestione dei null e la struttura del grid CSS inline."
+      },
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "File da modificare — leggere le sezioni '── Card massimali Big 3 ──' (righe 175-253) per capire il selettore .strength-card__exercise (grid-template-columns: 1fr auto auto) e le classi esistenti prima di aggiungere .strength-card__delta."
+      },
+      {
+        "path": "docs/data/measurements.json",
+        "motivo": "Struttura dati: array ordinato cronologicamente. L'ultimo oggetto (indice -1, data 2026-03-22) contiene squat_1rm: 145.8, panca_1rm: 116.7, stacco_1rm: 198.3, massimali_tipo: 'S', con campi per-esercizio squat_1rm_tipo / panca_1rm_tipo / stacco_1rm_tipo tutti 'S'. Campi delta_* presenti ma riferiti al peso corporeo, non ai massimali."
+      },
+      {
+        "path": "docs/data/plan.json",
+        "motivo": "Struttura dati: oggetto con campi meta, massimali_attuali, target[], fasi[], strategia_nutrizionale, rischi. Il campo target è un array di 3 oggetti con orizzonte '3 mesi' / '6 mesi' / '12 mesi'. L'oggetto target 12 mesi ha: squat: 157, panca: 124, stacco: 218. La funzione cerca con .find(t => t.orizzonte === '12 mesi') — la struttura è confermata."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS ES2022 — nessun build step, nessun framework",
+      "grafici": "Chart.js 4.x via CDN — NON usato in dashboard.html, non aggiungere",
+      "deploy": "GitHub Pages — docs/ servita come root"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase per variabili e funzioni; SCREAMING_SNAKE_CASE per costanti (DATA_PATH_*)",
+      "classi_css": "BEM-like con prefisso pagina: .strength-card__delta, .strength-card__delta--done",
+      "gestione_null": "val != null ? val.toFixed(1) : '—' — mai mostrare 'null', 'undefined' o NaN",
+      "valori_negativi_delta": "Se (target - valore) <= 0: mostrare '✓' con classe .strength-card__delta--done anziché un valore negativo",
+      "arrotondamento": "1 decimale per kg: toFixed(1) — delta = (target - valore) > 0 ? (target - valore).toFixed(1) : 0",
+      "css_variabili": "Usare sempre var(--...) da variables.css — mai colori hardcoded",
+      "no_inline_style": "Nessuno style inline eccetto width dinamico (non necessario qui)"
+    },
+    "pagina": {
+      "nome": "Dashboard",
+      "html": "docs/dashboard.html",
+      "js": "docs/js/dashboard.js",
+      "css": "docs/css/dashboard.css",
+      "dati_json": ["data/measurements.json", "data/plan.json", "data/workout.json"],
+      "chart_js": false,
+      "funzione_target": "renderStrengthSummaryCard(last, plan)"
+    },
+    "markup_attuale_esercizio": {
+      "descrizione": "Il markup corrente di ogni riga Big 3 — da modificare aggiungendo lo span delta",
+      "html_prima": "<div class=\"strength-card__exercise\">\n  <span class=\"strength-card__name\">{nome}</span>\n  <span class=\"strength-card__value\">{valore} kg</span>\n  <span class=\"strength-card__target\">→ {target} kg</span>\n</div>",
+      "html_dopo": "<div class=\"strength-card__exercise\">\n  <span class=\"strength-card__name\">{nome}</span>\n  <span class=\"strength-card__value\">{valore} kg</span>\n  <span class=\"strength-card__delta [--done]\">{+delta kg | ✓}</span>\n  <span class=\"strength-card__target\">→ {target} kg</span>\n</div>",
+      "css_grid_prima": "grid-template-columns: 1fr auto auto",
+      "css_grid_dopo": "grid-template-columns: 1fr auto auto auto"
+    },
+    "logica_delta": {
+      "calcolo": "const delta = (ex.target != null && ex.valore != null) ? ex.target - ex.valore : null",
+      "display_positivo": "delta > 0  → '+' + delta.toFixed(1) + ' kg' con classe strength-card__delta",
+      "display_zero_o_raggiunto": "delta <= 0 → '✓' con classe strength-card__delta strength-card__delta--done",
+      "display_null": "delta == null (un dato mancante) → stringa vuota o non renderizzare lo span"
+    }
+  },
+  "criteri_accettazione": [
+    "Per ogni esercizio (Squat, Panca, Stacco) sono visibili tre elementi nella card: il valore corrente in kg, il delta (+X.X kg) e l'obiettivo a 12 mesi in kg",
+    "Il delta è visivamente distinto dagli altri valori (colore diverso tramite var(--color-accent) o simile, e/o font-weight bold)",
+    "Il delta è calcolato correttamente: Squat +11.2 kg, Panca +7.3 kg, Stacco +19.7 kg con i dati attuali",
+    "Se il massimale corrente è >= target, lo span mostra '✓' con classe .strength-card__delta--done (nessun valore negativo)",
+    "La card è leggibile su mobile (<768px): il testo non trabocca e non c'è overflow orizzontale",
+    "Se plan.json non è disponibile (plan === null), la card mostra solo il valore corrente senza errori JavaScript",
+    "docs/js/dashboard.js contiene il calcolo della variabile 'delta' nella funzione renderStrengthSummaryCard()",
+    "docs/js/dashboard.js usa la classe CSS 'strength-card__delta' nel template HTML degli esercizi",
+    "docs/css/dashboard.css contiene il selettore .strength-card__delta con almeno la proprietà color",
+    "docs/css/dashboard.css contiene il selettore .strength-card__exercise con grid-template-columns aggiornato a 4 colonne",
+    "Nessun console.error o eccezione JavaScript appare nella browser console al caricamento della dashboard"
+  ],
+  "dipendenze": []
+}

@@ -1,0 +1,129 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "big3-delta-style",
+    "task_title": "Stile visivo del delta nella card Big 3",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "big3-delta-style",
+    "type": "ux",
+    "title": "Stile visivo del delta nella card Big 3",
+    "description": "Definizione dello stile visivo per il componente delta della card Massimali Big 3. Il delta deve essere percepito come un elemento separato e positivo — la distanza da colmare, non un difetto. Suggerimento di trattamento: colore accent (es. arancione o verde chiaro), font in grassetto, possibile freccia direzionale (→ o ↑) per comunicare direzione di miglioramento. Lo stile deve essere coerente con il design system già presente nel sito (variabili CSS esistenti, dark/light mode supportati). La gerarchia visiva nella card deve essere: 1) valore corrente (primario), 2) delta (enfatizzato), 3) obiettivo (secondario).",
+    "inputs": [
+      "Big3CardWithDelta",
+      "branding_css_variables"
+    ],
+    "outputs": [
+      "Big3DeltaStyle"
+    ],
+    "acceptance_criteria": [
+      "Il delta è distinguibile a colpo d'occhio dagli altri valori della card senza leggere le etichette",
+      "Lo stile del delta è coerente con il design system del sito (usa le variabili CSS esistenti o ne aggiunge di nuove coerenti)",
+      "Il delta è leggibile sia in tema chiaro che scuro (light/dark mode)",
+      "La card non risulta sovraffollata: il layout dei tre esercizi rimane ordinato e aligned"
+    ],
+    "notes": "Il task è puramente CSS: la logica JS di .strength-card__delta e .strength-card__delta--done è già implementata in dashboard.js dal task big3-delta-display. Non è necessario modificare dashboard.html o dashboard.js, solo dashboard.css (e opzionalmente variables.css se si aggiungono nuove variabili CSS per il delta). Il developer deve rafforzare visivamente il blocco .strength-card__delta esistente, rispettando la gerarchia: valore (primario) > delta (enfatizzato) > target (secondario). Valutare: sfondo pill/badge sul delta, freccia direzionale (↑ o →) anteposta al valore, colore warm (var(--color-accent) #ff6b35 in tema dark, var(--color-accent) #58a6ff in tema pro)."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "Rafforzare lo stile di .strength-card__delta: aggiungere sfondo pill/badge con var(--color-accent-dim), font-size aumentato, possibile freccia direzionale, e assicurare gerarchia visiva corretta. Rivedere anche .strength-card__delta--done per la variante 'obiettivo raggiunto'. Verificare che la colonna delta nel grid di .strength-card__exercise sia correttamente dimensionata per non causare overflow.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/variables.css",
+        "motivo": "Opzionale: se si introduce una nuova variabile CSS dedicata al delta (es. --color-delta, --color-delta-bg), aggiungerla sia in :root (tema dark) sia in html.theme-pro (tema pro) per garantire coerenza dark/light mode.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "Contiene già .strength-card__delta (linea ~255-260) e .strength-card__delta--done (linea ~263-265), .strength-card__exercise (grid a 4 colonne: nome | valore | delta | target), .strength-card__value, .strength-card__target, .strength-card__name. Il developer deve leggere questi blocchi per capire il punto di partenza e non rompere il layout grid."
+      },
+      {
+        "path": "docs/css/variables.css",
+        "motivo": "Contiene tutte le variabili CSS disponibili: --color-accent (#ff6b35 dark, #58a6ff pro), --color-accent-dim (rgba con opacità 15%), --color-success, --color-warning, --font-weight-bold, --font-weight-semibold, --font-size-sm, --font-size-base. Da usare per costruire lo stile senza hardcoded."
+      },
+      {
+        "path": "docs/js/dashboard.js",
+        "motivo": "Verificare il markup HTML generato da renderStrengthSummaryCard(): la struttura esatta di .strength-card__exercise (grid a 4 colonne), come vengono emessi .strength-card__delta e .strength-card__delta--done, e il testo del delta (es. '+12.5 kg' oppure '✓'). Lo stile CSS deve corrispondere esattamente agli elementi generati."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "styling": {
+        "nome": "CSS custom properties",
+        "file_globali": ["docs/css/variables.css", "docs/css/layout.css"],
+        "file_pagina": "docs/css/dashboard.css",
+        "tema": "Due temi: default dark powerlifting (:root) + tema pro GitHub-style (html.theme-pro). Le variabili CSS vengono sovrascritte automaticamente."
+      }
+    },
+    "convenzioni": {
+      "classi_css": "BEM-like con prefisso card: .strength-card__delta, .strength-card__delta--done (modificatore BEM per stato 'obiettivo raggiunto')",
+      "variabili_css": "Usare sempre CSS custom properties di variables.css — mai valori colore hardcoded. Per nuove variabili: aggiungere sia in :root che in html.theme-pro.",
+      "no": "No inline style, no !important salvo override tema",
+      "responsivo": "Mobile-first. Il grid di .strength-card__exercise (4 colonne: nome | valore | delta | target) deve restare leggibile su mobile (<768px). Valutare se ridurre padding o font-size su schermi stretti.",
+      "tema_pro": "Gli override html.theme-pro in dashboard.css raffinano già .strength-card__value (font-size-kpi-value, font-weight-extrabold). Il delta non deve risultare più grande del valore principale: applicare font-size inferiore o uguale a .strength-card__value."
+    },
+    "variabili_disponibili": {
+      "colori_accent": {
+        "dark": "--color-accent: #ff6b35 (arancione powerlifting)",
+        "pro": "--color-accent: #58a6ff (blu acciaio)",
+        "dim": "--color-accent-dim: rgba(accent, 0.15) — sfondo pill/badge ideale per il delta"
+      },
+      "colori_stato": {
+        "success": "--color-success: #4caf50 (dark) / #3fb950 (pro) — usato per .strength-card__delta--done",
+        "warning": "--color-warning: #ffc107 — disponibile ma non consigliato per il delta positivo"
+      },
+      "tipografia": {
+        "font_weight_bold": "--font-weight-bold: 700",
+        "font_weight_semibold": "--font-weight-semibold: 600",
+        "font_size_sm": "--font-size-sm: 0.875rem (14px) — dimensione attuale del delta",
+        "font_size_base": "--font-size-base: 1rem (16px) — possibile upgrade"
+      },
+      "spaziature": {
+        "space_1": "--space-1: 0.25rem (4px)",
+        "space_2": "--space-2: 0.5rem (8px)",
+        "space_3": "--space-3: 0.75rem (12px)"
+      },
+      "radius": {
+        "radius_full": "--radius-full: 9999px — per badge pill arrotondato",
+        "radius_sm": "--radius-sm: 4px — per badge squadrato"
+      }
+    },
+    "struttura_card_esistente": {
+      "grid_exercise": "grid-template-columns: 1fr auto auto auto — [nome] [valore] [delta] [target]",
+      "gerarchia_voluta": "1) .strength-card__value (primario, font-size-lg/kpi-value, bold) → 2) .strength-card__delta (enfatizzato, distinto visivamente) → 3) .strength-card__target (secondario, opacity 0.85)",
+      "stato_corrente_delta": "font-size: sm, font-weight: bold, color: var(--color-accent) — manca distinguibilità visiva (nessun sfondo/badge/freccia)"
+    }
+  },
+  "criteri_accettazione": [
+    "Il delta è distinguibile a colpo d'occhio dagli altri valori della card senza leggere le etichette",
+    "Lo stile del delta è coerente con il design system: usa var(--color-accent) e/o var(--color-accent-dim) — nessun valore colore hardcoded",
+    "Il delta è leggibile sia in tema dark (--color-accent: #ff6b35) che in tema pro (--color-accent: #58a6ff)",
+    "La card non risulta sovraffollata: i tre esercizi (Squat/Panca/Stacco) restano allineati e il grid a 4 colonne non causa overflow su mobile",
+    "docs/css/dashboard.css contiene una regola .strength-card__delta con background-color usando var(--color-accent-dim) o variabile equivalente (pill/badge visivo)",
+    "docs/css/dashboard.css contiene una regola .strength-card__delta con display: inline-flex o display: inline-block per contenere il pill",
+    "docs/css/dashboard.css contiene la regola .strength-card__delta--done con color: var(--color-success) — invariata o migliorata",
+    "Se introdotte nuove variabili CSS (es. --color-delta-bg), sono definite sia in :root che in html.theme-pro dentro variables.css",
+    "Il font-size di .strength-card__delta non supera quello di .strength-card__value (gerarchia visiva rispettata)",
+    "html.theme-pro non richiede override separati per .strength-card__delta se si usano correttamente le variabili CSS già esistenti"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "big3-delta-display",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/js/dashboard.js",
+        "docs/css/dashboard.css"
+      ],
+      "note": "La funzione renderStrengthSummaryCard() in dashboard.js genera già .strength-card__delta (con testo '+X.X kg') e .strength-card__delta--done (con '✓'). Il CSS in dashboard.css definisce già le classi .strength-card__delta e .strength-card__delta--done con stile base (color: accent, font-weight: bold). Il task big3-delta-style deve solo rafforzare/migliorare questi stili esistenti senza modificare la logica JS."
+    }
+  ]
+}

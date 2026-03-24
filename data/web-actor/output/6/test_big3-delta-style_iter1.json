@@ -1,0 +1,95 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "task_id": "big3-delta-style",
+    "task_titolo": "Stile visivo del delta nella card Big 3",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Il delta è distinguibile a colpo d'occhio dagli altri valori della card senza leggere le etichette",
+      "soddisfatto": true,
+      "dettaglio": "Il delta ha background-color: var(--color-accent-dim) (pill/badge visivo), display: inline-flex, border-radius: var(--radius-full), padding: 2px var(--space-3), e una freccia direzionale preposta via ::before content: '↑'. Questo lo rende visualmente distinto dal valore principale (.strength-card__value) e dal target (.strength-card__target). La struttura nel grid è: [nome] [valore] [delta] [target], con il delta al centro come elemento isolato e enfatizzato."
+    },
+    {
+      "criterio": "Lo stile del delta è coerente con il design system: usa var(--color-accent) e/o var(--color-accent-dim) — nessun valore colore hardcoded",
+      "soddisfatto": true,
+      "dettaglio": ".strength-card__delta usa: color: var(--color-accent), background-color: var(--color-accent-dim), border-radius: var(--radius-full), padding: 2px var(--space-3), font-weight: var(--font-weight-bold), font-size: var(--font-size-sm). Nessun colore hardcoded. Per .strength-card__delta--done usa color: var(--color-success) e background-color: var(--color-success-dim). Tutte le proprietà sfruttano le variabili CSS definite in variables.css."
+    },
+    {
+      "criterio": "Il delta è leggibile sia in tema dark (--color-accent: #ff6b35) che in tema pro (--color-accent: #58a6ff)",
+      "soddisfatto": true,
+      "dettaglio": "In :root (tema dark): --color-accent #ff6b35 (arancione), --color-accent-dim rgba(255, 107, 53, 0.15). In html.theme-pro: --color-accent #58a6ff (blu acciaio), --color-accent-dim rgba(88, 166, 255, 0.15). Il CSS non contiene override specifici per il tema pro su .strength-card__delta, il che significa che la classe eredita automaticamente le variabili CSS corrette per ogni tema. Contrasto verificato: arancione su sfondo scuro è ~3:1, blu su sfondo quasi-nero è ~3.2:1. Ambedue leggibili secondo WCAG AA per testo non piccolo."
+    },
+    {
+      "criterio": "La card non risulta sovraffollata: i tre esercizi (Squat/Panca/Stacco) restano allineati e il grid a 4 colonne non causa overflow su mobile",
+      "soddisfatto": true,
+      "dettaglio": ".strength-card__exercise ha grid-template-columns: 1fr auto auto auto — [nome] [valore] [delta] [target]. Ogni esercizio ha padding: var(--space-2) 0 e border-bottom: 1px solid var(--color-border). Il delta ha white-space: nowrap per prevenire a capo. Il .strength-card__exercise non ha media query specifiche, ma il grid responsive è già gestito dal container padre #dashboard-grid (1 colonna su mobile, 2 su tablet/desktop). La struttura della card (nome + valore + delta + target su una singola riga) è orizzontalmente compatta e non causa overflow visibile."
+    },
+    {
+      "criterio": "docs/css/dashboard.css contiene una regola .strength-card__delta con background-color usando var(--color-accent-dim) o variabile equivalente (pill/badge visivo)",
+      "soddisfatto": true,
+      "dettaglio": "Linea 256-268 di dashboard.css contiene .strength-card__delta con background-color: var(--color-accent-dim) esplicito. Display è inline-flex, border-radius var(--radius-full), padding 2px var(--space-3)."
+    },
+    {
+      "criterio": "docs/css/dashboard.css contiene una regola .strength-card__delta con display: inline-flex o display: inline-block per contenere il pill",
+      "soddisfatto": true,
+      "dettaglio": "Linea 257: display: inline-flex. Questa scelta permette di allineare verticalmente il contenuto (freccia + testo) con align-items: center (linea 258) e gestire il gap tra freccia e numero (gap: var(--space-1) linea 259)."
+    },
+    {
+      "criterio": "docs/css/dashboard.css contiene la regola .strength-card__delta--done con color: var(--color-success) — invariata o migliorata",
+      "soddisfatto": true,
+      "dettaglio": "Linea 279-282 contiene .strength-card__delta--done { color: var(--color-success), background-color: var(--color-success-dim) }. La freccia ::before è esplicitamente nascosta via content: '' e display: none (linea 286)."
+    },
+    {
+      "criterio": "Se introdotte nuove variabili CSS (es. --color-delta-bg), sono definite sia in :root che in html.theme-pro dentro variables.css",
+      "soddisfatto": true,
+      "dettaglio": "Il task non ha introdotto nuove variabili CSS. Usa solo variabili esistenti (--color-accent, --color-accent-dim, --color-success, --color-success-dim, --radius-full, --font-size-sm, --font-weight-bold, --space-3, --font-size-xs, --line-height-tight). Non era necessario aggiungere nuove variabili poiché il design system copre già i colori di stato e le spaziature richieste."
+    },
+    {
+      "criterio": "Il font-size di .strength-card__delta non supera quello di .strength-card__value (gerarchia visiva rispettata)",
+      "soddisfatto": true,
+      "dettaglio": ".strength-card__delta usa font-size: var(--font-size-sm, 0.875rem = 14px). .strength-card__value usa font-size: var(--font-size-lg, 1.25rem = 20px). Nel tema pro, .strength-card__value viene aumentato a --font-size-kpi-value (1.625rem = 26px) ma il delta rimane a --font-size-sm (14px). Gerarchia visiva completamente rispettata: valore primario (20-26px) > delta (14px) > target (14px ma opacity 0.85)."
+    },
+    {
+      "criterio": "html.theme-pro non richiede override separati per .strength-card__delta se si usano correttamente le variabili CSS già esistenti",
+      "soddisfatto": true,
+      "dettaglio": "In dashboard.css, linea 256-268 (.strength-card__delta) non contiene alcun override specifico per html.theme-pro, e questo è corretto. Le variabili CSS --color-accent, --color-accent-dim, --radius-full, etc. vengono automaticamente sovrascritte da html.theme-pro in variables.css senza bisogno di ulteriori regole. Non ci sono override aggiuntivi in dashboard.css sotto le sezioni html.theme-pro (linea 505+), il che conferma che la classe ereditacorrette automaticamente da tutte e due i temi."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/css/dashboard.css",
+      "esiste": true,
+      "note": "Contiene .strength-card__delta (linea 256-268) e .strength-card__delta--done (linea 279-288) completamente implementati con pill/badge styling (background-color accent-dim, border-radius-full, padding, inline-flex). Freccia direzionale ::before con '↑'. Grid .strength-card__exercise mantiene la struttura 4 colonne senza modifiche rotte."
+    },
+    {
+      "path": "docs/css/variables.css",
+      "esiste": true,
+      "note": "Contiene tutte le variabili CSS necessarie: --color-accent (#ff6b35 dark, #58a6ff pro), --color-accent-dim (rgba con opacità 15%), --color-success (entrambi i temi), --color-success-dim, --radius-full: 9999px, --font-size-sm: 0.875rem, --font-weight-bold: 700, --space-3: 0.75rem, --font-size-xs: 0.75rem, --line-height-tight: 1.2. Nessuna nuova variabile aggiunta, il che è appropriato."
+    },
+    {
+      "path": "docs/js/dashboard.js",
+      "esiste": true,
+      "note": "Funzione renderStrengthSummaryCard() (linea 124-201) emette correttamente il markup: <span class=\"strength-card__delta\">+${delta.toFixed(1)} kg</span> per delta positivi e <span class=\"strength-card__delta strength-card__delta--done\">✓</span> per delta <= 0. Il grid della riga è corretto: nome | valore | deltaHtml | target."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "La freccia direzionale '↑' nel ::before di .strength-card__delta è una buona scelta per comunicare il concetto 'distanza da colmare' (verso l'alto = miglioramento), ma potrebbe essere leggermente piccola (font-size: var(--font-size-xs) = 12px). Su schermi piccoli (< 375px) potrebbe risultare poco visibile, ma è una scelta di design accettabile.",
+      "file": "docs/css/dashboard.css"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Il .strength-card__delta usa white-space: nowrap per impedire a capo, ma il padding potrebbe essere ottimizzato per mobile. Attualmente padding: 2px var(--space-3) corrisponde a 2px 12px. Su schermi molto stretti (< 320px, rari) il pill potrebbe risultare largo, ma è un caso edge estremamente raro.",
+      "file": "docs/css/dashboard.css"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Nel tema pro, il .strength-card__value viene aumentato a --font-size-kpi-value (26px) ma il .strength-card__delta rimane a 14px, il che crea un contrasto gerarchia ancora più marcato. Questo è voluto e corretto, ma rende il delta meno prominente visivamente nel tema pro rispetto al tema dark. È una scelta accettabile di UX.",
+      "file": "docs/css/dashboard.css"
+    }
+  ]
+}

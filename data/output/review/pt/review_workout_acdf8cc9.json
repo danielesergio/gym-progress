@@ -1,0 +1,49 @@
+{
+  "meta": {
+    "data": "2026-03-23",
+    "tipo": "workout",
+    "valutazione": 9,
+    "esito": "APPROVATA",
+    "numero_review": 1
+  },
+  "correzioni_applicate": [],
+  "problemi_critici": [],
+  "suggerimenti": [
+    {
+      "id": "S1",
+      "descrizione": "Alzate frontali con manubri coinvolgono il deltoide anteriore che ha inserzione prossima al piccolo pettorale",
+      "motivazione": "Le alzate frontali richiedono flessione della spalla sotto carico. In presenza di TOS con infiammazione del piccolo pettorale, la flessione della spalla con carico puo' creare tensione indiretta sul piccolo pettorale attraverso la fascia clavipettorale. L'atleta riferisce assenza di dolore, ma il rischio e' presente soprattutto con l'aumento del carico da 8 a 10 kg nelle settimane 3-4. La scheda gia' prevede il criterio di stop se compare dolore, il che mitiga il rischio.",
+      "proposta": "Mantenere le alzate frontali ma NON aumentare il carico oltre 8 kg nelle prime 3 settimane. L'aumento a 10 kg (S3-S4) dovrebbe essere condizionato non solo all'assenza di dolore ma anche a una valutazione palpatorica del piccolo pettorale post-sessione. In alternativa, sostituire le alzate frontali con alzate laterali aggiuntive (meno coinvolgimento del deltoide anteriore)."
+    },
+    {
+      "id": "S2",
+      "descrizione": "Manca un protocollo esplicito di regressione per il beach volley",
+      "motivazione": "Il beach volley prevede salti, schiacchiate e palleggi overhead che possono stressare il piccolo pettorale e la spalla. Le note generali dicono di monitorare ma non forniscono criteri quantitativi per decidere se continuare o sospendere (es. dolore > X/10 = stop per Y giorni).",
+      "proposta": "Aggiungere nelle note generali: se dopo il beach volley compare dolore al piccolo pettorale >= 1/10, sospendere il beach volley per almeno 1 settimana e ripetere la valutazione. Se il dolore compare 2 giovedi' consecutivi, sospendere fino alla fine della fase rehab."
+    },
+    {
+      "id": "S3",
+      "descrizione": "Progressione squat e stacco simultanea in S3 potrebbe essere troppo aggressiva",
+      "motivazione": "In S3 sia lo squat (+5 kg a 100 kg) sia lo stacco (+5 kg a 135 kg con +1 rep) aumentano contemporaneamente. In fase rehab e' preferibile aumentare un fondamentale alla volta per isolare meglio la risposta dell'atleta al carico. Se compare un problema, non sapremmo se attribuirlo all'aumento dello squat o dello stacco.",
+      "proposta": "Considerare l'aumento dello squat in S3 e dello stacco in S4 (o viceversa) per una progressione sfalsata. Non e' un problema critico perche' gli incrementi sono minimi e il TOS non coinvolge direttamente questi movimenti, ma sarebbe una cautela ulteriore."
+    },
+    {
+      "id": "S4",
+      "descrizione": "Il Test Day non include un criterio quantitativo per decidere se passare alla fase ramp-up o estendere il rehab",
+      "motivazione": "I criteri di passaggio sono elencati in criteri_passaggio.da_rehab_a_rampup ma il Test Day nella sessione del sabato S5 non li riassume esplicitamente. L'atleta potrebbe non avere chiaro cosa deve succedere DOPO il test per decidere se avanza o ripete.",
+      "proposta": "Aggiungere una nota nel Test Day che riassuma: se tutti i 4 protocolli sono superati con dolore 0/10 e ROM completo, il passaggio alla Fase 2 (Ramp-up) e' approvato. Se anche solo 1 criterio non e' soddisfatto, la fase rehab si estende di 1-2 settimane ripetendo S4-S5."
+    }
+  ],
+  "punti_di_forza": [
+    "Eccellente gestione dell'infortunio TOS: nessun esercizio nella scheda coinvolge il piccolo pettorale, il grande pettorale o movimenti overhead sotto carico. La lista delle strutture da evitare e' completa e corretta.",
+    "Progressione dei carichi molto graduale e appropriata per una fase rehab: incrementi di 5 kg su squat (95->100->105->110) e stacco (130->135->140->145) con RPE che sale da 5 a 6-7 in 5 settimane. Mai sopra il 75% 1RM.",
+    "Tutte le percentuali 1RM sono calcolate correttamente rispetto ai massimali attuali (squat 145.8 kg, stacco 198.3 kg). Nessun errore di calcolo riscontrato.",
+    "Protocollo dolore-guidato ben strutturato con la Regola delle 24 Ore, criteri di stop immediato e monitoraggio sistematico del dolore post-sessione.",
+    "Mobilita' scapolare e rinforzo cuffia dei rotatori presenti in OGNI sessione, con progressione appropriata (reps, resistenza elastico).",
+    "Test Day ben concepito come valutazione funzionale (non test massimale): include mobilita' scapolare, squat singola RPE 6-7, stacco singola RPE 6-7 e valutazione simmetria cuffia rotatori. Correttamente escluso il test panca.",
+    "Criteri di passaggio da rehab a ramp-up chiari, misurabili e conservativi.",
+    "Note fisioterapiche dettagliate con lista esplicita degli esercizi vietati e indicazioni di regressione.",
+    "Volume totale appropriatamente basso per fase rehab (~30-40 rep fondamentali/settimana), coerente con il piano annuale.",
+    "Coerenza perfetta con il piano annuale: tipo mesociclo Recupero, fase nutrizionale mantenimento, durata 5 settimane, frequenza 3 sessioni/settimana."
+  ]
+}

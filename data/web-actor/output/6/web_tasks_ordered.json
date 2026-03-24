@@ -1,0 +1,34 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "anomalie": []
+  },
+  "tasks": [
+    {
+      "ordine": 1,
+      "id": "big3-delta-display",
+      "title": "Visualizzazione delta Big 3: attuale + Δ → obiettivo",
+      "type": "component",
+      "feature": "Dashboard — Card Massimali Big 3",
+      "feature_priority": 1,
+      "motivazione_ordine": "Primo perché è il componente che costruisce la logica di visualizzazione del delta. Tutti gli altri task (stile, layout) dipendono da questa implementazione di base. È anche il quick win che sblocca immediatamente il task di stile.",
+      "dependencies_resolved": [],
+      "sblocca": [
+        "big3-delta-style"
+      ]
+    },
+    {
+      "ordine": 2,
+      "id": "big3-delta-style",
+      "title": "Stile visivo del delta nella card Big 3",
+      "type": "ux",
+      "feature": "Dashboard — Card Massimali Big 3",
+      "feature_priority": 1,
+      "motivazione_ordine": "Secondo perché dipende da big3-delta-display: una volta che il componente è implementato, applica lo styling visivo per renderlo leggibile e coherente con il design system esistente.",
+      "dependencies_resolved": [
+        "big3-delta-display"
+      ],
+      "sblocca": []
+    }
+  ]
+}

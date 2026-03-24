@@ -1,0 +1,1099 @@
+meta:
+  data: "2026-03-23"
+  fase: "mantenimento"
+  kcal_allenamento: 2850
+  kcal_beach_volley: 3100
+  kcal_riposo: 2650
+  kcal_sgarro: 2750
+  proteine_g: 185
+  carboidrati_g: 320
+  grassi_g: 80
+  note_strategia: >
+    FASE MANTENIMENTO (rehab TOS): il TDEE calcolato e' 2850 kcal/die (BMR 1839 x 1.55).
+    L'analisi automatica suggerisce 2850 kcal senza modifiche, e concordo con questa indicazione.
+    La fase di mantenimento e' corretta durante il recupero dall'infortunio TOS per preservare
+    massa magra e favorire la guarigione dei tessuti. Non applico deficit per evitare di
+    compromettere il recupero, ne' surplus perche' l'attivita' e' ridotta (3 sessioni/sett rehab leggero).
+    GIORNO ALLENAMENTO PESI (~2850 kcal): target pari al TDEE. I carboidrati sono concentrati
+    a pranzo e cena per supportare il recupero post-allenamento. Proteine distribuite su 4 pasti
+    (35-55g per pasto) per massimizzare la sintesi proteica.
+    GIORNO BEACH VOLLEY (~3100 kcal): TDEE + 250 kcal per compensare il dispendio da 90 minuti
+    di beach volley a intensita' media (~250-300 kcal aggiuntive). Carboidrati aumentati per
+    supportare l'attivita' prolungata.
+    GIORNO RIPOSO (~2650 kcal): TDEE - 200 kcal. Riduzione moderata dei carboidrati, proteine
+    e grassi mantenuti stabili per favorire il recupero.
+    GIORNO SGARRO (~2750 kcal): circa TDEE - 100 kcal. Il pasto sgarro (pizza) copre buona parte
+    delle calorie, la cena e' piu' leggera per compensare. Mantengo 1 sgarro a settimana per
+    aderenza psicologica alla dieta.
+    PROTEINE: 2.1-2.5 g/kg (180-215g/die) — fascia alta per atleta di forza in fase di
+    mantenimento con rehab, dove la sintesi proteica per riparazione tissutale e' prioritaria.
+    L'aderenza dieta non e' dichiarata (attendibilita' 70%), quindi ho preferito un piano
+    semplice con pasti ripetitivi e facili da preparare, in linea con le preferenze dell'atleta.
+    BF% attuale 17.1%: sopra il target del 13%, ma il cut e' correttamente posticipato
+    al mesociclo 3 (post-rehab). Durante il rehab la priorita' e' guarigione, non dimagrimento.
+
+giorni:
+  - nome: "Lunedi - Allenamento Pesi"
+    tipo: "allenamento"
+    kcal: 2842
+    macros:
+      proteine: 196
+      carboidrati: 319
+      grassi: 86
+    pasti:
+      - nome: "Colazione"
+        orario: "07:30"
+        alimenti:
+          - nome: "Yogurt greco 0%"
+            grammi: 150
+            kcal: 86
+            proteine: 15.5
+            carbo: 6.0
+            grassi: 1.0
+          - nome: "Muesli proteico"
+            grammi: 30
+            kcal: 108
+            proteine: 8.9
+            carbo: 13.6
+            grassi: 1.6
+          - nome: "Banana"
+            grammi: 130
+            kcal: 116
+            proteine: 1.4
+            carbo: 29.6
+            grassi: 0.4
+          - nome: "Mandorle"
+            grammi: 25
+            kcal: 145
+            proteine: 5.2
+            carbo: 5.5
+            grassi: 12.2
+        totale:
+          kcal: 455
+          proteine: 31.0
+          carbo: 54.7
+          grassi: 15.2
+      - nome: "Pranzo"
+        orario: "13:00"
+        alimenti:
+          - nome: "Pasta di semola"
+            grammi: 120
+            kcal: 427
+            proteine: 15.0
+            carbo: 86.4
+            grassi: 1.8
+          - nome: "Sugo al pomodoro"
+            grammi: 100
+            kcal: 40
+            proteine: 1.5
+            carbo: 6.0
+            grassi: 1.0
+          - nome: "Parmigiano grattugiato"
+            grammi: 10
+            kcal: 39
+            proteine: 3.3
+            carbo: 0.0
+            grassi: 2.8
+          - nome: "Olio extravergine di oliva"
+            grammi: 15
+            kcal: 133
+            proteine: 0.0
+            carbo: 0.0
+            grassi: 15.0
+          - nome: "Petto di pollo"
+            grammi: 200
+            kcal: 220
+            proteine: 46.2
+            carbo: 0.0
+            grassi: 2.4
+          - nome: "Insalata mista"
+            grammi: 100
+            kcal: 15
+            proteine: 1.0
+            carbo: 2.0
+            grassi: 0.2
+          - nome: "Pane integrale"
+            grammi: 60
+            kcal: 148
+            proteine: 4.8
+            carbo: 26.4
+            grassi: 2.1
+        totale:
+          kcal: 1022
+          proteine: 71.8
+          carbo: 120.8
+          grassi: 25.3
+      - nome: "Merenda"
+        orario: "16:30"
+        alimenti:
+          - nome: "Banana"
+            grammi: 130
+            kcal: 116
+            proteine: 1.4
+            carbo: 29.6
+            grassi: 0.4
+          - nome: "Whey proteine"
+            grammi: 35
+            kcal: 140
+            proteine: 28.0
+            carbo: 2.8
+            grassi: 1.4
+          - nome: "Latte parzialmente scremato"
+            grammi: 250
+            kcal: 115
+            proteine: 8.2
+            carbo: 12.5
+            grassi: 3.8
+        totale:
+          kcal: 371
+          proteine: 37.6
+          carbo: 44.9
+          grassi: 5.6
+      - nome: "Cena"
+        orario: "20:00"
+        alimenti:
+          - nome: "Salmone fresco"
+            grammi: 200
+            kcal: 416
+            proteine: 40.8
+            carbo: 0.0
+            grassi: 26.8
+          - nome: "Patate"
+            grammi: 400
+            kcal: 308
+            proteine: 8.0
+            carbo: 68.0
+            grassi: 0.4
+          - nome: "Zucchine"
+            grammi: 200
+            kcal: 34
+            proteine: 2.4
+            carbo: 4.0
+            grassi: 0.6
+          - nome: "Olio extravergine di oliva"
+            grammi: 10
+            kcal: 88
+            proteine: 0.0
+            carbo: 0.0
+            grassi: 10.0
+          - nome: "Pane integrale"
+            grammi: 60
+            kcal: 148
+            proteine: 4.8
+            carbo: 26.4
+            grassi: 2.1
+        totale:
+          kcal: 994
+          proteine: 56.0
+          carbo: 98.4
+          grassi: 39.9
+
+  - nome: "Martedi - Riposo"
+    tipo: "riposo"
+    kcal: 2677
+    macros:
+      proteine: 178
+      carboidrati: 353
+      grassi: 61
+    pasti:
+      - nome: "Colazione"
+        orario: "08:00"
+        alimenti:
+          - nome: "Yogurt greco 0%"
+            grammi: 150
+            kcal: 86
+            proteine: 15.5
+            carbo: 6.0
+            grassi: 1.0
+          - nome: "Muesli proteico"
+            grammi: 30
+            kcal: 108
+            proteine: 8.9
+            carbo: 13.6
+            grassi: 1.6
+          - nome: "Mela"
+            grammi: 200
+            kcal: 104
+            proteine: 0.6
+            carbo: 27.6
+            grassi: 0.4
+          - nome: "Noci"
+            grammi: 20
+            kcal: 131
+            proteine: 3.0
+            carbo: 2.8
+            grassi: 13.0
+        totale:
+          kcal: 429
+          proteine: 28.0
+          carbo: 50.0
+          grassi: 16.0
+      - nome: "Pranzo"
+        orario: "13:00"
+        alimenti:
+          - nome: "Lenticchie secche"
+            grammi: 90
+            kcal: 318
+            proteine: 22.5
+            carbo: 48.6
+            grassi: 0.9
+          - nome: "Verdure miste per minestra"
+            grammi: 200
+            kcal: 50
+            proteine: 3.0
+            carbo: 8.0
+            grassi: 0.6
+          - nome: "Pasta di semola"
+            grammi: 60
+            kcal: 214
+            proteine: 7.5
+            carbo: 43.2
+            grassi: 0.9
+          - nome: "Olio extravergine di oliva"
+            grammi: 15
+            kcal: 133
+            proteine: 0.0
+            carbo: 0.0
+            grassi: 15.0
+          - nome: "Parmigiano grattugiato"
+            grammi: 10
+            kcal: 39
+            proteine: 3.3
+            carbo: 0.0
+            grassi: 2.8
+          - nome: "Pane integrale"
+            grammi: 60
+            kcal: 148
+            proteine: 4.8
+            carbo: 26.4
+            grassi: 2.1
+          - nome: "Banana"
+            grammi: 130
+            kcal: 116
+            proteine: 1.4
+            carbo: 29.6
+            grassi: 0.4
+        totale:
+          kcal: 1018
+          proteine: 42.5
+          carbo: 155.8
+          grassi: 22.7
+      - nome: "Merenda"
+        orario: "16:30"
+        alimenti:
+          - nome: "Mela"
+            grammi: 200
+            kcal: 104
+            proteine: 0.6
+            carbo: 27.6
+            grassi: 0.4
+          - nome: "Whey proteine"
+            grammi: 35
+            kcal: 140
+            proteine: 28.0
+            carbo: 2.8
+            grassi: 1.4
+          - nome: "Latte parzialmente scremato"
+            grammi: 250
+            kcal: 115
+            proteine: 8.2
+            carbo: 12.5
+            grassi: 3.8
+        totale:
+          kcal: 359
+          proteine: 36.8
+          carbo: 42.9
+          grassi: 5.6
+      - nome: "Cena"
+        orario: "20:00"
+        alimenti:
+          - nome: "Petto di pollo"
+            grammi: 250
+            kcal: 275
+            proteine: 57.8
+            carbo: 0.0
+            grassi: 3.0
+          - nome: "Riso basmati"
+            grammi: 100
+            kcal: 350
+            proteine: 7.0
+            carbo: 78.0
+            grassi: 0.6
+          - nome: "Zucchine"
+            grammi: 200
+            kcal: 34
+            proteine: 2.4
+            carbo: 4.0
+            grassi: 0.6
+          - nome: "Olio extravergine di oliva"
+            grammi: 10
+            kcal: 88
+            proteine: 0.0
+            carbo: 0.0
+            grassi: 10.0
+          - nome: "Pane integrale"
+            grammi: 50
+            kcal: 124
+            proteine: 4.0
+            carbo: 22.0
+            grassi: 1.8
+        totale:
+          kcal: 871
+          proteine: 71.2
+          carbo: 104.0
+          grassi: 16.0
+
+  - nome: "Mercoledi - Allenamento Pesi"
+    tipo: "allenamento"
+    kcal: 2849
+    macros:
+      proteine: 219
+      carboidrati: 327
+      grassi: 73
+    pasti:
+      - nome: "Colazione"
+        orario: "07:30"
+        alimenti:
+          - nome: "Yogurt greco 0%"
+            grammi: 150
+            kcal: 86
+            proteine: 15.5
+            carbo: 6.0
+            grassi: 1.0
+          - nome: "Muesli proteico"
+            grammi: 30
+            kcal: 108
+            proteine: 8.9
+            carbo: 13.6
+            grassi: 1.6
+          - nome: "Banana"
+            grammi: 130
+            kcal: 116
+            proteine: 1.4
+            carbo: 29.6
+            grassi: 0.4
+          - nome: "Mandorle"
+            grammi: 25
+            kcal: 145
+            proteine: 5.2
+            carbo: 5.5
+            grassi: 12.2
+        totale:
+          kcal: 455
+          proteine: 31.0
+          carbo: 54.7
+          grassi: 15.2
+      - nome: "Pranzo"
+        orario: "13:00"
+        alimenti:
+          - nome: "Pasta di semola"
+            grammi: 120
+            kcal: 427
+            proteine: 15.0
+            carbo: 86.4
+            grassi: 1.8
+          - nome: "Pesto alla genovese"
+            grammi: 30
+            kcal: 132
+            proteine: 1.5
+            carbo: 1.2
+            grassi: 13.2
+          - nome: "Parmigiano grattugiato"
+            grammi: 10
+            kcal: 39
+            proteine: 3.3
+            carbo: 0.0
+            grassi: 2.8
+          - nome: "Petto di pollo"
+            grammi: 200
+            kcal: 220
+            proteine: 46.2
+            carbo: 0.0
+            grassi: 2.4
+          - nome: "Insalata mista"
+            grammi: 100
+            kcal: 15
+            proteine: 1.0
+            carbo: 2.0
+            grassi: 0.2
+          - nome: "Pane integrale"
+            grammi: 90
+            kcal: 222
+            proteine: 7.2
+            carbo: 39.6
+            grassi: 3.2
+        totale:
+          kcal: 1055
+          proteine: 74.2
+          carbo: 129.2
+          grassi: 23.6
+      - nome: "Merenda"
+        orario: "16:30"
+        alimenti:
+          - nome: "Banana"
+            grammi: 130
+            kcal: 116
+            proteine: 1.4
+            carbo: 29.6
+            grassi: 0.4
+          - nome: "Whey proteine"
+            grammi: 35
+            kcal: 140
+            proteine: 28.0
+            carbo: 2.8
+            grassi: 1.4
+          - nome: "Latte parzialmente scremato"
+            grammi: 250
+            kcal: 115
+            proteine: 8.2
+            carbo: 12.5
+            grassi: 3.8
+        totale:
+          kcal: 371
+          proteine: 37.6
+          carbo: 44.9
+          grassi: 5.6
+      - nome: "Cena"
+        orario: "20:00"
+        alimenti:
+          - nome: "Trota"
+            grammi: 300
+            kcal: 357
+            proteine: 61.5
+            carbo: 0.0
+            grassi: 10.5
+          - nome: "Patate"
+            grammi: 400
+            kcal: 308
+            proteine: 8.0
+            carbo: 68.0
+            grassi: 0.4
+          - nome: "Insalata mista"
+            grammi: 150
+            kcal: 22
+            proteine: 1.5
+            carbo: 3.0
+            grassi: 0.3
+          - nome: "Olio extravergine di oliva"
+            grammi: 15
+            kcal: 133
+            proteine: 0.0
+            carbo: 0.0
+            grassi: 15.0
+          - nome: "Pane integrale"
+            grammi: 60
+            kcal: 148
+            proteine: 4.8
+            carbo: 26.4
+            grassi: 2.1
+        totale:
+          kcal: 968
+          proteine: 75.8
+          carbo: 97.4
+          grassi: 28.3
+
+  - nome: "Giovedi - Beach Volley"
+    tipo: "beach_volley"
+    kcal: 3149
+    macros:
+      proteine: 214
+      carboidrati: 419
+      grassi: 68
+    pasti:
+      - nome: "Colazione"
+        orario: "07:30"
+        alimenti:
+          - nome: "Yogurt greco 0%"
+            grammi: 150
+            kcal: 86
+            proteine: 15.5
+            carbo: 6.0
+            grassi: 1.0
+          - nome: "Muesli proteico"
+            grammi: 30
+            kcal: 108
+            proteine: 8.9
+            carbo: 13.6
+            grassi: 1.6
+          - nome: "Fiocchi d'avena"
+            grammi: 50
+            kcal: 185
+            proteine: 6.5
+            carbo: 30.0
+            grassi: 3.5
+          - nome: "Banana"
+            grammi: 130
+            kcal: 116
+            proteine: 1.4
+            carbo: 29.6
+            grassi: 0.4
+          - nome: "Mandorle"
+            grammi: 25
+            kcal: 145
+            proteine: 5.2
+            carbo: 5.5
+            grassi: 12.2
+        totale:
+          kcal: 640
+          proteine: 37.5
+          carbo: 84.7
+          grassi: 18.7
+      - nome: "Pranzo"
+        orario: "13:00"
+        alimenti:
+          - nome: "Pasta di semola"
+            grammi: 140
+            kcal: 498
+            proteine: 17.5
+            carbo: 100.8
+            grassi: 2.1
+          - nome: "Sugo al pomodoro"
+            grammi: 100
+            kcal: 40
+            proteine: 1.5
+            carbo: 6.0
+            grassi: 1.0
+          - nome: "Tonno in scatola sgocciolato"
+            grammi: 120
+            kcal: 156
+            proteine: 31.2
+            carbo: 0.0
+            grassi: 3.0
+          - nome: "Parmigiano grattugiato"
+            grammi: 10
+            kcal: 39
+            proteine: 3.3
+            carbo: 0.0
+            grassi: 2.8
+          - nome: "Olio extravergine di oliva"
+            grammi: 10
+            kcal: 88
+            proteine: 0.0
+            carbo: 0.0
+            grassi: 10.0
+          - nome: "Pane integrale"
+            grammi: 60
+            kcal: 148
+            proteine: 4.8
+            carbo: 26.4
+            grassi: 2.1
+          - nome: "Banana"
+            grammi: 130
+            kcal: 116
+            proteine: 1.4
+            carbo: 29.6
+            grassi: 0.4
+        totale:
+          kcal: 1085
+          proteine: 59.7
+          carbo: 162.8
+          grassi: 21.4
+      - nome: "Merenda"
+        orario: "16:30"
+        alimenti:
+          - nome: "Banana"
+            grammi: 130
+            kcal: 116
+            proteine: 1.4
+            carbo: 29.6
+            grassi: 0.4
+          - nome: "Whey proteine"
+            grammi: 40
+            kcal: 160
+            proteine: 32.0
+            carbo: 3.2
+            grassi: 1.6
+          - nome: "Latte parzialmente scremato"
+            grammi: 300
+            kcal: 138
+            proteine: 9.9
+            carbo: 15.0
+            grassi: 4.5
+        totale:
+          kcal: 414
+          proteine: 43.3
+          carbo: 47.8
+          grassi: 6.5
+      - nome: "Cena"
+        orario: "20:00"
+        alimenti:
+          - nome: "Petto di pollo"
+            grammi: 250
+            kcal: 275
+            proteine: 57.8
+            carbo: 0.0
+            grassi: 3.0
+          - nome: "Riso basmati"
+            grammi: 120
+            kcal: 420
+            proteine: 8.4
+            carbo: 93.6
+            grassi: 0.7
+          - nome: "Zucchine"
+            grammi: 200
+            kcal: 34
+            proteine: 2.4
+            carbo: 4.0
+            grassi: 0.6
+          - nome: "Olio extravergine di oliva"
+            grammi: 15
+            kcal: 133
+            proteine: 0.0
+            carbo: 0.0
+            grassi: 15.0
+          - nome: "Pane integrale"
+            grammi: 60
+            kcal: 148
+            proteine: 4.8
+            carbo: 26.4
+            grassi: 2.1
+        totale:
+          kcal: 1010
+          proteine: 73.4
+          carbo: 124.0
+          grassi: 21.4
+
+  - nome: "Venerdi - Allenamento Pesi"
+    tipo: "allenamento"
+    kcal: 2861
+    macros:
+      proteine: 178
+      carboidrati: 306
+      grassi: 103
+    pasti:
+      - nome: "Colazione"
+        orario: "07:30"
+        alimenti:
+          - nome: "Yogurt greco 0%"
+            grammi: 150
+            kcal: 86
+            proteine: 15.5
+            carbo: 6.0
+            grassi: 1.0
+          - nome: "Muesli proteico"
+            grammi: 30
+            kcal: 108
+            proteine: 8.9
+            carbo: 13.6
+            grassi: 1.6
+          - nome: "Banana"
+            grammi: 130
+            kcal: 116
+            proteine: 1.4
+            carbo: 29.6
+            grassi: 0.4
+          - nome: "Mandorle"
+            grammi: 25
+            kcal: 145
+            proteine: 5.2
+            carbo: 5.5
+            grassi: 12.2
+        totale:
+          kcal: 455
+          proteine: 31.0
+          carbo: 54.7
+          grassi: 15.2
+      - nome: "Pranzo"
+        orario: "13:00"
+        alimenti:
+          - nome: "Pasta di semola (carbonara)"
+            grammi: 120
+            kcal: 427
+            proteine: 15.0
+            carbo: 86.4
+            grassi: 1.8
+          - nome: "Guanciale"
+            grammi: 30
+            kcal: 196
+            proteine: 3.0
+            carbo: 0.1
+            grassi: 20.4
+          - nome: "Pecorino romano"
+            grammi: 20
+            kcal: 77
+            proteine: 5.2
+            carbo: 0.0
+            grassi: 6.2
+          - nome: "Uova intere (2 uova)"
+            grammi: 120
+            kcal: 172
+            proteine: 14.9
+            carbo: 0.8
+            grassi: 11.9
+          - nome: "Insalata mista"
+            grammi: 100
+            kcal: 15
+            proteine: 1.0
+            carbo: 2.0
+            grassi: 0.2
+          - nome: "Pane integrale"
+            grammi: 50
+            kcal: 124
+            proteine: 4.0
+            carbo: 22.0
+            grassi: 1.8
+        totale:
+          kcal: 1011
+          proteine: 43.1
+          carbo: 111.3
+          grassi: 42.3
+      - nome: "Merenda"
+        orario: "16:30"
+        alimenti:
+          - nome: "Mela"
+            grammi: 200
+            kcal: 104
+            proteine: 0.6
+            carbo: 27.6
+            grassi: 0.4
+          - nome: "Whey proteine"
+            grammi: 35
+            kcal: 140
+            proteine: 28.0
+            carbo: 2.8
+            grassi: 1.4
+          - nome: "Latte parzialmente scremato"
+            grammi: 250
+            kcal: 115
+            proteine: 8.2
+            carbo: 12.5
+            grassi: 3.8
+        totale:
+          kcal: 359
+          proteine: 36.8
+          carbo: 42.9
+          grassi: 5.6
+      - nome: "Cena"
+        orario: "20:00"
+        alimenti:
+          - nome: "Manzo macinato magro"
+            grammi: 250
+            kcal: 425
+            proteine: 52.5
+            carbo: 0.0
+            grassi: 22.5
+          - nome: "Patate"
+            grammi: 400
+            kcal: 308
+            proteine: 8.0
+            carbo: 68.0
+            grassi: 0.4
+          - nome: "Insalata mista"
+            grammi: 150
+            kcal: 22
+            proteine: 1.5
+            carbo: 3.0
+            grassi: 0.3
+          - nome: "Olio extravergine di oliva"
+            grammi: 15
+            kcal: 133
+            proteine: 0.0
+            carbo: 0.0
+            grassi: 15.0
+          - nome: "Pane integrale"
+            grammi: 60
+            kcal: 148
+            proteine: 4.8
+            carbo: 26.4
+            grassi: 2.1
+        totale:
+          kcal: 1036
+          proteine: 66.8
+          carbo: 97.4
+          grassi: 40.3
+
+  - nome: "Sabato - Riposo (Sgarro)"
+    tipo: "riposo_sgarro"
+    kcal: 2747
+    macros:
+      proteine: 170
+      carboidrati: 327
+      grassi: 87
+    pasti:
+      - nome: "Colazione"
+        orario: "08:00"
+        alimenti:
+          - nome: "Yogurt greco 0%"
+            grammi: 150
+            kcal: 86
+            proteine: 15.5
+            carbo: 6.0
+            grassi: 1.0
+          - nome: "Muesli proteico"
+            grammi: 30
+            kcal: 108
+            proteine: 8.9
+            carbo: 13.6
+            grassi: 1.6
+          - nome: "Banana"
+            grammi: 130
+            kcal: 116
+            proteine: 1.4
+            carbo: 29.6
+            grassi: 0.4
+          - nome: "Noci"
+            grammi: 20
+            kcal: 131
+            proteine: 3.0
+            carbo: 2.8
+            grassi: 13.0
+        totale:
+          kcal: 441
+          proteine: 28.8
+          carbo: 52.0
+          grassi: 16.0
+      - nome: "Pranzo (sgarro - pizza)"
+        orario: "13:00"
+        alimenti:
+          - nome: "Pizza margherita"
+            grammi: 450
+            kcal: 1220
+            proteine: 54.0
+            carbo: 148.5
+            grassi: 45.0
+          - nome: "Insalata mista"
+            grammi: 150
+            kcal: 22
+            proteine: 1.5
+            carbo: 3.0
+            grassi: 0.3
+        totale:
+          kcal: 1242
+          proteine: 55.5
+          carbo: 151.5
+          grassi: 45.3
+      - nome: "Merenda"
+        orario: "16:30"
+        alimenti:
+          - nome: "Mela"
+            grammi: 200
+            kcal: 104
+            proteine: 0.6
+            carbo: 27.6
+            grassi: 0.4
+          - nome: "Whey proteine"
+            grammi: 35
+            kcal: 140
+            proteine: 28.0
+            carbo: 2.8
+            grassi: 1.4
+          - nome: "Latte parzialmente scremato"
+            grammi: 250
+            kcal: 115
+            proteine: 8.2
+            carbo: 12.5
+            grassi: 3.8
+        totale:
+          kcal: 359
+          proteine: 36.8
+          carbo: 42.9
+          grassi: 5.6
+      - nome: "Cena"
+        orario: "20:00"
+        alimenti:
+          - nome: "Bresaola"
+            grammi: 100
+            kcal: 151
+            proteine: 32.0
+            carbo: 0.0
+            grassi: 2.6
+          - nome: "Parmigiano grattugiato"
+            grammi: 20
+            kcal: 78
+            proteine: 6.6
+            carbo: 0.0
+            grassi: 5.6
+          - nome: "Riso basmati"
+            grammi: 80
+            kcal: 280
+            proteine: 5.6
+            carbo: 62.4
+            grassi: 0.5
+          - nome: "Insalata mista"
+            grammi: 150
+            kcal: 22
+            proteine: 1.5
+            carbo: 3.0
+            grassi: 0.3
+          - nome: "Olio extravergine di oliva"
+            grammi: 10
+            kcal: 88
+            proteine: 0.0
+            carbo: 0.0
+            grassi: 10.0
+          - nome: "Pane integrale"
+            grammi: 35
+            kcal: 86
+            proteine: 2.8
+            carbo: 15.4
+            grassi: 1.2
+        totale:
+          kcal: 705
+          proteine: 48.5
+          carbo: 80.8
+          grassi: 20.2
+
+  - nome: "Domenica - Riposo"
+    tipo: "riposo"
+    kcal: 2624
+    macros:
+      proteine: 154
+      carboidrati: 283
+      grassi: 101
+    pasti:
+      - nome: "Colazione"
+        orario: "08:00"
+        alimenti:
+          - nome: "Yogurt greco 0%"
+            grammi: 150
+            kcal: 86
+            proteine: 15.5
+            carbo: 6.0
+            grassi: 1.0
+          - nome: "Muesli proteico"
+            grammi: 30
+            kcal: 108
+            proteine: 8.9
+            carbo: 13.6
+            grassi: 1.6
+          - nome: "Mela"
+            grammi: 200
+            kcal: 104
+            proteine: 0.6
+            carbo: 27.6
+            grassi: 0.4
+          - nome: "Noci"
+            grammi: 20
+            kcal: 131
+            proteine: 3.0
+            carbo: 2.8
+            grassi: 13.0
+        totale:
+          kcal: 429
+          proteine: 28.0
+          carbo: 50.0
+          grassi: 16.0
+      - nome: "Pranzo"
+        orario: "13:00"
+        alimenti:
+          - nome: "Piselli surgelati"
+            grammi: 150
+            kcal: 122
+            proteine: 8.1
+            carbo: 21.8
+            grassi: 0.6
+          - nome: "Verdure miste per minestra"
+            grammi: 200
+            kcal: 50
+            proteine: 3.0
+            carbo: 8.0
+            grassi: 0.6
+          - nome: "Pasta di semola"
+            grammi: 70
+            kcal: 249
+            proteine: 8.8
+            carbo: 50.4
+            grassi: 1.0
+          - nome: "Olio extravergine di oliva"
+            grammi: 15
+            kcal: 133
+            proteine: 0.0
+            carbo: 0.0
+            grassi: 15.0
+          - nome: "Parmigiano grattugiato"
+            grammi: 10
+            kcal: 39
+            proteine: 3.3
+            carbo: 0.0
+            grassi: 2.8
+          - nome: "Pane integrale"
+            grammi: 80
+            kcal: 198
+            proteine: 6.4
+            carbo: 35.2
+            grassi: 2.8
+          - nome: "Banana"
+            grammi: 130
+            kcal: 116
+            proteine: 1.4
+            carbo: 29.6
+            grassi: 0.4
+        totale:
+          kcal: 907
+          proteine: 31.0
+          carbo: 145.0
+          grassi: 23.2
+      - nome: "Merenda"
+        orario: "16:30"
+        alimenti:
+          - nome: "Mela"
+            grammi: 200
+            kcal: 104
+            proteine: 0.6
+            carbo: 27.6
+            grassi: 0.4
+          - nome: "Whey proteine"
+            grammi: 35
+            kcal: 140
+            proteine: 28.0
+            carbo: 2.8
+            grassi: 1.4
+          - nome: "Latte parzialmente scremato"
+            grammi: 250
+            kcal: 115
+            proteine: 8.2
+            carbo: 12.5
+            grassi: 3.8
+        totale:
+          kcal: 359
+          proteine: 36.8
+          carbo: 42.9
+          grassi: 5.6
+      - nome: "Cena"
+        orario: "20:00"
+        alimenti:
+          - nome: "Uova intere (3 uova)"
+            grammi: 180
+            kcal: 257
+            proteine: 22.3
+            carbo: 1.3
+            grassi: 17.8
+          - nome: "Mozzarella"
+            grammi: 125
+            kcal: 350
+            proteine: 27.5
+            carbo: 1.2
+            grassi: 25.6
+          - nome: "Pomodoro fresco"
+            grammi: 200
+            kcal: 36
+            proteine: 1.8
+            carbo: 7.8
+            grassi: 0.2
+          - nome: "Pane integrale"
+            grammi: 80
+            kcal: 198
+            proteine: 6.4
+            carbo: 35.2
+            grassi: 2.8
+          - nome: "Olio extravergine di oliva"
+            grammi: 10
+            kcal: 88
+            proteine: 0.0
+            carbo: 0.0
+            grassi: 10.0
+        totale:
+          kcal: 929
+          proteine: 58.0
+          carbo: 45.5
+          grassi: 56.4
+
+integratori:
+  - nome: "Creatina monoidrato"
+    dose: "5g"
+    timing: "dopo allenamento (giorni palestra) o al mattino (giorni riposo)"
+    note: "Con acqua o succo di frutta. Mantenere tutti i giorni per saturazione muscolare."
+  - nome: "Whey proteine"
+    dose: "35g"
+    timing: "a merenda, come indicato nel piano pasti"
+    note: "Gusto cioccolato con latte parzialmente scremato o acqua. Integrato nei pasti per raggiungere il target proteico giornaliero. Nei giorni beach volley aumentare a 40g."

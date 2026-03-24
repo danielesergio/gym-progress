@@ -1,0 +1,51 @@
+{
+  "meta": {
+    "data": "2026-03-22",
+    "project": "Daniele Fitness Dashboard",
+    "goal": "Miglioramento del sito esistente: arricchimento della card Massimali Big 3 con delta visivo verso l'obiettivo",
+    "sommario": "Il sito è già strutturato con 6 pagine (Dashboard, Progressi, Allenamento, Dieta, Piano, Volume). L'unica richiesta esplicita di miglioramento riguarda la card 'Massimali Big 3' nella dashboard: attualmente mostra i massimali correnti (squat 145.8 kg, panca 116.7 kg, stacco 198.3 kg) e il target a 12 mesi in forma testuale '→ X.X kg', ma manca una rappresentazione visiva del delta (distanza dall'obiettivo). L'atleta vuole vedere il progressivo come: valore attuale + delta evidenziato → obiettivo, in modo da percepire immediatamente quanto manca al target. I dati necessari (massimali correnti e target a 12 mesi) sono già presenti nei JSON esistenti. L'intervento è chirurgico: si modifica solo il componente della card Massimali Big 3.",
+    "features_totali": 1,
+    "tasks_totali": 2
+  },
+  "features": [
+    {
+      "name": "Dashboard — Card Massimali Big 3",
+      "priority": 1,
+      "description": "Arricchimento della card 'Massimali Big 3' nella dashboard con visualizzazione del delta tra massimale corrente e obiettivo a 12 mesi. Attualmente la card mostra solo il valore corrente e il target in forma scarna ('→ X.X kg'). L'obiettivo è rendere visivamente evidente la distanza dall'obiettivo, con il delta in risalto.",
+      "tasks": [
+        {
+          "id": "big3-delta-display",
+          "type": "component",
+          "title": "Visualizzazione delta Big 3: attuale + Δ → obiettivo",
+          "description": "Modifica la card 'Massimali Big 3' nella dashboard per mostrare, per ciascuno dei tre esercizi (Squat, Panca, Stacco), la progressione nella forma: valore attuale → delta evidenziato → obiettivo a 12 mesi. Il delta è la differenza tra il target a 12 mesi e il massimale corrente (es. Squat: 145.8 kg +11.2 → 157 kg). Il delta deve essere visivamente distinto dal resto (colore, font weight o badge) per attirare l'attenzione. Se il massimale corrente supera già il target, il delta deve essere mostrato come 0 o con indicazione positiva (obiettivo raggiunto). I dati già disponibili sono: massimali correnti dall'ultima misurazione (squat 145.8, panca 116.7, stacco 198.3) e target a 12 mesi da plan.json (squat 157, panca 124, stacco 218). Il target di riferimento è quello a 12 mesi, già usato dalla card attuale.",
+          "inputs": ["measurements_data", "plan_data_target_12m"],
+          "outputs": ["Big3CardWithDelta"],
+          "acceptance_criteria": [
+            "Per ogni esercizio (Squat, Panca, Stacco) sono visibili tre elementi: il valore corrente in kg, il delta (+X.X kg) e l'obiettivo a 12 mesi in kg",
+            "Il delta è visivamente distinto dagli altri valori (es. colore diverso, grassetto o badge)",
+            "Il delta è calcolato correttamente come differenza tra target 12 mesi e massimale corrente (arrotondato a 1 decimale)",
+            "Se il massimale corrente è già uguale o superiore al target, il delta non mostra un valore negativo ma un'indicazione neutra o positiva (es. '✓' o '0')",
+            "La card rimane leggibile e non sovraffollata su mobile e desktop",
+            "Se i dati del target a 12 mesi non sono disponibili, la card mostra il massimale corrente senza errori"
+          ],
+          "dependencies": []
+        },
+        {
+          "id": "big3-delta-style",
+          "type": "ux",
+          "title": "Stile visivo del delta nella card Big 3",
+          "description": "Definizione dello stile visivo per il componente delta della card Massimali Big 3. Il delta deve essere percepito come un elemento separato e positivo — la distanza da colmare, non un difetto. Suggerimento di trattamento: colore accent (es. arancione o verde chiaro), font in grassetto, possibile freccia direzionale (→ o ↑) per comunicare direzione di miglioramento. Lo stile deve essere coerente con il design system già presente nel sito (variabili CSS esistenti, dark/light mode supportati). La gerarchia visiva nella card deve essere: 1) valore corrente (primario), 2) delta (enfatizzato), 3) obiettivo (secondario).",
+          "inputs": ["Big3CardWithDelta", "branding_css_variables"],
+          "outputs": ["Big3DeltaStyle"],
+          "acceptance_criteria": [
+            "Il delta è distinguibile a colpo d'occhio dagli altri valori della card senza leggere le etichette",
+            "Lo stile del delta è coerente con il design system del sito (usa le variabili CSS esistenti o ne aggiunge di nuove coerenti)",
+            "Il delta è leggibile sia in tema chiaro che scuro (light/dark mode)",
+            "La card non risulta sovraffollata: il layout dei tre esercizi rimane ordinato e aligned"
+          ],
+          "dependencies": ["big3-delta-display"]
+        }
+      ]
+    }
+  ]
+}

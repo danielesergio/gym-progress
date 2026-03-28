@@ -1,0 +1,75 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "diet-slot-option-nav-style",
+    "task_titolo": "Stile visivo dei controlli di navigazione opzioni slot",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "I bottoni freccia (&#8249; &#8250;) sono visibili su schermo 375px senza essere compressi da overflow hidden o padding eccessivo del container genitore",
+      "soddisfatto": true,
+      "dettaglio": "Media query @media (max-width: 400px) in diet.css (lines 461-479) riduce padding del .diet-slot-nav container (da var(--space-5) a var(--space-3)) ma mantiene min-width/min-height 44px sui bottoni .diet-slot-nav__btn. Nessun overflow: hidden sul container."
+    },
+    {
+      "criterio": "L'area cliccabile dei bottoni freccia è confermata >= 44x44px: verificare che min-width: 44px e min-height: 44px non vengano sovrascritti da regole più specifiche",
+      "soddisfatto": true,
+      "dettaglio": "diet.css lines 401-402 definiscono min-width: 44px e min-height: 44px. Media query (lines 470-471) riconferma gli stessi valori. Line 472 aggiunge box-sizing: border-box per garantire che padding non espanda l'area touch. Nessuna regola più specifica sovrascritto i min-width/min-height."
+    },
+    {
+      "criterio": "L'indicatore '1 / 2' è leggibile su mobile: font-size var(--font-size-sm) su sfondo var(--color-bg-secondary) con color var(--color-text-muted) deve garantire contrasto WCAG AA",
+      "soddisfatto": true,
+      "dettaglio": "Default: font-size var(--font-size-sm) = 14px (variables.css line 38). Mobile (375px): font-size aumentato a var(--font-size-base) = 16px (diet.css line 476). Color: var(--color-text-muted) = #a0a0a0 su var(--color-bg-secondary) = #2d2d2d → contrasto ~4.7:1 (WCAG AA). Su theme-pro, color è var(--color-text) = #e6edf3 → contrasto ~12:1 (WCAG AAA)."
+    },
+    {
+      "criterio": "Il colore e lo schema visivo di .diet-slot-nav__btn (border pill, accent su hover) sono coerenti con .diet-toggle-btn — già verificato nel codice esistente",
+      "soddisfatto": true,
+      "dettaglio": "diet.css .diet-slot-nav__btn (lines 397-423) e .diet-toggle-btn (lines 48-95) condividono: border-radius var(--radius-full), border 2px solid var(--color-border), hover con border-color/color/background-color var(--color-accent) + var(--color-accent-dim). Stile visivo coerente."
+    },
+    {
+      "criterio": "docs/css/diet.css contiene la classe .diet-slot-nav con stili completi",
+      "soddisfatto": true,
+      "dettaglio": "diet.css lines 387-395 definiscono .diet-slot-nav con display: flex, align-items: center, justify-content: center, gap, padding, border-bottom, background-color. Stili completi."
+    },
+    {
+      "criterio": "docs/css/diet.css contiene .diet-slot-nav__btn con min-width: 44px e min-height: 44px",
+      "soddisfatto": true,
+      "dettaglio": "diet.css lines 397-417 definiscono .diet-slot-nav__btn con min-width: 44px (line 401), min-height: 44px (line 402), display: inline-flex, align-items/justify-content center, padding, border 2px, border-radius full, background/color, font-size lg, cursor pointer, transition, line-height 1."
+    },
+    {
+      "criterio": "docs/css/diet.css contiene .diet-slot-nav__indicator con text-align: center e white-space: nowrap",
+      "soddisfatto": true,
+      "dettaglio": "diet.css lines 435-443 definiscono .diet-slot-nav__indicator con font-size sm, font-weight medium, color text-muted, min-width 3rem, text-align: center (line 440), white-space: nowrap (line 441), user-select: none."
+    },
+    {
+      "criterio": "Nessun bottone freccia viene nascosto o compresso su viewport 375px (nessun overflow: hidden sul container che riduca l'area touch)",
+      "soddisfatto": true,
+      "dettaglio": ".diet-slot-nav container (lines 387-395) non ha overflow: hidden. Media query per 375px (lines 461-479) riduce padding e gap ma non modifica overflow. Bottoni rimangono visibili e toccabili."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/css/diet.css",
+      "esiste": true,
+      "note": "File CSS per stili pagina Dieta. Contiene classi .diet-slot-nav, .diet-slot-nav__btn, .diet-slot-nav__indicator (lines 379-454) + media query mobile 375px (lines 456-479). Stili completi e coerenti con design system."
+    },
+    {
+      "path": "docs/js/diet.js",
+      "esiste": true,
+      "note": "Markup HTML generato da renderSlotCard() (lines 354-419) produce correttamente <div class='diet-slot-nav'> con bottoni <button class='diet-slot-nav__btn'> e indicatore <span class='diet-slot-nav__indicator'>. Aria-label e data attributes presenti."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "Le frecce Unicode &#8249; (‹) e &#8250; (›) potrebbero avere resa visiva inconsistente su browser molto vecchi. Tuttavia, font-size var(--font-size-lg) (20px) + line-height 1 assicurano buona leggibilità su moderni browser. Non è un blocco.",
+      "file": "docs/js/diet.js (lines 391, 400)"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Min-width: 3rem dell'indicatore (diet.css line 439) su mobile (375px) si riduce a 2.5rem (line 477). Con font-size base (16px) e spazio interno, garantisce comunque spazio sufficiente per '1 / 2' (~18-20px necessari). Non è un blocco.",
+      "file": "docs/css/diet.css (lines 439, 477)"
+    }
+  ]
+}

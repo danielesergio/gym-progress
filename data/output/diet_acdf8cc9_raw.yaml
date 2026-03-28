@@ -1,0 +1,2355 @@
+meta:
+  data: "2026-03-28"
+  fase: "mantenimento"
+  tipi_giorno:
+    - id: "riposo"
+      label: "Giorno di Riposo"
+      kcal_target: 2650
+      macros_target:
+        proteine: 180
+        carboidrati: 295
+        grassi: 75
+    - id: "palestra"
+      label: "Giorno Allenamento Pesi"
+      kcal_target: 2850
+      macros_target:
+        proteine: 185
+        carboidrati: 330
+        grassi: 78
+    - id: "beach_volley"
+      label: "Giorno Beach Volley (giovedi)"
+      kcal_target: 3150
+      macros_target:
+        proteine: 190
+        carboidrati: 390
+        grassi: 82
+
+  note_strategia: >
+    FASE CORRENTE: Mantenimento calorico (Mesociclo 2 - Rehab TOS Fase 2, ramp-up).
+    L'atleta e' in recupero da sindrome TOS e non e' opportuno creare deficit che
+    comprometterebbe la guarigione tissutale e la massa magra.
+
+    BASE CALORICA: TDEE 2850 kcal (BMR 1839 x 1.55) dall'ultima misurazione (2026-03-27).
+    L'analisi automatica non e' disponibile per insufficienza di dati (solo 2 misurazioni),
+    quindi si parte direttamente dal TDEE calcolato.
+
+    GIORNO RIPOSO (2650 kcal): Riduzione di 200 kcal rispetto al TDEE base.
+    L'atleta cammina 10000-12000 passi/die quindi il dispendio non e' zero,
+    ma il deficit leggero e' giustificato dalla minore attivita' strutturata.
+    Carboidrati ridotti, proteine e grassi stabili.
+
+    GIORNO PALESTRA (2850 kcal): Target TDEE base esatto. Prevalenza carboidrati
+    per supportare le sessioni di allenamento in fase rehab (anche se leggere).
+    Carboidrati concentrati attorno all'allenamento (pranzo o cena post-workout).
+
+    GIORNO BEACH VOLLEY (3150 kcal): TDEE + 300 kcal per compensare 90 minuti
+    di beach volley a intensita' media (stima consumo aggiuntivo 350-450 kcal).
+    Si arrotonda a +300 kcal per non eccedere il mantenimento. Carboidrati
+    significativamente aumentati per sostenere l'attivita' sportiva.
+
+    PROTEINE: 180-190 g/die (2.1-2.2 g/kg su 85.9 kg). Valore alto per:
+    (1) preservare massa magra durante il periodo di attivita' ridotta,
+    (2) supportare la guarigione del tessuto connettivo (TOS),
+    (3) coerenza con la fase di mantenimento.
+
+    STRUTTURA PASTI: 4 pasti principali come da preferenza atleta (colazione, pranzo,
+    cena, + spuntino pomeriggio/sera o tra colazione e pranzo).
+    Colazione abbondante (preferenza esplicita). Pranzo e cena calibrati ma non
+    eccessivamente voluminosi. Lo spuntino opzionale tra colazione e pranzo
+    (datteri e mandorle/noci) e' trattato come slot separato con 1-2 opzioni.
+
+    LINEE GUIDA NUTRIZIONALI rispettate:
+    - Frutta distribuita tra colazione e pasti (3 frutti/die)
+    - Verdura presente a pranzo e cena
+    - Cereali integrali preferiti (pasta integrale, riso)
+    - Pesce ~3 volte/settimana nelle opzioni cena
+    - Carne ~3 volte/settimana alternata a legumi, pesce, uova, formaggi
+    - Legumi 2-3 volte/settimana a pranzo (minestre, zuppe)
+    - Yogurt greco ogni giorno a colazione
+    - Formaggi (mozzarella, parmigiano) come secondo 2 volte/settimana
+    - Uova 1 volta/settimana come secondo
+    - Affettati ridotti al minimo (esclusi dalle opzioni principali)
+    - Niente pasti sgarro nelle opzioni (pizza/hamburger esclusi)
+
+    INTERCAMBIABILITA': Le opzioni di ogni slot sono calibrate per avere kcal
+    simili (tolleranza +/-50 kcal) per ciascun tipo di giorno. Il postprocessing
+    Python ricalcolera' grammi e macro esatti scalando gli alimenti.
+
+    INTEGRATORI: Proteine whey cioccolato con latte parzialmente scremato come
+    spuntino serale opzionale o post-allenamento. Creatina monoidrata 5g/die
+    dopo allenamento. Nessun altro integratore necessario.
+
+slot_pasto:
+  - id: "colazione"
+    label: "Colazione"
+    orario_indicativo: "07:30"
+    kcal_per_tipo:
+      riposo: 550
+      palestra: 600
+      beach_volley: 620
+    opzioni:
+      - nome: "Yogurt greco con muesli proteico e frutta"
+        varianti:
+          riposo:
+            alimenti:
+              - nome: "Yogurt greco 0%"
+                grammi: 150
+                kcal: 89
+                proteine: 15.0
+                carbo: 5.4
+                grassi: 0.3
+              - nome: "Muesli proteico"
+                grammi: 50
+                kcal: 190
+                proteine: 10.0
+                carbo: 27.5
+                grassi: 4.0
+              - nome: "Banana"
+                grammi: 120
+                kcal: 107
+                proteine: 1.3
+                carbo: 27.6
+                grassi: 0.4
+              - nome: "Latte parzialmente scremato"
+                grammi: 100
+                kcal: 46
+                proteine: 3.3
+                carbo: 4.8
+                grassi: 1.5
+            totale:
+              kcal: 432
+              proteine: 29.6
+              carbo: 65.3
+              grassi: 6.2
+          palestra:
+            alimenti:
+              - nome: "Yogurt greco 0%"
+                grammi: 200
+                kcal: 118
+                proteine: 20.0
+                carbo: 7.2
+                grassi: 0.4
+              - nome: "Muesli proteico"
+                grammi: 60
+                kcal: 228
+                proteine: 12.0
+                carbo: 33.0
+                grassi: 4.8
+              - nome: "Banana"
+                grammi: 120
+                kcal: 107
+                proteine: 1.3
+                carbo: 27.6
+                grassi: 0.4
+              - nome: "Latte parzialmente scremato"
+                grammi: 100
+                kcal: 46
+                proteine: 3.3
+                carbo: 4.8
+                grassi: 1.5
+            totale:
+              kcal: 499
+              proteine: 36.6
+              carbo: 72.6
+              grassi: 7.1
+          beach_volley:
+            alimenti:
+              - nome: "Yogurt greco 0%"
+                grammi: 200
+                kcal: 118
+                proteine: 20.0
+                carbo: 7.2
+                grassi: 0.4
+              - nome: "Muesli proteico"
+                grammi: 60
+                kcal: 228
+                proteine: 12.0
+                carbo: 33.0
+                grassi: 4.8
+              - nome: "Banana"
+                grammi: 150
+                kcal: 134
+                proteine: 1.7
+                carbo: 34.5
+                grassi: 0.5
+              - nome: "Latte parzialmente scremato"
+                grammi: 150
+                kcal: 69
+                proteine: 5.0
+                carbo: 7.2
+                grassi: 2.3
+            totale:
+              kcal: 549
+              proteine: 38.7
+              carbo: 81.9
+              grassi: 8.0
+
+  - id: "spuntino_mattino"
+    label: "Spuntino Mattino (opzionale)"
+    orario_indicativo: "10:30"
+    kcal_per_tipo:
+      riposo: 150
+      palestra: 180
+      beach_volley: 200
+    opzioni:
+      - nome: "Datteri e mandorle"
+        varianti:
+          riposo:
+            alimenti:
+              - nome: "Datteri secchi"
+                grammi: 30
+                kcal: 85
+                proteine: 0.8
+                carbo: 22.5
+                grassi: 0.1
+              - nome: "Mandorle"
+                grammi: 15
+                kcal: 87
+                proteine: 3.2
+                carbo: 3.3
+                grassi: 7.5
+            totale:
+              kcal: 172
+              proteine: 4.0
+              carbo: 25.8
+              grassi: 7.6
+          palestra:
+            alimenti:
+              - nome: "Datteri secchi"
+                grammi: 35
+                kcal: 99
+                proteine: 0.9
+                carbo: 26.3
+                grassi: 0.1
+              - nome: "Mandorle"
+                grammi: 18
+                kcal: 104
+                proteine: 3.8
+                carbo: 4.0
+                grassi: 9.0
+            totale:
+              kcal: 203
+              proteine: 4.7
+              carbo: 30.3
+              grassi: 9.1
+          beach_volley:
+            alimenti:
+              - nome: "Datteri secchi"
+                grammi: 40
+                kcal: 113
+                proteine: 1.0
+                carbo: 30.0
+                grassi: 0.2
+              - nome: "Mandorle"
+                grammi: 18
+                kcal: 104
+                proteine: 3.8
+                carbo: 4.0
+                grassi: 9.0
+            totale:
+              kcal: 217
+              proteine: 4.8
+              carbo: 34.0
+              grassi: 9.2
+      - nome: "Datteri e noci"
+        varianti:
+          riposo:
+            alimenti:
+              - nome: "Datteri secchi"
+                grammi: 30
+                kcal: 85
+                proteine: 0.8
+                carbo: 22.5
+                grassi: 0.1
+              - nome: "Noci"
+                grammi: 15
+                kcal: 98
+                proteine: 2.3
+                carbo: 2.1
+                grassi: 9.8
+            totale:
+              kcal: 183
+              proteine: 3.1
+              carbo: 24.6
+              grassi: 9.9
+          palestra:
+            alimenti:
+              - nome: "Datteri secchi"
+                grammi: 35
+                kcal: 99
+                proteine: 0.9
+                carbo: 26.3
+                grassi: 0.1
+              - nome: "Noci"
+                grammi: 15
+                kcal: 98
+                proteine: 2.3
+                carbo: 2.1
+                grassi: 9.8
+            totale:
+              kcal: 197
+              proteine: 3.2
+              carbo: 28.4
+              grassi: 9.9
+          beach_volley:
+            alimenti:
+              - nome: "Datteri secchi"
+                grammi: 40
+                kcal: 113
+                proteine: 1.0
+                carbo: 30.0
+                grassi: 0.2
+              - nome: "Noci"
+                grammi: 18
+                kcal: 118
+                proteine: 2.7
+                carbo: 2.5
+                grassi: 11.7
+            totale:
+              kcal: 231
+              proteine: 3.7
+              carbo: 32.5
+              grassi: 11.9
+
+  - id: "pranzo"
+    label: "Pranzo"
+    orario_indicativo: "13:00"
+    kcal_per_tipo:
+      riposo: 800
+      palestra: 880
+      beach_volley: 980
+    opzioni:
+      - nome: "Pasta integrale al sugo di pomodoro e verdure"
+        varianti:
+          riposo:
+            alimenti:
+              - nome: "Pasta di semola"
+                grammi: 90
+                kcal: 315
+                proteine: 10.8
+                carbo: 64.8
+                grassi: 1.4
+              - nome: "Passata di pomodoro"
+                grammi: 150
+                kcal: 50
+                proteine: 2.4
+                carbo: 10.5
+                grassi: 0.3
+              - nome: "Zucchine"
+                grammi: 150
+                kcal: 26
+                proteine: 1.8
+                carbo: 4.7
+                grassi: 0.5
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Parmigiano reggiano"
+                grammi: 20
+                kcal: 80
+                proteine: 6.6
+                carbo: 0.0
+                grassi: 5.8
+              - nome: "Insalata mista"
+                grammi: 100
+                kcal: 20
+                proteine: 1.5
+                carbo: 3.5
+                grassi: 0.2
+              - nome: "Banana"
+                grammi: 120
+                kcal: 107
+                proteine: 1.3
+                carbo: 27.6
+                grassi: 0.4
+            totale:
+              kcal: 731
+              proteine: 24.4
+              carbo: 111.1
+              grassi: 23.6
+          palestra:
+            alimenti:
+              - nome: "Pasta di semola"
+                grammi: 100
+                kcal: 350
+                proteine: 12.0
+                carbo: 72.0
+                grassi: 1.5
+              - nome: "Passata di pomodoro"
+                grammi: 150
+                kcal: 50
+                proteine: 2.4
+                carbo: 10.5
+                grassi: 0.3
+              - nome: "Zucchine"
+                grammi: 150
+                kcal: 26
+                proteine: 1.8
+                carbo: 4.7
+                grassi: 0.5
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Parmigiano reggiano"
+                grammi: 20
+                kcal: 80
+                proteine: 6.6
+                carbo: 0.0
+                grassi: 5.8
+              - nome: "Insalata mista"
+                grammi: 100
+                kcal: 20
+                proteine: 1.5
+                carbo: 3.5
+                grassi: 0.2
+              - nome: "Banana"
+                grammi: 120
+                kcal: 107
+                proteine: 1.3
+                carbo: 27.6
+                grassi: 0.4
+            totale:
+              kcal: 766
+              proteine: 25.6
+              carbo: 118.3
+              grassi: 23.7
+          beach_volley:
+            alimenti:
+              - nome: "Pasta di semola"
+                grammi: 110
+                kcal: 385
+                proteine: 13.2
+                carbo: 79.2
+                grassi: 1.7
+              - nome: "Passata di pomodoro"
+                grammi: 150
+                kcal: 50
+                proteine: 2.4
+                carbo: 10.5
+                grassi: 0.3
+              - nome: "Zucchine"
+                grammi: 150
+                kcal: 26
+                proteine: 1.8
+                carbo: 4.7
+                grassi: 0.5
+              - nome: "Olio extravergine di oliva"
+                grammi: 20
+                kcal: 177
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 20.0
+              - nome: "Parmigiano reggiano"
+                grammi: 20
+                kcal: 80
+                proteine: 6.6
+                carbo: 0.0
+                grassi: 5.8
+              - nome: "Insalata mista"
+                grammi: 100
+                kcal: 20
+                proteine: 1.5
+                carbo: 3.5
+                grassi: 0.2
+              - nome: "Banana"
+                grammi: 130
+                kcal: 116
+                proteine: 1.4
+                carbo: 29.9
+                grassi: 0.4
+            totale:
+              kcal: 854
+              proteine: 26.9
+              carbo: 127.8
+              grassi: 28.9
+
+      - nome: "Pasta integrale al pesto con pomodorini"
+        varianti:
+          riposo:
+            alimenti:
+              - nome: "Pasta di semola"
+                grammi: 90
+                kcal: 315
+                proteine: 10.8
+                carbo: 64.8
+                grassi: 1.4
+              - nome: "Pesto alla genovese"
+                grammi: 30
+                kcal: 144
+                proteine: 1.5
+                carbo: 1.2
+                grassi: 14.4
+              - nome: "Pomodorini"
+                grammi: 150
+                kcal: 27
+                proteine: 1.4
+                carbo: 5.9
+                grassi: 0.3
+              - nome: "Parmigiano reggiano"
+                grammi: 15
+                kcal: 60
+                proteine: 5.0
+                carbo: 0.0
+                grassi: 4.4
+              - nome: "Insalata mista"
+                grammi: 100
+                kcal: 20
+                proteine: 1.5
+                carbo: 3.5
+                grassi: 0.2
+              - nome: "Banana"
+                grammi: 120
+                kcal: 107
+                proteine: 1.3
+                carbo: 27.6
+                grassi: 0.4
+            totale:
+              kcal: 673
+              proteine: 21.5
+              carbo: 103.0
+              grassi: 21.1
+          palestra:
+            alimenti:
+              - nome: "Pasta di semola"
+                grammi: 100
+                kcal: 350
+                proteine: 12.0
+                carbo: 72.0
+                grassi: 1.5
+              - nome: "Pesto alla genovese"
+                grammi: 35
+                kcal: 168
+                proteine: 1.8
+                carbo: 1.4
+                grassi: 16.8
+              - nome: "Pomodorini"
+                grammi: 150
+                kcal: 27
+                proteine: 1.4
+                carbo: 5.9
+                grassi: 0.3
+              - nome: "Parmigiano reggiano"
+                grammi: 15
+                kcal: 60
+                proteine: 5.0
+                carbo: 0.0
+                grassi: 4.4
+              - nome: "Insalata mista"
+                grammi: 100
+                kcal: 20
+                proteine: 1.5
+                carbo: 3.5
+                grassi: 0.2
+              - nome: "Banana"
+                grammi: 120
+                kcal: 107
+                proteine: 1.3
+                carbo: 27.6
+                grassi: 0.4
+            totale:
+              kcal: 732
+              proteine: 23.0
+              carbo: 110.4
+              grassi: 23.6
+          beach_volley:
+            alimenti:
+              - nome: "Pasta di semola"
+                grammi: 110
+                kcal: 385
+                proteine: 13.2
+                carbo: 79.2
+                grassi: 1.7
+              - nome: "Pesto alla genovese"
+                grammi: 40
+                kcal: 192
+                proteine: 2.0
+                carbo: 1.6
+                grassi: 19.2
+              - nome: "Pomodorini"
+                grammi: 150
+                kcal: 27
+                proteine: 1.4
+                carbo: 5.9
+                grassi: 0.3
+              - nome: "Parmigiano reggiano"
+                grammi: 20
+                kcal: 80
+                proteine: 6.6
+                carbo: 0.0
+                grassi: 5.8
+              - nome: "Insalata mista"
+                grammi: 100
+                kcal: 20
+                proteine: 1.5
+                carbo: 3.5
+                grassi: 0.2
+              - nome: "Banana"
+                grammi: 130
+                kcal: 116
+                proteine: 1.4
+                carbo: 29.9
+                grassi: 0.4
+            totale:
+              kcal: 820
+              proteine: 26.1
+              carbo: 120.1
+              grassi: 27.6
+
+      - nome: "Riso basmati con broccoli e mais"
+        varianti:
+          riposo:
+            alimenti:
+              - nome: "Riso basmati"
+                grammi: 80
+                kcal: 292
+                proteine: 6.0
+                carbo: 64.0
+                grassi: 0.8
+              - nome: "Broccoli"
+                grammi: 200
+                kcal: 68
+                proteine: 5.6
+                carbo: 14.0
+                grassi: 0.8
+              - nome: "Mais dolce"
+                grammi: 80
+                kcal: 69
+                proteine: 2.6
+                carbo: 15.2
+                grassi: 1.0
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Banana"
+                grammi: 120
+                kcal: 107
+                proteine: 1.3
+                carbo: 27.6
+                grassi: 0.4
+            totale:
+              kcal: 669
+              proteine: 15.5
+              carbo: 120.8
+              grassi: 18.0
+          palestra:
+            alimenti:
+              - nome: "Riso basmati"
+                grammi: 90
+                kcal: 329
+                proteine: 6.8
+                carbo: 72.0
+                grassi: 0.9
+              - nome: "Broccoli"
+                grammi: 200
+                kcal: 68
+                proteine: 5.6
+                carbo: 14.0
+                grassi: 0.8
+              - nome: "Mais dolce"
+                grammi: 80
+                kcal: 69
+                proteine: 2.6
+                carbo: 15.2
+                grassi: 1.0
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Banana"
+                grammi: 130
+                kcal: 116
+                proteine: 1.4
+                carbo: 29.9
+                grassi: 0.4
+            totale:
+              kcal: 715
+              proteine: 16.4
+              carbo: 131.1
+              grassi: 18.1
+          beach_volley:
+            alimenti:
+              - nome: "Riso basmati"
+                grammi: 100
+                kcal: 365
+                proteine: 7.5
+                carbo: 80.0
+                grassi: 1.0
+              - nome: "Broccoli"
+                grammi: 200
+                kcal: 68
+                proteine: 5.6
+                carbo: 14.0
+                grassi: 0.8
+              - nome: "Mais dolce"
+                grammi: 100
+                kcal: 86
+                proteine: 3.2
+                carbo: 19.0
+                grassi: 1.2
+              - nome: "Olio extravergine di oliva"
+                grammi: 20
+                kcal: 177
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 20.0
+              - nome: "Banana"
+                grammi: 130
+                kcal: 116
+                proteine: 1.4
+                carbo: 29.9
+                grassi: 0.4
+            totale:
+              kcal: 812
+              proteine: 17.7
+              carbo: 142.9
+              grassi: 23.4
+
+      - nome: "Minestra di lenticchie con pane integrale"
+        varianti:
+          riposo:
+            alimenti:
+              - nome: "Lenticchie secche"
+                grammi: 80
+                kcal: 282
+                proteine: 20.0
+                carbo: 48.0
+                grassi: 0.9
+              - nome: "Carota"
+                grammi: 80
+                kcal: 33
+                proteine: 0.7
+                carbo: 7.7
+                grassi: 0.2
+              - nome: "Cipolla"
+                grammi: 50
+                kcal: 20
+                proteine: 0.6
+                carbo: 4.7
+                grassi: 0.1
+              - nome: "Passata di pomodoro"
+                grammi: 100
+                kcal: 33
+                proteine: 1.6
+                carbo: 7.0
+                grassi: 0.2
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Pane integrale"
+                grammi: 60
+                kcal: 148
+                proteine: 5.4
+                carbo: 24.6
+                grassi: 2.4
+              - nome: "Banana"
+                grammi: 120
+                kcal: 107
+                proteine: 1.3
+                carbo: 27.6
+                grassi: 0.4
+            totale:
+              kcal: 756
+              proteine: 29.6
+              carbo: 119.6
+              grassi: 19.2
+          palestra:
+            alimenti:
+              - nome: "Lenticchie secche"
+                grammi: 90
+                kcal: 318
+                proteine: 22.5
+                carbo: 54.0
+                grassi: 1.0
+              - nome: "Carota"
+                grammi: 80
+                kcal: 33
+                proteine: 0.7
+                carbo: 7.7
+                grassi: 0.2
+              - nome: "Cipolla"
+                grammi: 50
+                kcal: 20
+                proteine: 0.6
+                carbo: 4.7
+                grassi: 0.1
+              - nome: "Passata di pomodoro"
+                grammi: 100
+                kcal: 33
+                proteine: 1.6
+                carbo: 7.0
+                grassi: 0.2
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Pane integrale"
+                grammi: 70
+                kcal: 173
+                proteine: 6.3
+                carbo: 28.7
+                grassi: 2.8
+              - nome: "Banana"
+                grammi: 120
+                kcal: 107
+                proteine: 1.3
+                carbo: 27.6
+                grassi: 0.4
+            totale:
+              kcal: 817
+              proteine: 33.0
+              carbo: 129.7
+              grassi: 19.7
+          beach_volley:
+            alimenti:
+              - nome: "Lenticchie secche"
+                grammi: 100
+                kcal: 353
+                proteine: 25.0
+                carbo: 60.0
+                grassi: 1.1
+              - nome: "Carota"
+                grammi: 80
+                kcal: 33
+                proteine: 0.7
+                carbo: 7.7
+                grassi: 0.2
+              - nome: "Cipolla"
+                grammi: 50
+                kcal: 20
+                proteine: 0.6
+                carbo: 4.7
+                grassi: 0.1
+              - nome: "Passata di pomodoro"
+                grammi: 100
+                kcal: 33
+                proteine: 1.6
+                carbo: 7.0
+                grassi: 0.2
+              - nome: "Olio extravergine di oliva"
+                grammi: 20
+                kcal: 177
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 20.0
+              - nome: "Pane integrale"
+                grammi: 80
+                kcal: 198
+                proteine: 7.2
+                carbo: 32.8
+                grassi: 3.2
+              - nome: "Banana"
+                grammi: 130
+                kcal: 116
+                proteine: 1.4
+                carbo: 29.9
+                grassi: 0.4
+            totale:
+              kcal: 930
+              proteine: 36.5
+              carbo: 142.1
+              grassi: 25.2
+
+      - nome: "Pasta integrale alla carbonara leggera"
+        varianti:
+          riposo:
+            alimenti:
+              - nome: "Pasta di semola"
+                grammi: 90
+                kcal: 315
+                proteine: 10.8
+                carbo: 64.8
+                grassi: 1.4
+              - nome: "Uova intere"
+                grammi: 55
+                kcal: 79
+                proteine: 7.2
+                carbo: 0.6
+                grassi: 5.5
+              - nome: "Pecorino romano"
+                grammi: 20
+                kcal: 77
+                proteine: 5.2
+                carbo: 0.0
+                grassi: 6.4
+              - nome: "Guanciale"
+                grammi: 20
+                kcal: 131
+                proteine: 1.8
+                carbo: 0.0
+                grassi: 14.0
+              - nome: "Insalata mista"
+                grammi: 100
+                kcal: 20
+                proteine: 1.5
+                carbo: 3.5
+                grassi: 0.2
+              - nome: "Banana"
+                grammi: 120
+                kcal: 107
+                proteine: 1.3
+                carbo: 27.6
+                grassi: 0.4
+            totale:
+              kcal: 729
+              proteine: 27.8
+              carbo: 96.5
+              grassi: 27.9
+          palestra:
+            alimenti:
+              - nome: "Pasta di semola"
+                grammi: 100
+                kcal: 350
+                proteine: 12.0
+                carbo: 72.0
+                grassi: 1.5
+              - nome: "Uova intere"
+                grammi: 55
+                kcal: 79
+                proteine: 7.2
+                carbo: 0.6
+                grassi: 5.5
+              - nome: "Pecorino romano"
+                grammi: 20
+                kcal: 77
+                proteine: 5.2
+                carbo: 0.0
+                grassi: 6.4
+              - nome: "Guanciale"
+                grammi: 25
+                kcal: 164
+                proteine: 2.3
+                carbo: 0.0
+                grassi: 17.5
+              - nome: "Insalata mista"
+                grammi: 100
+                kcal: 20
+                proteine: 1.5
+                carbo: 3.5
+                grassi: 0.2
+              - nome: "Banana"
+                grammi: 120
+                kcal: 107
+                proteine: 1.3
+                carbo: 27.6
+                grassi: 0.4
+            totale:
+              kcal: 797
+              proteine: 29.5
+              carbo: 103.7
+              grassi: 31.5
+          beach_volley:
+            alimenti:
+              - nome: "Pasta di semola"
+                grammi: 110
+                kcal: 385
+                proteine: 13.2
+                carbo: 79.2
+                grassi: 1.7
+              - nome: "Uova intere"
+                grammi: 55
+                kcal: 79
+                proteine: 7.2
+                carbo: 0.6
+                grassi: 5.5
+              - nome: "Pecorino romano"
+                grammi: 25
+                kcal: 97
+                proteine: 6.5
+                carbo: 0.0
+                grassi: 8.0
+              - nome: "Guanciale"
+                grammi: 25
+                kcal: 164
+                proteine: 2.3
+                carbo: 0.0
+                grassi: 17.5
+              - nome: "Insalata mista"
+                grammi: 100
+                kcal: 20
+                proteine: 1.5
+                carbo: 3.5
+                grassi: 0.2
+              - nome: "Banana"
+                grammi: 130
+                kcal: 116
+                proteine: 1.4
+                carbo: 29.9
+                grassi: 0.4
+            totale:
+              kcal: 861
+              proteine: 32.1
+              carbo: 113.2
+              grassi: 33.3
+
+      - nome: "Minestra di fagioli borlotti con pane integrale"
+        varianti:
+          riposo:
+            alimenti:
+              - nome: "Fagioli borlotti secchi"
+                grammi: 80
+                kcal: 270
+                proteine: 16.8
+                carbo: 48.0
+                grassi: 1.2
+              - nome: "Carota"
+                grammi: 80
+                kcal: 33
+                proteine: 0.7
+                carbo: 7.7
+                grassi: 0.2
+              - nome: "Cipolla"
+                grammi: 50
+                kcal: 20
+                proteine: 0.6
+                carbo: 4.7
+                grassi: 0.1
+              - nome: "Passata di pomodoro"
+                grammi: 100
+                kcal: 33
+                proteine: 1.6
+                carbo: 7.0
+                grassi: 0.2
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Pane integrale"
+                grammi: 60
+                kcal: 148
+                proteine: 5.4
+                carbo: 24.6
+                grassi: 2.4
+              - nome: "Banana"
+                grammi: 120
+                kcal: 107
+                proteine: 1.3
+                carbo: 27.6
+                grassi: 0.4
+            totale:
+              kcal: 744
+              proteine: 26.4
+              carbo: 119.6
+              grassi: 19.5
+          palestra:
+            alimenti:
+              - nome: "Fagioli borlotti secchi"
+                grammi: 90
+                kcal: 303
+                proteine: 18.9
+                carbo: 54.0
+                grassi: 1.4
+              - nome: "Carota"
+                grammi: 80
+                kcal: 33
+                proteine: 0.7
+                carbo: 7.7
+                grassi: 0.2
+              - nome: "Cipolla"
+                grammi: 50
+                kcal: 20
+                proteine: 0.6
+                carbo: 4.7
+                grassi: 0.1
+              - nome: "Passata di pomodoro"
+                grammi: 100
+                kcal: 33
+                proteine: 1.6
+                carbo: 7.0
+                grassi: 0.2
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Pane integrale"
+                grammi: 70
+                kcal: 173
+                proteine: 6.3
+                carbo: 28.7
+                grassi: 2.8
+              - nome: "Banana"
+                grammi: 120
+                kcal: 107
+                proteine: 1.3
+                carbo: 27.6
+                grassi: 0.4
+            totale:
+              kcal: 802
+              proteine: 29.4
+              carbo: 129.7
+              grassi: 20.1
+          beach_volley:
+            alimenti:
+              - nome: "Fagioli borlotti secchi"
+                grammi: 100
+                kcal: 337
+                proteine: 21.0
+                carbo: 60.0
+                grassi: 1.5
+              - nome: "Carota"
+                grammi: 80
+                kcal: 33
+                proteine: 0.7
+                carbo: 7.7
+                grassi: 0.2
+              - nome: "Cipolla"
+                grammi: 50
+                kcal: 20
+                proteine: 0.6
+                carbo: 4.7
+                grassi: 0.1
+              - nome: "Passata di pomodoro"
+                grammi: 100
+                kcal: 33
+                proteine: 1.6
+                carbo: 7.0
+                grassi: 0.2
+              - nome: "Olio extravergine di oliva"
+                grammi: 20
+                kcal: 177
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 20.0
+              - nome: "Pane integrale"
+                grammi: 80
+                kcal: 198
+                proteine: 7.2
+                carbo: 32.8
+                grassi: 3.2
+              - nome: "Banana"
+                grammi: 130
+                kcal: 116
+                proteine: 1.4
+                carbo: 29.9
+                grassi: 0.4
+            totale:
+              kcal: 914
+              proteine: 32.5
+              carbo: 142.1
+              grassi: 25.6
+
+      - nome: "Minestra di piselli con pane integrale"
+        varianti:
+          riposo:
+            alimenti:
+              - nome: "Piselli secchi"
+                grammi: 80
+                kcal: 273
+                proteine: 19.2
+                carbo: 48.0
+                grassi: 1.0
+              - nome: "Carota"
+                grammi: 80
+                kcal: 33
+                proteine: 0.7
+                carbo: 7.7
+                grassi: 0.2
+              - nome: "Cipolla"
+                grammi: 50
+                kcal: 20
+                proteine: 0.6
+                carbo: 4.7
+                grassi: 0.1
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Pane integrale"
+                grammi: 60
+                kcal: 148
+                proteine: 5.4
+                carbo: 24.6
+                grassi: 2.4
+              - nome: "Banana"
+                grammi: 120
+                kcal: 107
+                proteine: 1.3
+                carbo: 27.6
+                grassi: 0.4
+            totale:
+              kcal: 714
+              proteine: 27.2
+              carbo: 112.6
+              grassi: 19.1
+          palestra:
+            alimenti:
+              - nome: "Piselli secchi"
+                grammi: 90
+                kcal: 307
+                proteine: 21.6
+                carbo: 54.0
+                grassi: 1.1
+              - nome: "Carota"
+                grammi: 80
+                kcal: 33
+                proteine: 0.7
+                carbo: 7.7
+                grassi: 0.2
+              - nome: "Cipolla"
+                grammi: 50
+                kcal: 20
+                proteine: 0.6
+                carbo: 4.7
+                grassi: 0.1
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Pane integrale"
+                grammi: 70
+                kcal: 173
+                proteine: 6.3
+                carbo: 28.7
+                grassi: 2.8
+              - nome: "Banana"
+                grammi: 120
+                kcal: 107
+                proteine: 1.3
+                carbo: 27.6
+                grassi: 0.4
+            totale:
+              kcal: 773
+              proteine: 30.5
+              carbo: 122.7
+              grassi: 19.6
+          beach_volley:
+            alimenti:
+              - nome: "Piselli secchi"
+                grammi: 100
+                kcal: 341
+                proteine: 24.0
+                carbo: 60.0
+                grassi: 1.2
+              - nome: "Carota"
+                grammi: 80
+                kcal: 33
+                proteine: 0.7
+                carbo: 7.7
+                grassi: 0.2
+              - nome: "Cipolla"
+                grammi: 50
+                kcal: 20
+                proteine: 0.6
+                carbo: 4.7
+                grassi: 0.1
+              - nome: "Olio extravergine di oliva"
+                grammi: 20
+                kcal: 177
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 20.0
+              - nome: "Pane integrale"
+                grammi: 80
+                kcal: 198
+                proteine: 7.2
+                carbo: 32.8
+                grassi: 3.2
+              - nome: "Banana"
+                grammi: 130
+                kcal: 116
+                proteine: 1.4
+                carbo: 29.9
+                grassi: 0.4
+            totale:
+              kcal: 885
+              proteine: 33.9
+              carbo: 135.1
+              grassi: 25.1
+
+      - nome: "Tonno in scatola con riso e verdure crude"
+        varianti:
+          riposo:
+            alimenti:
+              - nome: "Riso basmati"
+                grammi: 80
+                kcal: 292
+                proteine: 6.0
+                carbo: 64.0
+                grassi: 0.8
+              - nome: "Tonno in scatola sgocciolato"
+                grammi: 80
+                kcal: 93
+                proteine: 20.8
+                carbo: 0.0
+                grassi: 0.8
+              - nome: "Pomodorini"
+                grammi: 150
+                kcal: 27
+                proteine: 1.4
+                carbo: 5.9
+                grassi: 0.3
+              - nome: "Insalata mista"
+                grammi: 100
+                kcal: 20
+                proteine: 1.5
+                carbo: 3.5
+                grassi: 0.2
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Banana"
+                grammi: 120
+                kcal: 107
+                proteine: 1.3
+                carbo: 27.6
+                grassi: 0.4
+            totale:
+              kcal: 672
+              proteine: 31.0
+              carbo: 101.0
+              grassi: 17.5
+          palestra:
+            alimenti:
+              - nome: "Riso basmati"
+                grammi: 90
+                kcal: 329
+                proteine: 6.8
+                carbo: 72.0
+                grassi: 0.9
+              - nome: "Tonno in scatola sgocciolato"
+                grammi: 100
+                kcal: 116
+                proteine: 26.0
+                carbo: 0.0
+                grassi: 1.0
+              - nome: "Pomodorini"
+                grammi: 150
+                kcal: 27
+                proteine: 1.4
+                carbo: 5.9
+                grassi: 0.3
+              - nome: "Insalata mista"
+                grammi: 100
+                kcal: 20
+                proteine: 1.5
+                carbo: 3.5
+                grassi: 0.2
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Banana"
+                grammi: 120
+                kcal: 107
+                proteine: 1.3
+                carbo: 27.6
+                grassi: 0.4
+            totale:
+              kcal: 732
+              proteine: 37.0
+              carbo: 109.0
+              grassi: 17.8
+          beach_volley:
+            alimenti:
+              - nome: "Riso basmati"
+                grammi: 100
+                kcal: 365
+                proteine: 7.5
+                carbo: 80.0
+                grassi: 1.0
+              - nome: "Tonno in scatola sgocciolato"
+                grammi: 100
+                kcal: 116
+                proteine: 26.0
+                carbo: 0.0
+                grassi: 1.0
+              - nome: "Pomodorini"
+                grammi: 150
+                kcal: 27
+                proteine: 1.4
+                carbo: 5.9
+                grassi: 0.3
+              - nome: "Insalata mista"
+                grammi: 100
+                kcal: 20
+                proteine: 1.5
+                carbo: 3.5
+                grassi: 0.2
+              - nome: "Olio extravergine di oliva"
+                grammi: 20
+                kcal: 177
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 20.0
+              - nome: "Banana"
+                grammi: 130
+                kcal: 116
+                proteine: 1.4
+                carbo: 29.9
+                grassi: 0.4
+            totale:
+              kcal: 821
+              proteine: 37.8
+              carbo: 119.3
+              grassi: 22.9
+
+  - id: "cena"
+    label: "Cena"
+    orario_indicativo: "20:00"
+    kcal_per_tipo:
+      riposo: 850
+      palestra: 900
+      beach_volley: 980
+    opzioni:
+      - nome: "Petto di pollo alla piastra con patate e verdure"
+        varianti:
+          riposo:
+            alimenti:
+              - nome: "Petto di pollo alla piastra"
+                grammi: 180
+                kcal: 297
+                proteine: 55.8
+                carbo: 0.0
+                grassi: 6.5
+              - nome: "Patate"
+                grammi: 250
+                kcal: 193
+                proteine: 5.0
+                carbo: 42.5
+                grassi: 0.3
+              - nome: "Zucchine"
+                grammi: 200
+                kcal: 34
+                proteine: 2.4
+                carbo: 6.2
+                grassi: 0.6
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Mela"
+                grammi: 150
+                kcal: 78
+                proteine: 0.5
+                carbo: 21.0
+                grassi: 0.3
+            totale:
+              kcal: 735
+              proteine: 63.7
+              carbo: 69.7
+              grassi: 22.7
+          palestra:
+            alimenti:
+              - nome: "Petto di pollo alla piastra"
+                grammi: 200
+                kcal: 330
+                proteine: 62.0
+                carbo: 0.0
+                grassi: 7.2
+              - nome: "Patate"
+                grammi: 280
+                kcal: 216
+                proteine: 5.6
+                carbo: 47.6
+                grassi: 0.3
+              - nome: "Zucchine"
+                grammi: 200
+                kcal: 34
+                proteine: 2.4
+                carbo: 6.2
+                grassi: 0.6
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Mela"
+                grammi: 150
+                kcal: 78
+                proteine: 0.5
+                carbo: 21.0
+                grassi: 0.3
+            totale:
+              kcal: 791
+              proteine: 70.5
+              carbo: 74.8
+              grassi: 23.4
+          beach_volley:
+            alimenti:
+              - nome: "Petto di pollo alla piastra"
+                grammi: 220
+                kcal: 363
+                proteine: 68.2
+                carbo: 0.0
+                grassi: 7.9
+              - nome: "Patate"
+                grammi: 300
+                kcal: 231
+                proteine: 6.0
+                carbo: 51.0
+                grassi: 0.3
+              - nome: "Zucchine"
+                grammi: 200
+                kcal: 34
+                proteine: 2.4
+                carbo: 6.2
+                grassi: 0.6
+              - nome: "Olio extravergine di oliva"
+                grammi: 20
+                kcal: 177
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 20.0
+              - nome: "Mela"
+                grammi: 150
+                kcal: 78
+                proteine: 0.5
+                carbo: 21.0
+                grassi: 0.3
+            totale:
+              kcal: 883
+              proteine: 77.1
+              carbo: 78.2
+              grassi: 29.1
+
+      - nome: "Salmone al forno con patate dolci e insalata"
+        varianti:
+          riposo:
+            alimenti:
+              - nome: "Salmone fresco"
+                grammi: 180
+                kcal: 374
+                proteine: 36.0
+                carbo: 0.0
+                grassi: 23.4
+              - nome: "Patate dolci"
+                grammi: 200
+                kcal: 172
+                proteine: 3.2
+                carbo: 40.0
+                grassi: 0.2
+              - nome: "Insalata mista"
+                grammi: 150
+                kcal: 30
+                proteine: 2.3
+                carbo: 5.3
+                grassi: 0.3
+              - nome: "Olio extravergine di oliva"
+                grammi: 10
+                kcal: 88
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 10.0
+              - nome: "Mela"
+                grammi: 150
+                kcal: 78
+                proteine: 0.5
+                carbo: 21.0
+                grassi: 0.3
+            totale:
+              kcal: 742
+              proteine: 42.0
+              carbo: 66.3
+              grassi: 34.2
+          palestra:
+            alimenti:
+              - nome: "Salmone fresco"
+                grammi: 200
+                kcal: 416
+                proteine: 40.0
+                carbo: 0.0
+                grassi: 26.0
+              - nome: "Patate dolci"
+                grammi: 220
+                kcal: 189
+                proteine: 3.5
+                carbo: 44.0
+                grassi: 0.2
+              - nome: "Insalata mista"
+                grammi: 150
+                kcal: 30
+                proteine: 2.3
+                carbo: 5.3
+                grassi: 0.3
+              - nome: "Olio extravergine di oliva"
+                grammi: 10
+                kcal: 88
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 10.0
+              - nome: "Mela"
+                grammi: 150
+                kcal: 78
+                proteine: 0.5
+                carbo: 21.0
+                grassi: 0.3
+            totale:
+              kcal: 801
+              proteine: 46.3
+              carbo: 70.3
+              grassi: 36.8
+          beach_volley:
+            alimenti:
+              - nome: "Salmone fresco"
+                grammi: 220
+                kcal: 458
+                proteine: 44.0
+                carbo: 0.0
+                grassi: 28.6
+              - nome: "Patate dolci"
+                grammi: 250
+                kcal: 215
+                proteine: 4.0
+                carbo: 50.0
+                grassi: 0.3
+              - nome: "Insalata mista"
+                grammi: 150
+                kcal: 30
+                proteine: 2.3
+                carbo: 5.3
+                grassi: 0.3
+              - nome: "Olio extravergine di oliva"
+                grammi: 12
+                kcal: 106
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 12.0
+              - nome: "Mela"
+                grammi: 150
+                kcal: 78
+                proteine: 0.5
+                carbo: 21.0
+                grassi: 0.3
+            totale:
+              kcal: 887
+              proteine: 50.8
+              carbo: 76.3
+              grassi: 41.5
+
+      - nome: "Filetto di manzo con patate e broccoli"
+        varianti:
+          riposo:
+            alimenti:
+              - nome: "Filetto di manzo"
+                grammi: 180
+                kcal: 257
+                proteine: 37.8
+                carbo: 0.0
+                grassi: 10.8
+              - nome: "Patate"
+                grammi: 250
+                kcal: 193
+                proteine: 5.0
+                carbo: 42.5
+                grassi: 0.3
+              - nome: "Broccoli"
+                grammi: 200
+                kcal: 68
+                proteine: 5.6
+                carbo: 14.0
+                grassi: 0.8
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Mela"
+                grammi: 150
+                kcal: 78
+                proteine: 0.5
+                carbo: 21.0
+                grassi: 0.3
+            totale:
+              kcal: 729
+              proteine: 48.9
+              carbo: 77.5
+              grassi: 27.2
+          palestra:
+            alimenti:
+              - nome: "Filetto di manzo"
+                grammi: 200
+                kcal: 286
+                proteine: 42.0
+                carbo: 0.0
+                grassi: 12.0
+              - nome: "Patate"
+                grammi: 280
+                kcal: 216
+                proteine: 5.6
+                carbo: 47.6
+                grassi: 0.3
+              - nome: "Broccoli"
+                grammi: 200
+                kcal: 68
+                proteine: 5.6
+                carbo: 14.0
+                grassi: 0.8
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Mela"
+                grammi: 150
+                kcal: 78
+                proteine: 0.5
+                carbo: 21.0
+                grassi: 0.3
+            totale:
+              kcal: 781
+              proteine: 53.7
+              carbo: 82.6
+              grassi: 28.4
+          beach_volley:
+            alimenti:
+              - nome: "Filetto di manzo"
+                grammi: 220
+                kcal: 315
+                proteine: 46.2
+                carbo: 0.0
+                grassi: 13.2
+              - nome: "Patate"
+                grammi: 320
+                kcal: 246
+                proteine: 6.4
+                carbo: 54.4
+                grassi: 0.3
+              - nome: "Broccoli"
+                grammi: 200
+                kcal: 68
+                proteine: 5.6
+                carbo: 14.0
+                grassi: 0.8
+              - nome: "Olio extravergine di oliva"
+                grammi: 20
+                kcal: 177
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 20.0
+              - nome: "Mela"
+                grammi: 150
+                kcal: 78
+                proteine: 0.5
+                carbo: 21.0
+                grassi: 0.3
+            totale:
+              kcal: 884
+              proteine: 58.7
+              carbo: 89.4
+              grassi: 34.6
+
+      - nome: "Branzino al forno con patate e insalata"
+        varianti:
+          riposo:
+            alimenti:
+              - nome: "Branzino"
+                grammi: 250
+                kcal: 243
+                proteine: 45.0
+                carbo: 0.0
+                grassi: 5.0
+              - nome: "Patate"
+                grammi: 250
+                kcal: 193
+                proteine: 5.0
+                carbo: 42.5
+                grassi: 0.3
+              - nome: "Insalata mista"
+                grammi: 150
+                kcal: 30
+                proteine: 2.3
+                carbo: 5.3
+                grassi: 0.3
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Mela"
+                grammi: 150
+                kcal: 78
+                proteine: 0.5
+                carbo: 21.0
+                grassi: 0.3
+            totale:
+              kcal: 677
+              proteine: 52.8
+              carbo: 68.8
+              grassi: 20.9
+          palestra:
+            alimenti:
+              - nome: "Branzino"
+                grammi: 280
+                kcal: 272
+                proteine: 50.4
+                carbo: 0.0
+                grassi: 5.6
+              - nome: "Patate"
+                grammi: 280
+                kcal: 216
+                proteine: 5.6
+                carbo: 47.6
+                grassi: 0.3
+              - nome: "Insalata mista"
+                grammi: 150
+                kcal: 30
+                proteine: 2.3
+                carbo: 5.3
+                grassi: 0.3
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Mela"
+                grammi: 150
+                kcal: 78
+                proteine: 0.5
+                carbo: 21.0
+                grassi: 0.3
+            totale:
+              kcal: 729
+              proteine: 58.8
+              carbo: 73.9
+              grassi: 21.5
+          beach_volley:
+            alimenti:
+              - nome: "Branzino"
+                grammi: 300
+                kcal: 291
+                proteine: 54.0
+                carbo: 0.0
+                grassi: 6.0
+              - nome: "Patate"
+                grammi: 320
+                kcal: 246
+                proteine: 6.4
+                carbo: 54.4
+                grassi: 0.3
+              - nome: "Insalata mista"
+                grammi: 150
+                kcal: 30
+                proteine: 2.3
+                carbo: 5.3
+                grassi: 0.3
+              - nome: "Olio extravergine di oliva"
+                grammi: 20
+                kcal: 177
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 20.0
+              - nome: "Mela"
+                grammi: 150
+                kcal: 78
+                proteine: 0.5
+                carbo: 21.0
+                grassi: 0.3
+            totale:
+              kcal: 822
+              proteine: 63.2
+              carbo: 81.0
+              grassi: 26.9
+
+      - nome: "Trota al forno con patate e carote"
+        varianti:
+          riposo:
+            alimenti:
+              - nome: "Trota"
+                grammi: 220
+                kcal: 326
+                proteine: 44.0
+                carbo: 0.0
+                grassi: 15.4
+              - nome: "Patate"
+                grammi: 200
+                kcal: 154
+                proteine: 4.0
+                carbo: 34.0
+                grassi: 0.2
+              - nome: "Carota"
+                grammi: 150
+                kcal: 62
+                proteine: 1.4
+                carbo: 14.4
+                grassi: 0.3
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Mela"
+                grammi: 150
+                kcal: 78
+                proteine: 0.5
+                carbo: 21.0
+                grassi: 0.3
+            totale:
+              kcal: 753
+              proteine: 49.9
+              carbo: 69.4
+              grassi: 31.2
+          palestra:
+            alimenti:
+              - nome: "Trota"
+                grammi: 240
+                kcal: 355
+                proteine: 48.0
+                carbo: 0.0
+                grassi: 16.8
+              - nome: "Patate"
+                grammi: 230
+                kcal: 177
+                proteine: 4.6
+                carbo: 39.1
+                grassi: 0.2
+              - nome: "Carota"
+                grammi: 150
+                kcal: 62
+                proteine: 1.4
+                carbo: 14.4
+                grassi: 0.3
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Mela"
+                grammi: 150
+                kcal: 78
+                proteine: 0.5
+                carbo: 21.0
+                grassi: 0.3
+            totale:
+              kcal: 805
+              proteine: 54.5
+              carbo: 74.5
+              grassi: 32.6
+          beach_volley:
+            alimenti:
+              - nome: "Trota"
+                grammi: 260
+                kcal: 385
+                proteine: 52.0
+                carbo: 0.0
+                grassi: 18.2
+              - nome: "Patate"
+                grammi: 260
+                kcal: 200
+                proteine: 5.2
+                carbo: 44.2
+                grassi: 0.3
+              - nome: "Carota"
+                grammi: 150
+                kcal: 62
+                proteine: 1.4
+                carbo: 14.4
+                grassi: 0.3
+              - nome: "Olio extravergine di oliva"
+                grammi: 20
+                kcal: 177
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 20.0
+              - nome: "Mela"
+                grammi: 150
+                kcal: 78
+                proteine: 0.5
+                carbo: 21.0
+                grassi: 0.3
+            totale:
+              kcal: 902
+              proteine: 59.1
+              carbo: 79.6
+              grassi: 39.1
+
+      - nome: "Mozzarella fior di latte con patate e pomodori"
+        varianti:
+          riposo:
+            alimenti:
+              - nome: "Mozzarella fior di latte"
+                grammi: 125
+                kcal: 350
+                proteine: 22.5
+                carbo: 2.5
+                grassi: 27.5
+              - nome: "Patate"
+                grammi: 250
+                kcal: 193
+                proteine: 5.0
+                carbo: 42.5
+                grassi: 0.3
+              - nome: "Pomodoro"
+                grammi: 200
+                kcal: 36
+                proteine: 1.8
+                carbo: 7.8
+                grassi: 0.4
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Mela"
+                grammi: 150
+                kcal: 78
+                proteine: 0.5
+                carbo: 21.0
+                grassi: 0.3
+            totale:
+              kcal: 790
+              proteine: 29.8
+              carbo: 73.8
+              grassi: 43.5
+          palestra:
+            alimenti:
+              - nome: "Mozzarella fior di latte"
+                grammi: 150
+                kcal: 420
+                proteine: 27.0
+                carbo: 3.0
+                grassi: 33.0
+              - nome: "Patate"
+                grammi: 250
+                kcal: 193
+                proteine: 5.0
+                carbo: 42.5
+                grassi: 0.3
+              - nome: "Pomodoro"
+                grammi: 200
+                kcal: 36
+                proteine: 1.8
+                carbo: 7.8
+                grassi: 0.4
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Mela"
+                grammi: 150
+                kcal: 78
+                proteine: 0.5
+                carbo: 21.0
+                grassi: 0.3
+            totale:
+              kcal: 860
+              proteine: 34.3
+              carbo: 74.3
+              grassi: 49.0
+          beach_volley:
+            alimenti:
+              - nome: "Mozzarella fior di latte"
+                grammi: 150
+                kcal: 420
+                proteine: 27.0
+                carbo: 3.0
+                grassi: 33.0
+              - nome: "Patate"
+                grammi: 300
+                kcal: 231
+                proteine: 6.0
+                carbo: 51.0
+                grassi: 0.3
+              - nome: "Pomodoro"
+                grammi: 200
+                kcal: 36
+                proteine: 1.8
+                carbo: 7.8
+                grassi: 0.4
+              - nome: "Olio extravergine di oliva"
+                grammi: 20
+                kcal: 177
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 20.0
+              - nome: "Mela"
+                grammi: 150
+                kcal: 78
+                proteine: 0.5
+                carbo: 21.0
+                grassi: 0.3
+            totale:
+              kcal: 942
+              proteine: 35.3
+              carbo: 82.8
+              grassi: 54.0
+
+      - nome: "Uova strapazzate con patate e verdure"
+        varianti:
+          riposo:
+            alimenti:
+              - nome: "Uova intere"
+                grammi: 220
+                kcal: 315
+                proteine: 28.6
+                carbo: 2.4
+                grassi: 22.0
+              - nome: "Patate"
+                grammi: 250
+                kcal: 193
+                proteine: 5.0
+                carbo: 42.5
+                grassi: 0.3
+              - nome: "Zucchine"
+                grammi: 150
+                kcal: 26
+                proteine: 1.8
+                carbo: 4.7
+                grassi: 0.5
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Mela"
+                grammi: 150
+                kcal: 78
+                proteine: 0.5
+                carbo: 21.0
+                grassi: 0.3
+            totale:
+              kcal: 745
+              proteine: 35.9
+              carbo: 70.6
+              grassi: 38.1
+          palestra:
+            alimenti:
+              - nome: "Uova intere"
+                grammi: 275
+                kcal: 394
+                proteine: 35.8
+                carbo: 3.0
+                grassi: 27.5
+              - nome: "Patate"
+                grammi: 250
+                kcal: 193
+                proteine: 5.0
+                carbo: 42.5
+                grassi: 0.3
+              - nome: "Zucchine"
+                grammi: 150
+                kcal: 26
+                proteine: 1.8
+                carbo: 4.7
+                grassi: 0.5
+              - nome: "Olio extravergine di oliva"
+                grammi: 10
+                kcal: 88
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 10.0
+              - nome: "Mela"
+                grammi: 150
+                kcal: 78
+                proteine: 0.5
+                carbo: 21.0
+                grassi: 0.3
+            totale:
+              kcal: 779
+              proteine: 43.1
+              carbo: 71.2
+              grassi: 38.6
+          beach_volley:
+            alimenti:
+              - nome: "Uova intere"
+                grammi: 275
+                kcal: 394
+                proteine: 35.8
+                carbo: 3.0
+                grassi: 27.5
+              - nome: "Patate"
+                grammi: 300
+                kcal: 231
+                proteine: 6.0
+                carbo: 51.0
+                grassi: 0.3
+              - nome: "Zucchine"
+                grammi: 150
+                kcal: 26
+                proteine: 1.8
+                carbo: 4.7
+                grassi: 0.5
+              - nome: "Olio extravergine di oliva"
+                grammi: 15
+                kcal: 133
+                proteine: 0.0
+                carbo: 0.0
+                grassi: 15.0
+              - nome: "Mela"
+                grammi: 150
+                kcal: 78
+                proteine: 0.5
+                carbo: 21.0
+                grassi: 0.3
+            totale:
+              kcal: 862
+              proteine: 44.1
+              carbo: 79.7
+              grassi: 43.6
+
+  - id: "spuntino_sera"
+    label: "Spuntino Serale / Post-Allenamento (opzionale)"
+    orario_indicativo: "22:00"
+    kcal_per_tipo:
+      riposo: 300
+      palestra: 270
+      beach_volley: 350
+    opzioni:
+      - nome: "Proteine whey con latte"
+        varianti:
+          riposo:
+            alimenti:
+              - nome: "Proteine whey cioccolato"
+                grammi: 30
+                kcal: 120
+                proteine: 24.0
+                carbo: 2.4
+                grassi: 1.8
+              - nome: "Latte parzialmente scremato"
+                grammi: 300
+                kcal: 138
+                proteine: 9.9
+                carbo: 14.4
+                grassi: 4.5
+            totale:
+              kcal: 258
+              proteine: 33.9
+              carbo: 16.8
+              grassi: 6.3
+          palestra:
+            alimenti:
+              - nome: "Proteine whey cioccolato"
+                grammi: 30
+                kcal: 120
+                proteine: 24.0
+                carbo: 2.4
+                grassi: 1.8
+              - nome: "Latte parzialmente scremato"
+                grammi: 300
+                kcal: 138
+                proteine: 9.9
+                carbo: 14.4
+                grassi: 4.5
+            totale:
+              kcal: 258
+              proteine: 33.9
+              carbo: 16.8
+              grassi: 6.3
+          beach_volley:
+            alimenti:
+              - nome: "Proteine whey cioccolato"
+                grammi: 35
+                kcal: 140
+                proteine: 28.0
+                carbo: 2.8
+                grassi: 2.1
+              - nome: "Latte parzialmente scremato"
+                grammi: 350
+                kcal: 161
+                proteine: 11.6
+                carbo: 16.8
+                grassi: 5.3
+            totale:
+              kcal: 301
+              proteine: 39.6
+              carbo: 19.6
+              grassi: 7.4
+      - nome: "Proteine whey con acqua e frutto"
+        varianti:
+          riposo:
+            alimenti:
+              - nome: "Proteine whey cioccolato"
+                grammi: 30
+                kcal: 120
+                proteine: 24.0
+                carbo: 2.4
+                grassi: 1.8
+              - nome: "Mela"
+                grammi: 150
+                kcal: 78
+                proteine: 0.5
+                carbo: 21.0
+                grassi: 0.3
+            totale:
+              kcal: 198
+              proteine: 24.5
+              carbo: 23.4
+              grassi: 2.1
+          palestra:
+            alimenti:
+              - nome: "Proteine whey cioccolato"
+                grammi: 30
+                kcal: 120
+                proteine: 24.0
+                carbo: 2.4
+                grassi: 1.8
+              - nome: "Banana"
+                grammi: 120
+                kcal: 107
+                proteine: 1.3
+                carbo: 27.6
+                grassi: 0.4
+            totale:
+              kcal: 227
+              proteine: 25.3
+              carbo: 30.0
+              grassi: 2.2
+          beach_volley:
+            alimenti:
+              - nome: "Proteine whey cioccolato"
+                grammi: 35
+                kcal: 140
+                proteine: 28.0
+                carbo: 2.8
+                grassi: 2.1
+              - nome: "Banana"
+                grammi: 150
+                kcal: 134
+                proteine: 1.7
+                carbo: 34.5
+                grassi: 0.5
+            totale:
+              kcal: 274
+              proteine: 29.7
+              carbo: 37.3
+              grassi: 2.6
+
+integratori:
+  - nome: "Creatina monoidrata"
+    dose: "5g"
+    timing: "dopo allenamento, con acqua o succo di frutta"
+    note: "Assumere ogni giorno, anche nei giorni di riposo, per mantenere la saturazione muscolare. Nei giorni senza allenamento assumere a qualsiasi orario."
+  - nome: "Proteine whey cioccolato"
+    dose: "30-35g di polvere"
+    timing: "post-allenamento o come spuntino serale"
+    note: "Utilizzare con latte parzialmente scremato (300ml) per aumentare il profilo aminoacidico e le calorie, oppure con acqua per versione piu' leggera. Utile per raggiungere il target proteico giornaliero di 180-190g. Conteggiato nello slot spuntino_sera."

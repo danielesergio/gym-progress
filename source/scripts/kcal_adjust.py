@@ -7,10 +7,10 @@ Incorpora feedback_atleta.yaml per calcolare l'attendibilita' delle variazioni.
 Tiene conto del dispendio calorico da altre attivita' (corsa, ciclismo, ecc.).
 
 Uso:
-    python scripts/kcal_adjust.py --fase cut --kcal-attuali 2400
-    python scripts/kcal_adjust.py --fase bulk --kcal-attuali 3100
-    python scripts/kcal_adjust.py --fase cut --kcal-attuali 2400 --kcal-extra-settimana 1200
-    python scripts/kcal_adjust.py --fase cut --kcal-attuali 2400 --temp data/measurements-temp.json
+    python source/scripts/kcal_adjust.py --fase cut --kcal-attuali 2400
+    python source/scripts/kcal_adjust.py --fase bulk --kcal-attuali 3100
+    python source/scripts/kcal_adjust.py --fase cut --kcal-attuali 2400 --kcal-extra-settimana 1200
+    python source/scripts/kcal_adjust.py --fase cut --kcal-attuali 2400 --temp data/measurements-temp.json
 """
 
 import argparse
@@ -201,8 +201,45 @@ def apply_attendibilita(delta: int, attendibilita: float) -> int:
 
 
 # ---------------------------------------------------------------------------
-# Logica cut / bulk
+# Logica cut / bulk / mantenimento
 # ---------------------------------------------------------------------------
+
+def analyze_mantenimento(prev: dict, curr: dict) -> tuple[int, list[str]]:
+    reasons = []
+
+    loss_pct     = weight_loss_pct_per_week(prev, curr)
+    gain_pct     = weight_gain_pct_per_week(prev, curr)
+    mm_ratio     = lean_mass_loss_ratio(prev, curr)
+    strength_chg = strength_change_pct_per_week(prev, curr)
+    waist_chg    = waist_change(prev, curr)
+
+    # M1-M3 — perdita peso / catabolismo: TDEE sottostimato
+    muscle_alarm = False
+    if loss_pct is not None and loss_pct > 0.5:
+        reasons.append(f"M1: perdita peso {loss_pct:.2f}%/sett > 0.5% in normocalorica (TDEE sottostimato)")
+        muscle_alarm = True
+    if mm_ratio is not None and mm_ratio > 0.25:
+        reasons.append(f"M2: massa magra persa = {mm_ratio*100:.0f}% della perdita totale (soglia 25%) — catabolismo")
+        muscle_alarm = True
+    if strength_chg is not None and strength_chg < -5.0:
+        reasons.append(f"M3: forza -{abs(strength_chg):.1f}%/sett (soglia -5%) — segnale catabolico")
+        muscle_alarm = True
+    if muscle_alarm:
+        return +STEP, reasons
+
+    # M4 — guadagno eccessivo: TDEE sovrastimato
+    if gain_pct is not None and gain_pct > 0.5:
+        if waist_chg is not None and waist_chg > 0.5:
+            reasons.append(f"M4: guadagno {gain_pct:.2f}%/sett > 0.5% e vita +{waist_chg:.1f} cm (TDEE sovrastimato)")
+            return -STEP_SMALL, reasons
+
+    if not reasons:
+        reasons.append(
+            f"Mantenimento nella norma: variazione peso {loss_pct:.2f}%/sett" if loss_pct is not None
+            else "Dati insufficienti per analisi"
+        )
+    return 0, reasons
+
 
 def analyze_cut(prev: dict, curr: dict, targets: dict) -> tuple[int, list[str]]:
     reasons = []
@@ -319,8 +356,7 @@ def run(fase: str, kcal_attuali: int, temp_path: Path | None, kcal_extra_settima
     elif fase == "bulk":
         delta_raw, reasons = analyze_bulk(prev, curr, targets)
     else:
-        delta_raw = 0
-        reasons = ["Fase mantenimento: nessun aggiustamento automatico applicato"]
+        delta_raw, reasons = analyze_mantenimento(prev, curr)
 
     # Applica attendibilita' al delta
     delta = apply_attendibilita(delta_raw, attendibilita)

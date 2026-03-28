@@ -1,0 +1,95 @@
+{
+  "meta": {
+    "data": "2026-03-27",
+    "task_id": "dashboard-dual-progress",
+    "task_titolo": "Doppia progress bar: fase corrente e macrociclo",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Sono presenti due progress bar distinte nella card #card-fase, con label diverse",
+      "soddisfatto": true,
+      "dettaglio": "renderDualProgressBar() genera due <div class='phase-card__progress-section'> distinte (linee 255-265 e 266-277 in dashboard.js). Prima barra ha label 'Fase corrente', seconda barra ha label 'Macrociclo 1'. Entrambe le label sono contenute in <span class='phase-card__progress-section-title'>."
+    },
+    {
+      "criterio": "La prima barra indica settimana corrente nella fase / durata totale della fase attuale",
+      "soddisfatto": true,
+      "dettaglio": "In renderDualProgressBar(), la prima barra (linee 255-265) usa pctFase calcolato come (settCorrenteFase / durataFase) * 100 (riga 242). Il contatore mostra 'Sett. ${settFaseClamp} / ${durataFase}' (riga 258). settFaseClamp è clampato al valore massimo di durataFase (riga 244)."
+    },
+    {
+      "criterio": "La seconda barra indica settimana corrente nel macrociclo / 40 (durata totale macrociclo 1)",
+      "soddisfatto": true,
+      "dettaglio": "In renderDualProgressBar(), la seconda barra (linee 266-277) usa pctMacro calcolato come (settCorrentiMacro / durataMacro) * 100 (riga 248). Il contatore mostra 'Sett. ${settCorrentiMacro} / ${durataMacro}' (riga 269). In renderProgramPhaseCard(), durataMacro è assegnato da macrociclo?.durata_settimane (riga 344) = 40 per plan.json fornito."
+    },
+    {
+      "criterio": "La barra del macrociclo contiene span.phase-card__macro-tick per ogni confine tra mesocicli (6 tacche, posizionate a 12.5%, 25%, 40%, 65%, 80%, 95%)",
+      "soddisfatto": true,
+      "dettaglio": "renderMacroTicks() (linee 211-228) genera span con classe 'phase-card__macro-tick' calcolando cumulativo delle durate mesocicli. Per plan.json fornito (mesocicli con durate 5,5,6,10,6,6,2): tacche a 5/40=12.5%, 10/40=25%, 16/40=40%, 26/40=65%, 32/40=80%, 38/40=95%. Loop (riga 217) itera per i < mesocicli.length-1, escludendo correttamente l'ultima tacca al 100%."
+    },
+    {
+      "criterio": "Le label non sono ambigue: si capisce immediatamente quale barra si riferisce alla fase e quale al macrociclo",
+      "soddisfatto": true,
+      "dettaglio": "Titoli distinti: 'Fase corrente' (riga 257) vs 'Macrociclo 1' (riga 268). Contatori chiari: 'Sett. X / Y della fase' vs 'Sett. X / 40 del macrociclo'. Classi CSS distinte (.phase-card__progress-fill--phase color: accent vs .phase-card__progress-fill--macro color: success) differenziano visivamente le due barre."
+    },
+    {
+      "criterio": "docs/js/dashboard.js contiene la funzione renderProgramPhaseCard() aggiornata con due sezioni barra distinte",
+      "soddisfatto": true,
+      "dettaglio": "renderProgramPhaseCard(plan) presente alle linee 289-369. Calcola settCorrenteFase (riga 340), durataFase (riga 313), settCorrentiMacro (riga 350), durataMacro (riga 344), mesocicli (riga 345). Chiama renderDualProgressBar() con parametri corretti (riga 356 o 357 a seconda della disponibilità del macrociclo). Inietta HTML nella card-fase (riga 367)."
+    },
+    {
+      "criterio": "docs/css/dashboard.css contiene le classi .phase-card__progress-section, .phase-card__progress-label-row, .phase-card__progress-section-title, .phase-card__progress-count, .phase-card__progress-bar--macro, .phase-card__macro-tick, .phase-card__progress-fill--phase, .phase-card__progress-fill--macro",
+      "soddisfatto": true,
+      "dettaglio": "Tutte le 8 classi CSS sono presenti in dashboard.css: .phase-card__progress-section (riga 336), .phase-card__progress-label-row (riga 345), .phase-card__progress-section-title (riga 353), .phase-card__progress-count (riga 362), .phase-card__progress-bar--macro (riga 387), .phase-card__macro-tick (riga 412), .phase-card__progress-fill--phase (riga 401), .phase-card__progress-fill--macro (riga 406)."
+    },
+    {
+      "criterio": "Il fill della barra fase ha colore distinto dal fill della barra macrociclo",
+      "soddisfatto": true,
+      "dettaglio": "Fill fase (.phase-card__progress-fill--phase, riga 401) ha background-color: var(--color-accent). Fill macrociclo (.phase-card__progress-fill--macro, riga 406) ha background-color: var(--color-success). Due colori distinti per differenziazione visiva."
+    },
+    {
+      "criterio": "Se plan.macrocicli è assente, la barra macrociclo non viene renderizzata e non si generano errori JS",
+      "soddisfatto": true,
+      "dettaglio": "In renderProgramPhaseCard(), const macrociclo = plan?.macrocicli?.[0] ?? null (riga 343) usa optional chaining. const durataMacro = macrociclo?.durata_settimane ?? 0 (riga 344) fallback a 0. Condizione (riga 355) if (durataMacro > 0) dirotta verso renderDualProgressBar con parametri durataMacro=0 e mesocicli=[]. renderMacroTicks() (riga 212) controlla se (!mesocicli || mesocicli.length === 0 || durataTotale <= 0) e ritorna '' senza errori."
+    },
+    {
+      "criterio": "I valori null o assenti in durata_settimane sono gestiti con fallback a 0 senza lanciare eccezioni",
+      "soddisfatto": true,
+      "dettaglio": "In renderMacroTicks() riga 218: cumulativo += mesocicli[i]?.durata_settimane ?? 0 usa ?? per fallback a 0. In renderProgramPhaseCard() riga 321: .reduce((acc, f) => acc + (f.durata_settimane ?? 0), 0) gestisce settimane pre-fase. In renderProgramPhaseCard() riga 313: durataFase = faseCorrente?.durata_settimane ?? 0. Mai lanciati errori per valori null/undefined."
+    },
+    {
+      "criterio": "La card è responsive: le due barre sono impilate verticalmente e leggibili su mobile (< 480px) e desktop",
+      "soddisfatto": true,
+      "dettaglio": ".phase-card__progress-section (riga 336) ha margin-bottom: var(--space-4), permettendo impilamento verticale naturale. .phase-card__progress-bar (riga 371) ha width: 100% per adattarsi a viewport. Nessun media query speciali necessarie: il layout si adatta automaticamente. Font-size piccoli (-xs per label) assicurano leggibilità su mobile."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/dashboard.js",
+      "esiste": true,
+      "note": "File presente. Contiene le funzioni renderMacroTicks (linee 211-228) e renderDualProgressBar (linee 239-278), oltre a renderProgramPhaseCard (linee 289-369) aggiornata. Logica completa per calcolo settimane e generazione HTML doppia progress bar."
+    },
+    {
+      "path": "docs/css/dashboard.css",
+      "esiste": true,
+      "note": "File presente. Contiene tutti gli stili necessari per .phase-card__progress-section (riga 336-342), .phase-card__progress-label-row (riga 345-350), .phase-card__progress-section-title (riga 353-359), .phase-card__progress-count (riga 362-368), .phase-card__progress-bar--phase (riga 381-384), .phase-card__progress-bar--macro (riga 387-390), .phase-card__progress-fill--phase (riga 401-403), .phase-card__progress-fill--macro (riga 406-408), .phase-card__macro-tick (riga 412-423)."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "In renderDualProgressBar() riga 357, quando durataMacro <= 0, viene passato un array mesocicli=[] alla funzione. Questo è corretto (renderMacroTicks controlla length === 0), ma potrebbe essere più esplicito il commento di fallback.",
+      "file": "docs/js/dashboard.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": ".phase-card__macro-tick usa transform: translateX(-50%) (riga 419) per centrare le tacche sul left%. Questo è corretto e segue best practice CSS per posizionamento dei divisori.",
+      "file": "docs/css/dashboard.css"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Il calcolo settCorrentiMacro (riga 349) usa la data di inizio programma da meta.data_aggiornamento (2026-03-23). Questo è un'approssimazione accettata secondo le note del task, e il codice mantiene coerenza con il calcolo della fase corrente.",
+      "file": "docs/js/dashboard.js"
+    }
+  ]
+}

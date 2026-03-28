@@ -1,5 +1,4 @@
 Implementa solo i seguenti miglioramenti/fix:
-- fix il volume è settimanele, non del mesociclo
-- feature - visualizza riscaldamente e defaticamento in Allenamento
-- rivedere strategia nutrizionale con nuove strutture dati
-- feature - esporta dieta in csv
+- Per il confronto tra dieta e valori selezionati fai una sezione a scomparsa subito sotto la prima card che mostar  il target. Cliama la nuova card selezione attuale, il formato e la ui deve essere identico a quella della card attuale
+
+

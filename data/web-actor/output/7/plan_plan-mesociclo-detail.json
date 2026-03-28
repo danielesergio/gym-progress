@@ -1,0 +1,124 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "plan-mesociclo-detail",
+    "task_title": "Dettaglio mesociclo espandibile al click",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "plan-mesociclo-detail",
+    "type": "component",
+    "title": "Dettaglio mesociclo espandibile al click",
+    "description": "Ogni card mesociclo nella timeline del Piano deve essere cliccabile. Al click, si apre un pannello o area espansa che mostra: nome, tipo (Rehab/Accumulo/ecc.), fase nutrizionale, durata in settimane, obiettivo (testo), metodologia (testo), note (testo), criteri di avanzamento (lista). Il pannello può essere chiuso cliccando di nuovo sulla card o su un pulsante esplicito. Un solo dettaglio alla volta è aperto. I dati provengono da plan.json → macrocicli[n].mesocicli[m].",
+    "inputs": ["plan_mesocicli_data"],
+    "outputs": ["MesocicloDetailPanel"],
+    "acceptance_criteria": [
+      "Ogni card mesociclo è visivamente cliccabile (cursore pointer, feedback hover)",
+      "Al click su una card si apre una sezione con i dettagli del mesociclo",
+      "Il dettaglio mostra almeno: obiettivo, metodologia, durata, fase nutrizionale",
+      "I criteri di avanzamento sono mostrati come lista leggibile",
+      "Si può chiudere il dettaglio e aprirne un altro",
+      "Solo un dettaglio è aperto contemporaneamente"
+    ],
+    "notes": "Il task opera sulla sezione SEZIONE 1 già esistente (#plan-timeline / #plan-phase-cards). Le card attuali sono costruite da renderTimeline() → buildPhaseCard() leggendo planData.fasi[]. Tuttavia, planData.fasi[] è un array piatto 'denormalizzato' che NON ha i campi 'metodologia', 'criteri_avanzamento' e 'incrocio_stimolo_ambiente' in forma garantita — in realtà li ha (vedi struttura JSON), ma soprattutto la fonte canonica per i mesocicli è planData.macrocicli[n].mesocicli[m]. Il developer DEVE usare planData.macrocicli per accedere ai dati dettagliati dei mesocicli (metodologia, criteri_avanzamento). Nota: in plan.json le 'fasi' e 'macrocicli[0].mesocicli' contengono gli stessi 7 mesocicli duplicati — il developer deve decidere quale fonte usare (preferire macrocicli[n].mesocicli per aderenza alla descrizione del task). I criteri_avanzamento sono stringhe singole (non già liste): il developer deve splittare su '. ' per presentarli come lista leggibile. Il campo 'incrocio_stimolo_ambiente' può essere mostrato come nota opzionale nel dettaglio."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/plan.js",
+        "motivo": "1) Modificare buildPhaseCard() per aggiungere attributo data-meso-id e renderla cliccabile (role='button', tabindex='0', cursor pointer). 2) Aggiungere funzione renderMesocicloDetail(meso) che costruisce l'HTML del pannello dettaglio. 3) Aggiungere gestione click/toggle: un solo pannello aperto per volta, click seconda volta chiude. 4) Costruire una mappa mesocicli da planData.macrocicli[n].mesocicli[m] indicizzata per numero, da usare nel gestore click.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/plan.css",
+        "motivo": "Aggiungere stili per: .plan-phase-card--clickable (cursor pointer), pannello .plan-meso-detail (espansione con animazione), sezioni interne del dettaglio (.plan-meso-detail-header, .plan-meso-detail-body, .plan-meso-detail-close, .plan-meso-criteria-list), stato aperto/chiuso via classe .plan-meso-detail--open, badge tipo mesociclo (.plan-meso-badge), badge fase nutrizionale (.plan-meso-nutri-badge).",
+        "esiste": true
+      },
+      {
+        "path": "docs/plan.html",
+        "motivo": "Nessuna modifica strutturale necessaria: le card sono generate dinamicamente da plan.js nel container #plan-phase-cards già esistente. Eventuali aggiustamenti solo se servono container aggiuntivi per il pannello dettaglio (es. un elemento #plan-meso-detail-panel fisso o inline). Verificare che il markup generato sia accessibile (aria-expanded, aria-controls).",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/plan.json",
+        "motivo": "Struttura dati mesocicli: macrocicli[0].mesocicli[] — ogni mesociclo ha: numero (int), nome (string), tipo (string: 'Recupero'|'Mini-Cut'|'Ipertrofia'|'Forza'), fase_nutrizionale (string: 'mantenimento'|'cut'|'bulk'), data_inizio (YYYY-MM), durata_settimane (int), obiettivo (string, testo lungo), metodologia (string, testo lungo), note (string, testo lungo), criteri_avanzamento (string — da splittare in lista), incrocio_stimolo_ambiente (string opzionale). Totale: 7 mesocicli nel macrociclo 1."
+      },
+      {
+        "path": "docs/js/plan.js",
+        "motivo": "Codice esistente da modificare: buildPhaseCard() genera le card da planData.fasi[]. Il developer deve capire dove iniettare il listener click e come accedere alla mappa mesocicli da planData.macrocicli per il pannello dettaglio. Struttura renderTimeline() e pattern fetch già presente."
+      },
+      {
+        "path": "docs/css/plan.css",
+        "motivo": "Stili esistenti delle card (.plan-phase-card, .plan-phase-card--current, .plan-phase-card--completed) da estendere senza rompere il layout esistente. Verificare variabili CSS usate (--color-accent, --color-bg-card, ecc.) per coerenza con i nuovi stili del dettaglio."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "Plain HTML/JS ES2022 — nessun build step",
+      "grafici": null,
+      "styling": "CSS custom properties da variables.css — nessun framework CSS"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase (es. mesoMap, currentOpenId, detailPanel)",
+      "costanti_js": "UPPER_SNAKE_CASE per path dati (DATA_PATH_PLAN = 'data/plan.json')",
+      "classi_css": "kebab-case con prefisso pagina 'plan-' (es. .plan-meso-detail, .plan-meso-criteria-list)",
+      "id_html": "kebab-case descrittivo (es. #plan-meso-detail-panel)",
+      "gestione_null": "Optional chaining (?.) e fallback con ?? '—'. Criteri avanzamento: se stringa vuota o null, mostrare '—'",
+      "no_inline_style": "Nessun style= inline nell'HTML generato — solo classi CSS",
+      "no_var": "Solo const e let",
+      "no_es_modules": "Nessun import/export",
+      "pattern_js": "Funzione renderTimeline() già esistente. Aggiungere: buildMesoMap(planData), renderMesocicloDetail(meso), toggleMesocicloDetail(mesoNumber, mesoMap, container). Listener click delegato sul container #plan-phase-cards.",
+      "accessibilita": "Aggiungere role='button', tabindex='0', aria-expanded='false/true' sulle card. aria-controls='plan-meso-detail-panel'. Supportare tasto Enter/Space per apertura da tastiera."
+    },
+    "pagina": {
+      "nome": "Piano",
+      "file": "docs/plan.html",
+      "js": "docs/js/plan.js",
+      "css": "docs/css/plan.css",
+      "dati_json": ["data/plan.json"]
+    },
+    "pattern_toggle_dettaglio": {
+      "descrizione": "Pannello dettaglio inline sotto le card (non modal overlay). Inserire il pannello come elemento separato dopo #plan-phase-cards nel DOM, aggiornando il suo innerHTML ad ogni click. Toggle via classe CSS .plan-meso-detail--open. Un solo pannello aperto: se si clicca una card già aperta, si chiude; se se ne apre un'altra, il pannello si aggiorna.",
+      "alternativa_scartata": "Modal overlay (troppo invasivo per dati consultivi). Espansione inline della singola card (rompe il layout scroll orizzontale delle card)."
+    }
+  },
+  "struttura_dati_mesociclo": {
+    "fonte": "planData.macrocicli[0].mesocicli[m]",
+    "campi": {
+      "numero": "int — identificatore univoco (1-7)",
+      "nome": "string — nome esteso del mesociclo",
+      "tipo": "string — 'Recupero' | 'Mini-Cut' | 'Ipertrofia' | 'Forza'",
+      "fase_nutrizionale": "string — 'mantenimento' | 'cut' | 'bulk'",
+      "data_inizio": "string — formato YYYY-MM (es. '2026-03')",
+      "durata_settimane": "int — numero settimane",
+      "obiettivo": "string — testo lungo (2-4 frasi)",
+      "metodologia": "string — testo lungo (2-5 frasi)",
+      "note": "string — testo lungo (1-3 frasi)",
+      "criteri_avanzamento": "string — testo con più criteri separati da '. ' — splittare per lista",
+      "incrocio_stimolo_ambiente": "string — nota nutrizionale contestuale (opzionale nel render)"
+    },
+    "esempio_criteri_split": "criteria.split('. ').filter(s => s.trim().length > 0).map(s => s.trim())"
+  },
+  "criteri_accettazione": [
+    "Ogni card mesociclo ha cursor:pointer e feedback visivo all'hover (es. box-shadow o border-color cambia)",
+    "Click su una card apre un pannello #plan-meso-detail-panel con i dati del mesociclo selezionato",
+    "Il pannello mostra: nome, tipo, fase nutrizionale, durata settimane, obiettivo, metodologia, note",
+    "I criteri di avanzamento sono mostrati come lista <ul> con un <li> per criterio (split su '. ')",
+    "Click sulla stessa card (già aperta) chiude il pannello",
+    "Click su una card diversa aggiorna il pannello con i dati del nuovo mesociclo (un solo aperto)",
+    "È presente un pulsante esplicito 'Chiudi' (o ×) che chiude il pannello",
+    "docs/js/plan.js contiene la funzione renderMesocicloDetail(meso)",
+    "docs/js/plan.js contiene la funzione buildMesoMap(planData) che indicizza i mesocicli per numero",
+    "docs/css/plan.css contiene la classe .plan-meso-detail con transizione visibile apertura/chiusura",
+    "docs/css/plan.css contiene la classe .plan-meso-detail--open",
+    "Le card hanno role='button' e aria-expanded='true/false' aggiornato al toggle",
+    "I valori null in metodologia/note/criteri_avanzamento non producono 'null' o 'undefined' nel DOM",
+    "Il pannello è accessibile da tastiera (Enter/Space apre/chiude la card focalizzata)"
+  ],
+  "dipendenze": []
+}

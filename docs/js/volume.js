@@ -92,15 +92,15 @@ function renderVolumeMetaCard(meta) {
   volumeMetaCard.innerHTML = `
     <div class="volume-meta-grid">
       <div class="volume-meta-item">
-        <span class="volume-meta-label">Serie pesate totali</span>
+        <span class="volume-meta-label">Serie settimanali totali</span>
         <span class="volume-meta-value">${totalSerie}</span>
       </div>
       <div class="volume-meta-item">
-        <span class="volume-meta-label">Serie Pull</span>
+        <span class="volume-meta-label">Serie Pull (sett.)</span>
         <span class="volume-meta-value volume-meta-value--pull">${pullSerie}</span>
       </div>
       <div class="volume-meta-item">
-        <span class="volume-meta-label">Serie Push</span>
+        <span class="volume-meta-label">Serie Push (sett.)</span>
         <span class="volume-meta-value volume-meta-value--push">${pushSerie}</span>
       </div>
       <div class="volume-meta-item">
@@ -178,7 +178,7 @@ function renderVolumeChart(volumi) {
           callbacks: {
             label(context) {
               const val = context.parsed.x;
-              return ` ${val != null ? val.toFixed(1) : '—'} serie pesate`;
+              return ` ${val != null ? val.toFixed(1) : '—'} serie/sett.`;
             }
           }
         }
@@ -195,7 +195,7 @@ function renderVolumeChart(volumi) {
           },
           title: {
             display: true,
-            text: 'Serie pesate',
+            text: 'Serie pesate / settimana',
             color: 'rgba(240,240,240,0.5)',
             font: { size: 11 }
           }
@@ -269,7 +269,7 @@ function renderVolumeTable(volumi) {
       <div class="volume-muscle-block">
         <div class="volume-muscle-block-header">
           <span class="volume-muscle-name">${muscolo}</span>
-          <span class="volume-muscle-total">${serieTot} serie pesate</span>
+          <span class="volume-muscle-total">${serieTot} serie/sett.</span>
         </div>
         <div class="volume-detail-table-wrap">
           <table class="volume-detail-table">

@@ -177,5 +177,5 @@ rischi:
 
 ## File temporanei
 
-Se hai bisogno di creare script di calcolo o file di verifica durante l'elaborazione, salvali **esclusivamente** in `scripts/agent-temp/gym-pt-macro/`. Non creare mai file temporanei in altre cartelle.
+Se hai bisogno di creare script di calcolo o file di verifica durante l'elaborazione, salvali **esclusivamente** in `source/scripts/agent-temp/gym-pt-macro/`. Non creare mai file temporanei in altre cartelle.
 Ogni file temporaneo DEVE iniziare con un commento che spiega perche' e' stato creato.

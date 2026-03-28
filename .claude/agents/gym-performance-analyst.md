@@ -71,7 +71,7 @@ Considera che:
 - Periodi di allenamento discontinuo (es. cambi casa, viaggi) devono essere pesati meno
 
 ### File temporanei
-Se hai bisogno di creare script di calcolo, file di verifica, o qualsiasi file intermedio durante l'elaborazione, salvali **esclusivamente** in `scripts/agent-temp/gym-performance-analyst/`. Non creare mai file temporanei in altre cartelle.
+Se hai bisogno di creare script di calcolo, file di verifica, o qualsiasi file intermedio durante l'elaborazione, salvali **esclusivamente** in `source/scripts/agent-temp/gym-performance-analyst/`. Non creare mai file temporanei in altre cartelle.
 Ogni file temporaneo DEVE iniziare con un commento che spiega perche' e' stato creato, es:
 ```python
 # File temporaneo creato da gym-performance-analyst il YYYY-MM-DD

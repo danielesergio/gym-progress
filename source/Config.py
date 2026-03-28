@@ -17,7 +17,7 @@ class Config:
     iteration_id: str = field(default_factory=lambda: uuid.uuid4().hex[:8])
 
     def __post_init__(self):
-        self.SCRIPTS_DIR   = self.PROJECT_ROOT / "scripts"
+        self.SCRIPTS_DIR   = self.PROJECT_ROOT / "source" / "scripts"
         self.DATA_DIR      = self.PROJECT_ROOT / "data"
         self.OUTPUT_DIR    = self.DATA_DIR / "output"
         self.HISTORY_DIR   = self.OUTPUT_DIR / "history"

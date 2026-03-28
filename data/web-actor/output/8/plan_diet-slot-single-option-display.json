@@ -1,0 +1,121 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "diet-slot-single-option-display",
+    "task_title": "Mostra un'opzione per slot con navigazione tra alternative",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "diet-slot-single-option-display",
+    "type": "bugfix",
+    "title": "Mostra un'opzione per slot con navigazione tra alternative",
+    "description": "Attualmente ogni slot pasto (Colazione, Spuntino, Pranzo, Merenda, Cena) mostra tutte le opzioni disponibili impilate verticalmente. Il bug è in renderSlotCard (docs/js/diet.js, riga ~352): itera su tutte le opzioni con opzioni.map(...).join('') e le rende tutte visibili. La correzione richiede che: (1) sia visibile solo l'opzione corrente (indice 0 di default); (2) se lo slot ha più di una opzione, compaia un controllo di navigazione (es. '< 1/2 >') che permetta di passare all'opzione precedente/successiva; (3) se lo slot ha una sola opzione, nessun controllo di navigazione sia mostrato. Lo stato dell'opzione attiva per ogni slot deve essere indipendente dagli altri slot.",
+    "inputs": [
+      "diet_data",
+      "DietSlotCard"
+    ],
+    "outputs": [
+      "DietSlotCardFixed"
+    ],
+    "acceptance_criteria": [
+      "Aprendo la pagina Dieta, ogni slot mostra una sola opzione alla volta",
+      "Se uno slot ha più opzioni, sono visibili frecce o indicatori di navigazione (es. '< 1/3 >')",
+      "Cliccando la freccia successiva, l'opzione cambia e quella precedente scompare",
+      "Se uno slot ha una sola opzione, non compaiono controlli di navigazione",
+      "Cambiare tipo di giorno (Riposo / Palestra / Beach V.) non resetta la navigazione delle opzioni in modo anomalo",
+      "Il comportamento funziona su mobile (touch) e desktop"
+    ],
+    "notes": "Il bug è interamente in docs/js/diet.js — il file HTML (docs/diet.html) è già corretto come struttura statica e non richiede modifiche. Il CSS richiede l'aggiunta delle classi per i controlli di navigazione (.diet-slot-nav). Non toccare i file in docs/data/."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "Tre modifiche necessarie: (1) aggiungere la variabile di stato slotOptionIndices (Map o plain object con slot.id come chiave e indice corrente come valore, default 0 per ogni slot); (2) riscrivere renderSlotCard per mostrare solo l'opzione all'indice corrente e generare il controllo di navigazione se opzioni.length > 1; (3) aggiungere event delegation su #meals-list nel DOMContentLoaded per gestire i click sui bottoni .diet-slot-nav__btn e aggiornare slotOptionIndices[slotId], quindi ri-rendere solo lo slot (o tutta la lista).",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Aggiungere le classi per il controllo di navigazione: .diet-slot-nav (container flex), .diet-slot-nav__btn (bottone freccia prev/next, min 44x44px per touch, stile coerente con .diet-toggle-btn), .diet-slot-nav__indicator (testo '1 / 2', font-size-sm, colore text-muted).",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "File da modificare — leggere il codice attuale per capire: (a) lo stato globale esistente (let dietData, let currentDayTypeId); (b) la funzione renderSlotCard (riga ~345) che contiene il bug; (c) il blocco DOMContentLoaded (riga ~618) dove aggiungere il listener per i bottoni di navigazione slot."
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "File da modificare — leggere le classi esistenti .diet-toggle-btn e .diet-slot-card__header per mantenere coerenza visiva nei nuovi stili .diet-slot-nav. Verificare le custom properties disponibili (var(--space-*), var(--color-*), var(--radius-*))."
+      },
+      {
+        "path": "docs/data/diet.json",
+        "motivo": "Struttura dati reale: root ha 'meta.tipi_giorno' (array di {id, label, kcal_target, macros_target}) e 'slot_pasto' (array di slot). Ogni slot ha: id (stringa, es. 'colazione'), label, orario_indicativo, kcal_per_tipo (object), opzioni (array). Ogni opzione ha: nome (stringa) e varianti (object con chiavi tipo-giorno, es. varianti.riposo.alimenti[] e varianti.riposo.totale). Lo stato di navigazione deve usare slot.id come chiave."
+      },
+      {
+        "path": "docs/diet.html",
+        "motivo": "Verifica che #meals-list esista come container (confermato: riga 90). L'event delegation per i bottoni di navigazione va attaccata a questo container nel DOMContentLoaded."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS — ES2022 (no build, no framework)",
+      "no_dipendenze_esterne": "Chart.js non è usato in diet.html — non includere CDN",
+      "deploy": "GitHub Pages, cartella docs/"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase — es. slotOptionIndices, currentDayTypeId",
+      "costanti_js": "UPPER_SNAKE_CASE — es. DATA_PATH",
+      "classi_css": "kebab-case con prefisso 'diet-' — es. .diet-slot-nav, .diet-slot-nav__btn",
+      "id_html": "kebab-case — es. #meals-list (già esistente)",
+      "gestione_null": "Usare optional chaining (?.) e fallback con ?? '—'",
+      "no": "No var (usare const/let), no inline style salvo eccezioni dinamiche, no jQuery"
+    },
+    "pattern_js": {
+      "struttura_stato": "Le variabili di stato del modulo (dietData, currentDayTypeId) sono già definite a livello di modulo. Aggiungere slotOptionIndices come plain object {} o Map. Inizializzarlo a {} e settare la chiave slot.id → 0 la prima volta che renderSlotCard è chiamata per quello slot.",
+      "pattern_render": "renderSlotCard(slot, dayTypeId) deve leggere slotOptionIndices[slot.id] ?? 0 per sapere quale opzione mostrare. Deve chiamare renderOpzioneCard solo per quell'indice.",
+      "pattern_navigazione": "I bottoni di navigazione devono avere data-slot-id e data-direction ('prev' o 'next'). Event delegation su #meals-list: intercetta click su [data-direction], aggiorna slotOptionIndices[slotId], chiama renderMealsList(dietData, currentDayTypeId) per ri-renderare.",
+      "reset_navigazione": "Quando l'utente cambia tipo di giorno, renderDiet() già chiama renderMealsList(). Lo slotOptionIndices NON va resettato al cambio di tipo giorno (requisito: 'non resetta la navigazione in modo anomalo') — lo stato deve persistere attraverso i cambi di giorno.",
+      "event_delegation": "Il listener su #meals-list va aggiunto nel blocco DOMContentLoaded, dopo che il container esiste nel DOM (non dopo il fetch). I bottoni vengono generati dinamicamente, quindi il listener va sul container statico."
+    },
+    "accessibilita": {
+      "touch": "I bottoni .diet-slot-nav__btn devono avere area cliccabile minima 44x44px (requisito architettura per controlli navigazione diet slot).",
+      "aria": "I bottoni prev/next devono avere aria-label descrittivi: es. aria-label='Opzione precedente' e aria-label='Opzione successiva'. L'indicatore '1 / 2' può avere aria-live='polite' o essere incluso nell'aria-label del bottone.",
+      "disabled": "Se l'indice è 0, il bottone 'prev' è disabilitato (disabled o aria-disabled='true'). Se l'indice è opzioni.length-1, il bottone 'next' è disabilitato."
+    },
+    "pagina_dieta": {
+      "file_html": "docs/diet.html",
+      "file_js": "docs/js/diet.js",
+      "file_css": "docs/css/diet.css",
+      "dati_json": ["data/diet.json"],
+      "container_principale": "#meals-list (riga 90 in diet.html)",
+      "stato_modulo_esistente": [
+        "let dietData = null",
+        "let currentDayTypeId = 'riposo'"
+      ],
+      "funzione_buggy": "renderSlotCard(slot, dayTypeId) — riga ~345 in diet.js — usa opzioni.map(...).join('') che mostra tutte le opzioni"
+    }
+  },
+  "criteri_accettazione": [
+    "Aprendo la pagina Dieta, ogni slot mostra una sola opzione alla volta",
+    "Se uno slot ha più opzioni, sono visibili frecce o indicatori di navigazione (es. '< 1/3 >')",
+    "Cliccando la freccia successiva, l'opzione cambia e quella precedente scompare",
+    "Se uno slot ha una sola opzione, non compaiono controlli di navigazione",
+    "Cambiare tipo di giorno (Riposo / Palestra / Beach V.) non resetta la navigazione delle opzioni in modo anomalo",
+    "Il comportamento funziona su mobile (touch) e desktop",
+    "docs/js/diet.js contiene la variabile slotOptionIndices (plain object o Map) a livello di modulo",
+    "docs/js/diet.js: renderSlotCard chiama renderOpzioneCard solo per l'indice slotOptionIndices[slot.id] ?? 0, non itera su tutte le opzioni",
+    "docs/js/diet.js: è presente event delegation su #meals-list che intercetta click su bottoni con data-direction ('prev' o 'next') e aggiorna slotOptionIndices",
+    "docs/js/diet.js: i bottoni nav hanno data-slot-id e data-direction come attributi data-*",
+    "docs/css/diet.css contiene le classi .diet-slot-nav, .diet-slot-nav__btn, .diet-slot-nav__indicator",
+    "Il bottone 'prev' è disabilitato quando l'opzione corrente è la prima (indice 0)",
+    "Il bottone 'next' è disabilitato quando l'opzione corrente è l'ultima",
+    "I bottoni .diet-slot-nav__btn hanno area cliccabile minima 44x44px (padding + min-height/min-width nel CSS)",
+    "Nessun file in docs/data/ è stato modificato"
+  ],
+  "dipendenze": []
+}

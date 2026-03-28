@@ -1,0 +1,110 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "diet-macros-by-type",
+    "task_titolo": "Riepilogo macros per tipo di giorno",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "I valori di kcal, proteine, carbo e grassi cambiano al cambio del tipo di giorno",
+      "soddisfatto": true,
+      "dettaglio": "Confermato in diet.js: event delegation sul #day-toggle (righe 406-415) intercetta i click sui bottoni .diet-toggle-btn, estrae data-day-type-id, aggiorna currentDayTypeId e chiama renderDiet(dietData) che a sua volta chiama renderMacrosSummary(tipoSelezionato, ...). Ad ogni cambio, il tipoGiorno estratto da tipiGiorno.find(t => t.id === currentDayTypeId) è diverso (righe 382-383), quindi i valori cambiano necessariamente."
+    },
+    {
+      "criterio": "I valori mostrati corrispondono ai target del tipo selezionato (es. riposo: 2800 kcal / 172g P / 348g C / 80g G)",
+      "soddisfatto": true,
+      "dettaglio": "In diet.js righe 147-196 renderMacrosSummary() legge direttamente da tipoGiorno.kcal_target, tipoGiorno.macros_target.proteine, tipoGiorno.macros_target.carboidrati, tipoGiorno.macros_target.grassi. Nel JSON (diet.json, righe 5-35), riposo ha esattamente 2800 kcal, P:172, C:348, G:80. I valori sono renderizzati al riga 178 (kcal), 182 (proteine), 186 (carbo), 190 (grassi) con Math.round() e fallback '—'."
+    },
+    {
+      "criterio": "Il riepilogo è leggibile e visivamente coerente con il resto della pagina",
+      "soddisfatto": true,
+      "dettaglio": "I CSS per .diet-macros-summary, .diet-macros-bar, .diet-macros-bar__item, .diet-macros-bar__value, .diet-macros-bar__label, .diet-macros-bar__unit e .diet-macros-proportion-bar sono definiti in diet.css (righe 106-261). Font-size e colori variano per macro type (es. kcal color accent). Gli stili responsive sono presenti (media query a 600px, 360px, righe 128-139). La sezione ha padding, border, background-color coerenti con il design card."
+    },
+    {
+      "criterio": "docs/diet.html contiene <section id='macros-summary' class='diet-macros-summary' aria-live='polite'>",
+      "soddisfatto": true,
+      "dettaglio": "Confermato in diet.html riga 80: <section id='macros-summary' class='diet-macros-summary' aria-label='Riepilogo macros giornalieri' aria-live='polite'>. Contiene aria-label per accessibilità e aria-live='polite' per screen reader. Elemento di placeholder <p class='diet-loading-placeholder'> presente inizialmente."
+    },
+    {
+      "criterio": "docs/js/diet.js contiene la funzione renderMacrosSummary(tipoGiorno, notaStrategia)",
+      "soddisfatto": true,
+      "dettaglio": "Funzione definita a riga 147-196 in diet.js. Signature esatta: renderMacrosSummary(tipoGiorno, notaStrategia). La funzione valida che tipoGiorno esista, estrae i campi target, e popola il container #macros-summary con HTML strutturato."
+    },
+    {
+      "criterio": "renderMacrosSummary legge tipoGiorno.kcal_target e tipoGiorno.macros_target.proteine/carboidrati/grassi",
+      "soddisfatto": true,
+      "dettaglio": "Riga 156: const kcal = tipoGiorno.kcal_target ?? '—'. Riga 157: const proteine = tipoGiorno.macros_target?.proteine ?? '—'. Riga 158: const carbo = tipoGiorno.macros_target?.carboidrati ?? '—'. Riga 159: const grassi = tipoGiorno.macros_target?.grassi ?? '—'. Usa optional chaining (?.) e nullish coalescing (??) per accesso sicuro."
+    },
+    {
+      "criterio": "renderMacrosSummary applica Math.round() ai valori numerici e fallback '—' per null/undefined",
+      "soddisfatto": true,
+      "dettaglio": "Riga 178 kcal: ${typeof kcal === 'number' ? Math.round(kcal) : kcal}. Righe 182, 186, 190 per proteine, carbo, grassi: stessa logica con Math.round(). Fallback '—' già applicato nelle variabili (righe 156-159 con ??)."
+    },
+    {
+      "criterio": "renderDiet() chiama renderMacrosSummary con tipiGiorno.find(t => t.id === currentDayTypeId)",
+      "soddisfatto": true,
+      "dettaglio": "Riga 382-383 in renderDiet(): const tipiGiorno = data?.meta?.tipi_giorno ?? []; const tipoSelezionato = tipiGiorno.find(t => t.id === currentDayTypeId) ?? tipiGiorno[0] ?? null. Riga 389: renderMacrosSummary(tipoSelezionato, data?.meta?.note_strategia ?? null). Il tipoGiorno è estratto per match su id stringa (non indice numerico)."
+    },
+    {
+      "criterio": "renderMacrosSummary è chiamata al cambio di currentDayTypeId tramite event delegation",
+      "soddisfatto": true,
+      "dettaglio": "Event delegation implementato righe 406-415: addEventListener('click') sul #day-toggle container, intercetta .diet-toggle-btn, estrae data-day-type-id, assegna a currentDayTypeId, chiama renderDiet(dietData) che poi chiama renderMacrosSummary(). Flow: click → currentDayTypeId update → renderDiet() → renderMacrosSummary()."
+    },
+    {
+      "criterio": "buildProportionBar() costruisce la barra con larghezze proporzionali ai macros in kcal",
+      "soddisfatto": true,
+      "dettaglio": "Funzione buildProportionBar() righe 105-139. Converte P/C/G in kcal (P*4, C*4, G*9), calcola percentuali (righe 110-119), genera HTML con width: ${pPerc}% (righe 123-131). buildProportionBar() è chiamata da renderMacrosSummary() riga 171 con valori numerici estratti."
+    },
+    {
+      "criterio": "buildProportionBar() verifica typeof per validare input numerici",
+      "soddisfatto": true,
+      "dettaglio": "Righe 106-108: const p = typeof proteineG === 'number' ? proteineG : 0; const c = typeof carboG === 'number' ? carboG : 0; const g = typeof grassiG === 'number' ? grassiG : 0. In renderMacrosSummary righe 168-170 sono estratti i valori numerici da proteine/carbo/grassi, con fallback null se '—'."
+    },
+    {
+      "criterio": "Strategia nutrizionale sintetica è estratta dalla prima riga di note_strategia",
+      "soddisfatto": true,
+      "dettaglio": "Righe 163-165 in renderMacrosSummary(): strategiaSintetica = (typeof notaStrategia === 'string' && notaStrategia.trim().length > 0) ? notaStrategia.split('\\n')[0].trim() : null. Nel JSON diet.json riga 37 è presente note_strategia con più righe. La funzione estrae correttamente la prima linea e la renderizza (riga 175) in <p class='diet-macros-strategy'>."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/diet.js",
+      "esiste": true,
+      "note": "File implementato completamente. Contiene renderMacrosSummary() (147-196), buildProportionBar() (105-139), renderDiet() (377-396), event delegation (406-415), DOMContentLoaded handler (400-450). Tutti i criteri coperti."
+    },
+    {
+      "path": "docs/diet.html",
+      "esiste": true,
+      "note": "HTML strutturato correttamente. Section #macros-summary presente riga 80 con aria-label e aria-live='polite'. Elemento di placeholder presente. Ordine delle sezioni coerente: #day-toggle (77), #macros-summary (80), #meals-list (85), #supplements-section (90)."
+    },
+    {
+      "path": "docs/css/diet.css",
+      "esiste": true,
+      "note": "Stili completi per macros summary: .diet-macros-summary (106-112), .diet-macros-bar (122-150), .diet-macros-bar__item (141-150), .diet-macros-bar__value (157-166), .diet-macros-bar__label (174-181), .diet-macros-bar__unit (168-172), .diet-macros-proportion-bar (197-224), legend items (226-261). Responsive design con media query. Theme-pro overrides presenti (520-592)."
+    },
+    {
+      "path": "docs/data/diet.json",
+      "esiste": true,
+      "note": "Struttura dati conforme al piano: meta.tipi_giorno[] con id, label, kcal_target, macros_target {proteine, carboidrati, grassi}. Valori reali: riposo 2800 kcal (P172/C348/G80), palestra 3000 kcal (P172/C398/G80), attivita_extra 3250 kcal (P172/C460/G80). Nessun valore null nei macros_target. meta.note_strategia presente con testo multiriga."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "In renderMacrosSummary() riga 168-170, se proteine/carbo/grassi è '—' (string fallback), i valori numerici diventeranno null e buildProportionBar() riceverà null/null/null. Questo è gestito correttamente in buildProportionBar() (righe 106-108, usa 0 come fallback), ma tecnicamente la logica di conversione è implicitamente affidata a buildProportionBar(). Nessun blocco, ma la semantica potrebbe essere resa esplicita.",
+      "file": "docs/js/diet.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "In renderDaySelector() riga 68-69, se tipoGiorno.id === currentDayTypeId è falso per tutti gli elementi durante init (perché currentDayTypeId è settato dopo fetch), il primo rendering mostra nessun bottone attivo. Tuttavia ciò è subito corretto in riga 430-431 dove currentDayTypeId è resettato al primo tipo disponibile PRIMA di renderDaySelector(). Ordine logico corretto (righe 428-435), ma merita attenzione.",
+      "file": "docs/js/diet.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Le abbreviazioni dei giorni (DAY_TYPE_LABELS, righe 10-14) sono hardcoded in JS anziché caricate dal JSON. Se i tipi giorno aumentassero oltre i 3 attuali, i bottoni fallerebbero a mostrare l'abbreviazione breve (userebbero il label completo). Non è un blocco, ma una limitazione da considerare in future espansioni.",
+      "file": "docs/js/diet.js"
+    }
+  ]
+}

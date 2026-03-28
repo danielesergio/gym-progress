@@ -131,8 +131,8 @@ Scrivi il file JSON nel percorso indicato dal prompt usando il tool Write.
 ```json
 {
   "id": "T03",
-  "descrizione": "In scripts/generate_site.py aggiungere un grafico Chart.js nella funzione renderMeasurements...",
-  "file_coinvolti": ["scripts/generate_site.py"]
+  "descrizione": "In source/scripts/generate_site.py aggiungere un grafico Chart.js nella funzione renderMeasurements...",
+  "file_coinvolti": ["source/scripts/generate_site.py"]
 }
 ```
 Questo è sbagliato perché descrive l'implementazione, non il requisito.
@@ -145,7 +145,7 @@ Questo è sbagliato perché descrive l'implementazione, non il requisito.
 - Al termine stampa un sommario testuale: numero feature, numero task totali, elenco feature con task count
 
 ## File temporanei
-Se hai bisogno di creare file intermedi durante l'elaborazione, salvali **esclusivamente** in `scripts/agent-temp/gym-web-analyst/`. Non creare mai file temporanei in altre cartelle.
+Se hai bisogno di creare file intermedi durante l'elaborazione, salvali **esclusivamente** in `source/scripts/agent-temp/gym-web-analyst/`. Non creare mai file temporanei in altre cartelle.
 Ogni file temporaneo DEVE iniziare con un commento che spiega perche' e' stato creato, es:
 ```json
 // File temporaneo creato da gym-web-analyst il YYYY-MM-DD

@@ -1,0 +1,149 @@
+{
+  "meta": {
+    "data": "2026-03-27",
+    "project": "Daniele Fitness Dashboard",
+    "anomalie": []
+  },
+  "tasks": [
+    {
+      "ordine": 1,
+      "id": "dashboard-dual-progress",
+      "title": "Doppia progress bar: fase corrente e macrociclo",
+      "type": "component",
+      "feature": "Fix Dashboard — Progress Bar Macrociclo",
+      "feature_priority": 1,
+      "motivazione_ordine": "Priority massima (1): nessuna dipendenza. Fornisce chiarezza immediata sull'avanzamento del macrociclo, elemento critico della Dashboard.",
+      "dependencies_resolved": [],
+      "sblocca": []
+    },
+    {
+      "ordine": 2,
+      "id": "volume-weekly-label-fix",
+      "title": "Correggi etichette volume da 'mesociclo' a 'settimanale'",
+      "type": "bugfix",
+      "feature": "Fix Volume — Etichetta Settimanale",
+      "feature_priority": 2,
+      "motivazione_ordine": "Priority 2, bugfix prima di component: nessuna dipendenza. Fix di testo, implementazione rapida e risolve ambiguità nei dati.",
+      "dependencies_resolved": [],
+      "sblocca": []
+    },
+    {
+      "ordine": 3,
+      "id": "workout-warmup-cooldown",
+      "title": "Sezione riscaldamento e defaticamento nella scheda giorno",
+      "type": "component",
+      "feature": "Allenamento — Riscaldamento, Defaticamento e Note",
+      "feature_priority": 3,
+      "motivazione_ordine": "Priority 3: nessuna dipendenza esplicita. Sblocca workout-exercise-notes. Mostra informazioni già presenti nei dati, necessaria per la completezza della scheda allenamento.",
+      "dependencies_resolved": [],
+      "sblocca": ["workout-exercise-notes"]
+    },
+    {
+      "ordine": 4,
+      "id": "workout-exercise-notes",
+      "title": "Note testuali degli esercizi nella scheda allenamento",
+      "type": "component",
+      "feature": "Allenamento — Riscaldamento, Defaticamento e Note",
+      "feature_priority": 3,
+      "motivazione_ordine": "Priority 3, dipende da workout-warmup-cooldown. Completa la visualizzazione della scheda allenamento con informazioni tecniche critiche per l'esecuzione corretta.",
+      "dependencies_resolved": ["workout-warmup-cooldown"],
+      "sblocca": []
+    },
+    {
+      "ordine": 5,
+      "id": "diet-day-type-selector",
+      "title": "Selettore tipo giorno (riposo / palestra / beach volley)",
+      "type": "component",
+      "feature": "Dieta — Ristrutturazione Pagina per Nuovi Dati",
+      "feature_priority": 4,
+      "motivazione_ordine": "Priority 4, nessuna dipendenza. Sblocca 4 task (macros, meals, strategy, export). Componente fondamentale che abilita tutta la nuova struttura della dieta.",
+      "dependencies_resolved": [],
+      "sblocca": ["diet-macros-by-type", "diet-meals-by-type", "diet-strategy-note", "diet-export-csv"]
+    },
+    {
+      "ordine": 6,
+      "id": "diet-macros-by-type",
+      "title": "Riepilogo macros per tipo di giorno",
+      "type": "component",
+      "feature": "Dieta — Ristrutturazione Pagina per Nuovi Dati",
+      "feature_priority": 4,
+      "motivazione_ordine": "Priority 4, dipende da diet-day-type-selector. Sblocca diet-meals-by-type. Mostra i target calorici e macronutrienti, informazione visuale complementare al selettore.",
+      "dependencies_resolved": ["diet-day-type-selector"],
+      "sblocca": ["diet-meals-by-type"]
+    },
+    {
+      "ordine": 7,
+      "id": "diet-meals-by-type",
+      "title": "Lista pasti con opzioni varianti per tipo di giorno",
+      "type": "component",
+      "feature": "Dieta — Ristrutturazione Pagina per Nuovi Dati",
+      "feature_priority": 4,
+      "motivazione_ordine": "Priority 4, dipende da diet-day-type-selector e diet-macros-by-type. Sblocca diet-strategy-note e diet-export-csv. Componente centrale che visualizza il contenuto principale della dieta.",
+      "dependencies_resolved": ["diet-day-type-selector", "diet-macros-by-type"],
+      "sblocca": ["diet-strategy-note", "diet-export-csv"]
+    },
+    {
+      "ordine": 8,
+      "id": "diet-strategy-note",
+      "title": "Sezione strategia nutrizionale con note_strategia",
+      "type": "component",
+      "feature": "Dieta — Ristrutturazione Pagina per Nuovi Dati",
+      "feature_priority": 4,
+      "motivazione_ordine": "Priority 4, dipende da diet-meals-by-type. Componente secondaria che spiega il razionale nutrizionale, da implementare dopo che la dieta è strutturata.",
+      "dependencies_resolved": ["diet-meals-by-type"],
+      "sblocca": []
+    },
+    {
+      "ordine": 9,
+      "id": "diet-export-csv",
+      "title": "Esportazione dieta in CSV",
+      "type": "component",
+      "feature": "Dieta — Ristrutturazione Pagina per Nuovi Dati",
+      "feature_priority": 4,
+      "motivazione_ordine": "Priority 4, dipende da diet-meals-by-type. Feature di utilità che permette all'utente di esportare la dieta, implementabile una volta che i pasti sono visivi.",
+      "dependencies_resolved": ["diet-meals-by-type"],
+      "sblocca": []
+    },
+    {
+      "ordine": 10,
+      "id": "workout-auto-select",
+      "title": "Pre-selezione automatica giorno e settimana in base alla data",
+      "type": "ux",
+      "feature": "Allenamento — Pre-selezione Automatica Giorno e Settimana",
+      "feature_priority": 5,
+      "motivazione_ordine": "Priority 5, nessuna dipendenza esplicita. UX improvement che migliora l'esperienza d'uso della pagina Allenamento senza bloccare altri task.",
+      "dependencies_resolved": [],
+      "sblocca": []
+    },
+    {
+      "ordine": 11,
+      "id": "plan-mesociclo-detail",
+      "title": "Dettaglio mesociclo espandibile al click",
+      "type": "component",
+      "feature": "Piano — Mesocicli Cliccabili con Dettaglio",
+      "feature_priority": 6,
+      "motivazione_ordine": "Priority 6, nessuna dipendenza. Sblocca plan-nutrition-strategy-section. Abilita l'interattività della timeline del Piano.",
+      "dependencies_resolved": [],
+      "sblocca": ["plan-nutrition-strategy-section"]
+    },
+    {
+      "ordine": 12,
+      "id": "plan-nutrition-strategy-section",
+      "title": "Strategia nutrizionale per fase con dati da mesocicli",
+      "type": "component",
+      "feature": "Piano — Strategia Nutrizionale per Fase Aggiornata",
+      "feature_priority": 7,
+      "motivazione_ordine": "Priority 7 (ultima), dipende da plan-mesociclo-detail. Completa la sezione Piano fornendo contesto nutrizionale per ogni fase del macrociclo.",
+      "dependencies_resolved": ["plan-mesociclo-detail"],
+      "sblocca": []
+    }
+  ],
+  "ordine_sequenza": "dashboard-dual-progress → volume-weekly-label-fix → workout-warmup-cooldown → workout-exercise-notes → diet-day-type-selector → diet-macros-by-type → diet-meals-by-type → diet-strategy-note → diet-export-csv → workout-auto-select → plan-mesociclo-detail → plan-nutrition-strategy-section",
+  "statistiche": {
+    "task_totali": 12,
+    "anomalie": 0,
+    "componenti": 10,
+    "bugfix": 1,
+    "ux": 1
+  }
+}

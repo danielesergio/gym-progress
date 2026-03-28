@@ -1,0 +1,103 @@
+// File temporaneo creato da gym-web-task-tester il 2026-03-27
+// Scopo: appunti verifica criteri task dashboard-dual-progress iterazione 1
+// Puo' essere eliminato al termine del test
+
+{
+  "data_verifica": "2026-03-27",
+  "task_id": "dashboard-dual-progress",
+  "task_iterazione": 1,
+  "file_existenza": {
+    "docs/js/dashboard.js": true,
+    "docs/css/dashboard.css": true
+  },
+  "criteri_verificati": {
+    "criterio_1": {
+      "testo": "Sono presenti due progress bar distinte nella card #card-fase, con label diverse",
+      "verifiche": [
+        "Cercare renderDualProgressBar() in dashboard.js",
+        "Verificare che ritorni HTML con due <div class='phase-card__progress-section'>",
+        "Verificare che la prima barra abbia label 'Fase corrente'",
+        "Verificare che la seconda barra abbia label 'Macrociclo 1'"
+      ]
+    },
+    "criterio_2": {
+      "testo": "La prima barra indica settimana corrente nella fase / durata totale della fase attuale",
+      "verifiche": [
+        "In renderDualProgressBar(), controllare il parametro settCorrenteFase",
+        "Verificare che il contatore mostri 'Sett. X / Y' dove Y = durataFase",
+        "Verificare che il fill sia calcolato come (settCorrenteFase / durataFase) * 100"
+      ]
+    },
+    "criterio_3": {
+      "testo": "La seconda barra indica settimana corrente nel macrociclo / 40 (durata totale macrociclo 1)",
+      "verifiche": [
+        "In renderDualProgressBar(), controllare il parametro settCorrentiMacro",
+        "Verificare che il contatore mostri 'Sett. X / 40'",
+        "Verificare che il fill sia calcolato come (settCorrentiMacro / durataMacro) * 100"
+      ]
+    },
+    "criterio_4": {
+      "testo": "La barra del macrociclo contiene span.phase-card__macro-tick per ogni confine tra mesocicli (6 tacche, posizionate a 12.5%, 25%, 40%, 65%, 80%, 95%)",
+      "verifiche": [
+        "Cercare renderMacroTicks() in dashboard.js",
+        "Verificare che generi span con classe 'phase-card__macro-tick'",
+        "Verificare che le posizioni siano calcolate correttamente in percentuale",
+        "Controllare le posizioni attese: 5/40=12.5%, 10/40=25%, 16/40=40%, 26/40=65%, 32/40=80%, 38/40=95%"
+      ]
+    },
+    "criterio_5": {
+      "testo": "Le label sono inequivoche: 'Fase corrente' e 'Macrociclo 1' come titoli di sezione con contatore 'Sett. X / Y'",
+      "verifiche": [
+        "Verificare le classi: .phase-card__progress-section-title e .phase-card__progress-count",
+        "Controllare il testo HTML iniettato: 'Fase corrente', 'Macrociclo 1'",
+        "Verificare i format dei contatori"
+      ]
+    },
+    "criterio_6": {
+      "testo": "docs/js/dashboard.js contiene la funzione renderProgramPhaseCard() aggiornata con due sezioni barra distinte",
+      "verifiche": [
+        "Cercare function renderProgramPhaseCard(plan)",
+        "Verificare che chiami renderDualProgressBar()",
+        "Verificare che passi i parametri corretti: settCorrenteFase, durataFase, settCorrentiMacro, durataMacro, mesocicli"
+      ]
+    },
+    "criterio_7": {
+      "testo": "docs/css/dashboard.css contiene le classi .phase-card__progress-section, .phase-card__progress-label-row, .phase-card__progress-section-title, .phase-card__progress-count, .phase-card__progress-bar--macro, .phase-card__macro-tick, .phase-card__progress-fill--phase, .phase-card__progress-fill--macro",
+      "verifiche": [
+        "Cercare ciascuna classe nel CSS",
+        "Verificare che gli stili siano appropriati per la funzione"
+      ]
+    },
+    "criterio_8": {
+      "testo": "Il fill della barra fase ha colore distinto dal fill della barra macrociclo",
+      "verifiche": [
+        "Verificare .phase-card__progress-fill--phase: background-color",
+        "Verificare .phase-card__progress-fill--macro: background-color",
+        "Assicurarsi che siano diversi"
+      ]
+    },
+    "criterio_9": {
+      "testo": "Se plan.macrocicli è assente, la barra macrociclo non viene renderizzata e non si generano errori JS",
+      "verifiche": [
+        "Cercare la logica in renderProgramPhaseCard()",
+        "Verificare il fallback: const macrociclo = plan?.macrocicli?.[0] ?? null;",
+        "Verificare la condizione: if (durataMacro > 0)"
+      ]
+    },
+    "criterio_10": {
+      "testo": "I valori null o assenti in durata_settimane sono gestiti con fallback a 0 senza lanciare eccezioni",
+      "verifiche": [
+        "Cercare la gestione di null in renderMacroTicks()",
+        "Verificare mesocicli[i]?.durata_settimane ?? 0"
+      ]
+    },
+    "criterio_11": {
+      "testo": "La card è responsive: le due barre sono impilate verticalmente e leggibili su mobile (< 480px) e desktop",
+      "verifiche": [
+        "Verificare che .phase-card__progress-section sia a width 100%",
+        "Verificare che le barre si impilino naturalmente (margin-bottom)"
+      ]
+    }
+  },
+  "anomalie_trovate": []
+}

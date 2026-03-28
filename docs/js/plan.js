@@ -3,6 +3,9 @@
    Daniele Fitness | fetch plan.json + renderPlan()
    ============================================================ */
 
+// ── Stato dettaglio mesociclo aperto ──────────────────────────
+let currentOpenMesoNumber = null;
+
 document.addEventListener('DOMContentLoaded', () => {
   renderPlan();
 });
@@ -73,6 +76,10 @@ function renderTimeline(planData) {
   // Genera card per ogni fase, passando il numero della fase corrente
   const cards = fasi.map(fase => buildPhaseCard(fase, currentPhaseNumber)).join('');
   container.innerHTML = cards;
+
+  // Costruisce mappa mesocicli da macrocicli e attacca listener click delegato
+  const mesoMap = buildMesoMap(planData);
+  attachTimelineClickListener(container, mesoMap);
 }
 
 /**
@@ -112,7 +119,13 @@ function buildPhaseCard(fase, currentPhaseNumber) {
     : '—';
 
   return `
-    <article class="${cardClass}" role="listitem" aria-label="Fase ${numero}: ${nome}">
+    <article class="${cardClass} plan-phase-card--clickable"
+             role="button"
+             tabindex="0"
+             aria-expanded="false"
+             aria-controls="plan-meso-detail-panel"
+             data-meso-id="${numero}"
+             aria-label="Fase ${numero}: ${nome} — clicca per dettagli">
       <span class="plan-phase-number">Fase ${numero}</span>
       <span class="plan-phase-name">${nome}</span>
       <span class="plan-phase-period">${periodo}</span>
@@ -206,6 +219,188 @@ function buildStrengthTargetRow(t) {
   `.trim();
 }
 
+// ══════════════════════════════════════════
+// DETTAGLIO MESOCICLO — funzioni espansione
+// ══════════════════════════════════════════
+
+/**
+ * Costruisce una mappa numerica dei mesocicli da planData.macrocicli[n].mesocicli[m].
+ * La chiave è il numero (int) del mesociclo per lookup rapido nel click handler.
+ * @param {Object} planData — dati completi da plan.json
+ * @returns {Map<number, Object>} mappa numero → oggetto mesociclo
+ */
+function buildMesoMap(planData) {
+  const mesoMap = new Map();
+  const macrocicli = planData?.macrocicli;
+  if (!Array.isArray(macrocicli)) return mesoMap;
+
+  for (const macro of macrocicli) {
+    const mesocicli = macro?.mesocicli;
+    if (!Array.isArray(mesocicli)) continue;
+    for (const meso of mesocicli) {
+      if (meso?.numero != null) {
+        mesoMap.set(meso.numero, meso);
+      }
+    }
+  }
+  return mesoMap;
+}
+
+/**
+ * Costruisce l'HTML del pannello dettaglio per un mesociclo.
+ * Mostra: nome, tipo, fase nutrizionale, durata, obiettivo, metodologia,
+ * note, criteri di avanzamento (lista), incrocio stimolo/ambiente (opzionale).
+ * @param {Object} meso — oggetto mesociclo da planData.macrocicli[n].mesocicli[m]
+ * @returns {string} HTML del pannello dettaglio
+ */
+function renderMesocicloDetail(meso) {
+  const numero = meso?.numero ?? '—';
+  const nome = meso?.nome ?? '—';
+  const tipo = meso?.tipo ?? '—';
+  const faseNutrizionale = meso?.fase_nutrizionale ?? '—';
+  const durata = meso?.durata_settimane != null ? `${meso.durata_settimane} settimane` : '—';
+  const obiettivo = meso?.obiettivo ?? '—';
+  const metodologia = meso?.metodologia ?? '—';
+  const note = meso?.note ?? '—';
+  const criteriRaw = meso?.criteri_avanzamento ?? '';
+  const incrocioPossibile = meso?.incrocio_stimolo_ambiente ?? null;
+
+  // Split criteri su '. ' e filtra stringhe vuote
+  const criteriaList = criteriRaw
+    ? criteriRaw.split('. ').filter(s => s.trim().length > 0).map(s => {
+        const trimmed = s.trim();
+        // Aggiunge punto finale se mancante
+        return trimmed.endsWith('.') ? trimmed : trimmed + '.';
+      })
+    : [];
+
+  const criteriHTML = criteriaList.length > 0
+    ? `<ul class="plan-meso-criteria-list">${criteriaList.map(c => `<li>${c}</li>`).join('')}</ul>`
+    : '<p class="plan-meso-detail-text">—</p>';
+
+  const incrociHTML = incrocioPossibile
+    ? `<div class="plan-meso-detail-field">
+        <span class="plan-meso-detail-label">Nutrizione contestuale</span>
+        <p class="plan-meso-detail-text plan-meso-detail-text--note">${incrocioPossibile}</p>
+      </div>`
+    : '';
+
+  return `
+    <div class="plan-meso-detail-header">
+      <div class="plan-meso-detail-title-row">
+        <span class="plan-meso-badge plan-meso-badge--tipo" data-tipo="${tipo.toLowerCase()}">${tipo}</span>
+        <span class="plan-meso-badge plan-meso-nutri-badge" data-fase="${faseNutrizionale}">${faseNutrizionale}</span>
+        <h3 class="plan-meso-detail-title">Fase ${numero} — ${nome}</h3>
+        <button class="plan-meso-detail-close" aria-label="Chiudi dettaglio mesociclo" type="button">×</button>
+      </div>
+      <p class="plan-meso-detail-duration">${durata}</p>
+    </div>
+    <div class="plan-meso-detail-body">
+      <div class="plan-meso-detail-field">
+        <span class="plan-meso-detail-label">Obiettivo</span>
+        <p class="plan-meso-detail-text">${obiettivo}</p>
+      </div>
+      <div class="plan-meso-detail-field">
+        <span class="plan-meso-detail-label">Metodologia</span>
+        <p class="plan-meso-detail-text">${metodologia}</p>
+      </div>
+      <div class="plan-meso-detail-field">
+        <span class="plan-meso-detail-label">Note</span>
+        <p class="plan-meso-detail-text">${note}</p>
+      </div>
+      <div class="plan-meso-detail-field">
+        <span class="plan-meso-detail-label">Criteri di avanzamento</span>
+        ${criteriHTML}
+      </div>
+      ${incrociHTML}
+    </div>
+  `.trim();
+}
+
+/**
+ * Toggling del pannello dettaglio: apre/chiude/aggiorna in base alla card cliccata.
+ * Gestisce lo stato: un solo pannello aperto per volta.
+ * Aggiorna aria-expanded su tutte le card.
+ * @param {number} mesoNumber — numero del mesociclo cliccato
+ * @param {Map<number, Object>} mesoMap — mappa numero → mesociclo
+ * @param {HTMLElement} cardsContainer — container #plan-phase-cards
+ */
+function toggleMesocicloDetail(mesoNumber, mesoMap, cardsContainer) {
+  const panel = document.getElementById('plan-meso-detail-panel');
+  if (!panel) return;
+
+  const meso = mesoMap.get(mesoNumber);
+  if (!meso) return;
+
+  // Reimposta aria-expanded su tutte le card
+  const allCards = cardsContainer.querySelectorAll('[data-meso-id]');
+
+  if (currentOpenMesoNumber === mesoNumber) {
+    // Stessa card cliccata: chiudi il pannello
+    panel.innerHTML = '';
+    panel.classList.remove('plan-meso-detail--open');
+    panel.hidden = true;
+    currentOpenMesoNumber = null;
+
+    allCards.forEach(card => card.setAttribute('aria-expanded', 'false'));
+  } else {
+    // Nuova card o nessuna aperta: aggiorna e apri
+    panel.innerHTML = renderMesocicloDetail(meso);
+    panel.classList.add('plan-meso-detail--open');
+    panel.hidden = false;
+    currentOpenMesoNumber = mesoNumber;
+
+    allCards.forEach(card => {
+      const cardNum = parseInt(card.getAttribute('data-meso-id'), 10);
+      card.setAttribute('aria-expanded', cardNum === mesoNumber ? 'true' : 'false');
+    });
+
+    // Listener per il pulsante "Chiudi" ×
+    const closeBtn = panel.querySelector('.plan-meso-detail-close');
+    if (closeBtn) {
+      closeBtn.addEventListener('click', () => {
+        panel.innerHTML = '';
+        panel.classList.remove('plan-meso-detail--open');
+        panel.hidden = true;
+        currentOpenMesoNumber = null;
+        allCards.forEach(card => card.setAttribute('aria-expanded', 'false'));
+      });
+    }
+
+    // Scroll del pannello in vista (soft)
+    panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+}
+
+/**
+ * Attacca il listener click delegato al container delle card.
+ * Gestisce click con mouse e tastiera (Enter/Space).
+ * @param {HTMLElement} container — #plan-phase-cards
+ * @param {Map<number, Object>} mesoMap — mappa numero → mesociclo
+ */
+function attachTimelineClickListener(container, mesoMap) {
+  if (!container) return;
+
+  const handleActivation = (target) => {
+    const card = target.closest('[data-meso-id]');
+    if (!card) return;
+    const mesoNumber = parseInt(card.getAttribute('data-meso-id'), 10);
+    if (isNaN(mesoNumber)) return;
+    toggleMesocicloDetail(mesoNumber, mesoMap, container);
+  };
+
+  container.addEventListener('click', (e) => {
+    handleActivation(e.target);
+  });
+
+  container.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      handleActivation(e.target);
+    }
+  });
+}
+
 /**
  * Mostra un messaggio di errore in un container.
  * @param {string} containerId — id del container target
@@ -221,10 +416,29 @@ function renderError(containerId, message) {
 // ── Strategia Nutrizionale ────────────────────────────────
 
 /**
+ * Raccoglie tutti i mesocicli da planData.macrocicli in un array piatto ordinato.
+ * @param {Object} planData — dati completi da plan.json
+ * @returns {Array} array di oggetti mesociclo
+ */
+function buildNutritionMesoList(planData) {
+  const macrocicli = planData?.macrocicli;
+  if (!Array.isArray(macrocicli) || macrocicli.length === 0) return [];
+  const result = [];
+  for (const macro of macrocicli) {
+    const mesocicli = macro?.mesocicli;
+    if (Array.isArray(mesocicli)) {
+      for (const meso of mesocicli) {
+        result.push(meso);
+      }
+    }
+  }
+  return result;
+}
+
+/**
  * Renderizza la strategia nutrizionale nel container #plan-nutrition-container.
- * Legge planData.strategia_nutrizionale (oggetto con chiavi descrittive) e
- * produce card per: fase corrente (ora), fasi dieta (mini-cut/mantenimento/bulk),
- * trigger, macronutrienti, note generali.
+ * Itera su planData.macrocicli[n].mesocicli[m] e mostra per ogni mesociclo:
+ * numero, nome, badge fase_nutrizionale colorato e testo incrocio_stimolo_ambiente.
  * @param {Object} planData — dati completi da plan.json
  * @returns {void}
  */
@@ -232,110 +446,57 @@ function renderNutritionStrategy(planData) {
   const container = document.getElementById('plan-nutrition-container');
   if (!container) return;
 
-  const strategia = planData?.strategia_nutrizionale;
-  if (!strategia) {
+  if (!Array.isArray(planData?.macrocicli) || planData.macrocicli.length === 0) {
     renderError('plan-nutrition-container', 'Strategia nutrizionale non disponibile.');
     return;
   }
 
-  // Determina la fase corrente per evidenziare la sezione più rilevante
-  const fasi = planData?.fasi;
-  const faseCorrente = Array.isArray(fasi) ? fasi.find(f => f.stato === 'corrente') : null;
-  const nomeF = faseCorrente ? `Fase ${faseCorrente.numero} — ${faseCorrente.nome}` : null;
+  const mesoList = buildNutritionMesoList(planData);
+  if (mesoList.length === 0) {
+    renderError('plan-nutrition-container', 'Nessun mesociclo trovato nel piano.');
+    return;
+  }
 
-  // ── Sezione "Ora" / Fase corrente ──
-  const labelOra = nomeF ? `Adesso: ${nomeF}` : 'Approccio Attuale';
-  const testoOra = strategia.ora ?? '—';
+  // ── Build lista mesocicli ──
+  const itemsHtml = mesoList.map(meso => {
+    const numero = meso?.numero ?? '—';
+    const nome = meso?.nome ?? '—';
+    const faseNutrizionale = meso?.fase_nutrizionale ?? 'mantenimento';
+    const rationale = meso?.incrocio_stimolo_ambiente ?? '—';
 
-  // ── Fasi dieta ──
-  const fasiDieta = [
-    {
-      label: 'Fase 2 — Mini-Cut',
-      testo: strategia.fase_mini_cut ?? '—',
-    },
-    {
-      label: 'Fasi 3-7 — Mantenimento',
-      testo: strategia.fase_mantenimento ?? '—',
-    },
-    {
-      label: 'Fase 8 — Bulk',
-      testo: strategia.fase_bulk ?? '—',
-    },
-  ];
+    const itemEl = document.createElement('li');
+    itemEl.className = 'plan-nutrition-meso-item';
 
-  // ── Trigger ──
-  const triggerCut = strategia.trigger_cut ?? '—';
-  const triggerBulk = strategia.trigger_bulk ?? '—';
+    const headerEl = document.createElement('div');
+    headerEl.className = 'plan-nutrition-meso-header';
 
-  // ── Macronutrienti ──
-  const macro = strategia.macronutrienti;
-  const proteineGPerKg = macro?.proteine_g_per_kg != null ? macro.proteine_g_per_kg : '—';
-  const carboidrati = macro?.carboidrati ?? '—';
-  const grassi = macro?.grassi ?? '—';
+    const numEl = document.createElement('span');
+    numEl.className = 'plan-nutrition-meso-number';
+    numEl.textContent = `Meso ${numero}`;
 
-  // ── Note finali ──
-  const noteFinali = strategia.note ?? '—';
+    const nomeEl = document.createElement('span');
+    nomeEl.className = 'plan-nutrition-meso-name';
+    nomeEl.textContent = nome;
 
-  // ── Build HTML ──
-  const cardeFasiDieta = fasiDieta.map(f => `
-    <div class="plan-nutrition-card">
-      <p class="plan-nutrition-card-title">${f.label}</p>
-      <p class="plan-nutrition-card-text">${f.testo}</p>
-    </div>
-  `.trim()).join('');
+    const badgeEl = document.createElement('span');
+    badgeEl.className = 'plan-meso-badge plan-meso-nutri-badge';
+    badgeEl.setAttribute('data-fase', faseNutrizionale);
+    badgeEl.textContent = faseNutrizionale;
 
-  const html = `
-    <div class="plan-nutrition-card plan-nutrition-card--current">
-      <p class="plan-nutrition-card-title">${labelOra}</p>
-      <p class="plan-nutrition-card-text">${testoOra}</p>
-    </div>
+    headerEl.appendChild(numEl);
+    headerEl.appendChild(nomeEl);
+    headerEl.appendChild(badgeEl);
 
-    <div class="plan-nutrition-grid">
-      ${cardeFasiDieta}
-    </div>
+    const rationaleEl = document.createElement('p');
+    rationaleEl.className = 'plan-nutrition-meso-rationale';
+    rationaleEl.textContent = rationale;
 
-    <div class="plan-nutrition-triggers">
-      <div class="plan-nutrition-card">
-        <p class="plan-nutrition-card-title">⚠ Trigger Cut</p>
-        <p class="plan-nutrition-card-text">${triggerCut}</p>
-      </div>
-      <div class="plan-nutrition-card">
-        <p class="plan-nutrition-card-title">↑ Trigger Bulk</p>
-        <p class="plan-nutrition-card-text">${triggerBulk}</p>
-      </div>
-    </div>
+    itemEl.appendChild(headerEl);
+    itemEl.appendChild(rationaleEl);
 
-    <div class="plan-nutrition-macros">
-      <p class="plan-nutrition-card-title">Macronutrienti di riferimento</p>
-      <table class="plan-nutrition-macros-table" aria-label="Ripartizione macronutrienti">
-        <thead>
-          <tr>
-            <th scope="col">Nutriente</th>
-            <th scope="col">Target</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <th scope="row">Proteine</th>
-            <td>${proteineGPerKg} g/kg/die</td>
-          </tr>
-          <tr>
-            <th scope="row">Carboidrati</th>
-            <td>${carboidrati}</td>
-          </tr>
-          <tr>
-            <th scope="row">Grassi</th>
-            <td>${grassi}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
+    return itemEl.outerHTML;
+  }).join('');
 
-    <div class="plan-nutrition-note">
-      <p class="plan-nutrition-card-title">Note generali</p>
-      <p class="plan-nutrition-card-text">${noteFinali}</p>
-    </div>
-  `.trim();
-
+  const html = `<ul class="plan-nutrition-meso-list" aria-label="Strategia nutrizionale per mesociclo">${itemsHtml}</ul>`;
   container.innerHTML = html;
 }

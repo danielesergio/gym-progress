@@ -1,0 +1,170 @@
+{
+  "meta": {
+    "data": "2026-03-27",
+    "task_id": "volume-weekly-label-fix",
+    "task_title": "Correggi etichette volume da 'mesociclo' a 'settimanale'",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "volume-weekly-label-fix",
+    "type": "bugfix",
+    "title": "Correggi etichette volume da 'mesociclo' a 'settimanale'",
+    "description": "La pagina Volume ha titoli e sottotitoli che possono indurre l'utente a credere che le serie mostrate siano il totale del mesociclo. I dati in volume.json sono invece serie pesate per settimana (volume settimanale della scheda corrente). Titoli, sottotitoli, header e tooltip devono essere aggiornati per riflettere 'volume settimanale' in modo chiaro e consistente.",
+    "inputs": ["volume_data"],
+    "outputs": ["VolumePageLabels"],
+    "acceptance_criteria": [
+      "Nessun testo nella pagina Volume usa la parola 'mesociclo' per descrivere il totale delle serie",
+      "L'header della pagina mostra 'Volume settimanale' con il valore corretto",
+      "La sezione riepilogo recita chiaramente 'serie settimanali' o equivalente",
+      "Il sottotitolo della sezione grafico specifica che si tratta di serie per settimana"
+    ],
+    "dependencies": [],
+    "_feature": "Fix Volume — Etichetta Settimanale",
+    "notes": "La parola 'mesociclo' non appare esplicitamente nei file esistenti. Il problema è l'assenza di 'settimanale' in contesti chiave (tooltip, asse grafico, label meta card, blocchi dettaglio) che crea ambiguità. Il fix è puramente testuale/label — zero logica JS da cambiare, zero CSS da toccare."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/volume.html",
+        "motivo": "Aggiornare aria-label header-meta, sottotitolo sezione grafico",
+        "esiste": true,
+        "modifiche_specifiche": [
+          {
+            "elemento": "aria-label su div.header-meta (riga 24)",
+            "attuale": "Volume settimana corrente",
+            "proposto": "Volume settimanale corrente"
+          },
+          {
+            "elemento": "p.volume-section-subtitle sotto #volume-chart-title (riga 100)",
+            "attuale": "Serie pesate ordinate dal più alto al più basso",
+            "proposto": "Serie settimanali pesate per settimana, ordinate dal più alto al più basso"
+          }
+        ]
+      },
+      {
+        "path": "docs/js/volume.js",
+        "motivo": "Aggiornare label meta card ('Serie pesate totali' → 'Serie settimanali totali', 'Serie Pull/Push' → 'Serie Pull/Push settimanali'), tooltip grafico, asse X, blocco totale per muscolo",
+        "esiste": true,
+        "modifiche_specifiche": [
+          {
+            "elemento": "renderVolumeMetaCard — label 'Serie pesate totali' (riga 95)",
+            "attuale": "Serie pesate totali",
+            "proposto": "Serie settimanali totali"
+          },
+          {
+            "elemento": "renderVolumeMetaCard — label 'Serie Pull' (riga 98)",
+            "attuale": "Serie Pull",
+            "proposto": "Serie Pull (sett.)"
+          },
+          {
+            "elemento": "renderVolumeMetaCard — label 'Serie Push' (riga 102)",
+            "attuale": "Serie Push",
+            "proposto": "Serie Push (sett.)"
+          },
+          {
+            "elemento": "renderVolumeChart — tooltip callback label (riga 181)",
+            "attuale": "` ${val != null ? val.toFixed(1) : '—'} serie pesate`",
+            "proposto": "` ${val != null ? val.toFixed(1) : '—'} serie/sett.`"
+          },
+          {
+            "elemento": "renderVolumeChart — asse X title text (riga 199)",
+            "attuale": "Serie pesate",
+            "proposto": "Serie pesate / settimana"
+          },
+          {
+            "elemento": "renderVolumeTable — volume-muscle-total (riga 272)",
+            "attuale": "`${serieTot} serie pesate`",
+            "proposto": "`${serieTot} serie/sett.`"
+          }
+        ]
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/volume.html",
+        "motivo": "File da modificare — identificare i punti esatti dove inserire le nuove etichette (già letto in fase di pianificazione)"
+      },
+      {
+        "path": "docs/js/volume.js",
+        "motivo": "File da modificare — identificare le stringhe template nelle funzioni renderVolumeMetaCard, renderVolumeChart, renderVolumeTable (già letto in fase di pianificazione)"
+      },
+      {
+        "path": "docs/data/volume.json",
+        "motivo": "Struttura dati: oggetto con chiave 'volumi' (array) e 'meta'. I campo serie_pesate rappresentano serie SETTIMANALI ponderate per peso ruolo (principale=1.0, secondario=0.5, terziario=0.3). Confermato che non esiste campo 'mesociclo'. Nessuna modifica al JSON — solo lettura per capire la semantica."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "Plain HTML/JS ES2022 — nessun build step",
+      "grafici": {
+        "nome": "Chart.js",
+        "versione": "4.x",
+        "cdn": "https://cdn.jsdelivr.net/npm/chart.js",
+        "note": "Già caricato in volume.html con script defer. Il developer non modifica il tag CDN."
+      }
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase",
+      "no": ["no jQuery", "no var — solo const e let", "no inline style nell'HTML"],
+      "gestione_null": "Usare optional chaining (?.) e fallback: valore ?? '—'",
+      "modifiche_testo": "Le stringhe sono hardcoded nei template literal JavaScript e negli attributi HTML — edit diretto senza impatto su logica o CSS"
+    },
+    "pagina": {
+      "nome": "Volume",
+      "file": "docs/volume.html",
+      "js": "docs/js/volume.js",
+      "css": "docs/css/volume.css",
+      "dati_json": ["data/volume.json"],
+      "chart_js": true
+    }
+  },
+  "analisi_testi_esistenti": {
+    "volume_html": {
+      "testi_ok": [
+        "header-meta-label: 'Volume totale:' — generico, non induce confusione",
+        "volume-section-title sezione 1: 'Riepilogo Volume Settimanale' — già corretto",
+        "volume-section-subtitle sezione 1: 'Serie pesate totali per muscolo — scheda corrente' — accettabile",
+        "volume-section-title sezione 2: 'Volume per Gruppo Muscolare' — accettabile",
+        "volume-section-title sezione 3: 'Dettaglio Esercizi per Muscolo' — OK",
+        "volume-section-subtitle sezione 3: 'Elenco completo con giorno, serie, ruolo e contributo' — OK"
+      ],
+      "testi_da_correggere": [
+        "aria-label div.header-meta: 'Volume settimana corrente' → 'Volume settimanale corrente' (coerenza terminologica)",
+        "volume-section-subtitle sezione 2: 'Serie pesate ordinate dal più alto al più basso' → aggiungere riferimento alla settimana"
+      ],
+      "parola_mesociclo_trovata": false
+    },
+    "volume_js": {
+      "testi_ok": [
+        "Dataset label Chart.js: 'Serie pesate' — generico, accettabile",
+        "showError: messaggi tecnici non visibili all'utente in condizioni normali",
+        "Intestazioni tabella: 'Esercizio', 'Giorno', 'Serie', 'Ruolo', 'Contributo' — OK"
+      ],
+      "testi_da_correggere": [
+        "renderVolumeMetaCard label 'Serie pesate totali' → 'Serie settimanali totali'",
+        "renderVolumeMetaCard label 'Serie Pull' → 'Serie Pull (sett.)'",
+        "renderVolumeMetaCard label 'Serie Push' → 'Serie Push (sett.)'",
+        "renderVolumeChart tooltip: 'serie pesate' → 'serie/sett.'",
+        "renderVolumeChart asse X title: 'Serie pesate' → 'Serie pesate / settimana'",
+        "renderVolumeTable volume-muscle-total: '${serieTot} serie pesate' → '${serieTot} serie/sett.'"
+      ],
+      "parola_mesociclo_trovata": false
+    }
+  },
+  "criteri_accettazione": [
+    "Nessun testo nella pagina Volume usa la parola 'mesociclo' per descrivere il totale delle serie",
+    "L'header della pagina mostra 'Volume settimanale' con il valore corretto (verificabile tramite id='header-total-volume')",
+    "La sezione riepilogo (volume-meta-card) mostra le label 'Serie settimanali totali', 'Serie Pull (sett.)', 'Serie Push (sett.)'",
+    "Il sottotitolo della sezione grafico (#volume-chart-title + p.volume-section-subtitle) specifica che si tratta di serie per settimana",
+    "Il tooltip del grafico a barre mostra 'serie/sett.' anziché solo 'serie pesate'",
+    "L'asse X del grafico mostra il titolo 'Serie pesate / settimana'",
+    "Ogni blocco muscolo nella tabella dettaglio mostra '${serieTot} serie/sett.' anziché '${serieTot} serie pesate'",
+    "docs/volume.html NON contiene occorrenze di 'mesociclo'",
+    "docs/js/volume.js NON contiene occorrenze di 'mesociclo'",
+    "La logica JS (calcoli, fetch, ordinamento, rendering) rimane invariata — solo le stringhe label cambiano"
+  ],
+  "dipendenze": []
+}

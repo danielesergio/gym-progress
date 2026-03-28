@@ -52,6 +52,7 @@ class DataLoader:
             if previous_path.exists():
                 seed = self.read_json(previous_path, default=[])
                 for entry in seed:
+                    entry["generate_by"] = "previous_data"
                     if not entry.get("id"):
                         entry["id"] = uuid.uuid4().hex[:8]
                 measurements_path.write_text(

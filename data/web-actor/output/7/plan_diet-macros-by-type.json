@@ -1,0 +1,141 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "diet-macros-by-type",
+    "task_title": "Riepilogo macros per tipo di giorno",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "diet-macros-by-type",
+    "type": "component",
+    "title": "Riepilogo macros per tipo di giorno",
+    "description": "Il riepilogo macros deve mostrare i target calorici e i macronutrienti (proteine, carboidrati, grassi) specifici del tipo di giorno selezionato. I valori provengono da tipi_giorno[n].macros_target e tipi_giorno[n].kcal_target nel JSON dieta.",
+    "inputs": [
+      "diet_day_types",
+      "DayTypeSelector"
+    ],
+    "outputs": [
+      "MacrosSummaryByType"
+    ],
+    "acceptance_criteria": [
+      "I valori di kcal, proteine, carbo e grassi cambiano al cambio del tipo di giorno",
+      "I valori mostrati corrispondono ai target del tipo selezionato",
+      "Il riepilogo è leggibile e visivamente coerente con il resto della pagina"
+    ],
+    "notes": "STATO ATTUALE: il componente MacrosSummaryByType è già implementato in docs/js/diet.js (funzione renderMacrosSummary) e docs/diet.html (#macros-summary). Il task richiede verifica della correttezza e completezza rispetto ai dati reali in docs/data/diet.json, non una creazione da zero. La dipendenza diet-day-type-selector è parimenti già implementata nello stesso file JS (renderDaySelector + renderDayTypeToggle + event delegation su #day-toggle)."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "Verificare e completare renderMacrosSummary(tipoGiorno, notaStrategia): deve leggere tipoGiorno.kcal_target e tipoGiorno.macros_target.proteine/carboidrati/grassi. Verificare che sia chiamata correttamente da renderDiet() al cambio del tipo selezionato. La funzione esiste (righe 147-196) ma va validata contro la struttura dati reale.",
+        "esiste": true
+      },
+      {
+        "path": "docs/diet.html",
+        "motivo": "Verificare che #macros-summary abbia aria-live='polite' e sia posizionato dopo #day-toggle. La sezione esiste (riga 80) ma va confermata la struttura HTML attesa dalla funzione renderMacrosSummary.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Verificare che esistano gli stili per .diet-macros-summary, .diet-macros-bar, .diet-macros-bar__item, .diet-macros-bar__value, .diet-macros-bar__label, .diet-macros-bar__unit, .diet-macros-proportion-bar e le sue varianti. Gli stili esistono (righe 104-260) ma vanno validati visivamente.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/diet.json",
+        "motivo": "Struttura dati: meta.tipi_giorno[] con campi id (string), label (string), kcal_target (number intero), macros_target.proteine (number intero), macros_target.carboidrati (number intero), macros_target.grassi (number intero). Valori reali: riposo=2800kcal (P172/C348/G80), palestra=3000kcal (P172/C398/G80), attivita_extra=3250kcal (P172/C460/G80). Nessun valore null nei macros_target — tutti i campi sono interi."
+      },
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "Implementazione attuale di renderMacrosSummary() (righe 147-196), buildProportionBar() (righe 105-139), renderDiet() (righe 377-396) e del flusso di chiamata al cambio del tipo giorno (event delegation righe 404-416). Da verificare prima di qualsiasi modifica."
+      },
+      {
+        "path": "docs/diet.html",
+        "motivo": "Struttura HTML attuale: #day-toggle (riga 77), #macros-summary (riga 80) con aria-label e aria-live. Da verificare l'ordine delle sezioni e la presenza degli attributi accessibilità."
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Stili esistenti per il componente macros summary (righe 104-260). Verificare la presenza e correttezza di tutti i selettori CSS utilizzati dalla funzione renderMacrosSummary."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "Plain HTML/JS ES2022",
+      "grafici": null,
+      "dati": {
+        "fonte": "fetch('data/diet.json') in docs/js/diet.js",
+        "formato_date": "non rilevante per questo task",
+        "gestione_null": "Usare ?? '—' per kcal_target e macros_target.*. I dati reali non contengono null nei macros, ma la gestione difensiva va comunque applicata per robustezza."
+      }
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase — tipoGiorno, notaStrategia, kcal, proteine, carbo, grassi",
+      "classi_css": "kebab-case con prefisso diet- — .diet-macros-summary, .diet-macros-bar, .diet-macros-bar__item, .diet-macros-bar__value, .diet-macros-bar__label, .diet-macros-bar__unit, .diet-macros-proportion-bar",
+      "id_html": "kebab-case — #macros-summary",
+      "arrotondamento": "Math.round() per kcal e grammi (tutti interi nel JSON reale, ma da applicare per robustezza)",
+      "gestione_null": "valore ?? '—' nel rendering. typeof proteineNum === 'number' prima di passare a buildProportionBar",
+      "pattern_js": "renderMacrosSummary chiamata da renderDiet() che è chiamata sia all'init che ad ogni click su .diet-toggle-btn via event delegation"
+    },
+    "pagina": {
+      "nome": "Dieta",
+      "file": "docs/diet.html",
+      "js": "docs/js/diet.js",
+      "css": "docs/css/diet.css",
+      "dati_json": ["data/diet.json"]
+    },
+    "struttura_js": {
+      "flusso": "DOMContentLoaded → fetch('data/diet.json') → renderDaySelector(tipiGiorno) → renderDiet(dietData) [che chiama renderMacrosSummary]. Al click su .diet-toggle-btn: aggiorna currentDayTypeId → renderDiet(dietData) → renderMacrosSummary con il nuovo tipoSelezionato.",
+      "stato_globale": "dietData (Object, intero diet.json), currentDayTypeId (string, id tipo giorno corrente)",
+      "funzione_target": "renderMacrosSummary(tipoGiorno, notaStrategia) — riceve l'oggetto tipoGiorno già selezionato da tipiGiorno.find(t => t.id === currentDayTypeId)"
+    }
+  },
+  "struttura_dati_rilevante": {
+    "fonte": "docs/data/diet.json — meta.tipi_giorno[]",
+    "schema": {
+      "id": "string — 'riposo' | 'palestra' | 'attivita_extra'",
+      "label": "string — es. 'Giorno Riposo'",
+      "kcal_target": "number (intero) — es. 2800",
+      "macros_target": {
+        "proteine": "number (intero) — es. 172",
+        "carboidrati": "number (intero) — es. 348",
+        "grassi": "number (intero) — es. 80"
+      }
+    },
+    "valori_reali": [
+      { "id": "riposo",         "label": "Giorno Riposo",              "kcal_target": 2800, "macros_target": { "proteine": 172, "carboidrati": 348, "grassi": 80 } },
+      { "id": "palestra",       "label": "Giorno Allenamento Pesi",    "kcal_target": 3000, "macros_target": { "proteine": 172, "carboidrati": 398, "grassi": 80 } },
+      { "id": "attivita_extra", "label": "Giorno Beach Volley",        "kcal_target": 3250, "macros_target": { "proteine": 172, "carboidrati": 460, "grassi": 80 } }
+    ],
+    "nota": "Il campo macros_target usa 'carboidrati' (non 'carbo'). Il codice in diet.js legge tipoGiorno.macros_target?.carboidrati — coerente con la struttura JSON."
+  },
+  "criteri_accettazione": [
+    "I valori di kcal, proteine, carbo e grassi cambiano al cambio del tipo di giorno",
+    "I valori mostrati corrispondono ai target del tipo selezionato (es. riposo: 2800 kcal / 172g P / 348g C / 80g G)",
+    "Il riepilogo è leggibile e visivamente coerente con il resto della pagina",
+    "docs/diet.html contiene <section id='macros-summary' class='diet-macros-summary' aria-live='polite'>",
+    "docs/js/diet.js contiene la funzione renderMacrosSummary(tipoGiorno, notaStrategia)",
+    "renderMacrosSummary legge tipoGiorno.kcal_target e tipoGiorno.macros_target.proteine/carboidrati/grassi",
+    "renderMacrosSummary applica Math.round() ai valori numerici e fallback '—' per null/undefined",
+    "renderDiet() chiama renderMacrosSummary con tipiGiorno.find(t => t.id === currentDayTypeId)",
+    "Al click su un bottone .diet-toggle-btn viene aggiornato currentDayTypeId e richiamato renderDiet(dietData)",
+    "La barra proporzioni buildProportionBar calcola le percentuali in kcal (P/C: 4 kcal/g, G: 9 kcal/g) e non genera errori se i valori sono null",
+    "La sezione #macros-summary mostra il titolo del tipo giorno selezionato (es. 'Giorno Riposo')"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "diet-day-type-selector",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/diet.html",
+        "docs/js/diet.js",
+        "docs/css/diet.css"
+      ],
+      "note": "Selettore tipo giorno già implementato in docs/js/diet.js (funzioni renderDaySelector e renderDayTypeToggle, event delegation su #day-toggle con data-day-type-id). HTML: #day-toggle in docs/diet.html. CSS: .diet-toggle-btn e .diet-day-toggle in docs/css/diet.css. Piano disponibile in data/web-actor/output/plan_diet-day-type-selector.json."
+    }
+  ]
+}

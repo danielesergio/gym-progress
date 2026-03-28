@@ -1,0 +1,59 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "diet-totals-panel",
+    "task_titolo": "Pannello confronto totali selezionati vs target",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Il pannello mostra kcal, proteine, carboidrati e grassi sia per i pasti selezionati che per il target",
+      "soddisfatto": true,
+      "dettaglio": "Template HTML renderDietTotalsPanel() righe 336-350 contiene tre righe (header intestazione, riga selezionati, riga target, riga delta) con quattro colonne per le macro (kcal, Proteine, Carboidrati, Grassi). Valori selezionati da totals.{kcal, proteineG, carboG, grassiG}, valori target da tipoGiorno.{kcal_target, macros_target.proteine, macros_target.carboidrati, macros_target.grassi}."
+    },
+    {
+      "criterio": "Il delta tra selezionato e target è visibile per ogni voce",
+      "soddisfatto": true,
+      "dettaglio": "Riga delta (righe 352-358 template) contiene quattro celle delta calcolate via fmtDelta(sel, tgt) che ritorna '—' (null), '0' (zero), '+N' (positivo) o '-N' (negativo) per ogni macro. Funzione deltaClass() determina la classe CSS modificatrice in base al valore del delta (--neutral, --positive, --negative)."
+    },
+    {
+      "criterio": "Il delta negativo (selezionato < target) è distinguibile visivamente da delta positivo e da delta zero/neutro",
+      "soddisfatto": true,
+      "dettaglio": "Tre classi CSS modificatrici applicate dinamicamente (righe 319-322): --neutral se |delta|<=5 o uno dei valori è null, --positive se delta>0, --negative se delta<0. CSS applica var(--color-text-muted) a neutral (riga 784), var(--color-success) + rgba(76,175,80,0.08) a positive (righe 789-790), var(--color-danger) + rgba(244,67,54,0.08) a negative (righe 795-796)."
+    },
+    {
+      "criterio": "Il pannello si aggiorna senza ricaricare la pagina quando cambia la selezione",
+      "soddisfatto": true,
+      "dettaglio": "renderDietTotalsPanel(totals, tipoGiorno) aggiorna innerHTML del container #diet-totals-panel (riga 324). Viene richiamata in tre punti critici: (1) riga 845 dopo cambio tipo giorno via handler click #day-toggle, (2) riga 881 dopo click opzione slot via event delegation #meals-list, (3) riga 919 dopo fetch iniziale e renderDiet(). Ogni punto segue immediatamente l'aggiornamento di selectedTotals = calculateSelectedTotals(...). Nessun page reload."
+    },
+    {
+      "criterio": "Il pannello è leggibile su mobile (non tronca valori)",
+      "soddisfatto": true,
+      "dettaglio": "Media query @media (max-width: 400px) riga 811-829: riduce font-size a var(--font-size-xs) (riga 818), grid-template-columns a minmax(72px, 1.2fr) repeat(4, 1fr) (riga 827), mantiene overflow-x auto nel table per scroll orizzontale se necessario. Padding ridotto a var(--space-4) (riga 813). white-space: nowrap su tutte le celle impedisce a capo involontario."
+    },
+    {
+      "criterio": "I valori numerici sono arrotondati all'intero (nessun decimale visibile all'utente)",
+      "soddisfatto": true,
+      "dettaglio": "Target arrotondati con Math.round() (righe 282-285). selectedTotals (parametro totals) già arrotondato da calculateSelectedTotals() (funzione non modificata, già presente). fmtVal(v) ritorna String(v) senza decimali (righe 315-317). fmtDelta(sel, tgt) ritorna stringa di delta intero '+N' o '-N' senza decimali (righe 307-312)."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/diet.html",
+      "esiste": true,
+      "note": "Elemento <section id='diet-totals-panel' class='diet-totals-panel'> presente righe 94-97, posizionato correttamente tra #meals-list (righe 89-92) e #supplements-section (righe 99-108). Attributi aria-label='Confronto totali selezionati vs target' e aria-live='polite' presenti. Contiene placeholder <p class='diet-loading-placeholder'>Caricamento totali…</p> che viene sostituito da renderDietTotalsPanel()."
+    },
+    {
+      "path": "docs/js/diet.js",
+      "esiste": true,
+      "note": "Funzione renderDietTotalsPanel(totals, tipoGiorno) presente righe 265-361. Implementazione completa: (a) extrae valori selezionati e target con null check, (b) applica Math.round() a target, (c) calcola classe delta via deltaClass(), (d) formatta delta via fmtDelta(), (e) genera template HTML con ARIA role='table'/'row'/'cell'/'columnheader'/'rowheader' e aria-label descrittivi. Richiamata in tre punti corretti: (1) riga 845 post cambio tipo giorno, (2) riga 881 post cambio opzione slot, (3) riga 919 post fetch iniziale."
+    },
+    {
+      "path": "docs/css/diet.css",
+      "esiste": true,
+      "note": "Stili completi per .diet-totals-panel e varianti BEM: container (riga 683), title (riga 692), table (riga 701), row + row--header/selected/target/delta (righe 710-739), cell--label/col/val/delta (righe 742-770), delta--neutral/positive/negative (righe 783-797), responsive mobile (righe 811-829), theme-pro override (righe 832-848). Usa variabili CSS per colori (--color-success, --color-danger, --color-text-muted) e spaziatura. Delta positivo e negativo hanno background-color rgba con opacity per contrasto."
+    }
+  ],
+  "anomalie": []
+}

@@ -1,0 +1,103 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "workout-warmup-cooldown",
+    "task_title": "Sezione riscaldamento e defaticamento nella scheda giorno",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "workout-warmup-cooldown",
+    "type": "component",
+    "title": "Sezione riscaldamento e defaticamento nella scheda giorno",
+    "description": "Ogni scheda workout.json ha un array 'riscaldamento' e un array 'defaticamento' posizionati a livello RADICE della scheda (non a livello di singolo giorno). Il task richiede di mostrare queste due sezioni nella visualizzazione del giorno selezionato: la sezione 'Riscaldamento' prima della tabella esercizi, la sezione 'Defaticamento' dopo. Entrambe come lista di punti testuali, visibili (non collassabili nella versione iniziale) e sempre riferite alla scheda attiva. La funzione renderGiornoCard() in workout.js deve essere estesa per includere il rendering di queste due sezioni, leggendo i dati da workoutData.riscaldamento e workoutData.defaticamento (stato globale della scheda attiva).",
+    "inputs": [
+      "workout_day_data"
+    ],
+    "outputs": [
+      "WarmupCooldownSection"
+    ],
+    "acceptance_criteria": [
+      "Prima dell'elenco esercizi è presente una sezione 'Riscaldamento' con i punti del riscaldamento",
+      "Dopo l'elenco esercizi è presente una sezione 'Defaticamento' con i relativi punti",
+      "Le sezioni sono visibili o collassabili ma accessibili senza navigare altrove",
+      "Il contenuto corrisponde ai dati del giorno selezionato"
+    ],
+    "notes": "ATTENZIONE DATI: nel workout.json attuale, 'riscaldamento' e 'defaticamento' sono array posizionati a livello radice della scheda (stesso livello di 'meta', 'settimane', 'mesociclo'), NON dentro il singolo giorno. Questo significa che le sezioni sono condivise per tutta la scheda (stesse istruzioni per tutti i giorni). Il developer deve leggere workoutData.riscaldamento e workoutData.defaticamento — accessibili tramite la variabile globale workoutData già presente in workout.js. Per il futuro: se i dati evolveranno con riscaldamento per-giorno, la funzione renderGiornoCard() riceverà i dati già correttamente passati. La scelta implementativa (sempre visibili vs collassabili) è lasciata al developer: la soluzione più semplice è mostrare sempre le sezioni; una versione con <details>/<summary> HTML è accettabile e non richiede JS aggiuntivo."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "Aggiungere la funzione renderWarmupCooldownSection(items, titolo) che genera l'HTML della sezione (lista puntata). Modificare renderGiornoCard() per inserire renderWarmupCooldownSection() prima della tabella esercizi (riscaldamento) e dopo (defaticamento), leggendo i dati da workoutData.riscaldamento e workoutData.defaticamento.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Aggiungere stili per .workout-warmup-section e .workout-cooldown-section: titolo sezione, lista puntata, colori differenziati (warm tone per riscaldamento, cool tone per defaticamento), spacing coerente con il resto della card.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/workout.json",
+        "motivo": "Verificare la struttura reale dei campi 'riscaldamento' e 'defaticamento': sono array di stringhe a livello radice della scheda (non dentro i singoli giorni). Campi: riscaldamento[] (array di string), defaticamento[] (array di string). Esempio campo: 'riscaldamento[0]' = '5 min cardio leggero (cyclette o camminata sul tapis roulant)'."
+      },
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "Capire dove inserire renderWarmupCooldownSection(): la funzione target è renderGiornoCard() (riga ~747). La variabile globale workoutData contiene la scheda attiva con .riscaldamento e .defaticamento. Verificare che renderGiornoCard() non riceva già questi dati come parametro (attualmente non li riceve)."
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Verificare classi CSS esistenti per non creare duplicati. Verificare le variabili CSS disponibili (--color-accent, --color-warning, ecc.) per scegliere i colori delle sezioni warmup/cooldown coerenti col tema."
+      },
+      {
+        "path": "docs/css/variables.css",
+        "motivo": "Recuperare i design token disponibili: palette colori, spacing, font-size, border-radius da usare nelle nuove classi CSS."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "Plain HTML/JS ES2022 — nessun bundler",
+      "grafici": null,
+      "dati": {
+        "formato": "JSON statici in docs/data/ — fetch() via percorso relativo",
+        "file_rilevante": "data/workout.json",
+        "struttura_rilevante": "Oggetto radice con campi: meta{}, mesociclo{}, riscaldamento[] (array stringhe), defaticamento[] (array stringhe), note_generali[], settimane[]. Le sezioni riscaldamento/defaticamento sono a livello radice della scheda, non dentro i singoli giorni."
+      }
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase (es. warmupItems, cooldownItems)",
+      "classi_css": "kebab-case con prefisso workout- (es. .workout-warmup-section, .workout-cooldown-section, .workout-warmup-section__title, .workout-warmup-section__list)",
+      "id_html": "kebab-case (non necessari nuovi id — il rendering è inline nel JS)",
+      "gestione_null_array": "Array assente o vuoto → non renderizzare la sezione (controllo: if (!items || items.length === 0) return '')",
+      "pattern_js": "Funzione renderWarmupCooldownSection(items, titolo) → restituisce stringa HTML. Chiamata da renderGiornoCard() via workoutData.riscaldamento e workoutData.defaticamento (variabile globale). NO inline style nell'HTML — solo classi CSS.",
+      "struttura_js": "1. Nuova funzione renderWarmupCooldownSection(items, titolo) PRIMA di renderGiornoCard(). 2. In renderGiornoCard() aggiungere chiamate prima e dopo tabellaHtml. 3. workoutData è la variabile globale già disponibile — nessun nuovo parametro richiesto a renderGiornoCard().",
+      "html_collassabile": "Opzione: usare <details>/<summary> HTML nativo per collassare la sezione senza JS aggiuntivo. Alternativa semplice: sezione sempre visibile. Entrambe accettabili."
+    },
+    "pagina": {
+      "nome": "Allenamento",
+      "file": "docs/workout.html",
+      "js": "docs/js/workout.js",
+      "css": "docs/css/workout.css",
+      "dati_json": ["data/workout.json"],
+      "chart_js": false
+    }
+  },
+  "criteri_accettazione": [
+    "Prima dell'elenco esercizi è presente una sezione 'Riscaldamento' con i punti del riscaldamento",
+    "Dopo l'elenco esercizi è presente una sezione 'Defaticamento' con i relativi punti",
+    "Le sezioni sono visibili o collassabili ma accessibili senza navigare altrove",
+    "Il contenuto corrisponde ai dati della scheda attiva selezionata",
+    "docs/js/workout.js contiene la funzione renderWarmupCooldownSection(items, titolo)",
+    "renderGiornoCard() chiama renderWarmupCooldownSection() con workoutData.riscaldamento prima della tabella esercizi",
+    "renderGiornoCard() chiama renderWarmupCooldownSection() con workoutData.defaticamento dopo la tabella esercizi",
+    "La funzione gestisce array assenti o vuoti senza eccezioni (ritorna stringa vuota)",
+    "docs/css/workout.css contiene le classi .workout-warmup-section e .workout-cooldown-section",
+    "Nessun inline style nell'HTML generato — solo classi CSS",
+    "Le sezioni non appaiono per il branch Test Day (renderTestDaySection() — comportamento da concordare, ma accettabile anche includerle)"
+  ],
+  "dipendenze": []
+}

@@ -48,7 +48,7 @@
 .diet-toggle-btn {
   flex: 0 0 auto;                     /* Non si comprime, non si espande */
   flex-shrink: 0;                     /* Esplicito per leggibilità */
-  min-width: 160px;                   /* Sufficiente per i nomi più lunghi (~21 char a 14px) */
+  min-width: 100px;                   /* Sufficiente per abbreviazioni brevi (~8 char a 14px) */
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -99,6 +99,42 @@
 .diet-day-toggle .diet-empty {
   padding: var(--space-4);
   text-align: left;
+}
+
+/* ── ESPORTA CSV ── */
+
+.diet-export-bar {
+  display: flex;
+  justify-content: flex-end;
+  margin-block: var(--space-4) var(--space-6);
+}
+
+.diet-export-btn {
+  padding: var(--space-3) var(--space-5);
+  border: 2px solid var(--color-accent);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--color-accent);
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  font-family: var(--font-base);
+  cursor: pointer;
+  transition: background-color var(--transition-fast),
+              color var(--transition-fast);
+}
+
+.diet-export-btn:hover {
+  background-color: var(--color-accent-dim);
+}
+
+.diet-export-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.diet-export-btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
 }
 
 /* ── MACROS SUMMARY ── */
@@ -280,6 +316,236 @@
   gap: var(--space-5);
 }
 
+/* ── SLOT CARD ── */
+
+.diet-slots-stack {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.diet-slot-card {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  box-shadow: var(--shadow-sm);
+}
+
+.diet-slot-card__header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
+  background-color: var(--color-bg-elevated);
+  border-bottom: 1px solid var(--color-border);
+  flex-wrap: wrap;
+}
+
+.diet-slot-card__label {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  margin: 0;
+  line-height: var(--line-height-tight);
+  flex: 1 1 auto;
+}
+
+.diet-slot-card__orario {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-accent);
+  background-color: var(--color-accent-dim);
+  border-radius: var(--radius-full);
+  padding: var(--space-1) var(--space-3);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.diet-slot-card__kcal {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.diet-slot-card__opzioni {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+/* ── NAVIGAZIONE OPZIONI SLOT ── */
+
+/**
+ * .diet-slot-nav       — container flex per i controlli di navigazione opzioni
+ * .diet-slot-nav__btn  — bottone prev/next (min 44×44px per touch WCAG)
+ * .diet-slot-nav__indicator — testo "1 / 2", font-size-sm, colore text-muted
+ */
+
+.diet-slot-nav {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+  background-color: var(--color-bg-secondary);
+}
+
+.diet-slot-nav__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  padding: var(--space-2) var(--space-3);
+  border: 2px solid var(--color-border);
+  border-radius: var(--radius-full);
+  background-color: var(--color-bg-elevated);
+  color: var(--color-text);
+  font-size: var(--font-size-lg);
+  font-family: var(--font-base);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+  cursor: pointer;
+  transition: background-color var(--transition-fast),
+              border-color var(--transition-fast),
+              color var(--transition-fast);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.diet-slot-nav__btn:hover:not(:disabled) {
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  background-color: var(--color-accent-dim);
+}
+
+.diet-slot-nav__btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.diet-slot-nav__btn:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.diet-slot-nav__indicator {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  min-width: 3rem;
+  text-align: center;
+  white-space: nowrap;
+  user-select: none;
+}
+
+/* theme-pro override navigazione slot */
+
+html.theme-pro .diet-slot-nav__btn:hover:not(:disabled) {
+  box-shadow: 0 0 0 2px var(--color-accent);
+}
+
+html.theme-pro .diet-slot-nav__indicator {
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+}
+
+/* ── NAVIGAZIONE OPZIONI SLOT — mobile 375px ── */
+/* Riduce il padding laterale del container e aumenta font-size
+   dell'indicatore per garantire leggibilità e area touch su 375px.
+   I bottoni mantengono min-width/min-height 44px — nessun override. */
+
+@media (max-width: 400px) {
+  .diet-slot-nav {
+    padding: var(--space-2) var(--space-3);
+    gap: var(--space-2);
+  }
+
+  .diet-slot-nav__btn {
+    padding: var(--space-2);
+    /* Mantiene esplicitamente min 44×44px — nessuna riduzione */
+    min-width: 44px;
+    min-height: 44px;
+    box-sizing: border-box;
+  }
+
+  .diet-slot-nav__indicator {
+    font-size: var(--font-size-base);  /* 16px invece di 14px — leggibilità WCAG AA */
+    min-width: 2.5rem;
+  }
+}
+
+/* ── OPZIONE CARD ── */
+
+.diet-opzione-card {
+  border-bottom: 1px solid var(--color-border);
+  padding: var(--space-4) var(--space-5) 0;
+}
+
+.diet-opzione-card:last-child {
+  border-bottom: none;
+}
+
+.diet-opzione-card__nome {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  margin: 0 0 var(--space-3) 0;
+  line-height: var(--line-height-tight);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  padding-left: var(--space-1);
+  border-left: 3px solid var(--color-border-light);
+}
+
+.diet-opzione-card__unavailable {
+  padding: var(--space-3) 0 var(--space-4);
+  text-align: left;
+}
+
+.diet-opzione-card__totale {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  padding: var(--space-3) var(--space-1) var(--space-4);
+  border-top: 1px solid var(--color-border);
+  margin-top: var(--space-1);
+}
+
+.diet-opzione-card__totale-item {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-muted);
+  white-space: nowrap;
+}
+
+.diet-opzione-card__totale-item--kcal {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+}
+
+.diet-opzione-card__totale-sep {
+  color: var(--color-text-faint);
+  font-size: var(--font-size-xs);
+}
+
+/* ── theme-pro overrides per slot/opzione card ── */
+
+html.theme-pro .diet-slot-card__label {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.01em;
+}
+
+html.theme-pro .diet-opzione-card__nome {
+  border-left-color: var(--color-accent);
+  color: var(--color-text);
+}
+
 /* ── MEAL CARD ── */
 
 .diet-meal-card {
@@ -412,6 +678,178 @@
   font-size: var(--font-size-sm);
 }
 
+/* ── PANNELLO CONFRONTO TOTALI VS TARGET ── */
+
+.diet-totals-panel {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: var(--space-5) var(--space-6);
+  margin-bottom: var(--space-8);
+  overflow: hidden;
+  /* scroll-margin-top: compensa l'header sticky in caso di futuro scroll-into-view
+     senza causare scroll automatico durante l'aggiornamento reattivo */
+  scroll-margin-top: 80px;
+}
+
+.diet-totals-panel__title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  margin: 0 0 var(--space-4) 0;
+  line-height: var(--line-height-tight);
+}
+
+/* Struttura tabella a 5 colonne (label + 4 macro) */
+.diet-totals-panel__table {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.diet-totals-panel__row {
+  display: grid;
+  grid-template-columns: minmax(90px, 1.5fr) repeat(4, 1fr);
+  align-items: center;
+  min-width: 280px;
+}
+
+/* Riga header colonne */
+.diet-totals-panel__row--header {
+  border-bottom: 2px solid var(--color-border);
+  padding-bottom: var(--space-2);
+  margin-bottom: var(--space-1);
+}
+
+/* Riga selezionati */
+.diet-totals-panel__row--selected {
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Riga target */
+.diet-totals-panel__row--target {
+  padding: var(--space-2) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* Riga delta */
+.diet-totals-panel__row--delta {
+  padding: var(--space-2) 0;
+}
+
+/* Cella label (prima colonna) */
+.diet-totals-panel__cell--label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding-right: var(--space-3);
+  white-space: nowrap;
+}
+
+/* Intestazione colonne macro */
+.diet-totals-panel__row--header .diet-totals-panel__cell--col {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Celle valori */
+.diet-totals-panel__cell--val {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text);
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Celle delta — base (neutral) */
+.diet-totals-panel__cell--delta {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-bold);
+  text-align: right;
+  white-space: nowrap;
+  border-radius: var(--radius-sm);
+  padding: var(--space-1) var(--space-2);
+}
+
+/* Delta neutro (|delta| <= 5) */
+.diet-totals-panel__cell--delta.diet-totals-panel__delta--neutral {
+  color: var(--color-text-muted);
+}
+
+/* Delta positivo (selezionato > target) */
+.diet-totals-panel__cell--delta.diet-totals-panel__delta--positive {
+  color: var(--color-success);
+  background-color: rgba(76, 175, 80, 0.08);
+}
+
+/* Delta negativo (selezionato < target) */
+.diet-totals-panel__cell--delta.diet-totals-panel__delta--negative {
+  color: var(--color-danger);
+  background-color: rgba(244, 67, 54, 0.08);
+}
+
+/* Evidenzia la riga selezionati */
+.diet-totals-panel__row--selected .diet-totals-panel__cell--val {
+  font-weight: var(--font-weight-bold);
+  color: var(--color-accent);
+}
+
+/* Evidenzia la riga target */
+.diet-totals-panel__row--target .diet-totals-panel__cell--val {
+  color: var(--color-text-muted);
+}
+
+/* Responsive — mobile stretto: testo più piccolo */
+@media (max-width: 400px) {
+  .diet-totals-panel {
+    padding: var(--space-4) var(--space-4);
+  }
+
+  .diet-totals-panel__cell--val,
+  .diet-totals-panel__cell--delta {
+    font-size: var(--font-size-xs);
+  }
+
+  .diet-totals-panel__cell--label {
+    font-size: var(--font-size-xs);
+    letter-spacing: 0.02em;
+  }
+
+  .diet-totals-panel__row {
+    grid-template-columns: minmax(72px, 1.2fr) repeat(4, 1fr);
+  }
+}
+
+/* theme-pro override pannello totali */
+html.theme-pro .diet-totals-panel {
+  border-top: 3px solid var(--color-accent);
+}
+
+html.theme-pro .diet-totals-panel__title {
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.01em;
+}
+
+html.theme-pro .diet-totals-panel__cell--delta.diet-totals-panel__delta--positive {
+  background-color: rgba(63, 185, 80, 0.12);
+}
+
+html.theme-pro .diet-totals-panel__cell--delta.diet-totals-panel__delta--negative {
+  background-color: rgba(248, 81, 73, 0.12);
+}
+
 /* ── SEZIONE INTEGRATORI ── */
 
 .diet-supplements {
@@ -509,6 +947,100 @@
   line-height: var(--line-height-normal);
   border-top: 1px solid var(--color-border);
   padding-top: var(--space-3);
+}
+
+/* ── STRATEGIA NUTRIZIONALE (pannello collassabile) ── */
+
+.diet-strategy-note {
+  margin-bottom: var(--space-10);
+}
+
+.diet-strategy-note__details {
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-top: 3px solid var(--color-accent);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.diet-strategy-note__toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-6);
+  cursor: pointer;
+  list-style: none;             /* Rimuove il triangolo nativo in Firefox */
+  user-select: none;
+  background-color: var(--color-bg-elevated);
+  transition: background-color var(--transition-fast);
+}
+
+/* Rimuove il triangolo nativo in Chrome/Safari/Edge */
+.diet-strategy-note__toggle::-webkit-details-marker {
+  display: none;
+}
+
+.diet-strategy-note__toggle:hover {
+  background-color: var(--color-bg-secondary);
+}
+
+.diet-strategy-note__toggle:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: -2px;
+}
+
+.diet-strategy-note__toggle-label {
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-accent);
+  line-height: var(--line-height-tight);
+  flex: 1 1 auto;
+}
+
+.diet-strategy-note__toggle-icon {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+  transition: transform var(--transition-fast);
+  display: inline-block;
+}
+
+/* Ruota l'icona chevron quando il pannello è aperto */
+.diet-strategy-note__details[open] .diet-strategy-note__toggle-icon {
+  transform: rotate(90deg);
+}
+
+.diet-strategy-note__body {
+  padding: var(--space-5) var(--space-6) var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  border-top: 1px solid var(--color-border);
+}
+
+.diet-strategy-note__paragraph {
+  font-size: var(--font-size-sm);
+  color: var(--color-text);
+  line-height: var(--line-height-normal);
+  margin: 0;
+}
+
+/* Etichette in maiuscolo (es. FASE MANTENIMENTO) in evidenza */
+.diet-strategy-note__paragraph:first-child {
+  font-weight: var(--font-weight-medium);
+}
+
+/* ── theme-pro override strategia nutrizionale ── */
+
+html.theme-pro .diet-strategy-note__toggle-label {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  letter-spacing: -0.01em;
+}
+
+html.theme-pro .diet-strategy-note__paragraph {
+  font-size: var(--font-size-base);
 }
 
 /* ============================================================

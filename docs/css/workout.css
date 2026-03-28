@@ -3,6 +3,21 @@
    Daniele Fitness | Mobile-first, WCAG AA, prefisso workout-*
    ============================================================ */
 
+/* ── BANNER AUTO-SELEZIONE FUORI PERIODO ── */
+
+.workout-autoselect-info[hidden] {
+  display: none;
+}
+
+.workout-autoselect-info {
+  background-color: var(--color-accent-dim);
+  border-left: 3px solid var(--color-accent);
+  color: var(--color-text-muted);
+  padding: var(--space-2) var(--space-5);
+  font-size: 0.875rem;
+  box-sizing: border-box;
+}
+
 /* ── BANNER AVVISO INFORTUNIO TOS ── */
 
 /* Nasconde il banner quando il JS non ha ancora rilevato un infortunio,
@@ -286,8 +301,8 @@
 }
 
 .week-btn {
-  flex: 0 0 auto;              /* Non si comprime, non si espande */
-  min-width: 64px;             /* Touch target minimo 44px garantito con padding */
+  flex: 1 1 auto;              /* Si espande equamente per riempire la riga; min-width attiva lo scroll quando i bottoni sono troppi */
+  min-width: 64px;             /* Touch target minimo 44px garantito con padding; soglia sotto cui scatta lo scroll orizzontale */
   padding-block: var(--space-3);
   padding-inline: var(--space-2);
   font-family: var(--font-base);
@@ -300,7 +315,6 @@
   cursor: pointer;
   text-align: center;
   scroll-snap-align: start;    /* Aggancia il bottone allo snap point */
-  flex-shrink: 0;              /* Ridondante con flex: 0 0 auto — esplicito per leggibilità */
   transition:
     color var(--transition-fast),
     border-color var(--transition-fast),
@@ -346,9 +360,8 @@
 }
 
 .day-btn {
-  flex: 0 0 auto;              /* Non si comprime, non si espande */
-  flex-shrink: 0;              /* Ridondante con flex: 0 0 auto — esplicito per leggibilità */
-  min-width: 80px;             /* Touch target minimo 44px garantito con padding */
+  flex: 1 1 auto;              /* Si espande equamente per riempire la riga; se la somma dei min-width supera il container scatta lo scroll */
+  min-width: 80px;             /* Touch target minimo 44px garantito con padding; soglia per attivare scroll orizzontale */
   padding-block: var(--space-3);
   padding-inline: var(--space-3);
   font-family: var(--font-base);
@@ -361,9 +374,7 @@
   cursor: pointer;
   text-align: center;
   scroll-snap-align: start;    /* Aggancia il bottone allo snap point */
-  white-space: nowrap;         /* Impedisce il testo del giorno di andare su più righe */
-  overflow: hidden;            /* Tronca il testo se supera min-width */
-  text-overflow: ellipsis;     /* Mostra ... se il nome giorno è troppo lungo */
+  white-space: nowrap;         /* Impedisce il testo del giorno di andare su più righe e preserva lo scroll orizzontale */
   transition:
     color var(--transition-fast),
     border-color var(--transition-fast),
@@ -598,6 +609,16 @@
   margin-top: var(--space-1);
   font-size: var(--font-size-xs);
   color: var(--color-text-faint);
+  font-style: italic;
+}
+
+/* Nota tecnica di esecuzione sotto il nome esercizio */
+.workout-esercizio-row__note {
+  display: block;
+  margin-top: var(--space-1);
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-normal);
   font-style: italic;
 }
 
@@ -1110,6 +1131,163 @@ html.theme-pro .day-btn[aria-pressed="true"] {
     display: flex;
     flex-direction: column;
     gap: var(--space-5);
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RISCALDAMENTO & DEFATICAMENTO
+   Sezioni collassabili (<details>/<summary>) prima e dopo la tabella esercizi.
+   Riscaldamento: tono caldo (warning/amber) — Defaticamento: tono fresco (accent/blue).
+   ══════════════════════════════════════════════════════════════ */
+
+/* Base condivisa per entrambe le sezioni */
+.workout-warmup-section,
+.workout-cooldown-section {
+  margin-block: var(--space-4);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+/* ── Summary (header collassabile) ── */
+.workout-warmup-section__summary,
+.workout-cooldown-section__summary {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+  list-style: none;                /* Rimuove il triangolo nativo in Firefox */
+  user-select: none;
+  transition: background-color var(--transition-fast);
+}
+
+/* Rimuove il triangolo nativo in WebKit/Blink */
+.workout-warmup-section__summary::-webkit-details-marker,
+.workout-cooldown-section__summary::-webkit-details-marker {
+  display: none;
+}
+
+/* Indicatore ▶/▼ custom tramite pseudo-elemento */
+.workout-warmup-section__summary::before,
+.workout-cooldown-section__summary::before {
+  content: '▶';
+  font-size: var(--font-size-xs);
+  flex-shrink: 0;
+  transition: transform var(--transition-fast);
+  line-height: 1;
+}
+
+.workout-warmup-section[open] .workout-warmup-section__summary::before,
+.workout-cooldown-section[open] .workout-cooldown-section__summary::before {
+  transform: rotate(90deg);
+}
+
+/* ── Titolo dentro il summary ── */
+.workout-warmup-section__title,
+.workout-cooldown-section__title {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  line-height: var(--line-height-tight);
+}
+
+/* ── Lista punti ── */
+.workout-warmup-section__list,
+.workout-cooldown-section__list {
+  margin: 0;
+  padding: var(--space-3) var(--space-4) var(--space-4) var(--space-8);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.workout-warmup-section__item,
+.workout-cooldown-section__item {
+  font-size: var(--font-size-base);      /* >= 1rem — leggibile in palestra ✓ */
+  color: var(--color-text-muted);
+  line-height: var(--line-height-normal);
+}
+
+/* ── RISCALDAMENTO — tono caldo (warning/amber) ── */
+.workout-warmup-section {
+  border-left: 3px solid var(--color-warning);
+  background-color: rgba(255, 193, 7, 0.04);
+}
+
+.workout-warmup-section__summary {
+  background-color: rgba(255, 193, 7, 0.08);
+}
+
+.workout-warmup-section__summary:hover {
+  background-color: rgba(255, 193, 7, 0.14);
+}
+
+.workout-warmup-section__summary::before {
+  color: var(--color-warning);
+}
+
+.workout-warmup-section__title {
+  color: var(--color-warning);
+}
+
+/* ── DEFATICAMENTO — tono fresco (accent/blue) ── */
+.workout-cooldown-section {
+  border-left: 3px solid var(--color-accent);
+  background-color: var(--color-accent-dim);
+}
+
+.workout-cooldown-section__summary {
+  background-color: rgba(255, 107, 53, 0.08);
+}
+
+.workout-cooldown-section__summary:hover {
+  background-color: rgba(255, 107, 53, 0.14);
+}
+
+.workout-cooldown-section__summary::before {
+  color: var(--color-accent);
+}
+
+.workout-cooldown-section__title {
+  color: var(--color-accent);
+}
+
+/* ── Override tema-pro: usa i colori del tema blu acciaio ── */
+html.theme-pro .workout-cooldown-section {
+  background-color: var(--color-accent-dim);
+  border-left-color: var(--color-accent);
+}
+
+html.theme-pro .workout-cooldown-section__summary {
+  background-color: rgba(88, 166, 255, 0.08);
+}
+
+html.theme-pro .workout-cooldown-section__summary:hover {
+  background-color: rgba(88, 166, 255, 0.14);
+}
+
+html.theme-pro .workout-cooldown-section__summary::before,
+html.theme-pro .workout-cooldown-section__title {
+  color: var(--color-accent);
+}
+
+/* ── Responsive Mobile (<= 767px) ── */
+@media (max-width: 767px) {
+  .workout-warmup-section__summary,
+  .workout-cooldown-section__summary {
+    padding: var(--space-3);
+  }
+
+  .workout-warmup-section__list,
+  .workout-cooldown-section__list {
+    padding: var(--space-3) var(--space-3) var(--space-4) var(--space-6);
+  }
+
+  .workout-warmup-section__item,
+  .workout-cooldown-section__item {
+    font-size: var(--font-size-base);    /* Mantiene >= 1rem su mobile ✓ */
   }
 }
 

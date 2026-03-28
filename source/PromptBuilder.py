@@ -70,6 +70,15 @@ class PromptBuilder:
             return ""
         return files[0].read_text(encoding="utf-8") if files[0].exists() else ""
 
+    def _latest_file_exclude(self, pattern: str, exclude_suffix: str) -> str:
+        files = sorted(
+            (f for f in self._config.OUTPUT_DIR.glob(pattern) if not f.name.endswith(exclude_suffix)),
+            reverse=True,
+        )
+        if not files:
+            return ""
+        return files[0].read_text(encoding="utf-8") if files[0].exists() else ""
+
     def _schema_pt(self) -> str:
         """Ritorna lo schema JSON del review PT da includere nei prompt."""
         schema_path = self._config.PROJECT_ROOT / "source" / "schemas" / "review_pt.schema.json"
@@ -253,7 +262,7 @@ class PromptBuilder:
 
     def run_kcal_adjust(self, ctx: dict) -> str:
         """
-        Esegue scripts/kcal_adjust.py e ritorna l'output testuale.
+        Esegue source/scripts/kcal_adjust.py e ritorna l'output testuale.
         Ricava fase e kcal_attuali dal piano e dal contesto.
         In caso di errore ritorna una stringa vuota.
         """
@@ -526,7 +535,7 @@ Formato Markdown, tono professionale ma diretto."""
 
     def build_diet(self, ctx: dict) -> str:
         cfg              = self._config
-        last_diet        = self._latest_file("diet_*.yaml")
+        last_diet        = self._latest_file_exclude("diet_*.yaml", exclude_suffix="_raw.yaml")
         kcal_adjust_out  = self.run_kcal_adjust(ctx)
         plan_path        = cfg.OUTPUT_DIR / "plan.yaml"
         plan_text        = plan_path.read_text(encoding="utf-8") if plan_path.exists() else ""
@@ -545,7 +554,10 @@ ma devi **spiegare esplicitamente** nel campo `note_strategia` perche' ti discos
             kcal_adjust_section = "## Analisi adattamento calorico\n(non disponibile — calcola autonomamente dal TDEE)\n"
 
         return f"""Sei il dietologo del progetto fitness.
-Genera la dieta settimanale `data/output/diet_{cfg.iteration_id}.yaml`.
+Genera la dieta settimanale `data/output/diet_{cfg.iteration_id}_raw.yaml`.
+I grammi che scrivi sono indicativi: un postprocessing Python ricalcolera' automaticamente
+grammi e macro per centrare le kcal sul target e garantire l'intercambiabilita'.
+Concentrati sulla scelta degli alimenti e sulla coerenza con le preferenze dell'atleta.
 
 ## Profilo atleta
 {ctx['athlete_text']}
@@ -568,7 +580,7 @@ TDEE ultima misurazione: {ctx['measurements'][-1].get('tdee_kcal', 'N/D')} kcal/
 ```
 
 {kcal_adjust_section}
-## Dieta precedente (riferimento)
+## Dieta precedente (riferimento per scelta alimenti e struttura slot)
 {last_diet if last_diet else '(nessuna dieta precedente)'}
 
 ## Istruzioni
@@ -577,8 +589,8 @@ TDEE ultima misurazione: {ctx['measurements'][-1].get('tdee_kcal', 'N/D')} kcal/
 - Differenzia le kcal per tipologia di giorno: allenamento pesi, corsa/cardio, riposo (e altri se presenti nel piano)
 - Per ogni tipologia di giorno spiega in `note_strategia` perche' hai scelto quel fabbisogno calorico
 - Rispetta preferenze e difficolta' riportate nel feedback
-- Struttura: meta, giorni, integratori
-- **Usa il tool Write per salvare il file** `data/output/diet_{cfg.iteration_id}.yaml` sul disco. Non stampare il contenuto su stdout."""
+- Struttura: meta, slot_pasto, integratori
+- **Usa il tool Write per salvare il file** `data/output/diet_{cfg.iteration_id}_raw.yaml` sul disco. Non stampare il contenuto su stdout."""
 
     def build_workout(self, ctx: dict) -> str:
         cfg           = self._config
@@ -625,7 +637,7 @@ TDEE ultima misurazione: {ctx['measurements'][-1].get('tdee_kcal', 'N/D')} kcal/
 ## Istruzioni
 - RISPETTA il mesociclo attivo indicato sopra: tipo, metodologia, durata e obiettivo sono vincolanti
 - Infortuni -> escludi TUTTI gli esercizi che coinvolgono le aree interessate
-- Aggiorna EXERCISE_MUSCLES in scripts/volume_calc.py per ogni nuovo esercizio
+- Aggiorna EXERCISE_MUSCLES in source/scripts/volume_calc.py per ogni nuovo esercizio
 - Carichi basati sui massimali reali in measurements.json
 - Privilegia le metodologie empiricamente efficaci dal report performance (se disponibile)
 - ITERATION_ID per il nome del file: {cfg.iteration_id}"""

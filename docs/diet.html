@@ -76,6 +76,11 @@
       <!-- ── SELETTORE GIORNO ── generato dinamicamente da diet.js -->
       <section class="diet-day-toggle" id="day-toggle" aria-label="Seleziona giorno"></section>
 
+      <!-- ── ESPORTA CSV ── -->
+      <div class="diet-export-bar">
+        <button type="button" id="export-csv-btn" class="diet-export-btn" aria-label="Esporta la dieta completa in formato CSV" disabled>Esporta CSV</button>
+      </div>
+
       <!-- ── RIEPILOGO MACROS ── -->
       <section id="macros-summary" class="diet-macros-summary" aria-label="Riepilogo macros giornalieri" aria-live="polite">
         <p class="diet-loading-placeholder">Caricamento macros…</p>
@@ -84,6 +89,11 @@
       <!-- ── LISTA PASTI ── -->
       <section id="meals-list" class="diet-meals-list" aria-label="Lista pasti del giorno" aria-live="polite">
         <p class="diet-loading-placeholder">Caricamento pasti…</p>
+      </section>
+
+      <!-- ── PANNELLO CONFRONTO TOTALI VS TARGET ── -->
+      <section id="diet-totals-panel" class="diet-totals-panel" aria-label="Confronto totali selezionati vs target" aria-live="polite">
+        <p class="diet-loading-placeholder">Caricamento totali…</p>
       </section>
 
       <!-- ── INTEGRATORI ── -->
@@ -96,6 +106,9 @@
           <p class="diet-loading-placeholder">Caricamento integratori…</p>
         </div>
       </section>
+
+      <!-- ── STRATEGIA NUTRIZIONALE ── -->
+      <section id="strategy-note" class="diet-strategy-note" aria-label="Strategia nutrizionale" hidden></section>
 
     </div>
   </main>

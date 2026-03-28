@@ -1,0 +1,66 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "project": "Daniele Fitness Dashboard",
+    "goal": "Miglioramento della pagina Dieta: aggiunta del pannello riepilogo totali pasti selezionati con confronto vs target giornaliero",
+    "sommario": "Il sito è già completo con 6 pagine (Dashboard, Progressi, Allenamento, Dieta, Piano, Volume). La pagina Dieta mostra correttamente i target giornalieri di kcal e macros per tipo di giorno (Riposo / Palestra / Beach Volley), e lista i pasti per slot con navigazione tra opzioni alternative. Manca tuttavia il confronto dinamico: quando l'utente naviga tra le opzioni di ogni slot, non c'è nessun pannello che somma le kcal e i macros delle opzioni correntemente visualizzate e li affianca ai target. Il singolo task richiesto è la creazione di questo pannello di confronto, che deve aggiornarsi in tempo reale ad ogni cambio di opzione o cambio di tipo giorno.",
+    "features_totali": 1,
+    "tasks_totali": 3
+  },
+  "features": [
+    {
+      "name": "Riepilogo Totali Pasti Selezionati",
+      "priority": 1,
+      "description": "Nella pagina Dieta, mostrare in modo prominente la somma di kcal, proteine, carboidrati e grassi delle opzioni correntemente visibili in ogni slot, e confrontarle con i valori target del tipo di giorno attivo. Il pannello deve aggiornarsi ogni volta che l'utente cambia opzione in uno slot o cambia tipo di giorno.",
+      "tasks": [
+        {
+          "id": "diet-totals-logic",
+          "type": "data",
+          "title": "Calcolo dinamico dei totali dei pasti selezionati",
+          "description": "Logica che, dato il tipo-giorno attivo (riposo / palestra / beach_volley) e gli indici di opzione correntemente selezionati per ogni slot, somma kcal, proteine, carboidrati e grassi di tutte le opzioni visibili. Il risultato è un oggetto con i totali calcolati (kcal, proteine_g, carbo_g, grassi_g). Deve essere ricalcolato ogni volta che: (1) l'utente cambia il tipo di giorno, (2) l'utente cambia l'opzione attiva in uno slot qualsiasi. Il calcolo deve basarsi sui valori numerici presenti nel campo 'totale' di ogni variante (già presenti in diet.json), non ricalcolare dai singoli alimenti.",
+          "inputs": ["diet_data", "current_day_type_id", "slot_option_indices"],
+          "outputs": ["selected_meals_totals"],
+          "acceptance_criteria": [
+            "I totali cambiano immediatamente quando l'utente preme i tasti freccia di navigazione opzione in uno slot",
+            "I totali cambiano immediatamente quando l'utente cambia tipo di giorno (Riposo / Palestra / Beach Volley)",
+            "Se una variante di uno slot non è disponibile per il tipo di giorno, il suo contributo viene escluso dal totale",
+            "I valori calcolati corrispondono alla somma manuale dei totali delle opzioni visibili"
+          ],
+          "dependencies": []
+        },
+        {
+          "id": "diet-totals-panel",
+          "type": "component",
+          "title": "Pannello confronto totali selezionati vs target",
+          "description": "Sezione visibile nella pagina Dieta che mostra su due righe affiancate: (1) i totali sommati delle opzioni correntemente selezionate (kcal, proteine, carboidrati, grassi), (2) i target giornalieri del tipo-giorno attivo (già presenti nel blocco macros-summary). Per ogni macronutriente e per le kcal totali, mostra il delta (differenza tra selezionato e target), con segnalazione visiva positiva/negativa/neutrale. Esempio di layout: una riga 'Selezionati: 2720 kcal | 178g P | 310g C | 74g G', una riga 'Target: 2850 kcal | 185g P | 330g C | 78g G', una riga delta '−130 kcal | −7g P | −20g C | −4g G'. Il pannello non sostituisce il blocco macros-summary esistente (che rimane immutato), ma si posiziona come sezione aggiuntiva tra la lista pasti e gli integratori, oppure subito sotto la sezione macros-summary.",
+          "inputs": ["selected_meals_totals", "diet_day_type_targets"],
+          "outputs": ["DietTotalsPanel"],
+          "acceptance_criteria": [
+            "Il pannello mostra kcal, proteine, carboidrati e grassi sia per i pasti selezionati che per il target",
+            "Il delta tra selezionato e target è visibile per ogni voce",
+            "Il delta negativo (selezionato < target) è distinguibile visivamente da delta positivo e da delta zero/neutro",
+            "Il pannello si aggiorna senza ricaricare la pagina quando cambia la selezione",
+            "Il pannello è leggibile su mobile (non tronca valori)",
+            "I valori numerici sono arrotondati all'intero (nessun decimale visibile all'utente)"
+          ],
+          "dependencies": ["diet-totals-logic"]
+        },
+        {
+          "id": "diet-totals-panel-integration",
+          "type": "ux",
+          "title": "Integrazione del pannello nella pagina e aggiornamento reattivo",
+          "description": "Il pannello DietTotalsPanel deve essere integrato nel flusso della pagina Dieta in modo che si aggiorni automaticamente ad ogni interazione utente. In particolare: (1) quando l'utente preme i bottoni di navigazione opzione (frecce ‹ ›) in uno slot, il pannello ricalcola e si ri-renderizza; (2) quando l'utente seleziona un tipo di giorno diverso, il pannello ricalcola usando i nuovi target e le nuove varianti. L'aggiornamento non deve causare scroll o perdita di focus sul bottone appena premuto.",
+          "inputs": ["DietTotalsPanel", "diet_day_toggle_events", "diet_slot_nav_events"],
+          "outputs": ["DietTotalsPanel aggiornato in tempo reale"],
+          "acceptance_criteria": [
+            "Dopo aver cambiato opzione in uno slot, i valori nel pannello sono aggiornati entro 100ms senza ricaricare la pagina",
+            "Dopo aver cambiato tipo di giorno, sia i target che i totali selezionati si aggiornano nel pannello",
+            "Il cambio di opzione in uno slot non causa scroll indesiderato della pagina",
+            "Il pannello non mostra valori obsoleti (es. del tipo-giorno precedente) nemmeno per un istante visibile"
+          ],
+          "dependencies": ["diet-totals-panel"]
+        }
+      ]
+    }
+  ]
+}

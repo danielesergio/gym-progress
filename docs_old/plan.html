@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Piano — GYM</title>
+<style>
+:root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #232734;
+    --border: #2d3142;
+    --text: #e4e6ed;
+    --text-muted: #8b8fa3;
+    --accent: #6c8cff;
+    --accent2: #4ecdc4;
+    --green: #4ecdc4;
+    --yellow: #ffd93d;
+    --red: #ff6b6b;
+    --orange: #ffa94d;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+nav .logo {
+    font-weight: 700; font-size: 1.25rem; color: var(--accent);
+    padding: 1rem 0; white-space: nowrap; text-decoration: none;
+}
+nav .nav-links { display: flex; gap: 0; overflow-x: auto; }
+nav a.nav-item {
+    color: var(--text-muted); text-decoration: none;
+    padding: 1rem 1.25rem; font-size: 0.9rem; font-weight: 500;
+    border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap;
+}
+nav a.nav-item:hover { color: var(--text); }
+nav a.nav-item.active { color: var(--accent); border-bottom-color: var(--accent); }
+.content { padding: 2rem; max-width: 1400px; margin: 0 auto; width: 100%; }
+.cards {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem; margin-bottom: 2rem;
+}
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+.card .label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
+.card .value { font-size: 2rem; font-weight: 700; color: var(--text); }
+.card .value .unit { font-size: 0.9rem; color: var(--text-muted); font-weight: 400; }
+.card .sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+.card.accent { border-color: var(--accent); }
+.card.green { border-color: var(--green); }
+.table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; min-width: 480px; }
+th { background: var(--surface2); color: var(--text-muted); text-align: left; padding: 0.75rem 1rem; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1px solid var(--border); }
+td { padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); }
+tr:hover { background: var(--surface); }
+tr.total-row { font-weight: 700; background: var(--surface2); }
+.sub-nav { display: flex; gap: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin-bottom: 1.5rem; }
+.sub-nav-item { color: var(--text-muted); text-decoration: none; padding: 0.75rem 1.25rem; font-size: 0.85rem; font-weight: 500; white-space: nowrap; border-bottom: 2px solid transparent; transition: all 0.2s; cursor: pointer; }
+.sub-nav-item:hover { color: var(--text); background: var(--surface2); }
+.sub-nav-item.active { color: var(--accent); background: var(--surface2); border-bottom-color: var(--accent); }
+.panel { display: none; }
+.panel.active { display: block; }
+.sub-nav-days { margin-top: -0.5rem; margin-bottom: 1.5rem; background: var(--surface2); border-color: var(--border); }
+.sub-nav-days .sub-nav-item.active { background: var(--surface); }
+.warmup-cooldown { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; margin: 1rem 0; }
+.warmup-cooldown h4 { font-size: 0.85rem; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 0.5rem; }
+.warmup-cooldown ol { margin: 0 0 0 1.25rem; color: var(--text-muted); font-size: 0.9rem; }
+.warmup-cooldown li { margin: 0.2rem 0; }
+.day-nav { display: flex; justify-content: space-between; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+.day-nav a { color: var(--accent); text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 0.5rem 1rem; border-radius: 6px; transition: background 0.2s; cursor: pointer; }
+.day-nav a:hover { background: var(--surface2); }
+.bar-chart { margin: 1.5rem 0; }
+.bar-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+.bar-label { width: 160px; font-size: 0.85rem; text-align: right; color: var(--text-muted); flex-shrink: 0; }
+.bar-track { flex: 1; height: 24px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 4px; transition: width 0.5s ease; }
+.bar-value { width: 45px; font-size: 0.85rem; font-weight: 600; color: var(--text); }
+.tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+.tag-primary { background: rgba(108,140,255,0.2); color: var(--accent); }
+.tag-secondary { background: rgba(78,205,196,0.2); color: var(--green); }
+.tag-tertiary { background: rgba(255,217,61,0.15); color: var(--yellow); }
+.tag-danger { background: rgba(255,107,107,0.2); color: var(--red); }
+details.muscle-detail { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0.5rem; }
+details.muscle-detail summary { padding: 0.75rem 1rem; cursor: pointer; font-weight: 600; font-size: 0.95rem; }
+details.muscle-detail summary:hover { color: var(--accent); }
+details.muscle-detail .detail-table { margin: 0; }
+details.muscle-detail .detail-table td, details.muscle-detail .detail-table th { padding: 0.5rem 0.75rem; font-size: 0.85rem; }
+.md-content h1 { font-size: 1.6rem; margin: 1.5rem 0 0.75rem; color: var(--accent); }
+.md-content h2 { font-size: 1.3rem; margin: 1.5rem 0 0.75rem; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+.md-content h3 { font-size: 1.1rem; margin: 1.25rem 0 0.5rem; color: var(--text); }
+.md-content h4 { font-size: 1rem; margin: 1rem 0 0.5rem; color: var(--accent2); }
+.md-content p { margin: 0.5rem 0; color: var(--text-muted); }
+.md-content ul { margin: 0.5rem 0 0.5rem 1.5rem; }
+.md-content li { margin: 0.25rem 0; color: var(--text-muted); }
+.md-content strong { color: var(--text); }
+.md-content code { background: var(--surface2); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.85em; color: var(--accent2); }
+.md-content hr { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+.md-content .table-wrap { margin: 1rem 0; }
+.md-content table { background: var(--surface); border-radius: 8px; overflow: hidden; }
+.subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+h2.page-title { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text); }
+.loading { color: var(--text-muted); padding: 2rem 0; }
+@media (min-width: 1400px) { .content { max-width: 1600px; } .cards { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 768px) {
+    nav { padding: 0 1rem; flex-direction: column; gap: 0; }
+    nav .logo { padding: 0.75rem 0 0; }
+    nav .nav-links { width: 100%; }
+    nav a.nav-item { padding: 0.75rem 0.75rem; font-size: 0.8rem; }
+    .content { padding: 1rem; }
+    .cards { grid-template-columns: repeat(2, 1fr); }
+    .card .value { font-size: 1.5rem; }
+    .bar-label { width: 110px; font-size: 0.78rem; }
+    table { font-size: 0.8rem; }
+    td, th { padding: 0.4rem 0.5rem; }
+}
+@media (max-width: 480px) {
+    nav { padding: 0 0.5rem; }
+    nav a.nav-item { padding: 0.6rem 0.5rem; font-size: 0.75rem; }
+    .content { padding: 0.75rem; }
+    .cards { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .card { padding: 1rem; }
+    .card .value { font-size: 1.25rem; }
+    h2.page-title { font-size: 1.2rem; margin-bottom: 1rem; }
+    .bar-label { width: 80px; font-size: 0.7rem; }
+    .sub-nav-item { padding: 0.6rem 0.75rem; font-size: 0.78rem; }
+}
+</style>
+</head>
+<body>
+<nav>
+    <a href="dashboard.html" class="logo">GYM</a>
+    <div class="nav-links">
+        <a href="dashboard.html" class="nav-item">Dashboard</a>
+        <a href="workout.html" class="nav-item">Scheda</a>
+        <a href="volume.html" class="nav-item">Volume</a>
+        <a href="diet.html" class="nav-item">Dieta</a>
+        <a href="plan.html" class="nav-item active">Piano</a>
+        <a href="feedback.html" class="nav-item">Feedback</a>
+    </div>
+</nav>
+<div class="content" id="main-content">
+    <p class="loading">Caricamento...</p>
+</div>
+
+<script>
+function esc(s) {
+    if (s == null) return '&mdash;';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function card(label, value, unit, sub, extraCls) {
+    var cls = 'card' + (extraCls ? ' ' + extraCls : '');
+    var unitHtml = unit ? ' <span class="unit">' + esc(unit) + '</span>' : '';
+    return '<div class="' + cls + '">'
+        + '<div class="label">' + esc(label) + '</div>'
+        + '<div class="value">' + esc(value) + unitHtml + '</div>'
+        + '<div class="sub">' + sub + '</div>'
+        + '</div>';
+}
+function showTab(navId, panelClass, tabId) {
+    document.querySelectorAll('.' + panelClass).forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('#' + navId + ' .sub-nav-item').forEach(function(a) { a.classList.remove('active'); });
+    var el = document.getElementById(tabId);
+    if (el) el.classList.add('active');
+}
+function activateNavItem(navId, idx) {
+    var items = document.querySelectorAll('#' + navId + ' .sub-nav-item');
+    if (items[idx]) items[idx].classList.add('active');
+}
+</script>
+
+<script>
+fetch('data/plan.json').then(function(r){ return r.json(); }).then(renderPlan)
+    .catch(function(){ document.getElementById('main-content').innerHTML = '<p>Dati non disponibili.</p>'; });
+
+function renderPlan(data) {
+    var root = document.getElementById('main-content');
+    if (data.html) {
+        root.innerHTML = '<div class="md-content">' + data.html + '</div>';
+        return;
+    }
+    var meta = data.meta || {};
+    var situazione = data.situazione || {};
+    var massimali = data.massimali_attuali || {};
+    var targets = data.target || [];
+    var fasi = data.fasi || [];
+    var strategia = data.strategia_nutrizionale || {};
+    var rischi = data.rischi || [];
+
+    var tabs = [
+        { id: 'panoramica', label: 'Panoramica' },
+        { id: 'target', label: 'Target Massimali' },
+        { id: 'fasi', label: 'Fasi' },
+        { id: 'strategia', label: 'Strategia' },
+        { id: 'rischi', label: 'Rischi' }
+    ];
+
+    var html = '<h2 class="page-title">Piano a Lungo Termine</h2>';
+    html += '<div class="sub-nav" id="plan-nav">';
+    tabs.forEach(function(t, i) {
+        html += '<a class="sub-nav-item' + (i===0?' active':'') + '" onclick="planTab(\'' + t.id + '\', this)">' + t.label + '</a>';
+    });
+    html += '</div>';
+
+    // Panoramica
+    html += '<div id="plan-panoramica" class="panel active">';
+    if (meta.atleta) html += '<p><strong>Atleta</strong>: ' + esc(meta.atleta) + ' &mdash; <strong>Aggiornato</strong>: ' + esc(meta.data_aggiornamento) + '</p>';
+    if (situazione.infortunio) html += '<p><strong>Infortunio</strong>: ' + esc(situazione.infortunio) + '</p>';
+    if (situazione.note) html += '<p>' + esc(situazione.note) + '</p>';
+    if (massimali.squat || massimali.panca || massimali.stacco) {
+        html += '<div class="cards">';
+        html += card('Squat', massimali.squat || '-', 'kg', 'Massimale attuale');
+        html += card('Panca', massimali.panca || '-', 'kg', 'Massimale attuale');
+        html += card('Stacco', massimali.stacco || '-', 'kg', 'Massimale attuale');
+        html += '</div>';
+    }
+    html += '</div>';
+
+    // Target
+    html += '<div id="plan-target" class="panel">';
+    if (targets.length) {
+        html += '<div class="table-wrap"><table><thead><tr><th>Orizzonte</th><th>Data</th><th>Squat</th><th>Panca</th><th>Stacco</th><th>Note</th></tr></thead><tbody>';
+        targets.forEach(function(t) {
+            html += '<tr><td>' + esc(t.orizzonte) + '</td><td>' + esc(t.data) + '</td><td>' + esc(t.squat) + '</td><td>' + esc(t.panca) + '</td><td>' + esc(t.stacco) + '</td><td>' + esc(t.note) + '</td></tr>';
+        });
+        html += '</tbody></table></div>';
+    } else { html += '<p>Nessun target definito.</p>'; }
+    html += '</div>';
+
+    // Fasi
+    html += '<div id="plan-fasi" class="panel">';
+    var faseColors = ['var(--accent)','var(--accent2)','var(--yellow)','var(--orange)','var(--text-muted)'];
+    fasi.forEach(function(fase, fi) {
+        var col = faseColors[fi] || 'var(--text-muted)';
+        html += '<details class="muscle-detail" style="margin-bottom:0.6rem" ' + (fi===0?'open':'') + '>';
+        html += '<summary style="display:flex;align-items:center;gap:0.75rem;padding:0.875rem 1rem">';
+        html += '<span style="background:' + col + ';color:var(--bg);border-radius:50%;width:1.6rem;height:1.6rem;display:inline-flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:700;flex-shrink:0">' + fase.numero + '</span>';
+        html += '<span style="flex:1;font-weight:600;font-size:0.95rem">' + esc(fase.nome) + '</span>';
+        if (fase.durata_settimane) html += '<span style="font-size:0.8rem;color:var(--text-muted);background:var(--surface2);padding:0.2rem 0.6rem;border-radius:4px;white-space:nowrap">' + fase.durata_settimane + ' sett.</span>';
+        html += '</summary>';
+        html += '<div style="padding:0 1rem 1rem">';
+        if (fase.obiettivo) {
+            html += '<div style="background:var(--surface2);border-left:3px solid ' + col + ';border-radius:0 8px 8px 0;padding:0.75rem 1rem;margin-bottom:0.75rem">';
+            html += '<div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem">Obiettivo</div>';
+            html += '<div style="color:var(--text);font-size:0.9rem;line-height:1.6">' + esc(fase.obiettivo) + '</div>';
+            html += '</div>';
+        }
+        if (fase.metodologia) {
+            html += '<div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:0.75rem 1rem;margin-bottom:0.75rem">';
+            html += '<div style="font-size:0.72rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.5rem">Metodologia</div>';
+            html += '<div style="color:var(--text-muted);font-size:0.875rem;line-height:1.7">' + esc(fase.metodologia) + '</div>';
+            html += '</div>';
+        }
+        if (fase.note) {
+            html += '<div style="background:rgba(255,169,77,0.07);border:1px solid rgba(255,169,77,0.3);border-radius:8px;padding:0.75rem 1rem">';
+            html += '<div style="font-size:0.72rem;color:var(--orange);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.25rem">Note</div>';
+            html += '<div style="color:var(--text-muted);font-size:0.875rem;line-height:1.6">' + esc(fase.note) + '</div>';
+            html += '</div>';
+        }
+        html += '</div></details>';
+    });
+    html += '</div>';
+
+    // Strategia
+    html += '<div id="plan-strategia" class="panel">';
+    html += '<div class="cards">';
+    if (strategia.fase_attuale) {
+        var sfCol = strategia.fase_attuale === 'cut' ? 'var(--red)' : strategia.fase_attuale === 'bulk' ? 'var(--green)' : 'var(--accent)';
+        html += '<div class="card" style="border-color:' + sfCol + '"><div class="label">Fase attuale</div><div class="value" style="color:' + sfCol + ';font-size:1.5rem;text-transform:uppercase">' + esc(strategia.fase_attuale) + '</div></div>';
+    }
+    if (strategia.kcal_target) html += card('Calorie target', strategia.kcal_target, 'kcal', 'Deficit: ' + (strategia.deficit_kcal || '-') + ' kcal');
+    if (strategia.proteine_g_totali) html += card('Proteine', strategia.proteine_g_totali, 'g/giorno', (strategia.proteine_g_per_kg || '-') + ' g/kg peso');
+    if (strategia.deficit_kcal) html += card('Deficit', strategia.deficit_kcal, 'kcal', 'Deficit giornaliero');
+    html += '</div>';
+    if (strategia.note_strategia) {
+        html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:1rem 1.25rem;margin-top:0.5rem">';
+        html += '<div style="font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.75rem">Strategia dettagliata</div>';
+        html += '<div style="color:var(--text-muted);font-size:0.9rem;line-height:1.75">' + esc(strategia.note_strategia) + '</div>';
+        html += '</div>';
+    }
+    var knownSKeys = ['fase_attuale','deficit_kcal','kcal_target','proteine_g_per_kg','proteine_g_totali','note_strategia'];
+    var extraS = Object.entries(strategia).filter(function(e){ return knownSKeys.indexOf(e[0]) === -1; });
+    if (extraS.length) {
+        html += '<ul style="margin:1rem 0 0 1.25rem;color:var(--text-muted);font-size:0.9rem">';
+        extraS.forEach(function(e){ html += '<li style="margin:0.4rem 0"><strong style="color:var(--text)">' + esc(e[0].replace(/_/g,' ')) + '</strong>: ' + esc(e[1]) + '</li>'; });
+        html += '</ul>';
+    }
+    html += '</div>';
+
+    // Rischi
+    html += '<div id="plan-rischi" class="panel">';
+    if (rischi.length) {
+        html += '<div class="table-wrap"><table><thead><tr><th>Area</th><th>Livello</th><th>Azione</th></tr></thead><tbody>';
+        rischi.forEach(function(r) {
+            var clsMap = { alto: 'tag-danger', medio: 'tag-secondary', basso: 'tag-tertiary' };
+            html += '<tr><td>' + esc(r.area) + '</td><td><span class="tag ' + (clsMap[r.livello]||'') + '">' + esc(r.livello) + '</span></td><td>' + esc(r.azione) + '</td></tr>';
+        });
+        html += '</tbody></table></div>';
+    } else { html += '<p>Nessun rischio identificato.</p>'; }
+    html += '</div>';
+
+    root.innerHTML = html;
+}
+
+function planTab(id, link) {
+    document.querySelectorAll('[id^="plan-"]').forEach(function(p){ if(p.classList.contains('panel')) p.classList.remove('active'); });
+    document.querySelectorAll('#plan-nav .sub-nav-item').forEach(function(a){ a.classList.remove('active'); });
+    var el = document.getElementById('plan-' + id);
+    if (el) el.classList.add('active');
+    if (link) link.classList.add('active');
+}
+</script>
+
+</body>
+</html>

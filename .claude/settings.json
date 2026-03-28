@@ -7,8 +7,8 @@
     "allow": [
       "Write(data/output/**)",
       "Edit(data/output/**)",
-      "Write(scripts/volume_calc.py)",
-      "Edit(scripts/volume_calc.py)"
+      "Write(source/scripts/volume_calc.py)",
+      "Edit(source/scripts/volume_calc.py)"
     ]
   }
 }

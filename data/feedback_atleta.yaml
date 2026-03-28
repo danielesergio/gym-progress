@@ -14,40 +14,77 @@ allenamento:
 
 dieta:
   seguita:            # si / parzialmente / no
+  kcal_media_stimata: # es. 2200 — media kcal effettive consumate al giorno (lascia vuoto se non sai)
   difficolta:
   note:
-
+    - 1 opzione per colazione
+    - 1 o 2 opzioni per spuntini
+    - 7 opzioni per pranzo
+    - 7 opzioni per cena
+    - i pasti sgarro non introdurli nelle opzioni
+    - non mettere sempre carne nei pranzi
+    - non mettere proteine nei pasti principali
+    - usa pasta integrale
+    - cerca di rispettare le line guida della nutrizione
+      - FRUTTA	3 frutti al giorno grandi come il pugno di ciascuno
+      - VERDURA	2 porzioni di verdura al giorno, più frequentemente cruda
+      - CEREALI	ogni giorno ed a ogni pasto, pasta o riso o mais, ecc. meglio se integrali
+      - PESCE	3 volte a settimana
+      - CARNE ROSSA O BIANCA	3 volte a settimana
+      - 1-2 UOVA	1 volta a settimana al posto della carne
+      - AFFETTATI	prosciutto crudo o cotto e bresaola 2 volte a settimana con moderazione
+      - INSACCATI	Salame, mortadella, salsiccia, wurstel e similari 1 volta a settimana con moderazione
+      - LEGUMI	2-3 volte a settimana
+      - LATTE O YOGURT	1-2 volte al giorno
+      - FORMAGGI COME SECONDO	Stagionati come il Grana Padano DOP 2 volte a settimana 50/60g oppure freschi 100g al posto di carne o uova
+    - cerca di creare pasti con marco simili tra di loro nelle stesse categorie
+    - cerca di evitare gli affettati e mantenere i pasti semplici senza troppi alimenti.
+    - A colazione di solito mangio 150gr di yogurt greco allo 0% con 30 gr di muslei proteico ( Muslei proteico = 108kcal, 1,65 grassi, carbo 13,6 ( zuccheri 3,3), 8.88 proteine) se necessario integra con qualcos'altro o cambia le dosi.
+    - Alla sera mi piacerebbe mangiare petto di pollo / filetto / pesce (salmone, trota, branzino, tonno (anche in scatola) / mozzarella / uova.
+    - Ogni tanto faccio una merenda aggiuntiva (tra colazione e pranzo) con datteri e mandorle o noci.
+    - A pranzo di solito mangio pasta (al sugo pomodoro, pesto, carbonara) alternati a giorni con minestra di verderue/piselli/lenticchie/fagioli bianchi o borlotti accompagnati con una banana. è possibili avere 1 o 2 pasti sgarro (pizza, hamburger fuori)?
+    - prendo spesso proteine whey o proteine isolate al gusto cioccolato (con latte parzialmente scremato o acqua).
+    - unici integratori che voglio proteine e creatina, se necessari
+    - se serve un altro pasto aggiuntivo vorrei che fosse super semplice (frutto + proteine whey). Preferisco una colazione abbondate e pranzo e cena non troppo voluminosi.
 progressi:
   piu_forte:          # si / no / uguale
   cambiamenti_fisici:
 
 # Inserisci peso (kg) e reps eseguiti. Il calcolo 1RM e' automatico.
 massimali:
-  squat:  {kg: , reps: }
-  panca:  {kg: , reps: }
-  stacco: {kg: , reps: }
+  squat:  {kg: 125, reps: 5}
+  panca:  {kg: 100, reps: 5}
+  stacco: {kg: 170, reps: 5}
 
 corpo:
-  peso_kg:
+  peso_kg: 85.9
   misure:
-    vita_cm:
-    fianchi_cm:
-    petto_cm:
-    braccio_dx_cm:
-    coscia_dx_cm:
-    collo_cm:
+    vita_cm: 89
+    fianchi_cm: 100
+    petto_cm: 100
+    braccio_dx_cm: 33
+    coscia_dx_cm: 57
+    collo_cm: 39
 
 altre_attivita:
   # Attivita' svolte OLTRE all'allenamento in palestra (corsa, ciclismo, nuoto, sport, ecc.)
   # tipo: corsa / ciclismo / nuoto / camminata / sport / yoga / altro
-  - tipo:               # es. corsa
-    nome:               # es. "Corsa lenta"
-    durata_min:         # durata in minuti per sessione
-    volte_settimana:    # numero di sessioni a settimana
-    intensita:          # bassa / media / alta
-    note:
-  # Aggiungi altre righe se necessario (copia il blocco sopra)
+  - tipo:               Beach Volley
+    nome:               Allenamento
+    durata_min:         90 min
+    volte_settimana:    1
+    intensita:          media
+    note:               Giovedi (giorno diverso da allenamenti palestra)
+
+infortuni:
+  - guarito: no
+    durata_giorni: 40
+    descrizione:
+      - Sindrome TOS dovuta probabilmente a infiammazione / contrattura del piccolo pettorale.
+      - Sono fermo da 3 settimane per infortunio, adesso sono in via di guarigione. fammi un programma di 2 settimane per riprendere ad allenarmi senza forzare minimamente il piccolo pettorale (dolore trazioni, panca piana, military press e dip, lat machine e altri).Evita tutti gli esercizi che possono far peggiorare la mia situazione attuale. Fare alzate laterali e frontali non mi sembra che mi causi alcun dolore.
+
 
 altro:
-  infortuni:
-  note:
+    note:
+    - Info sulla mia storai pregressa, prima di iniziare questo percorso (4 anni di allenamento) mi sono allenato tra le 4 e 5 volte a settimanana con un numero di ripetizioni totali a settimana tra 80 e 100 con i risultati che puoi vedere dai dati. Anche se per vari motivi ho avuto della discontinuità.
+    - Mia idea (la puoi ignorare se sbagliata) ->  avevo iniziato una fase di cut che vorrei protrarre per abbassare la mia body fat e poi riprendere con il bulk. Volevo capire se durante la fase di recupero dal tos, durante la quale non posso allenarmi pienamente (1 o 2 mesocicli), è opportuno sospendere il cut e tornare ad una fase di normocalorica. Riprenderei il cut nel 2 o 3 mesociclo.

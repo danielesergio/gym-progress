@@ -1,0 +1,147 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "workout-auto-select",
+    "task_title": "Pre-selezione automatica giorno e settimana in base alla data",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "workout-auto-select",
+    "type": "ux",
+    "title": "Pre-selezione automatica giorno e settimana in base alla data",
+    "description": "All'apertura della pagina Allenamento, il sistema deve calcolare a partire dalla data odierna: 1) la settimana corrente del mesociclo attivo (confrontando la data odierna con la data di inizio del mesociclo corrente), 2) il giorno di allenamento più appropriato (il giorno corrente se è un giorno di palestra previsto, altrimenti il prossimo). La selezione è automatica ma l'utente può cambiarla manualmente. Se la data cade fuori dal periodo del mesociclo, viene selezionata la settimana 1 con un messaggio informativo.",
+    "inputs": [
+      "workout_data",
+      "plan_data",
+      "current_date"
+    ],
+    "outputs": [
+      "AutoSelectWorkoutDay"
+    ],
+    "acceptance_criteria": [
+      "Aprendo la pagina oggi (2026-03-28), la settimana selezionata è la settimana corrente del mesociclo attivo",
+      "Il giorno selezionato corrisponde al giorno di oggi se è un giorno di allenamento previsto",
+      "Se oggi non è un giorno di allenamento, viene selezionato il prossimo giorno di allenamento nella settimana corrente",
+      "L'utente può cambiare manualmente settimana e giorno dopo la pre-selezione automatica",
+      "La pre-selezione non rompe la navigazione su settimane passate o future"
+    ],
+    "notes": "Il JSON workout.json NON contiene un campo data_inizio esplicito: la data di inizio del mesociclo si ricava da meta.data (campo YYYY-MM-DD, data di generazione/attivazione scheda). I giorni di palestra sono nell'array settimane[n].palestra[].giorno con valori come 'Lunedi', 'Mercoledi', 'Sabato' (in italiano). Il calcolo della settimana si basa sui giorni trascorsi da meta.data: floor((oggi - dataInizio) / 7) + 1. L'implementazione agisce SOLO sulle variabili di stato settimanaAttiva e giornoAttivoIndex prima che venga chiamato aggiornaSelezioneSettimane(); non richiede modifiche all'HTML."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "Aggiungere funzione detectSettimanaEGiornoOggi(scheda) che calcola settimanaAttiva e giornoAttivoIndex in base alla data corrente, da richiamare in selectSchema() dopo il reset attuale (settimanaAttiva = settimane[0].numero, giornoAttivoIndex = 0). Aggiungere anche un eventuale messaggio informativo se la data è fuori dal periodo del mesociclo.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "File da modificare — capire il flusso di selectSchema() → aggiornaSelezioneSettimane() dove inserire la logica di auto-selezione. In particolare: (1) le variabili di stato settimanaAttiva e giornoAttivoIndex, (2) come selectSchema() imposta settimanaAttiva = settimane[0].numero e giornoAttivoIndex = 0, (3) la struttura di aggiornaSelezioneSettimane() che chiama renderDaySelector() passando giornoAttivoIndex."
+      },
+      {
+        "path": "docs/data/workout.json",
+        "motivo": "Struttura dati reale: meta.data (YYYY-MM-DD, data inizio mesociclo), meta.periodo ('YYYY-MM / YYYY-MM'), settimane[].numero (int), settimane[].palestra[].giorno (string in italiano: 'Lunedi', 'Mercoledi', 'Sabato'). Necessario per capire come mappare dayOfWeek JS (0=dom, 1=lun...) ai nomi in italiano dei giorni."
+      },
+      {
+        "path": "docs/workout.html",
+        "motivo": "Verificare la presenza del container #workout-info-banner o alternativa dove mostrare il messaggio 'Data fuori dal periodo del mesociclo — mostrata la settimana 1'. Se non esiste, il developer dovrà aggiungere un <div> dedicato prima del #week-selector."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "Plain HTML/JS ES2022 — nessun bundler",
+      "dati": "fetch() da 'data/workout.json' — file statico JSON generato da Python"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase — es. settimanaAttiva, giornoAttivoIndex, dataInizioScheda",
+      "costanti_js": "UPPER_SNAKE_CASE per path dati — DATA_PATH_WORKOUT già presente",
+      "gestione_null": "optional chaining (?.) e fallback ?? su tutti i campi del JSON",
+      "pattern_js": "Funzioni pure detectSettimanaEGiornoOggi(scheda) — non modificano stato globale direttamente. Il risultato viene assegnato a settimanaAttiva e giornoAttivoIndex prima di aggiornaSelezioneSettimane().",
+      "struttura_js_per_pagina": "Aggiungere la nuova funzione PRIMA di selectSchema() (sezione utility/rilevamento). Modificare selectSchema() nella sezione 'Reset settimana al numero iniziale della nuova scheda' per chiamare detectSettimanaEGiornoOggi() invece del reset fisso.",
+      "no_jquery_no_lodash": true,
+      "no_var": "solo const e let",
+      "no_inline_style": "usare classi CSS esistenti o nuova classe .workout-autoselect-info"
+    },
+    "pagina": {
+      "nome": "Allenamento",
+      "file": "docs/workout.html",
+      "js": "docs/js/workout.js",
+      "css": "docs/css/workout.css",
+      "dati_json": ["data/workout.json"]
+    }
+  },
+  "logica_implementativa": {
+    "calcolo_settimana": {
+      "descrizione": "Calcola il numero di settimana del mesociclo in cui cade la data odierna",
+      "input": "meta.data (YYYY-MM-DD) e data odierna (new Date())",
+      "algoritmo": [
+        "1. Parsa meta.data come dataInizio: new Date(scheda.meta.data + 'T00:00:00') per evitare problemi di fuso orario",
+        "2. Calcola diffMs = Date.now() - dataInizio.getTime()",
+        "3. Se diffMs < 0: data odierna prima dell'inizio → restituisci {settimana: settimane[0].numero, giornoIndex: 0, fuoriPeriodo: true, messaggio: 'La scheda non è ancora iniziata — mostrata la settimana 1'}",
+        "4. diffGiorni = Math.floor(diffMs / (1000 * 60 * 60 * 24))",
+        "5. settimanaCalcolata = Math.floor(diffGiorni / 7) + 1",
+        "6. Verifica che settimanaCalcolata esista in settimane[]: trova settimane.find(s => s.numero === settimanaCalcolata)",
+        "7. Se non trovata (data oltre la fine del mesociclo): fuoriPeriodo: true, usa settimane[0].numero, messaggio: 'Data fuori dal periodo del mesociclo — mostrata la settimana 1'",
+        "8. Se trovata: fuoriPeriodo: false, settimana = settimanaCalcolata"
+      ]
+    },
+    "calcolo_giorno": {
+      "descrizione": "Trova l'indice del giorno di palestra più appropriato per la data odierna",
+      "input": "settimana trovata con palestra[], data odierna",
+      "mappa_giorni_italiano": {
+        "0": "Domenica",
+        "1": "Lunedi",
+        "2": "Martedi",
+        "3": "Mercoledi",
+        "4": "Giovedi",
+        "5": "Venerdi",
+        "6": "Sabato"
+      },
+      "algoritmo": [
+        "1. Ottieni nomeGiornoOggi dalla mappa (es. today.getDay() → 'Sabato')",
+        "2. Cerca in palestra[] l'indice con giorno.toLowerCase() === nomeGiornoOggi.toLowerCase()",
+        "3. Se trovato: giornoIndex = quell'indice (oggi è un giorno di allenamento)",
+        "4. Se non trovato: cerca il prossimo giorno di allenamento nella settimana corrente iterando i giorni della settimana (da domani in avanti, entro 6 giorni)",
+        "5. Costruisci la lista ordinata dei nomi giorno nella settimana: palestra[].map(g => g.giorno)",
+        "6. Trova il primo giorno futuro: itera dayOffset da 1 a 6, calcola nomeGiornoFuturo, cerca match in palestra[]",
+        "7. Se trovato giorno futuro: giornoIndex = quell'indice",
+        "8. Fallback finale: giornoIndex = 0 (primo giorno della settimana)"
+      ]
+    },
+    "punto_di_inserimento_in_selectSchema": {
+      "dove": "In selectSchema(), sostituire le righe 'settimanaAttiva = settimane.length > 0 ? settimane[0].numero : 1' con la chiamata a detectSettimanaEGiornoOggi()",
+      "nota": "La funzione deve modificare settimanaAttiva e giornoAttivoIndex PRIMA della chiamata ad aggiornaSelezioneSettimane(workoutData). Questo garantisce che i render esistenti usino già i valori auto-calcolati senza ulteriori modifiche."
+    },
+    "messaggio_informativo": {
+      "dove": "Aggiungere un <div id='workout-autoselect-info' class='workout-autoselect-info' role='status' aria-live='polite' hidden></div> in workout.html, subito prima del #week-selector",
+      "quando_mostrarlo": "Solo quando fuoriPeriodo === true",
+      "testo": "Variabile — es. 'Data fuori dal periodo del mesociclo — mostrata la settimana 1' oppure 'La scheda non è ancora iniziata — mostrata la settimana 1'",
+      "funzione_js": "Aggiungere showAutoSelectInfo(messaggio) e hideAutoSelectInfo() in workout.js"
+    }
+  },
+  "struttura_dati_workout_json": {
+    "campo_data_inizio": "meta.data — YYYY-MM-DD (es. '2026-03-23')",
+    "campo_periodo": "meta.periodo — 'YYYY-MM / YYYY-MM' (es. '2026-03 / 2026-04')",
+    "settimane": "Array di oggetti con {numero: int, intensita_target, note_settimana, palestra: [{giorno: string, tipo, esercizi[], ...}]}",
+    "nomi_giorni_nel_json": "Italiano senza accenti — 'Lunedi', 'Mercoledi', 'Sabato' (mesociclo rehab attuale: 3 sessioni/settimana)",
+    "nota_plan_data": "plan_data NON è necessario per questo task: la data di inizio mesociclo si ricava direttamente da workout.json meta.data. Non serve un fetch aggiuntivo a plan.json."
+  },
+  "criteri_accettazione": [
+    "Aprendo la pagina oggi (2026-03-28 = Sabato, giorno 5 dal 23 marzo = settimana 1), la settimana selezionata è S1",
+    "Il giorno attivo selezionato è 'Sabato' (indice 2 in palestra[] della settimana 1, dato che palestra = [Lunedi, Mercoledi, Sabato])",
+    "Se oggi fosse Domenica (non giorno di allenamento), verrebbe selezionato il prossimo giorno: 'Lunedi' della stessa settimana (o S+1 se la settimana cambia)",
+    "L'utente può cliccare su un bottone settimana diverso e il selettore giorni si aggiorna normalmente (comportamento invariato)",
+    "Se la data odierna è successiva alla fine del mesociclo, viene mostrato #workout-autoselect-info con messaggio descrittivo e viene selezionata la settimana 1",
+    "docs/js/workout.js contiene la funzione detectSettimanaEGiornoOggi(scheda)",
+    "docs/js/workout.js contiene le funzioni showAutoSelectInfo(messaggio) e hideAutoSelectInfo()",
+    "docs/workout.html contiene <div id='workout-autoselect-info' class='workout-autoselect-info' role='status' aria-live='polite' hidden>",
+    "La funzione detectSettimanaEGiornoOggi() usa new Date(meta.data + 'T00:00:00') per evitare problemi di timezone UTC",
+    "Nessun fetch aggiuntivo a plan.json — l'auto-selezione usa solo i dati già disponibili in workoutData"
+  ],
+  "dipendenze": []
+}

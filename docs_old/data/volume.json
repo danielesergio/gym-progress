@@ -1,0 +1,377 @@
+{
+  "volumi": [
+    {
+      "muscolo": "glutei",
+      "serie_pesate": 20.0,
+      "dettaglio": [
+        {
+          "esercizio": "Squat con Bilanciere",
+          "giorno": "Lunedi",
+          "serie": 4,
+          "ruolo": "principale",
+          "peso": 1.0,
+          "contributo": 4.0
+        },
+        {
+          "esercizio": "Leg Press",
+          "giorno": "Lunedi",
+          "serie": 3,
+          "ruolo": "secondario",
+          "peso": 0.5,
+          "contributo": 1.5
+        },
+        {
+          "esercizio": "Stacco da Terra",
+          "giorno": "Mercoledi",
+          "serie": 4,
+          "ruolo": "principale",
+          "peso": 1.0,
+          "contributo": 4.0
+        },
+        {
+          "esercizio": "Stacco Rumeno",
+          "giorno": "Mercoledi",
+          "serie": 3,
+          "ruolo": "principale",
+          "peso": 1.0,
+          "contributo": 3.0
+        },
+        {
+          "esercizio": "Squat con Bilanciere",
+          "giorno": "Venerdi",
+          "serie": 3,
+          "ruolo": "principale",
+          "peso": 1.0,
+          "contributo": 3.0
+        },
+        {
+          "esercizio": "Stacco Rumeno",
+          "giorno": "Venerdi",
+          "serie": 3,
+          "ruolo": "principale",
+          "peso": 1.0,
+          "contributo": 3.0
+        },
+        {
+          "esercizio": "Leg Press",
+          "giorno": "Venerdi",
+          "serie": 3,
+          "ruolo": "secondario",
+          "peso": 0.5,
+          "contributo": 1.5
+        }
+      ]
+    },
+    {
+      "muscolo": "core",
+      "serie_pesate": 19.7,
+      "dettaglio": [
+        {
+          "esercizio": "Squat con Bilanciere",
+          "giorno": "Lunedi",
+          "serie": 4,
+          "ruolo": "secondario",
+          "peso": 0.5,
+          "contributo": 2.0
+        },
+        {
+          "esercizio": "Plank",
+          "giorno": "Lunedi",
+          "serie": 3,
+          "ruolo": "principale",
+          "peso": 1.0,
+          "contributo": 3.0
+        },
+        {
+          "esercizio": "Dead Bug",
+          "giorno": "Lunedi",
+          "serie": 3,
+          "ruolo": "principale",
+          "peso": 1.0,
+          "contributo": 3.0
+        },
+        {
+          "esercizio": "Stacco da Terra",
+          "giorno": "Mercoledi",
+          "serie": 4,
+          "ruolo": "terziario",
+          "peso": 0.3,
+          "contributo": 1.2
+        },
+        {
+          "esercizio": "Pallof Press al Cavo",
+          "giorno": "Mercoledi",
+          "serie": 3,
+          "ruolo": "principale",
+          "peso": 1.0,
+          "contributo": 3.0
+        },
+        {
+          "esercizio": "Squat con Bilanciere",
+          "giorno": "Venerdi",
+          "serie": 3,
+          "ruolo": "secondario",
+          "peso": 0.5,
+          "contributo": 1.5
+        },
+        {
+          "esercizio": "Dead Bug",
+          "giorno": "Venerdi",
+          "serie": 3,
+          "ruolo": "principale",
+          "peso": 1.0,
+          "contributo": 3.0
+        },
+        {
+          "esercizio": "Plank",
+          "giorno": "Venerdi",
+          "serie": 3,
+          "ruolo": "principale",
+          "peso": 1.0,
+          "contributo": 3.0
+        }
+      ]
+    },
+    {
+      "muscolo": "femorali",
+      "serie_pesate": 19.5,
+      "dettaglio": [
+        {
+          "esercizio": "Squat con Bilanciere",
+          "giorno": "Lunedi",
+          "serie": 4,
+          "ruolo": "secondario",
+          "peso": 0.5,
+          "contributo": 2.0
+        },
+        {
+          "esercizio": "Leg Curl",
+          "giorno": "Lunedi",
+          "serie": 3,
+          "ruolo": "principale",
+          "peso": 1.0,
+          "contributo": 3.0
+        },
+        {
+          "esercizio": "Stacco da Terra",
+          "giorno": "Mercoledi",
+          "serie": 4,
+          "ruolo": "principale",
+          "peso": 1.0,
+          "contributo": 4.0
+        },
+        {
+          "esercizio": "Stacco Rumeno",
+          "giorno": "Mercoledi",
+          "serie": 3,
+          "ruolo": "principale",
+          "peso": 1.0,
+          "contributo": 3.0
+        },
+        {
+          "esercizio": "Squat con Bilanciere",
+          "giorno": "Venerdi",
+          "serie": 3,
+          "ruolo": "secondario",
+          "peso": 0.5,
+          "contributo": 1.5
+        },
+        {
+          "esercizio": "Stacco Rumeno",
+          "giorno": "Venerdi",
+          "serie": 3,
+          "ruolo": "principale",
+          "peso": 1.0,
+          "contributo": 3.0
+        },
+        {
+          "esercizio": "Leg Curl",
+          "giorno": "Venerdi",
+          "serie": 3,
+          "ruolo": "principale",
+          "peso": 1.0,
+          "contributo": 3.0
+        }
+      ]
+    },
+    {
+      "muscolo": "quadricipiti",
+      "serie_pesate": 18.0,
+      "dettaglio": [
+        {
+          "esercizio": "Squat con Bilanciere",
+          "giorno": "Lunedi",
+          "serie": 4,
+          "ruolo": "principale",
+          "peso": 1.0,
+          "contributo": 4.0
+        },
+        {
+          "esercizio": "Leg Press",
+          "giorno": "Lunedi",
+          "serie": 3,
+          "ruolo": "principale",
+          "peso": 1.0,
+          "contributo": 3.0
+        },
+        {
+          "esercizio": "Stacco da Terra",
+          "giorno": "Mercoledi",
+          "serie": 4,
+          "ruolo": "secondario",
+          "peso": 0.5,
+          "contributo": 2.0
+        },
+        {
+          "esercizio": "Leg Extension",
+          "giorno": "Mercoledi",
+          "serie": 3,
+          "ruolo": "principale",
+          "peso": 1.0,
+          "contributo": 3.0
+        },
+        {
+          "esercizio": "Squat con Bilanciere",
+          "giorno": "Venerdi",
+          "serie": 3,
+          "ruolo": "principale",
+          "peso": 1.0,
+          "contributo": 3.0
+        },
+        {
+          "esercizio": "Leg Press",
+          "giorno": "Venerdi",
+          "serie": 3,
+          "ruolo": "principale",
+          "peso": 1.0,
+          "contributo": 3.0
+        }
+      ]
+    },
+    {
+      "muscolo": "erettori spinali",
+      "serie_pesate": 9.1,
+      "dettaglio": [
+        {
+          "esercizio": "Squat con Bilanciere",
+          "giorno": "Lunedi",
+          "serie": 4,
+          "ruolo": "terziario",
+          "peso": 0.3,
+          "contributo": 1.2
+        },
+        {
+          "esercizio": "Stacco da Terra",
+          "giorno": "Mercoledi",
+          "serie": 4,
+          "ruolo": "principale",
+          "peso": 1.0,
+          "contributo": 4.0
+        },
+        {
+          "esercizio": "Stacco Rumeno",
+          "giorno": "Mercoledi",
+          "serie": 3,
+          "ruolo": "secondario",
+          "peso": 0.5,
+          "contributo": 1.5
+        },
+        {
+          "esercizio": "Squat con Bilanciere",
+          "giorno": "Venerdi",
+          "serie": 3,
+          "ruolo": "terziario",
+          "peso": 0.3,
+          "contributo": 0.9
+        },
+        {
+          "esercizio": "Stacco Rumeno",
+          "giorno": "Venerdi",
+          "serie": 3,
+          "ruolo": "secondario",
+          "peso": 0.5,
+          "contributo": 1.5
+        }
+      ]
+    },
+    {
+      "muscolo": "dorsali",
+      "serie_pesate": 3.8,
+      "dettaglio": [
+        {
+          "esercizio": "Stacco da Terra",
+          "giorno": "Mercoledi",
+          "serie": 4,
+          "ruolo": "secondario",
+          "peso": 0.5,
+          "contributo": 2.0
+        },
+        {
+          "esercizio": "Stacco Rumeno",
+          "giorno": "Mercoledi",
+          "serie": 3,
+          "ruolo": "terziario",
+          "peso": 0.3,
+          "contributo": 0.9
+        },
+        {
+          "esercizio": "Stacco Rumeno",
+          "giorno": "Venerdi",
+          "serie": 3,
+          "ruolo": "terziario",
+          "peso": 0.3,
+          "contributo": 0.9
+        }
+      ]
+    },
+    {
+      "muscolo": "polpacci",
+      "serie_pesate": 3.0,
+      "dettaglio": [
+        {
+          "esercizio": "Calf Raise in Piedi",
+          "giorno": "Mercoledi",
+          "serie": 3,
+          "ruolo": "principale",
+          "peso": 1.0,
+          "contributo": 3.0
+        }
+      ]
+    },
+    {
+      "muscolo": "trapezi",
+      "serie_pesate": 2.0,
+      "dettaglio": [
+        {
+          "esercizio": "Stacco da Terra",
+          "giorno": "Mercoledi",
+          "serie": 4,
+          "ruolo": "secondario",
+          "peso": 0.5,
+          "contributo": 2.0
+        }
+      ]
+    },
+    {
+      "muscolo": "avambracci",
+      "serie_pesate": 1.2,
+      "dettaglio": [
+        {
+          "esercizio": "Stacco da Terra",
+          "giorno": "Mercoledi",
+          "serie": 4,
+          "ruolo": "terziario",
+          "peso": 0.3,
+          "contributo": 1.2
+        }
+      ]
+    }
+  ],
+  "meta": {
+    "total_serie_pesate": 96.3,
+    "push_serie": 0,
+    "pull_serie": 5.8,
+    "pull_push_ratio": 0,
+    "balance_rating": "insufficiente_pull"
+  }
+}

@@ -415,11 +415,11 @@ I campi `strategia_tapering`, `strategia_test`, `nutrizione_test_day`, `mental_c
 
 ### Dizionario esercizi
 
-Ogni nuovo esercizio inserito nel workout deve essere aggiunto anche al dizionario `EXERCISE_MUSCLES` in `scripts/volume_calc.py`.
+Ogni nuovo esercizio inserito nel workout deve essere aggiunto anche al dizionario `EXERCISE_MUSCLES` in `source/scripts/volume_calc.py`.
 
 ### File temporanei
 
-Se hai bisogno di creare script di calcolo o file di verifica, salvali in `scripts/agent-temp/gym-pt-micro-tapering/`. Ogni file deve iniziare con un commento che spiega perche' e' stato creato e puo' essere eliminato al termine dell'iterazione.
+Se hai bisogno di creare script di calcolo o file di verifica, salvali in `source/scripts/agent-temp/gym-pt-micro-tapering/`. Ogni file deve iniziare con un commento che spiega perche' e' stato creato e puo' essere eliminato al termine dell'iterazione.
 
 ### Formato testo
 

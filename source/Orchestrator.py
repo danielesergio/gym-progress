@@ -1,4 +1,5 @@
 import json
+import subprocess
 import sys
 
 from source.AgentRunner import AgentRunner
@@ -136,6 +137,9 @@ class Orchestrator:
         logger.separator("FASE 3a -Aggiornamento measurements.json")
 
         workout_history_list = self._workout_history.load()
+        # Applica feedback/infortuni subito (anche in dry-run e prima degli LLM)
+        self._workout_history.write_score(workout_history_list, ctx.get("feedback_data"))
+        self._workout_history.save(workout_history_list)
 
         new_m = self._body_calc.build_new_measurement(feedback, athlete_profile, ctx["measurements"])
         if new_m:
@@ -150,11 +154,12 @@ class Orchestrator:
                 logger.log("OK", f"measurements.json aggiornato: BF%={new_m.get('body_fat_pct')}, "
                            f"MM={new_m.get('massa_magra_kg')} kg, FFMI={new_m.get('ffmi_adj')}")
 
-                if self._workout_history.complete_last_entry(workout_history_list, ctx["measurements"]):
+                if self._workout_history.complete_last_entry(ctx.get("feedback_data"), workout_history_list, ctx["measurements"]):
+                    self._workout_history.annotate_completed_entry(workout_history_list, ctx.get("feedback_data"))
                     self._workout_history.save(workout_history_list)
 
             if not any(e.get("id") == cfg.iteration_id for e in workout_history_list):
-                self._workout_history.append_entry(workout_history_list, ctx["measurements"])
+                self._workout_history.append_entry(workout_history_list, ctx["measurements"], ctx.get("feedback_data"))
                 self._workout_history.save(workout_history_list)
             else:
                 logger.log("INFO", f"RESUME: entry workout_history {cfg.iteration_id} gia' presente")
@@ -257,7 +262,7 @@ class Orchestrator:
                 "Misurazioni storiche (ultime 3) — tabella markdown",
                 "Rate progressione corretti per eta'/infortuni/stallo"])
             self._agent_runner.run("gym-personal-trainer", self._prompt_builder.build_feedback_coach(ctx))
-        self._workout_history.write_efficacia(workout_history_list)
+        self._workout_history.write_score(workout_history_list, ctx.get("feedback_data"))
         self._workout_history.save(workout_history_list)
 
         # ──────────────────────────────────────────────────────────────────
@@ -271,27 +276,32 @@ class Orchestrator:
         if active_meso:
             logger.log("OK", f"Mesociclo attivo: [{active_meso.get('numero')}] {active_meso.get('nome')} "
                        f"(tipo_fase={active_meso.get('tipo_fase')}, {active_meso.get('durata_settimane')} sett)")
+            tipo_fase = active_meso.get("tipo_fase") or active_meso.get("tipo") or "sconosciuto"
+            self._workout_history.set_tipo_fase(workout_history_list, cfg.iteration_id, tipo_fase)
+            self._workout_history.save(workout_history_list)
         else:
             logger.log("WARN", "Nessun mesociclo attivo trovato nel piano -agente fallback attivo")
         logger.log("INFO", f"Agente micro selezionato: {micro_agent}")
 
         # ──────────────────────────────────────────────────────────────────
+        # ──────────────────────────────────────────────────────────────────
         # FASE 3e+3f -Dieta + Scheda in parallelo
         # ──────────────────────────────────────────────────────────────────
         logger.separator("FASE 3e+3f -Dieta e scheda allenamento (parallelo)")
         diet_file       = cfg.OUTPUT_DIR / f"diet_{cfg.iteration_id}.yaml"
+        diet_raw_file   = cfg.OUTPUT_DIR / f"diet_{cfg.iteration_id}_raw.yaml"
         workout_file_de = cfg.OUTPUT_DIR / f"workout_data_{cfg.iteration_id}.yaml"
         tasks = []
-        if RESUME and diet_file.exists():
+        if RESUME and diet_raw_file.exists():
             logger.log("SKIP", f"diet_{cfg.iteration_id}.yaml esistente -dietologo saltato")
             self._prompt_builder.build_diet(ctx)
         else:
             logger.log_context("gym-dietologo [build_diet]", [
-                ("data/athlete.md",                "incorporato"),
-                ("data/feedback_atleta.yaml",      "incorporato"),
-                ("data/output/plan.yaml",          "incorporato"),
-                (cfg.OUTPUT_DIR / "diet_*.yaml",   "incorporato"),
-                ("scripts/kcal_adjust.py",         "eseguito — output incorporato"),
+                ("data/athlete.md",                    "incorporato"),
+                ("data/feedback_atleta.yaml",          "incorporato"),
+                ("data/output/plan.yaml",              "incorporato"),
+                (cfg.OUTPUT_DIR / "diet_*_raw.yaml",   "incorporato"),
+                ("source/scripts/kcal_adjust.py",             "eseguito — output incorporato"),
             ], ["Misurazioni storiche (ultime 2) — tabella markdown",
                 "Analisi adattamento calorico (fase, attendibilita', raccomandazione)"])
             tasks.append(("gym-dietologo", self._prompt_builder.build_diet(ctx)))
@@ -316,6 +326,35 @@ class Orchestrator:
             self._agent_runner.run_parallel(tasks, timeout=1200)
         else:
             logger.log("INFO", "Dieta e scheda gia' presenti -fase 3e+3f saltata")
+
+        # ──────────────────────────────────────────────────────────────────
+        # FASE 3e-post -Postprocessing dieta (scala grammi, ricalcola macro)
+        # ──────────────────────────────────────────────────────────────────
+        if not (RESUME and diet_file.exists()):
+            logger.separator("FASE 3e-post -Postprocessing dieta")
+            food_path = cfg.OUTPUT_DIR / "food.yaml"
+            if diet_raw_file.exists() and food_path.exists():
+                logger.log("ACTION", f"diet_postprocess.py -> diet_{cfg.iteration_id}.yaml")
+
+                result = subprocess.run(
+                    [sys.executable, "scripts/diet_postprocess.py",
+                     str(diet_raw_file), str(food_path), str(diet_file)],
+                    capture_output=True, text=True
+                )
+                if result.returncode == 0:
+                    logger.log("OK", "Postprocessing dieta completato")
+                    if result.stdout:
+                        for line in result.stdout.strip().splitlines():
+                            logger.log("INFO", line)
+                else:
+                    logger.log("ERROR", f"Postprocessing fallito: {result.stderr.strip()}")
+                    logger.log("WARN", f"Uso diet_raw come fallback: {diet_raw_file} -> {diet_file}")
+                    import shutil
+                    shutil.copy(diet_raw_file, diet_file)
+            elif not diet_raw_file.exists():
+                logger.log("WARN", f"diet_{cfg.iteration_id}_raw.yaml non trovato -postprocessing saltato")
+            else:
+                logger.log("WARN", "food.yaml non trovato -postprocessing saltato")
 
         # ──────────────────────────────────────────────────────────────────
         # FASE 3g -Loop revisione scheda
@@ -422,6 +461,7 @@ class Orchestrator:
             "performance_analysis.yaml",
             "plan.yaml",
             f"feedback_coach_{cfg.iteration_id}.md",
+            f"diet_{cfg.iteration_id}_raw.yaml",
             f"diet_{cfg.iteration_id}.yaml",
             f"workout_data_{cfg.iteration_id}.yaml",
             f"feedback_atleta_{cfg.iteration_id}.yaml",

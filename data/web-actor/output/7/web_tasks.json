@@ -1,0 +1,246 @@
+{
+  "meta": {
+    "data": "2026-03-27",
+    "project": "Daniele Fitness Dashboard",
+    "goal": "Miglioramento del sito esistente: fix su volume, dashboard, dieta e allenamento; nuove feature su mesocicli cliccabili, esportazione dieta CSV, pre-selezione giorno/settimana, note esercizi, strategia nutrizionale.",
+    "sommario": "Il sito è composto da 6 pagine (Dashboard, Progressi, Allenamento, Dieta, Piano, Volume). L'analisi è guidata dagli obiettivi espliciti in web-site-goal: 3 fix e 7 feature. La struttura dati della dieta è cambiata radicalmente (da giorni della settimana nominali a tipi di giorno — riposo/palestra/attività_extra — con slot e opzioni varianti per tipo). Il volume è settimanale, non del mesociclo. In Plan, i mesocicli sono già listati ma non cliccabili. La pagina Allenamento non mostra riscaldamento/defaticamento né note degli esercizi. La Dashboard mostra una sola progress bar per la fase corrente senza distinguere l'avanzamento del macrociclo. La pre-selezione automatica del giorno/settimana manca. L'esportazione CSV della dieta è assente.",
+    "features_totali": 7,
+    "tasks_totali": 13
+  },
+  "features": [
+    {
+      "name": "Fix Dashboard — Progress Bar Macrociclo",
+      "priority": 1,
+      "description": "La card 'Fase Corrente' in Dashboard mostra un contatore e una progress bar che sembrano riferiti alla fase (mesociclo), ma in realtà non è chiaro. Occorre separare visivamente l'avanzamento della fase corrente dall'avanzamento del macrociclo intero, con due progress bar distinte e label esplicite. La barra del macrociclo deve evidenziare i confini tra mesocicli.",
+      "tasks": [
+        {
+          "id": "dashboard-dual-progress",
+          "type": "component",
+          "title": "Doppia progress bar: fase corrente e macrociclo",
+          "description": "Nella card 'Fase Corrente' della Dashboard, sostituire la singola progress bar con due barre separate: 1) avanzamento della fase corrente (es. 'Settimana 2 di 5 — Rehab Fase 1'), 2) avanzamento del macrociclo intero (es. 'Settimana 7 di 40 — Macrociclo 1'). La barra del macrociclo deve mostrare segni visivi che indicano il confine tra un mesociclo e l'altro (es. tacche o separatori). Ogni barra deve avere una label che renda inequivocabile a cosa si riferisce.",
+          "inputs": ["plan_data", "current_phase_info"],
+          "outputs": ["DualProgressBar"],
+          "acceptance_criteria": [
+            "Sono presenti due progress bar distinte nella card, con label diverse",
+            "La prima barra indica settimana corrente / durata totale della fase attuale",
+            "La seconda barra indica settimana corrente / durata totale del macrociclo",
+            "La barra del macrociclo mostra separatori visivi tra i mesocicli",
+            "Le label non sono ambigue: si capisce immediatamente quale barra si riferisce alla fase e quale al macrociclo"
+          ],
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "name": "Fix Volume — Etichetta Settimanale",
+      "priority": 2,
+      "description": "La pagina Volume mostra il volume come se fosse relativo all'intero mesociclo, ma i dati in volume.json rappresentano il volume settimanale. Occorre correggere titoli, sottotitoli e l'header per riflettere correttamente che si tratta di volume settimanale.",
+      "tasks": [
+        {
+          "id": "volume-weekly-label-fix",
+          "type": "bugfix",
+          "title": "Correggi etichette volume da 'mesociclo' a 'settimanale'",
+          "description": "La pagina Volume ha titoli e sottotitoli che possono indurre l'utente a credere che le serie mostrate siano il totale del mesociclo. I dati in volume.json sono invece serie pesate per settimana (volume settimanale della scheda corrente). Titoli, sottotitoli, header e tooltip devono essere aggiornati per riflettere 'volume settimanale' in modo chiaro e consistente.",
+          "inputs": ["volume_data"],
+          "outputs": ["VolumePageLabels"],
+          "acceptance_criteria": [
+            "Nessun testo nella pagina Volume usa la parola 'mesociclo' per descrivere il totale delle serie",
+            "L'header della pagina mostra 'Volume settimanale' con il valore corretto",
+            "La sezione riepilogo recita chiaramente 'serie settimanali' o equivalente",
+            "Il sottotitolo della sezione grafico specifica che si tratta di serie per settimana"
+          ],
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "name": "Allenamento — Riscaldamento, Defaticamento e Note",
+      "priority": 3,
+      "description": "La pagina Allenamento non mostra il riscaldamento e il defaticamento previsti dalla scheda, né le note testuali dei singoli esercizi. Entrambi sono presenti nei dati (workout.json). Occorre renderli visibili all'utente.",
+      "tasks": [
+        {
+          "id": "workout-warmup-cooldown",
+          "type": "component",
+          "title": "Sezione riscaldamento e defaticamento nella scheda giorno",
+          "description": "Ogni sessione nella scheda ha un array 'riscaldamento' e un array 'defaticamento' con istruzioni testuali. Questi devono essere mostrati come sezioni collassabili (o sempre visibili) prima e dopo l'elenco degli esercizi nella visualizzazione del giorno selezionato. Il riscaldamento appare prima degli esercizi, il defaticamento dopo.",
+          "inputs": ["workout_day_data"],
+          "outputs": ["WarmupCooldownSection"],
+          "acceptance_criteria": [
+            "Prima dell'elenco esercizi è presente una sezione 'Riscaldamento' con i punti del riscaldamento",
+            "Dopo l'elenco esercizi è presente una sezione 'Defaticamento' con i relativi punti",
+            "Le sezioni sono visibili o collassabili ma accessibili senza navigare altrove",
+            "Il contenuto corrisponde ai dati del giorno selezionato"
+          ],
+          "dependencies": []
+        },
+        {
+          "id": "workout-exercise-notes",
+          "type": "component",
+          "title": "Note testuali degli esercizi nella scheda allenamento",
+          "description": "Ogni esercizio nella scheda ha un campo 'note' con istruzioni tecniche specifiche (es. 'Discesa controllata 3 secondi, pausa 1s in buca...'). Queste note devono essere mostrate all'utente per ogni esercizio, ad esempio come testo in espansione o testo secondario sotto il nome dell'esercizio. Le note sono presenti solo quando non vuote.",
+          "inputs": ["workout_exercise_data"],
+          "outputs": ["ExerciseNoteDisplay"],
+          "acceptance_criteria": [
+            "Ogni esercizio che ha note non vuote le mostra all'utente",
+            "Le note sono leggibili senza sovrapporsi ad altri elementi",
+            "Esercizi senza note non mostrano placeholder vuoti",
+            "Le note sono associate all'esercizio corretto"
+          ],
+          "dependencies": ["workout-warmup-cooldown"]
+        }
+      ]
+    },
+    {
+      "name": "Dieta — Ristrutturazione Pagina per Nuovi Dati",
+      "priority": 4,
+      "description": "La struttura dati della dieta è cambiata radicalmente. Ora non ci sono 'giorni della settimana' (Lunedì, Martedì...) ma 'tipi di giorno' (riposo, palestra, attività_extra). Ogni tipo ha macros target e calorie diverse. I pasti sono organizzati per slot (Colazione, Spuntino, Pranzo, ecc.) e ogni slot ha opzioni con varianti specifiche per ogni tipo di giorno. La pagina attuale usa un selettore giorno che non corrisponde più alla nuova struttura.",
+      "tasks": [
+        {
+          "id": "diet-day-type-selector",
+          "type": "component",
+          "title": "Selettore tipo giorno (riposo / palestra / beach volley)",
+          "description": "Sostituire il selettore dei giorni della settimana con un selettore che mostra i tipi di giorno disponibili nella dieta: 'Giorno Riposo', 'Giorno Allenamento Pesi', 'Giorno Beach Volley'. Le etichette devono usare abbreviazioni brevi nei bottoni (es. 'Riposo', 'Palestra', 'Beach V.') per non occupare troppo spazio, con il nome completo visibile altrove. Il tipo di giorno selezionato determina quali macros target e quali varianti dei pasti vengono mostrati.",
+          "inputs": ["diet_day_types"],
+          "outputs": ["DayTypeSelector"],
+          "acceptance_criteria": [
+            "Sono presenti esattamente 3 opzioni di selezione (una per tipo di giorno disponibile)",
+            "Le etichette dei bottoni sono brevi e non vengono troncate su mobile",
+            "La selezione cambia i macros target e le varianti dei pasti mostrati",
+            "Il tipo attivo è visivamente distinto dagli altri"
+          ],
+          "dependencies": []
+        },
+        {
+          "id": "diet-macros-by-type",
+          "type": "component",
+          "title": "Riepilogo macros per tipo di giorno",
+          "description": "Il riepilogo macros deve mostrare i target calorici e i macronutrienti (proteine, carboidrati, grassi) specifici del tipo di giorno selezionato. I valori provengono da tipi_giorno[n].macros_target e tipi_giorno[n].kcal_target nel JSON dieta.",
+          "inputs": ["diet_day_types", "DayTypeSelector"],
+          "outputs": ["MacrosSummaryByType"],
+          "acceptance_criteria": [
+            "I valori di kcal, proteine, carbo e grassi cambiano al cambio del tipo di giorno",
+            "I valori mostrati corrispondono ai target del tipo selezionato",
+            "Il riepilogo è leggibile e visivamente coerente con il resto della pagina"
+          ],
+          "dependencies": ["diet-day-type-selector"]
+        },
+        {
+          "id": "diet-meals-by-type",
+          "type": "component",
+          "title": "Lista pasti con opzioni varianti per tipo di giorno",
+          "description": "I pasti sono organizzati per slot (Colazione, Spuntino Mattina, Pranzo, Merenda, Cena). Ogni slot ha più opzioni. Ogni opzione ha varianti specifiche per il tipo di giorno selezionato (riposo / palestra / attività_extra), con alimenti e grammature che cambiano. Per ogni slot occorre mostrare: l'orario indicativo, le opzioni disponibili (selezionabili o in lista), e per ogni opzione gli alimenti con grammi e macros della variante corretta. La pagina deve aggiornare tutti i pasti quando l'utente cambia tipo di giorno.",
+          "inputs": ["diet_slots_data", "DayTypeSelector"],
+          "outputs": ["MealsByTypeList"],
+          "acceptance_criteria": [
+            "I pasti sono raggruppati per slot con orario indicativo visibile",
+            "Per ogni slot sono mostrate le opzioni disponibili",
+            "Gli alimenti e le grammature mostrati sono quelli della variante del tipo giorno selezionato",
+            "Cambiando tipo di giorno, gli alimenti si aggiornano senza ricaricare la pagina",
+            "La struttura è leggibile anche con molte opzioni per slot (es. 7 opzioni a pranzo)"
+          ],
+          "dependencies": ["diet-day-type-selector", "diet-macros-by-type"]
+        },
+        {
+          "id": "diet-strategy-note",
+          "type": "component",
+          "title": "Sezione strategia nutrizionale con note_strategia",
+          "description": "Il JSON della dieta contiene un campo 'note_strategia' in meta con una descrizione dettagliata della logica nutrizionale per fase (mantenimento durante rehab TOS, calcolo surplus/deficit, distribuzione kcal per slot). Questa informazione deve essere mostrata in una sezione dedicata della pagina dieta, ad esempio come pannello espandibile o sezione a fine pagina, per permettere all'utente di capire il razionale della dieta.",
+          "inputs": ["diet_meta_strategy"],
+          "outputs": ["NutritionalStrategyNote"],
+          "acceptance_criteria": [
+            "La sezione mostra il testo di note_strategia in modo leggibile",
+            "Il testo è formattato in paragrafi (non come blocco unico)",
+            "La sezione è accessibile ma non occupa spazio primario (es. collassabile o a fine pagina)"
+          ],
+          "dependencies": ["diet-meals-by-type"]
+        },
+        {
+          "id": "diet-export-csv",
+          "type": "component",
+          "title": "Esportazione dieta in CSV",
+          "description": "L'utente deve poter esportare la dieta in formato CSV. Il CSV deve contenere: per ogni slot di ogni tipo di giorno, le opzioni con gli alimenti, le grammature e i macros (kcal, proteine, carbo, grassi). Il file scaricato deve avere un nome descrittivo (es. 'dieta-daniele-2026-03.csv'). Il pulsante di esportazione deve essere visibile nella pagina dieta.",
+          "inputs": ["diet_slots_data", "diet_day_types"],
+          "outputs": ["DietCSVExport"],
+          "acceptance_criteria": [
+            "Un pulsante 'Esporta CSV' è visibile nella pagina dieta",
+            "Cliccando il pulsante il browser avvia il download di un file .csv",
+            "Il CSV contiene righe con: tipo_giorno, slot, opzione, alimento, grammi, kcal, proteine, carbo, grassi",
+            "Il file è apribile correttamente in Excel o LibreOffice Calc",
+            "Il nome del file è significativo e include la data o il periodo della dieta"
+          ],
+          "dependencies": ["diet-meals-by-type"]
+        }
+      ]
+    },
+    {
+      "name": "Allenamento — Pre-selezione Automatica Giorno e Settimana",
+      "priority": 5,
+      "description": "Quando l'utente apre la pagina Allenamento, il giorno e la settimana selezionati dovrebbero corrispondere automaticamente alla data odierna: la settimana corrente del mesociclo attivo e il giorno di allenamento più vicino. Questo evita che l'utente debba navigare manualmente ogni volta.",
+      "tasks": [
+        {
+          "id": "workout-auto-select",
+          "type": "ux",
+          "title": "Pre-selezione automatica giorno e settimana in base alla data",
+          "description": "All'apertura della pagina Allenamento, il sistema deve calcolare a partire dalla data odierna: 1) la settimana corrente del mesociclo attivo (confrontando la data odierna con la data di inizio del mesociclo corrente), 2) il giorno di allenamento più appropriato (il giorno corrente se è un giorno di palestra previsto, altrimenti il prossimo). La selezione è automatica ma l'utente può cambiarla manualmente. Se la data cade fuori dal periodo del mesociclo, viene selezionata la settimana 1 con un messaggio informativo.",
+          "inputs": ["workout_data", "plan_data", "current_date"],
+          "outputs": ["AutoSelectWorkoutDay"],
+          "acceptance_criteria": [
+            "Aprendo la pagina oggi (2026-03-27), la settimana selezionata è la settimana corrente del mesociclo attivo",
+            "Il giorno selezionato corrisponde al giorno di oggi se è un giorno di allenamento previsto",
+            "Se oggi non è un giorno di allenamento, viene selezionato il prossimo giorno di allenamento nella settimana corrente",
+            "L'utente può cambiare manualmente settimana e giorno dopo la pre-selezione automatica",
+            "La pre-selezione non rompe la navigazione su settimane passate o future"
+          ],
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "name": "Piano — Mesocicli Cliccabili con Dettaglio",
+      "priority": 6,
+      "description": "Nella pagina Piano, i mesocicli sono mostrati come card nella timeline, ma non sono interattivi. L'utente deve poter cliccare su un mesociclo per vedere i dettagli: obiettivo, metodologia, durata, fase nutrizionale, criteri di avanzamento e note. Il dettaglio può essere mostrato in un pannello laterale, un modale o una sezione espansa sotto la card.",
+      "tasks": [
+        {
+          "id": "plan-mesociclo-detail",
+          "type": "component",
+          "title": "Dettaglio mesociclo espandibile al click",
+          "description": "Ogni card mesociclo nella timeline del Piano deve essere cliccabile. Al click, si apre un pannello o area espansa che mostra: nome, tipo (Rehab/Accumulo/ecc.), fase nutrizionale, durata in settimane, obiettivo (testo), metodologia (testo), note (testo), criteri di avanzamento (lista). Il pannello può essere chiuso cliccando di nuovo sulla card o su un pulsante esplicito. Un solo dettaglio alla volta è aperto. I dati provengono da plan.json → macrocicli[n].mesocicli[m].",
+          "inputs": ["plan_mesocicli_data"],
+          "outputs": ["MesocicloDetailPanel"],
+          "acceptance_criteria": [
+            "Ogni card mesociclo è visivamente cliccabile (cursore pointer, feedback hover)",
+            "Al click su una card si apre una sezione con i dettagli del mesociclo",
+            "Il dettaglio mostra almeno: obiettivo, metodologia, durata, fase nutrizionale",
+            "I criteri di avanzamento sono mostrati come lista leggibile",
+            "Si può chiudere il dettaglio e aprirne un altro",
+            "Solo un dettaglio è aperto contemporaneamente"
+          ],
+          "dependencies": []
+        }
+      ]
+    },
+    {
+      "name": "Piano — Strategia Nutrizionale per Fase Aggiornata",
+      "priority": 7,
+      "description": "La sezione 'Strategia Nutrizionale' nella pagina Piano ha un placeholder vuoto ('Caricamento strategia nutrizionale...'). Ora che i dati nutrizionali sono strutturati per mesociclo (ogni mesociclo ha fase_nutrizionale e incrocio_stimolo_ambiente), questa sezione può mostrare una vista che associa ogni fase del piano alla sua strategia nutrizionale, usando i nuovi dati.",
+      "tasks": [
+        {
+          "id": "plan-nutrition-strategy-section",
+          "type": "component",
+          "title": "Strategia nutrizionale per fase con dati da mesocicli",
+          "description": "La sezione 'Strategia Nutrizionale' nella pagina Piano deve mostrare, per ogni mesociclo del piano, la fase nutrizionale associata (mantenimento/cut/bulk) e il razionale (campo 'incrocio_stimolo_ambiente'). La visualizzazione può essere una tabella o una lista di card compatte: una riga/card per mesociclo con nome, tipo nutrizionale e spiegazione. I dati provengono da plan.json → macrocicli[n].mesocicli[m].fase_nutrizionale e incrocio_stimolo_ambiente.",
+          "inputs": ["plan_mesocicli_data"],
+          "outputs": ["NutritionStrategyByPhase"],
+          "acceptance_criteria": [
+            "La sezione 'Strategia Nutrizionale' non mostra più il placeholder di caricamento",
+            "Sono elencati tutti i mesocicli del piano con la relativa fase nutrizionale",
+            "Per ogni mesociclo è visibile il razionale nutrizionale (testo da incrocio_stimolo_ambiente)",
+            "Il tipo nutrizionale (mantenimento/bulk/cut) è visivamente distinguibile (es. colore diverso o badge)",
+            "La sezione è leggibile anche con 7 mesocicli listati"
+          ],
+          "dependencies": ["plan-mesociclo-detail"]
+        }
+      ]
+    }
+  ]
+}

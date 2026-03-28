@@ -1,0 +1,126 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "diet-day-type-selector",
+    "task_title": "Selettore tipo giorno (riposo / palestra / beach volley)",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "diet-day-type-selector",
+    "type": "component",
+    "title": "Selettore tipo giorno (riposo / palestra / beach volley)",
+    "description": "Sostituire il selettore dei giorni della settimana con un selettore che mostra i tipi di giorno disponibili nella dieta: 'Giorno Riposo', 'Giorno Allenamento Pesi', 'Giorno Beach Volley'. Le etichette devono usare abbreviazioni brevi nei bottoni (es. 'Riposo', 'Palestra', 'Beach V.') per non occupare troppo spazio, con il nome completo visibile altrove. Il tipo di giorno selezionato determina quali macros target e quali varianti dei pasti vengono mostrati.",
+    "inputs": ["diet_day_types"],
+    "outputs": ["DayTypeSelector"],
+    "acceptance_criteria": [
+      "Sono presenti esattamente 3 opzioni di selezione (una per tipo di giorno disponibile)",
+      "Le etichette dei bottoni sono brevi e non vengono troncate su mobile",
+      "La selezione cambia i macros target e le varianti dei pasti mostrati",
+      "Il tipo attivo è visivamente distinto dagli altri"
+    ],
+    "notes": "Il JS attuale usa un array `giorni[]` che non esiste nella nuova struttura di diet.json. Il nuovo diet.json espone i tipi giorno in `meta.tipi_giorno[]` (id, label, kcal_target, macros_target) e i pasti in `slot_pasto[]` con varianti per tipo_giorno (`riposo`, `palestra`, `attivita_extra`). Tutta la logica di selezione del giorno in diet.js va riscritta per usare `currentDayType` (stringa id) invece di `currentDayIndex` (numero intero). La selezione attiva cambia i macros letti da `meta.tipi_giorno[n].macros_target` e le varianti dei pasti lette da ogni `slot_pasto[n].opzioni[m].varianti[currentDayType]`."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "Riscrivere renderDaySelector() per usare meta.tipi_giorno[] invece di giorni[]. Sostituire currentDayIndex (numero) con currentDayTypeId (stringa id: 'riposo'|'palestra'|'attivita_extra'). Aggiornare renderDiet() per passare il tipo corretto a renderMacrosSummary() e renderMealsList(). Le abbreviazioni brevi dei bottoni vanno calcolate da id: 'riposo'→'Riposo', 'palestra'→'Palestra', 'attivita_extra'→'Beach V.'; il label completo viene da tipi_giorno[n].label.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Aggiungere eventuale classe .diet-toggle-btn__full-label per il nome completo visibile (es. sotto il bottone o in un elemento separato), se si decide di mostrare il nome completo altrove rispetto all'abbreviazione. Verificare che min-width: 160px sia adatto alle nuove abbreviazioni (probabilmente si può ridurre a 90-100px). Aggiungere aria-label o title al bottone per accessibilità del nome completo.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/diet.json",
+        "motivo": "Struttura dati reale dei tipi giorno. Sezione meta.tipi_giorno[]: array con 3 oggetti, ognuno ha `id` (string: 'riposo'|'palestra'|'attivita_extra'), `label` (string: nome completo), `kcal_target` (int), `macros_target` (object: {proteine, carboidrati, grassi}). Sezione slot_pasto[]: ogni slot ha `opzioni[]`, ogni opzione ha `varianti` come oggetto con chiavi corrispondenti agli id tipi giorno. Il developer deve usare questi campi esatti nel codice JS."
+      },
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "File da modificare — capire la struttura attuale: renderDaySelector(), renderToggle(), renderDiet(), event delegation su #day-toggle, variabile di stato currentDayIndex. Tutto va adattato al nuovo schema dati."
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "File da modificare — verificare le classi .diet-toggle-btn, .diet-day-toggle, .diet-toggle-btn.active già definite. Capire se min-width: 160px e white-space: nowrap reggono con abbreviazioni brevi (~6-8 char) senza sprecare spazio."
+      },
+      {
+        "path": "docs/diet.html",
+        "motivo": "File strutturale — #day-toggle è già presente come <section class='diet-day-toggle' id='day-toggle'> generato dinamicamente. Non servono modifiche all'HTML statico per questo task."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "Plain HTML/JS ES2022 — no framework, no build step",
+      "styling": "CSS custom properties (variables.css). Classi con prefisso .diet-* in diet.css."
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase — es. currentDayTypeId, tipiGiorno, selectedType",
+      "costanti_js": "UPPER_SNAKE_CASE per path — es. DATA_PATH = 'data/diet.json'",
+      "classi_css": "kebab-case con prefisso pagina — es. .diet-toggle-btn, .diet-day-toggle",
+      "id_html": "kebab-case — #day-toggle già presente, non modificare",
+      "struttura_js_per_pagina": "1. Costanti DATA_PATH_*. 2. Stato interno (let dietData, let currentDayTypeId). 3. Funzioni render*. 4. Funzione initDiet(). 5. DOMContentLoaded → initDiet().",
+      "pattern_fetch": "async/await con try/catch. showError() in caso di errore.",
+      "gestione_errori": "try/catch su fetch, console.error('[diet.js]', err), messaggio 'Dati non disponibili' nei container.",
+      "no": ["no jQuery", "no var", "no inline style", "no document.write()", "no ES module import/export"]
+    },
+    "dati_rilevanti": {
+      "struttura_tipi_giorno": "meta.tipi_giorno[] — ogni elemento: { id: string, label: string, kcal_target: number, macros_target: { proteine: number, carboidrati: number, grassi: number } }",
+      "ids_tipi_giorno": ["riposo", "palestra", "attivita_extra"],
+      "abbreviazioni_bottoni": {
+        "riposo": "Riposo",
+        "palestra": "Palestra",
+        "attivita_extra": "Beach V."
+      },
+      "label_completo_da_usare": "tipi_giorno[n].label per aria-label del bottone e per il titolo del riepilogo macros",
+      "struttura_macros": "tipi_giorno[n].macros_target.proteine / .carboidrati / .grassi (non .carbo come nel vecchio schema)",
+      "struttura_kcal": "tipi_giorno[n].kcal_target (non dayData.kcal come nel vecchio schema)",
+      "struttura_varianti_pasto": "slot_pasto[n].opzioni[m].varianti[tipoGiornoId] — oggetto con alimenti[], totale per tipo"
+    },
+    "pagina": {
+      "nome": "Dieta",
+      "file": "docs/diet.html",
+      "js": "docs/js/diet.js",
+      "css": "docs/css/diet.css",
+      "dati_json": ["data/diet.json"]
+    },
+    "css_responsive": "Mobile-first. Breakpoint 768px. Il .diet-day-toggle usa flex + overflow-x:auto + scroll-snap già implementati — funziona con 3 bottoni brevi senza modifiche strutturali."
+  },
+  "analisi_delta": {
+    "problema_principale": "Il codice attuale in diet.js è basato su un array `data.giorni[]` con campi `nome`, `kcal`, `macros.proteine/carboidrati/grassi`, `pasti[]` che non esiste più nella struttura attuale di diet.json. Il nuovo JSON non ha `giorni[]` ma `meta.tipi_giorno[]` e `slot_pasto[]` con varianti per tipo. Tutta la logica di selezione e rendering è da adattare.",
+    "cosa_rimane_valido": [
+      "La struttura HTML di diet.html con #day-toggle, #macros-summary, #meals-list, #supplements-section — invariata",
+      "Le classi CSS .diet-toggle-btn, .diet-day-toggle, .diet-toggle-btn.active — già funzionanti, al più ridurre min-width",
+      "Il meccanismo event delegation su #day-toggle — riutilizzabile",
+      "Le funzioni showError(), renderDietHeader(), renderAlimentiRows(), renderMealCard(), renderSupplementCard(), buildProportionBar() — riutilizzabili con piccoli adattamenti ai nomi dei campi"
+    ],
+    "cosa_va_riscritto": [
+      "renderDaySelector(): usare meta.tipi_giorno[] invece di giorni[], bottoni con abbreviazione + aria-label con label completo, data-day-type-id invece di data-day-index",
+      "renderToggle(): confrontare per id (string) invece che per indice numerico",
+      "renderDiet(): selezionare il tipo per id (string) invece che per indice; leggere macros da tipi_giorno[n].macros_target e kcal da tipi_giorno[n].kcal_target",
+      "renderMacrosSummary(): adattare i campi letti — kcal_target (non kcal), macros_target.carboidrati (non macros.carboidrati)",
+      "renderMealsList(): la nuova struttura non ha pasti[] per tipo ma slot_pasto[] con varianti per tipo — questo è fuori scope di questo task (diet-meals-by-type lo gestirà), ma il selettore deve comunque esporre currentDayTypeId agli altri render",
+      "Variabile di stato: currentDayIndex → currentDayTypeId (stringa)"
+    ]
+  },
+  "criteri_accettazione": [
+    "Sono presenti esattamente 3 bottoni nel selettore (#day-toggle), uno per tipo: 'Riposo', 'Palestra', 'Beach V.'",
+    "Le etichette brevi non vengono troncate su mobile (white-space: nowrap confermato in CSS)",
+    "Il nome completo del tipo selezionato è accessibile via aria-label sul bottone (es. aria-label='Giorno Riposo')",
+    "Cliccando un bottone: il bottone acquisisce la classe .active e aria-pressed='true'; gli altri perdono .active e hanno aria-pressed='false'",
+    "La selezione aggiorna visivamente i macros nel blocco #macros-summary (kcal, proteine, carboidrati, grassi cambiano in base al tipo selezionato)",
+    "Il tipo attivo è visivamente distinto: bordo e colore accent (già definito in .diet-toggle-btn.active in diet.css)",
+    "docs/js/diet.js usa currentDayTypeId (stringa id) come variabile di stato, non currentDayIndex (intero)",
+    "docs/js/diet.js contiene la funzione renderDaySelector() che itera su meta.tipi_giorno[]",
+    "docs/js/diet.js contiene la funzione renderDayTypeToggle() o equivalente che aggiorna lo stato visivo dei bottoni in base a currentDayTypeId",
+    "I valori null o undefined in macros_target non causano eccezioni — usare optional chaining e fallback '—'",
+    "Il selettore funziona correttamente su viewport mobile (375px) senza troncamento o overflow visibile"
+  ],
+  "dipendenze": [],
+  "scope_note": "Questo task riguarda SOLO il selettore (renderDaySelector, stato currentDayTypeId, aggiornamento macros). Il rendering della lista pasti con varianti per tipo (slot_pasto[].opzioni[].varianti[tipo]) è delegato al task successivo diet-macros-by-type e diet-meals-by-type. Tuttavia, al termine di questo task il JS deve già esporre currentDayTypeId in modo che i task successivi possano leggerne il valore nel momento del rendering."
+}

@@ -1,0 +1,95 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "project": "Daniele Fitness — Dashboard Powerlifting",
+    "goal": "Miglioramento sito esistente: fix bug dieta (mostra tutte le opzioni invece di una sola) e fix UI allenamento (selettori settimana/giorno non occupano tutto lo spazio disponibile)",
+    "sommario": "Il sito esistente ha due problemi segnalati dall'atleta. (1) Nella pagina Dieta, per ogni slot pasto (es. Colazione) vengono mostrate simultaneamente tutte le opzioni disponibili. Il requisito è mostrarne solo una alla volta, con la possibilità di navigare tra le alternative. (2) Nella pagina Allenamento, i selettori settimana (#week-selector) e giorno (#day-selector) non occupano tutta la larghezza disponibile: i bottoni hanno dimensione fissa e non si espandono. Il requisito è che i bottoni riempiano equamente lo spazio del container, con scroll orizzontale solo se non ci stanno.",
+    "anomalie": []
+  },
+  "tasks": [
+    {
+      "ordine": 1,
+      "id": "diet-slot-single-option-display",
+      "title": "Mostra un'opzione per slot con navigazione tra alternative",
+      "type": "bugfix",
+      "feature": "Fix Dieta — Opzioni pasto una alla volta",
+      "feature_priority": 1,
+      "motivazione_ordine": "Primo perché è il task ad alta priorità senza dipendenze e risolve il primo bug segnalato dall'atleta. Sblocca immediatamente il task di styling successivo.",
+      "dependencies_resolved": [],
+      "sblocca": ["diet-slot-option-nav-style"],
+      "description": "Attualmente ogni slot pasto (Colazione, Spuntino, Pranzo, Merenda, Cena) mostra tutte le opzioni disponibili impilate verticalmente. Il bug è in renderSlotCard: itera su tutte le opzioni e le rende tutte visibili. La correzione richiede che: (1) sia visibile solo l'opzione corrente (indice 0 di default); (2) se lo slot ha più di una opzione, compaia un controllo di navigazione (es. '< 1/2 >') che permetta di passare all'opzione precedente/successiva; (3) se lo slot ha una sola opzione, nessun controllo di navigazione sia mostrato. Lo stato dell'opzione attiva per ogni slot deve essere indipendente dagli altri slot.",
+      "inputs": ["diet_data", "DietSlotCard"],
+      "outputs": ["DietSlotCardFixed"],
+      "acceptance_criteria": [
+        "Aprendo la pagina Dieta, ogni slot mostra una sola opzione alla volta",
+        "Se uno slot ha più opzioni, sono visibili frecce o indicatori di navigazione (es. '< 1/3 >')",
+        "Cliccando la freccia successiva, l'opzione cambia e quella precedente scompare",
+        "Se uno slot ha una sola opzione, non compaiono controlli di navigazione",
+        "Cambiare tipo di giorno (Riposo / Palestra / Beach V.) non resetta la navigazione delle opzioni in modo anomalo",
+        "Il comportamento funziona su mobile (touch) e desktop"
+      ]
+    },
+    {
+      "ordine": 2,
+      "id": "diet-slot-option-nav-style",
+      "title": "Stile visivo dei controlli di navigazione opzioni slot",
+      "type": "ux",
+      "feature": "Fix Dieta — Opzioni pasto una alla volta",
+      "feature_priority": 1,
+      "motivazione_ordine": "Secondo perché dipende dal task precedente (che risolve il bug logico). Una volta che il comportamento funziona, questo task applica lo stile coerente con il design system. Completa la feature Dieta.",
+      "dependencies_resolved": ["diet-slot-single-option-display"],
+      "sblocca": [],
+      "description": "I controlli di navigazione tra opzioni (frecce, indicatore posizione) del task diet-slot-single-option-display devono essere visivamente coerenti con il design system esistente. I bottoni freccia devono avere dimensione touch-friendly (min 44px), colore coerente con i bottoni dieta esistenti (diet-toggle-btn), e l'indicatore '1/3' deve essere leggibile su mobile.",
+      "inputs": ["DietSlotCardFixed", "branding"],
+      "outputs": ["DietSlotNavStyle"],
+      "acceptance_criteria": [
+        "I bottoni freccia sono visibili e cliccabili su schermo 375px",
+        "L'indicatore di posizione (es. '1 / 2') è leggibile",
+        "Il colore e font dei controlli di navigazione sono coerenti con il resto della pagina Dieta",
+        "I bottoni freccia hanno area cliccabile di almeno 44x44px"
+      ]
+    },
+    {
+      "ordine": 3,
+      "id": "workout-week-selector-full-width",
+      "title": "Selettore settimane occupa tutta la larghezza disponibile",
+      "type": "bugfix",
+      "feature": "Fix Allenamento — Selettori settimana e giorno full-width",
+      "feature_priority": 2,
+      "motivazione_ordine": "Terzo perché è il primo task della seconda feature (priorità più bassa). Non ha dipendenze e sblocca il task seguente del day-selector. Risolve il secondo bug segnalato dall'atleta.",
+      "dependencies_resolved": [],
+      "sblocca": ["workout-day-selector-full-width"],
+      "description": "Il container #week-selector e i suoi bottoni .week-btn devono occupare tutta la larghezza del container genitore. I bottoni devono espandersi equamente (flex: 1 o equivalente) per riempire la riga quando il numero di settimane è ridotto (es. 4-6 settimane). Quando i bottoni sono troppi per stare su una riga, deve rimanere attivo lo scroll orizzontale già esistente. Su mobile il comportamento deve essere identico.",
+      "inputs": ["WorkoutWeekSelector", "workout_css"],
+      "outputs": ["WorkoutWeekSelectorFixed"],
+      "acceptance_criteria": [
+        "Con 4 settimane, i 4 bottoni occupano tutta la larghezza del container senza spazio vuoto a destra",
+        "Con 8 o più settimane su schermo piccolo, i bottoni eccedenti sono raggiungibili con scroll orizzontale",
+        "La scrollbar orizzontale non è visibile (comportamento già presente, da preservare)",
+        "Il bottone attivo è sempre visibile senza scroll manuale (scroll automatico al bottone attivo già presente, da preservare)",
+        "Su mobile (375px) i bottoni non sono troppo stretti da rendere illeggibile il testo"
+      ]
+    },
+    {
+      "ordine": 4,
+      "id": "workout-day-selector-full-width",
+      "title": "Selettore giorni occupa tutta la larghezza disponibile",
+      "type": "bugfix",
+      "feature": "Fix Allenamento — Selettori settimana e giorno full-width",
+      "feature_priority": 2,
+      "motivazione_ordine": "Quarto e ultimo perché dipende dal task precedente (week-selector) e completa la feature Allenamento. Utilizza la stessa logica di styling già implementata nel week-selector.",
+      "dependencies_resolved": ["workout-week-selector-full-width"],
+      "sblocca": [],
+      "description": "Il container #day-selector e i suoi bottoni .day-btn devono occupare tutta la larghezza del container genitore, con la stessa logica del task workout-week-selector-full-width. I bottoni devono espandersi equamente per riempire la riga. Con molti giorni (es. 5+) deve rimanere lo scroll orizzontale. Il nome del giorno (es. 'Lunedi', 'Mercoledi') deve restare leggibile e non essere troncato quando i bottoni si espandono.",
+      "inputs": ["WorkoutDaySelector", "workout_css"],
+      "outputs": ["WorkoutDaySelectorFixed"],
+      "acceptance_criteria": [
+        "Con 3-4 giorni, i bottoni occupano tutta la larghezza del container senza spazio vuoto a destra",
+        "Con 5+ giorni su schermo piccolo (375px), i bottoni eccedenti sono raggiungibili con scroll orizzontale",
+        "Il nome del giorno nel bottone è leggibile (non troncato) quando i bottoni si espandono",
+        "La scrollbar orizzontale non è visibile (da preservare)",
+        "Il comportamento è coerente con il selettore settimane fix (stesso stile visivo)"
+      ]
+    }
+  ]
+}

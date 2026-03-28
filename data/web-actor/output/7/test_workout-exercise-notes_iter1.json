@@ -1,0 +1,75 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "workout-exercise-notes",
+    "task_titolo": "Note testuali degli esercizi nella scheda allenamento",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Ogni esercizio che ha notes non vuote le mostra all'utente sotto il nome nella tabella esercizi",
+      "soddisfatto": true,
+      "dettaglio": "La funzione renderEsercizioRow() legge correttamente il campo 'note' con optional chaining (esercizio?.note ?? ''), e lo renderizza condizionalmente nel template HTML della cella .workout-esercizio-row__nome. Linea 616-624 in workout.js: `${noteEsercizio ? `<span class=\"workout-esercizio-row__note\">${noteEsercizio}</span>` : ''}`"
+    },
+    {
+      "criterio": "Le note sono leggibili senza sovrapporsi ad altri elementi della riga (nome, serie, reps, peso, recupero)",
+      "soddisfatto": true,
+      "dettaglio": "Lo stile CSS .workout-esercizio-row__note è definito con display:block (linea 606), margin-top:var(--space-1) (linea 607) che crea distanziamento verticale, font-size:var(--font-size-xs) (linea 608) per ridurre l'ingombro, color:var(--color-text-muted) (linea 609) per distinguerla visivamente, line-height:var(--line-height-normal) (linea 610) per leggibilità. La note è in una <span> block all'interno della cella nome (colonna separata), non sovrappone altre colonne (serie, reps, peso, recupero)."
+    },
+    {
+      "criterio": "Esercizi senza note (campo assente o stringa vuota) non mostrano span vuoti o placeholder",
+      "soddisfatto": true,
+      "dettaglio": "La riga 624 in workout.js usa ternario: `${noteEsercizio ? ... : ''}`. Se noteEsercizio è falsy (undefined, null, stringa vuota), il ternario restituisce stringa vuota. Non viene renderizzato alcun span. La variabile noteEsercizio è inizializzata con nullish coalescing alla linea 616: `const noteEsercizio = esercizio?.note ?? '';` quindi tutti i casi nulli/undefined diventano stringa vuota, che è falsy nel ternario."
+    },
+    {
+      "criterio": "Le note sono associate all'esercizio corretto (ogni nota appare nella riga del proprio esercizio)",
+      "soddisfatto": true,
+      "dettaglio": "Ogni invocazione di renderEsercizioRow() riceve un singolo oggetto esercizio e estrae l'intera riga HTML per quell'esercizio, inclusa la nota specifica al campo esercizio.note passato alla funzione. Non c'è cross-reference tra esercizi. Il JSON workout.json contiene esempi di note diverse per ogni esercizio (es. Squat ha 'Discesa controllata...', Leg press ha 'Supplemento leggero...', Stacco ha '66% 1RM...'), e ogni riga della tabella riceve la propria nota corretta."
+    },
+    {
+      "criterio": "docs/js/workout.js: la funzione renderEsercizioRow() legge esercizio?.note e lo inserisce condizionalmente nel template HTML",
+      "soddisfatto": true,
+      "dettaglio": "Verificato nella funzione renderEsercizioRow() linee 608-632. Linea 616: `const noteEsercizio = esercizio?.note ?? '';` legge il campo con optional chaining e nullish coalescing. Linea 624: il template HTML include la nota con ternario: `${noteEsercizio ? `<span class=\"workout-esercizio-row__note\">${noteEsercizio}</span>` : ''}`"
+    },
+    {
+      "criterio": "docs/js/workout.js: la nota è racchiusa in un elemento con classe workout-esercizio-row__note",
+      "soddisfatto": true,
+      "dettaglio": "La linea 624 in workout.js racchiude la nota in `<span class=\"workout-esercizio-row__note\">`. La classe è corretta e corrisponde alla classe CSS definita in workout.css."
+    },
+    {
+      "criterio": "docs/css/workout.css: la classe .workout-esercizio-row__note è definita con display:block, font-size e colore usando variabili CSS (no hardcoded)",
+      "soddisfatto": true,
+      "dettaglio": "La classe è definita alle linee 605-612 in workout.css. Proprietà: display:block (linea 606), margin-top:var(--space-1) (linea 607), font-size:var(--font-size-xs) (linea 608), color:var(--color-text-muted) (linea 609), line-height:var(--line-height-normal) (linea 610), font-style:italic (linea 611). Tutti gli hardcoded sono rimossi, usate solo variabili CSS. Nessun colore RGB, px hardcoded, ecc."
+    },
+    {
+      "criterio": "La nota non viene mostrata se esercizio.note è undefined, null o stringa vuota",
+      "soddisfatto": true,
+      "dettaglio": "La logica è implementata con optional chaining (esercizio?.note) che non lancia eccezione se esercizio è null/undefined, e con nullish coalescing (?? '') che converte undefined/null in stringa vuota. Il ternario nel template verifica `noteEsercizio ?` che è falsy per stringa vuota, undefined, null, quindi non renderizza lo span."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/workout.js",
+      "esiste": true,
+      "note": "File contiene la funzione renderEsercizioRow() (linea 608-632) modificata per leggere e renderizzare il campo 'note' con optional chaining e ternario condizionale. Implementazione corretta."
+    },
+    {
+      "path": "docs/css/workout.css",
+      "esiste": true,
+      "note": "File contiene la classe .workout-esercizio-row__note (linee 605-612) con stili completi e corretti: display:block, variabili CSS per font-size, color, margin-top, line-height. Nessun hardcoded."
+    },
+    {
+      "path": "docs/data/workout.json",
+      "esiste": true,
+      "note": "File contiene struttura dati con campo 'note' su tutti gli esercizi campionati. Esempi verificati: Squat (linea 104), Leg press (linea 116), Stacco (linea 208), ecc. Tutte le note sono stringhe non vuote con testo tecnico."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "La nota è renderizzata con font-style:italic (linea 611 in workout.css) per distinguerla visivamente dal testo principale. Questo è una scelta di design appropriata ma non esplicitamente richiesto nei criteri — documentato per completezza.",
+      "file": "docs/css/workout.css"
+    }
+  ]
+}

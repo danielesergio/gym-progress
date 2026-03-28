@@ -1,0 +1,100 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "workout-warmup-cooldown",
+    "task_titolo": "Sezione riscaldamento e defaticamento nella scheda giorno",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Prima dell'elenco esercizi è presente una sezione 'Riscaldamento' con i punti del riscaldamento",
+      "soddisfatto": true,
+      "dettaglio": "La funzione renderWarmupCooldownSection() è chiamata in renderGiornoCard() alle righe 817-821 per il riscaldamento, inserita PRIMA della tabella esercizi (riga 835 nel return finale). Legge da workoutData.riscaldamento come previsto."
+    },
+    {
+      "criterio": "Dopo l'elenco esercizi è presente una sezione 'Defaticamento' con i relativi punti",
+      "soddisfatto": true,
+      "dettaglio": "La funzione renderWarmupCooldownSection() è chiamata in renderGiornoCard() alle righe 822-826 per il defaticamento, inserita DOPO la tabella esercizi (riga 837 nel return finale). Legge da workoutData.defaticamento come previsto."
+    },
+    {
+      "criterio": "Le sezioni sono visibili o collassabili ma accessibili senza navigare altrove",
+      "soddisfatto": true,
+      "dettaglio": "Le sezioni usano il tag HTML nativo <details>/<summary> con attributo 'open' (riga 752), rendendo il contenuto sempre visibile al caricamento. Sono collassabili tramite il click sul summary, senza richiedere JavaScript aggiuntivo. Accessibili direttamente nella card del giorno."
+    },
+    {
+      "criterio": "Il contenuto corrisponde ai dati della scheda attiva selezionata",
+      "soddisfatto": true,
+      "dettaglio": "workoutData.riscaldamento e workoutData.defaticamento sono letti dalla variabile globale workoutData (state della scheda attiva). Il workout.json contiene questi array a livello radice (linee 62-73 del file JSON), condivisi per tutta la scheda. Il contenuto è renderizzato correttamente tramite map() delle stringhe dell'array."
+    },
+    {
+      "criterio": "docs/js/workout.js contiene la funzione renderWarmupCooldownSection(items, titolo)",
+      "soddisfatto": true,
+      "dettaglio": "La funzione è definita alle linee 748-761 di workout.js con firma: renderWarmupCooldownSection(items, titolo, cssClass). Accetta tre parametri (items array, titolo string, cssClass per BEM), restituisce stringa HTML o '' se items vuoto."
+    },
+    {
+      "criterio": "renderGiornoCard() chiama renderWarmupCooldownSection() con workoutData.riscaldamento prima della tabella esercizi",
+      "soddisfatto": true,
+      "dettaglio": "Linee 817-821: warmupHtml = renderWarmupCooldownSection(workoutData?.riscaldamento, 'Riscaldamento', 'workout-warmup-section'). Inserito nel template alle linee 828-839 prima di tabellaHtml (riga 835)."
+    },
+    {
+      "criterio": "renderGiornoCard() chiama renderWarmupCooldownSection() con workoutData.defaticamento dopo la tabella esercizi",
+      "soddisfatto": true,
+      "dettaglio": "Linee 822-826: cooldownHtml = renderWarmupCooldownSection(workoutData?.defaticamento, 'Defaticamento', 'workout-cooldown-section'). Inserito nel template alle linee 828-839 dopo tabellaHtml (riga 837)."
+    },
+    {
+      "criterio": "La funzione gestisce array assenti o vuoti senza eccezioni (ritorna stringa vuota)",
+      "soddisfatto": true,
+      "dettaglio": "Riga 749 di workout.js: if (!items || items.length === 0) return ''; Gestisce sia array undefined/null che array vuoto, evitando eccezioni e non renderizzando la sezione."
+    },
+    {
+      "criterio": "docs/css/workout.css contiene le classi .workout-warmup-section e .workout-cooldown-section",
+      "soddisfatto": true,
+      "dettaglio": "Classi CSS definite a partire dalla riga 1123 (base condivisa) e poi differentiate: .workout-warmup-section (riga 1193) con tono caldo (warning/amber), .workout-cooldown-section (riga 1215) con tono fresco (accent/arancione). Incluse tutte le varianti BEM: __summary, __title, __list, __item e stati :hover, [open], @media mobile."
+    },
+    {
+      "criterio": "Nessun inline style nell'HTML generato — solo classi CSS",
+      "soddisfatto": true,
+      "dettaglio": "La funzione renderWarmupCooldownSection() genera HTML con sole classi CSS (righe 750-758). Nessun attributo style inline. Anche in renderGiornoCard() il template usa solo classi CSS, senza inline style."
+    },
+    {
+      "criterio": "Le sezioni non appaiono per il branch Test Day (renderTestDaySection() — comportamento da concordare, ma accettabile anche includerle)",
+      "soddisfatto": true,
+      "dettaglio": "Riga 777: se giorno.protocolli esiste (Test Day), la funzione ritorna early senza includere warmupHtml/cooldownHtml. Le sezioni riscaldamento/defaticamento appaiono SOLO nei giorni di allenamento regolare, non nei Test Day. Comportamento correto."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/workout.js",
+      "esiste": true,
+      "note": "Contiene renderWarmupCooldownSection (riga 748) e modifiche a renderGiornoCard() (righe 817-826 per le chiamate, linee 835-837 per il template). Funzione implementata correttamente con gestione null/empty e uso di workoutData globale."
+    },
+    {
+      "path": "docs/css/workout.css",
+      "esiste": true,
+      "note": "Classi .workout-warmup-section e .workout-cooldown-section completamente stilizzate (linee 1123-1271). Include base condivisa, varianti BEM, colori differenziati (warm amber per riscaldamento, cool accent per defaticamento), stati collassabili, responsive mobile, override tema-pro."
+    },
+    {
+      "path": "docs/data/workout.json",
+      "esiste": true,
+      "note": "Array 'riscaldamento' (4 stringhe, linea 62) e 'defaticamento' (4 stringhe, linea 68) presenti a livello radice della scheda come atteso. Struttura conforme alle aspettative del task."
+    },
+    {
+      "path": "docs/workout.html",
+      "esiste": true,
+      "note": "Pagina HTML che include workout.js e workout.css. Nessuna modifica necessaria poiché il rendering è dinamico via JS."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "La funzione renderWarmupCooldownSection() usa <details open> che mantiene le sezioni sempre aperte al caricamento. Questo soddisfa il requisito 'visibili o collassabili', ma potrebbe essere un comportamento discrezionale (il task lascia libertà sulla scelta, e la soluzione è implementata correttamente). Nessun problema funzionale.",
+      "file": "docs/js/workout.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Le sezioni riscaldamento/defaticamento sono condivise per tutti i giorni della scheda (stesso contenuto per ogni giorno), poiché i dati si trovano a livello radice nel JSON. Questo è il comportamento atteso secondo il task notes, ma potrebbe essere un punto di attenzione per evoluzioni future con dati per-giorno.",
+      "file": "docs/js/workout.js"
+    }
+  ]
+}

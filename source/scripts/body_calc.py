@@ -3,8 +3,8 @@
 Calcolatore composizione corporea e fabbisogno calorico per atleta.
 
 Uso:
-    python scripts/body_calc.py --peso 87.2 --altezza 188 --eta 38 --vita 89 --collo 39 --fianchi 100 --sesso M
-    python scripts/body_calc.py --peso 87.2 --altezza 188 --eta 38 --vita 89 --collo 39 --fianchi 100 --sesso M --surplus 300
+    python source/scripts/body_calc.py --peso 87.2 --altezza 188 --eta 38 --vita 89 --collo 39 --fianchi 100 --sesso M
+    python source/scripts/body_calc.py --peso 87.2 --altezza 188 --eta 38 --vita 89 --collo 39 --fianchi 100 --sesso M --surplus 300
 
 Formule utilizzate:
     - Body Fat %: US Navy (Hodgdon-Beckett)

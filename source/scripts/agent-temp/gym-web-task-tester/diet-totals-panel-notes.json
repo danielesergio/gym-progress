@@ -1,0 +1,177 @@
+// File temporaneo creato da gym-web-task-tester il 2026-03-28
+// Scopo: appunti verifica criteri task diet-totals-panel prima di scrivere il report finale
+// Può essere eliminato al termine del test
+
+{
+  "verifica": "diet-totals-panel iterazione 1",
+  "date": "2026-03-28",
+
+  "file_verificati": {
+    "docs/diet.html": {
+      "esiste": true,
+      "linea_inserimento": "riga 94-97",
+      "presente": true,
+      "note": "Elemento <section id='diet-totals-panel'> presente tra #meals-list (riga 89-92) e #supplements-section (riga 99-108). Contiene placeholder loading. Attributi aria-label e aria-live='polite' presenti."
+    },
+    "docs/js/diet.js": {
+      "esiste": true,
+      "funzione_renderDietTotalsPanel": {
+        "presente": true,
+        "linea": 265,
+        "parametri": ["totals", "tipoGiorno"],
+        "implementazione": {
+          "riga_266": "const container = document.getElementById('diet-totals-panel');",
+          "riga_267": "if (!container) return;",
+          "riga_270": "Se !totals || !tipoGiorno mostra <p class='diet-empty'>",
+          "riga_276_279": "Estrae valori selezionati (kcal, proteineG, carboG, grassiG) con null check (!=null)",
+          "riga_282_285": "Estrae valori target da tipoGiorno.kcal_target e tipoGiorno.macros_target.{proteine, carboidrati, grassi} con Math.round() e null check",
+          "riga_294_299": "deltaClass() calcola classe modificatrice: --neutral se |delta|<=5 oppure null, --positive se delta>0, --negative se delta<0",
+          "riga_307_312": "fmtDelta() formatta delta con segno (+12, -8, 0) o '—' se null",
+          "riga_315_317": "fmtVal() mostra intero o '—'",
+          "riga_324_360": "Template HTML con 4 righe (header, selezionati, target, delta), 5 colonne (label + kcal + prot + carb + gras), ARIA role='table'/'row'/'cell'/'columnheader'/'rowheader', aria-label descrittivi"
+        }
+      },
+      "punti_di_chiamata": {
+        "punto_1_riga_845": {
+          "contesto": "handler click day-toggle, dopo selectedTotals = calculateSelectedTotals(...)",
+          "codice": "renderDietTotalsPanel(selectedTotals, tipoSelezionato);",
+          "presente": true
+        },
+        "punto_2_riga_881": {
+          "contesto": "event delegation #meals-list dopo click opzione, dopo selectedTotals = calculateSelectedTotals(...)",
+          "codice": "renderDietTotalsPanel(selectedTotals, tipoSelezionatoMeals);",
+          "presente": true
+        },
+        "punto_3_riga_919": {
+          "contesto": "fetch iniziale dopo renderDiet(dietData), dopo selectedTotals = calculateSelectedTotals(...)",
+          "codice": "renderDietTotalsPanel(selectedTotals, tipoSelezionatoInit);",
+          "presente": true
+        }
+      },
+      "nota_importante": "renderDiet() function (riga 802-824) NON chiama renderDietTotalsPanel() — questo è INTENZIONALE perché renderDietTotalsPanel() viene invocata subito DOPO ogni chiamata a renderDiet() nei punti esatti dove selectedTotals viene ricalcolato. Pattern corretto secondo task notes."
+    },
+    "docs/css/diet.css": {
+      "esiste": true,
+      "stili_presenti": [
+        {
+          "classe": ".diet-totals-panel",
+          "riga": 683,
+          "proprieta": ["background-color: var(--color-bg-card)", "border: 1px solid var(--color-border)", "border-radius: var(--radius-lg)", "padding: var(--space-5) var(--space-6)", "margin-bottom: var(--space-8)", "overflow: hidden"]
+        },
+        {
+          "classe": ".diet-totals-panel__title",
+          "riga": 692,
+          "proprieta": ["font-size: var(--font-size-md)", "font-weight: var(--font-weight-semibold)", "color: var(--color-text)", "margin: 0 0 var(--space-4) 0"]
+        },
+        {
+          "classe": ".diet-totals-panel__table",
+          "riga": 701,
+          "proprieta": ["display: flex", "flex-direction: column", "gap: 0", "width: 100%", "overflow-x: auto"]
+        },
+        {
+          "classe": ".diet-totals-panel__row",
+          "riga": 710,
+          "proprieta": ["display: grid", "grid-template-columns: minmax(90px, 1.5fr) repeat(4, 1fr)", "align-items: center", "min-width: 280px"]
+        },
+        {
+          "classe": ".diet-totals-panel__row--header",
+          "riga": 718,
+          "proprieta": ["border-bottom: 2px solid var(--color-border)", "padding-bottom: var(--space-2)", "margin-bottom: var(--space-1)"]
+        },
+        {
+          "classe": ".diet-totals-panel__cell--delta.diet-totals-panel__delta--neutral",
+          "riga": 783,
+          "proprieta": ["color: var(--color-text-muted)"]
+        },
+        {
+          "classe": ".diet-totals-panel__cell--delta.diet-totals-panel__delta--positive",
+          "riga": 788,
+          "proprieta": ["color: var(--color-success)", "background-color: rgba(76, 175, 80, 0.08)"]
+        },
+        {
+          "classe": ".diet-totals-panel__cell--delta.diet-totals-panel__delta--negative",
+          "riga": 794,
+          "proprieta": ["color: var(--color-danger)", "background-color: rgba(244, 67, 54, 0.08)"]
+        }
+      ],
+      "media_query_mobile": {
+        "breakpoint": "@media (max-width: 400px)",
+        "riga": 811,
+        "proprieta": "Riduce font-size a var(--font-size-xs), grid-template-columns a minmax(72px, 1.2fr)"
+      },
+      "theme_pro_override": {
+        "riga": 832,
+        "proprieta": "border-top: 3px solid var(--color-accent)"
+      }
+    }
+  },
+
+  "criteri_accettazione": {
+    "criterio_1": {
+      "testo": "Il pannello mostra kcal, proteine, carboidrati e grassi sia per i pasti selezionati che per il target",
+      "verifica": "template HTML righe 336-350 contiene 3 righe (selezionati, target, delta) con 4 colonne macros (kcal, Prot, Carb, Gras)",
+      "soddisfatto": true,
+      "dettaglio": "fmtVal(selKcal), fmtVal(selProteine), fmtVal(selCarbo), fmtVal(selGrassi) per riga selezionati; fmtVal(tgtKcal), fmtVal(tgtProteine), fmtVal(tgtCarbo), fmtVal(tgtGrassi) per riga target"
+    },
+    "criterio_2": {
+      "testo": "Il delta tra selezionato e target è visibile per ogni voce",
+      "verifica": "fmtDelta(sel, tgt) ritorna '—', '0', '+N', '-N' per ogni macro nella riga delta (righe 354-357)",
+      "soddisfatto": true,
+      "dettaglio": "4 celle delta con fmtDelta(selKcal, tgtKcal), fmtDelta(selProteine, tgtProteine), fmtDelta(selCarbo, tgtCarbo), fmtDelta(selGrassi, tgtGrassi)"
+    },
+    "criterio_3": {
+      "testo": "Il delta negativo (selezionato < target) è distinguibile visivamente da delta positivo e da delta zero/neutro",
+      "verifica": "3 classi CSS modificatrici: --neutral se |delta|<=5, --positive se delta>0, --negative se delta<0 (linee 294-299). CSS usa var(--color-text-muted) per neutral, var(--color-success) per positive, var(--color-danger) per negative",
+      "soddisfatto": true,
+      "dettaglio": "Classi applicate dinamicamente via ${dKcalClass}, ${dProteineClass}, ecc. (righe 319-322). CSS riga 783 (neutral), 788 (positive), 794 (negative)"
+    },
+    "criterio_4": {
+      "testo": "Il pannello si aggiorna senza ricaricare la pagina quando cambia la selezione",
+      "verifica": "renderDietTotalsPanel() aggiorna innerHTML del container (riga 324), viene richiamata in 3 punti dove selectedTotals viene ricalcolato (righe 845, 881, 919)",
+      "soddisfatto": true,
+      "dettaglio": "Punti di chiamata: (1) cambio tipo giorno via handler click day-toggle, (2) cambio opzione slot via event delegation meals-list, (3) fetch iniziale. Nessun page reload."
+    },
+    "criterio_5": {
+      "testo": "Il pannello è leggibile su mobile (non tronca valori)",
+      "verifica": "Media query @media (max-width: 400px) riga 811 riduce font-size a var(--font-size-xs), grid-template-columns a minmax(72px, 1.2fr), overflow-x: auto nel table consente scroll orizzontale",
+      "soddisfatto": true,
+      "dettaglio": "Responsive grid con minmax, font-size-xs per mobile, overflow-x auto per non troncare"
+    },
+    "criterio_6": {
+      "testo": "I valori numerici sono arrotondati all'intero (nessun decimale visibile all'utente)",
+      "verifica": "Math.round() applicato a tutti i target (righe 282-285), fmtVal() mostra il valore arrotondato senza decimali, fmtDelta() mostra delta senza decimali",
+      "soddisfatto": true,
+      "dettaglio": "target arrotondati con Math.round(), selectedTotals già arrotondato da calculateSelectedTotals (linea 276-279 usa totals.kcal direttamente, che è già arrotondato), fmtVal(v) ritorna String(v) senza decimali"
+    }
+  },
+
+  "anomalie_potenziali": [
+    {
+      "gravita": "info",
+      "descrizione": "renderDiet() non chiama renderDietTotalsPanel() — è intenzionale, renderDietTotalsPanel() viene invocata subito dopo in ogni punto dove selectedTotals viene ricalcolato",
+      "file": "docs/js/diet.js",
+      "linee": [802, 845, 881, 919],
+      "non_problema": true,
+      "motivo": "Pattern corretto per separare la responsabilità di renderDiet (altri render) da renderDietTotalsPanel"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Soglia delta neutro è |delta|<=5 — potrebbe essere interpretabile come ambiguo se delta=5 esatto, ma la logica è chiara e coerente",
+      "file": "docs/js/diet.js",
+      "linea": 297,
+      "non_problema": true,
+      "motivo": "Design decision consapevole, soglia bassa per enfatizzare piccoli delta"
+    }
+  ],
+
+  "riassunto": {
+    "file_totali": 3,
+    "file_presenti": 3,
+    "criteri_totali": 6,
+    "criteri_soddisfatti": 6,
+    "anomalie_bloccanti": 0,
+    "anomalie_warning": 0,
+    "anomalie_info": 2,
+    "esito": "OK"
+  }
+}

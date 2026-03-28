@@ -1,0 +1,181 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "diet-meals-by-type",
+    "task_title": "Lista pasti con opzioni varianti per tipo di giorno",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "diet-meals-by-type",
+    "type": "component",
+    "title": "Lista pasti con opzioni varianti per tipo di giorno",
+    "description": "I pasti sono organizzati per slot (Colazione, Spuntino Mattina, Pranzo, Merenda, Cena). Ogni slot ha più opzioni. Ogni opzione ha varianti specifiche per il tipo di giorno selezionato (riposo / palestra / attivita_extra), con alimenti e grammature che cambiano. Per ogni slot occorre mostrare: l'orario indicativo, le opzioni disponibili (selezionabili o in lista), e per ogni opzione gli alimenti con grammi e macros della variante corretta. La pagina deve aggiornare tutti i pasti quando l'utente cambia tipo di giorno.",
+    "inputs": [
+      "diet_slots_data",
+      "DayTypeSelector"
+    ],
+    "outputs": [
+      "MealsByTypeList"
+    ],
+    "acceptance_criteria": [
+      "I pasti sono raggruppati per slot con orario indicativo visibile",
+      "Per ogni slot sono mostrate le opzioni disponibili",
+      "Gli alimenti e le grammature mostrati sono quelli della variante del tipo giorno selezionato",
+      "Cambiando tipo di giorno, gli alimenti si aggiornano senza ricaricare la pagina",
+      "La struttura è leggibile anche con molte opzioni per slot (es. 7 opzioni a pranzo)"
+    ],
+    "notes": "Il file diet.js esiste già con funzioni renderMealsList() e renderMealCard() parzialmente implementate, ma la logica attuale mostra solo la PRIMA opzione per slot (non tutte le opzioni). Il task richiede di estendere renderMealsList() per mostrare TUTTE le opzioni di ogni slot, con layout dedicato che gestisce l'espandibilità quando ci sono molte opzioni (es. accordion o schede cliccabili). La funzione renderDiet() aggiorna già tutti i blocchi al cambio tipo giorno — il meccanismo di aggiornamento è già funzionante. Il costo del task è concentrato sul nuovo layout multi-opzione e i relativi stili CSS."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "Riscrivere renderMealsList() e renderMealCard() per mostrare TUTTE le opzioni di ogni slot invece della sola prima. Aggiungere funzione renderSlotCard() che wrappa lo slot con orario + tutte le opzioni. Aggiungere renderOpzioneCard() per ciascuna opzione con il nome dell'opzione, gli alimenti della variante corretta e i totali macros. Il meccanismo di aggiornamento al cambio tipo giorno (via renderDiet() → renderMealsList()) è già presente e va mantenuto.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Aggiungere stili per il layout slot-pasto (container slot con orario in evidenza), lista opzioni dentro ogni slot, card opzione con nome-opzione + tabella alimenti. Gestire layout compatto quando ci sono molte opzioni (grid o stack con gap ridotto). Mantenere tutti gli stili esistenti.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/diet.json",
+        "motivo": "Struttura dati completa: meta.tipi_giorno[] (id, label, kcal_target, macros_target), slot_pasto[] (id, label, orario_indicativo, kcal_per_tipo, opzioni[]). Ogni opzione ha: nome (stringa), varianti{} con chiavi per tipo_giorno (riposo/palestra/attivita_extra). Ogni variante ha: alimenti[] (nome, grammi, kcal, proteine, carbo, grassi) e totale{kcal, proteine, carbo, grassi}. Lo slot 'pranzo' ha tipicamente 7 opzioni — leggere per verificare la struttura reale con molte opzioni."
+      },
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "File da modificare — capire le funzioni esistenti: renderMealsList(data, dayTypeId), renderMealCard(pasto), renderAlimentiRows(alimenti), renderDiet(data). La funzione renderMealsList() usa solo la prima opzione per slot: va estesa. Il meccanismo di aggiornamento al cambio tipo giorno è già funzionante tramite event delegation su #day-toggle e chiamata a renderDiet(dietData)."
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "File da modificare — verificare classi esistenti: .diet-meal-card, .diet-meal-card__header, .diet-meal-card__nome, .diet-meal-card__orario, .diet-meals-stack, .diet-meal-table, .diet-section-title. Le nuove classi per slot/opzioni devono seguire il prefisso diet- e usare le stesse variabili CSS già in uso."
+      },
+      {
+        "path": "docs/diet.html",
+        "motivo": "Verificare il contenitore #meals-list e la sua struttura HTML attuale. Il task modifica esclusivamente il contenuto generato dinamicamente in #meals-list — nessuna modifica all'HTML statico è necessaria. La sezione #meals-list ha già aria-live='polite'."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "Plain HTML/JS ES2022 — no framework, no bundler",
+      "grafici": null,
+      "dati": "fetch() da 'data/diet.json' (percorso relativo). Il fetch è già implementato in diet.js — il task non deve aggiungere nuovi fetch."
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase — es. slotPasto, tipoGiorno, opzioneAttiva, varianteCorrente",
+      "classi_css": "kebab-case con prefisso diet- — es. .diet-slot-card, .diet-slot-card__orario, .diet-opzione-card, .diet-opzione-card__nome",
+      "id_html": "kebab-case — il contenitore già esistente è #meals-list (non modificare l'ID)",
+      "gestione_null": "Usare optional chaining (?.) e fallback: valore ?? '—'. Mai mostrare 'null' o 'undefined' nel DOM.",
+      "pattern_js": "Funzioni render* pure che restituiscono stringhe HTML. renderMealsList(data, dayTypeId) aggiornato chiama le nuove renderSlotCard() e renderOpzioneCard(). La funzione renderDiet() già richiama renderMealsList() ad ogni cambio tipo giorno — non toccare il meccanismo di aggiornamento.",
+      "struttura_js": "1. Costanti DATA_PATH_* in cima. 2. Funzioni utility pure. 3. Funzioni render*. 4. Funzione initDiet(). 5. DOMContentLoaded listener.",
+      "no": [
+        "no jQuery",
+        "no var — solo const e let",
+        "no inline style — solo classi CSS",
+        "no ES module import/export",
+        "no alert()"
+      ]
+    },
+    "pagina": {
+      "nome": "Dieta",
+      "file": "docs/diet.html",
+      "js": "docs/js/diet.js",
+      "css": "docs/css/diet.css",
+      "dati_json": ["data/diet.json"],
+      "contenitore_target": "#meals-list",
+      "aria": "aria-live='polite' già presente su #meals-list — aggiornamenti DOM automaticamente annunciati agli screen reader"
+    }
+  },
+  "struttura_dati": {
+    "slot_pasto": {
+      "descrizione": "Array di oggetti slot in diet.json.slot_pasto[]",
+      "campi": {
+        "id": "stringa — es. 'colazione', 'spuntino', 'pranzo', 'merenda', 'cena'",
+        "label": "stringa — es. 'Colazione', 'Spuntino Mattina', 'Pranzo'",
+        "orario_indicativo": "stringa HH:MM — es. '07:30', '10:30', '13:00'",
+        "kcal_per_tipo": "oggetto con chiavi riposo/palestra/attivita_extra → numero intero",
+        "opzioni": "array di opzioni (1..N per slot — il pranzo ne ha tipicamente 7)"
+      }
+    },
+    "opzione": {
+      "descrizione": "Elemento di slot.opzioni[]",
+      "campi": {
+        "nome": "stringa — es. 'Yogurt greco e muesli proteico con pane e frutta', 'Pizza Margherita'",
+        "varianti": "oggetto con chiavi per tipo_giorno: riposo, palestra, attivita_extra"
+      }
+    },
+    "variante": {
+      "descrizione": "Elemento di opzione.varianti[tipoGiornoId]",
+      "campi": {
+        "alimenti": "array di oggetti con: nome (stringa), grammi (numero), kcal (numero), proteine (numero), carbo (numero), grassi (numero)",
+        "totale": "oggetto con: kcal (numero), proteine (numero), carbo (numero), grassi (numero)"
+      }
+    },
+    "note_chiave": [
+      "Una variante può non esistere per tutti i tipi di giorno — usare optional chaining: opzione.varianti?.[dayTypeId]",
+      "Il campo 'carbo' negli alimenti si chiama 'carbo' (non 'carboidrati') — verificare dal JSON reale",
+      "I valori numerici degli alimenti possono avere 1 decimale (es. 15.5g di proteine) — arrotondare con Math.round() nel render",
+      "Lo slot 'spuntino' ha sempre varianti identiche per tutti i tipi di giorno (200 kcal fissi)"
+    ]
+  },
+  "linee_guida_implementazione": {
+    "struttura_html_generata": {
+      "descrizione": "Il contenitore #meals-list viene popolato da renderMealsList() con questa struttura:",
+      "html_schema": "<h2 class='diet-section-title'>Pasti del giorno</h2> <div class='diet-slots-stack'> [per ogni slot:] <section class='diet-slot-card' aria-label='Slot: {label}'> <header class='diet-slot-card__header'> <h3 class='diet-slot-card__label'>{label}</h3> <span class='diet-slot-card__orario'>{orario_indicativo}</span> <span class='diet-slot-card__kcal'>{kcal_per_tipo[dayTypeId]} kcal</span> </header> <div class='diet-slot-card__opzioni'> [per ogni opzione:] <article class='diet-opzione-card' aria-label='Opzione: {nome}'> <h4 class='diet-opzione-card__nome'>{nome opzione}</h4> <div class='diet-meal-table-wrapper'> <table class='diet-meal-table'>...</table> </div> <footer class='diet-opzione-card__totale'>...</footer> </article> </div> </section> </div>"
+    },
+    "gestione_opzioni_multiple": "Quando uno slot ha molte opzioni (es. 7 al pranzo), usare un layout a stack verticale (.diet-slot-card__opzioni con flex-direction: column e gap). Ogni opzione mostra il suo nome come intestazione sopra la tabella alimenti. NON usare accordion/collapse per questo task — mostrare tutte le opzioni espanse, la leggibilità è garantita dal layout ordinato.",
+    "aggiornamento_tipo_giorno": "La funzione renderMealsList(data, dayTypeId) viene già chiamata da renderDiet(data) ogni volta che l'utente clicca un bottone nel selettore. Non modificare questo meccanismo — solo aggiornare il corpo di renderMealsList() per costruire il nuovo HTML con tutti gli slot e tutte le opzioni.",
+    "opzione_senza_variante": "Se opzione.varianti?.[dayTypeId] è undefined/null, saltare quella opzione (non mostrarla). Se nessuna opzione di uno slot ha la variante per il tipo giorno, mostrare uno slot vuoto con messaggio 'Nessuna opzione disponibile per questo tipo di giorno'.",
+    "funzioni_da_aggiungere": [
+      "renderSlotCard(slot, dayTypeId) → stringa HTML per un intero slot con tutte le sue opzioni",
+      "renderOpzioneCard(opzione, dayTypeId) → stringa HTML per una singola opzione con la variante del tipo giorno selezionato"
+    ],
+    "funzioni_da_modificare": [
+      "renderMealsList(data, dayTypeId) → usare renderSlotCard() invece di renderMealCard(). Mantenere la firma identica per compatibilità con renderDiet().",
+      "renderMealCard(pasto) → può essere mantenuta per compatibilità o deprecata in favore di renderOpzioneCard()"
+    ]
+  },
+  "criteri_accettazione": [
+    "I pasti sono raggruppati per slot con orario indicativo visibile nell'intestazione dello slot",
+    "Per ogni slot sono mostrate TUTTE le opzioni disponibili (non solo la prima)",
+    "Il nome di ciascuna opzione è visibile come intestazione della card opzione",
+    "Gli alimenti e le grammature mostrati sono quelli della variante del tipo giorno selezionato",
+    "Cambiando tipo di giorno, gli alimenti si aggiornano senza ricaricare la pagina",
+    "La struttura è leggibile anche con 7 opzioni al pranzo (layout a stack ordinato)",
+    "Le opzioni prive di variante per il tipo giorno selezionato non vengono mostrate",
+    "docs/js/diet.js contiene la funzione renderSlotCard(slot, dayTypeId)",
+    "docs/js/diet.js contiene la funzione renderOpzioneCard(opzione, dayTypeId)",
+    "docs/js/diet.js — renderMealsList() chiama renderSlotCard() per ogni slot in data.slot_pasto[]",
+    "docs/css/diet.css contiene la classe .diet-slot-card",
+    "docs/css/diet.css contiene la classe .diet-opzione-card",
+    "docs/css/diet.css contiene la classe .diet-opzione-card__nome",
+    "Valori null/undefined negli alimenti mostrano '—' nel DOM (mai 'null' o 'undefined')",
+    "La sezione #meals-list ha aria-live='polite' (già presente in diet.html — non rimuovere)"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "diet-day-type-selector",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/js/diet.js",
+        "docs/css/diet.css",
+        "docs/diet.html"
+      ],
+      "note": "Selettore tipo giorno completamente implementato in diet.js: renderDaySelector(), renderDayTypeToggle(), event delegation su #day-toggle, stato currentDayTypeId. Il bottone attivo ha classe .active e aria-pressed='true'. Il cambio tipo giorno aggiorna l'intera pagina via renderDiet(dietData)."
+    },
+    {
+      "task_id": "diet-macros-by-type",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/js/diet.js",
+        "docs/css/diet.css"
+      ],
+      "note": "Riepilogo macros completamente implementato in diet.js: renderMacrosSummary(tipoGiorno, notaStrategia), buildProportionBar(). Griglia 4 colonne kcal/proteine/carbo/grassi + barra proporzioni + nota strategia sintetica. Aggiornato ad ogni cambio tipo giorno via renderDiet()."
+    }
+  ]
+}

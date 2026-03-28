@@ -1,0 +1,106 @@
+// File temporaneo creato da gym-web-task-tester il 2026-03-28
+// Scopo: appunti verifica criteri task diet-meals-by-type iterazione 1 prima di scrivere il report finale
+// Puo' essere eliminato al termine del test
+
+{
+  "verifica_file": {
+    "docs/js/diet.js": {
+      "esiste": true,
+      "funzioni_da_trovare": [
+        "renderMealsList(data, dayTypeId)",
+        "renderSlotCard(slot, dayTypeId)",
+        "renderOpzioneCard(opzione, dayTypeId, index)"
+      ],
+      "trovate": []
+    },
+    "docs/css/diet.css": {
+      "esiste": true,
+      "classi_da_trovare": [
+        ".diet-slot-card",
+        ".diet-slot-card__header",
+        ".diet-slot-card__label",
+        ".diet-slot-card__orario",
+        ".diet-slot-card__kcal",
+        ".diet-slot-card__opzioni",
+        ".diet-opzione-card",
+        ".diet-opzione-card__nome",
+        ".diet-opzione-card__totale"
+      ],
+      "trovate": []
+    },
+    "docs/diet.html": {
+      "esiste": true,
+      "verifiche": [
+        "aria-live='polite' su #meals-list"
+      ]
+    }
+  },
+  "criteri_accettazione_verifica": {
+    "1_pasti_raggruppati_per_slot": {
+      "descrizione": "I pasti sono raggruppati per slot con orario indicativo visibile",
+      "soddisfatto": null,
+      "dettagli": ""
+    },
+    "2_tutte_opzioni_per_slot": {
+      "descrizione": "Per ogni slot sono mostrate le opzioni disponibili (non solo la prima)",
+      "soddisfatto": null,
+      "dettagli": ""
+    },
+    "3_alimenti_variante_corretta": {
+      "descrizione": "Gli alimenti e le grammature mostrati sono quelli della variante del tipo giorno selezionato",
+      "soddisfatto": null,
+      "dettagli": ""
+    },
+    "4_aggiornamento_senza_reload": {
+      "descrizione": "Cambiando tipo di giorno, gli alimenti si aggiornano senza ricaricare la pagina",
+      "soddisfatto": null,
+      "dettagli": ""
+    },
+    "5_leggibilita_molte_opzioni": {
+      "descrizione": "La struttura è leggibile anche con molte opzioni per slot (es. 7 opzioni a pranzo)",
+      "soddisfatto": null,
+      "dettagli": ""
+    },
+    "6_renderSlotCard_esiste": {
+      "descrizione": "docs/js/diet.js contiene la funzione renderSlotCard(slot, dayTypeId)",
+      "soddisfatto": null,
+      "dettagli": ""
+    },
+    "7_renderOpzioneCard_esiste": {
+      "descrizione": "docs/js/diet.js contiene la funzione renderOpzioneCard(opzione, dayTypeId)",
+      "soddisfatto": null,
+      "dettagli": ""
+    },
+    "8_renderMealsList_chiama_renderSlotCard": {
+      "descrizione": "renderMealsList() chiama renderSlotCard() per ogni slot in data.slot_pasto[]",
+      "soddisfatto": null,
+      "dettagli": ""
+    },
+    "9_diet_slot_card_css": {
+      "descrizione": "docs/css/diet.css contiene la classe .diet-slot-card",
+      "soddisfatto": null,
+      "dettagli": ""
+    },
+    "10_diet_opzione_card_css": {
+      "descrizione": "docs/css/diet.css contiene la classe .diet-opzione-card",
+      "soddisfatto": null,
+      "dettagli": ""
+    },
+    "11_diet_opzione_card_nome_css": {
+      "descrizione": "docs/css/diet.css contiene la classe .diet-opzione-card__nome",
+      "soddisfatto": null,
+      "dettagli": ""
+    },
+    "12_null_handling": {
+      "descrizione": "Valori null/undefined negli alimenti mostrano '—' nel DOM (mai 'null' o 'undefined')",
+      "soddisfatto": null,
+      "dettagli": ""
+    },
+    "13_aria_live_polite": {
+      "descrizione": "La sezione #meals-list ha aria-live='polite' (già presente in diet.html)",
+      "soddisfatto": null,
+      "dettagli": ""
+    }
+  },
+  "anomalie_trovate": []
+}

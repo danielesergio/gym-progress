@@ -1,0 +1,55 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "diet-totals-logic",
+    "task_titolo": "Calcolo dinamico dei totali dei pasti selezionati",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "I totali cambiano immediatamente quando l'utente preme i tasti freccia di navigazione opzione in uno slot",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in docs/js/diet.js linee 737-766: event listener su #meals-list container intercetta click sui bottoni con data-direction attribute (next/prev). Handler aggiorna slotOptionIndices[slotId], chiama renderMealsList() per re-renderizzare il DOM, quindi chiama selectedTotals = calculateSelectedTotals(dietData, currentDayTypeId, slotOptionIndices) per ricalcolare i totali. Lo stato selectedTotals viene aggiornato immediatamente e reso disponibile per i task successivi."
+    },
+    {
+      "criterio": "I totali cambiano immediatamente quando l'utente cambia tipo di giorno (Riposo / Palestra / Beach Volley)",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in docs/js/diet.js linee 720-735: event listener su #day-toggle container intercetta click sui bottoni .diet-toggle-btn. Handler legge data-day-type-id dalla button cliccata, assegna currentDayTypeId = typeId, chiama selectedTotals = calculateSelectedTotals(dietData, currentDayTypeId, slotOptionIndices) con il nuovo dayTypeId, quindi chiama renderDiet(dietData) per re-renderizzare l'interfaccia completa. I totali vengono ricalcolati con il nuovo tipo giorno."
+    },
+    {
+      "criterio": "Se una variante di uno slot non è disponibile per il tipo di giorno, il suo contributo viene escluso dal totale",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in docs/js/diet.js linee 60-88: function calculateSelectedTotals() utilizza optional chaining per accedere a opzione?.varianti?.[dayTypeId] e totale?.kcal, totale?.proteine, totale?.carbo, totale?.grassi. Se la variante è null (non disponibile per il tipo giorno), tutti gli accessi restituiscono undefined, e il nullish coalescing operator (?? 0) assicura che ogni campo non disponibile contribuisca 0 al totale. Non viene lanciata eccezione."
+    },
+    {
+      "criterio": "I valori calcolati corrispondono alla somma manuale dei totali delle opzioni visibili",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in docs/js/diet.js linee 60-88: function calculateSelectedTotals() itera su data.slot_pasto[], per ogni slot legge l'indice da indices[slot.id], accede alla variante corrente slot.opzioni[idx].varianti[dayTypeId].totale, e somma i quattro campi (kcal, proteine, carbo, grassi) in accumulatori separati. Restituisce un oggetto { kcal: Math.round(totKcal), proteineG: Math.round(totProteine), carboG: Math.round(totCarbo), grassiG: Math.round(totGrassi) } dove ogni valore è arrotondato al numero intero. La somma è esatta per costruzione."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/diet.js",
+      "esiste": true,
+      "note": "File contiene: (1) dichiarazione variabile let selectedTotals = null (linea 32), (2) function calculateSelectedTotals(data, dayTypeId, indices) con logica completa (linee 60-88), (3) tre chiamate a calculateSelectedTotals per aggiornare selectedTotals: dopo fetch/primo render (linea 800), nel handler day-toggle (linea 731), nel handler meals-list navigation (linea 765). Tutti i punti di re-render sono gestiti."
+    },
+    {
+      "path": "docs/data/diet.json",
+      "esiste": true,
+      "note": "Struttura dati verificata: slot_pasto[] contiene oggetti con opzioni[].varianti[dayTypeId].totale dove dayTypeId è stringa ('riposo', 'palestra', 'beach_volley'). Ogni campo totale ha kcal (float), proteine (float, NON proteineG), carbo (float, NON carboG), grassi (float). Alcuni slot potrebbero non avere varianti per tutti i dayTypeId (variante null). Il naming del JSON usa 'proteine' e 'carbo' senza suffisso, mentre la funzione restituisce 'proteineG' e 'carboG' con suffisso per distinguere."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "Nel handler meals-list (riga 764-765), renderMealsList() è chiamato PRIMA di calculateSelectedTotals(). Questo è il comportamento atteso: il DOM viene aggiornato per mostrare la nuova opzione selezionata, quindi i totali vengono ricalcolati. L'ordine è coretto perchè selectedTotals rappresenta lo stato globale disponibile per i task successivi (diet-totals-panel).",
+      "file": "docs/js/diet.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Nel handler day-toggle (riga 731-732), calculateSelectedTotals() è chiamato PRIMA di renderDiet(). Questo è il comportamento atteso: lo stato selectedTotals viene aggiornato con i nuovi totali per il dayTypeId, poi renderDiet() viene invocato e può utilizzare selectedTotals se necessario. L'ordine è corretto.",
+      "file": "docs/js/diet.js"
+    }
+  ]
+}

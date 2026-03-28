@@ -109,8 +109,23 @@ altre_attivita:
     note:
   # Aggiungi altre righe se necessario (copia il blocco sopra)
 
+infortuni:
+  # Lista degli infortuni del periodo. Aggiungi un blocco per ogni infortunio.
+  # Comportamento automatico su workout_history:
+  #   - entry PRECEDENTE (periodo appena concluso):
+  #       se guarito: no  → nota += "Infortunio: <descrizione>"
+  #       se guarito: si  → nota += "Infortunio risolto: <descrizione> (<durata_giorni>gg)"
+  #   - entry CORRENTE (nuovo periodo):
+  #       solo se guarito: no → nota = "Riabilitazione per: <descrizione>"
+  # Lo score tiene conto della durata: piu' giorni di infortunio = maggiore
+  # tolleranza per regressioni di forza e composizione corporea.
+  - descrizione:    # es. "Sindrome TOS spalla dx"
+    guarito:        # si / no
+    durata_giorni:  # numero di giorni — obbligatorio se guarito: si, facoltativo se no
+  # Aggiungi altri blocchi se necessario. Lascia la lista vuota se nessun infortunio:
+  # infortuni: []
+
 altro:
-  infortuni:
   note:
 """
         dest = cfg.DATA_DIR / "feedback_atleta.yaml"

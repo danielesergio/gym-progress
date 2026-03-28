@@ -54,7 +54,7 @@ Scrivi il report JSON nel percorso indicato dal prompt usando il tool Write. Str
   ],
   "file_verificati": [
     {
-      "path": "scripts/generate_site.py",
+      "path": "source/scripts/generate_site.py",
       "esiste": true,
       "note": "Contiene la funzione renderMeasurements aggiornata"
     }
@@ -63,7 +63,7 @@ Scrivi il report JSON nel percorso indicato dal prompt usando il tool Write. Str
     {
       "gravita": "warning",
       "descrizione": "Il campo body_fat_pct non ha gestione del null nel tooltip del grafico",
-      "file": "scripts/generate_site.py"
+      "file": "source/scripts/generate_site.py"
     }
   ]
 }
@@ -84,7 +84,7 @@ ANOMALIE: <n bloccanti> bloccanti, <n warning> warning
 ```
 
 ## File temporanei
-Se hai bisogno di creare file intermedi durante l'elaborazione, salvali **esclusivamente** in `scripts/agent-temp/gym-web-task-tester/`. Non creare mai file temporanei in altre cartelle.
+Se hai bisogno di creare file intermedi durante l'elaborazione, salvali **esclusivamente** in `source/scripts/agent-temp/gym-web-task-tester/`. Non creare mai file temporanei in altre cartelle.
 Ogni file temporaneo DEVE iniziare con un commento che spiega perche' e' stato creato, es:
 ```json
 // File temporaneo creato da gym-web-task-tester il YYYY-MM-DD

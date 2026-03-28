@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Feedback — GYM</title>
+<style>
+:root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #232734;
+    --border: #2d3142;
+    --text: #e4e6ed;
+    --text-muted: #8b8fa3;
+    --accent: #6c8cff;
+    --accent2: #4ecdc4;
+    --green: #4ecdc4;
+    --yellow: #ffd93d;
+    --red: #ff6b6b;
+    --orange: #ffa94d;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+nav .logo {
+    font-weight: 700; font-size: 1.25rem; color: var(--accent);
+    padding: 1rem 0; white-space: nowrap; text-decoration: none;
+}
+nav .nav-links { display: flex; gap: 0; overflow-x: auto; }
+nav a.nav-item {
+    color: var(--text-muted); text-decoration: none;
+    padding: 1rem 1.25rem; font-size: 0.9rem; font-weight: 500;
+    border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap;
+}
+nav a.nav-item:hover { color: var(--text); }
+nav a.nav-item.active { color: var(--accent); border-bottom-color: var(--accent); }
+.content { padding: 2rem; max-width: 1400px; margin: 0 auto; width: 100%; }
+.cards {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem; margin-bottom: 2rem;
+}
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+.card .label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
+.card .value { font-size: 2rem; font-weight: 700; color: var(--text); }
+.card .value .unit { font-size: 0.9rem; color: var(--text-muted); font-weight: 400; }
+.card .sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+.card.accent { border-color: var(--accent); }
+.card.green { border-color: var(--green); }
+.table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; min-width: 480px; }
+th { background: var(--surface2); color: var(--text-muted); text-align: left; padding: 0.75rem 1rem; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1px solid var(--border); }
+td { padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); }
+tr:hover { background: var(--surface); }
+tr.total-row { font-weight: 700; background: var(--surface2); }
+.sub-nav { display: flex; gap: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin-bottom: 1.5rem; }
+.sub-nav-item { color: var(--text-muted); text-decoration: none; padding: 0.75rem 1.25rem; font-size: 0.85rem; font-weight: 500; white-space: nowrap; border-bottom: 2px solid transparent; transition: all 0.2s; cursor: pointer; }
+.sub-nav-item:hover { color: var(--text); background: var(--surface2); }
+.sub-nav-item.active { color: var(--accent); background: var(--surface2); border-bottom-color: var(--accent); }
+.panel { display: none; }
+.panel.active { display: block; }
+.sub-nav-days { margin-top: -0.5rem; margin-bottom: 1.5rem; background: var(--surface2); border-color: var(--border); }
+.sub-nav-days .sub-nav-item.active { background: var(--surface); }
+.warmup-cooldown { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; margin: 1rem 0; }
+.warmup-cooldown h4 { font-size: 0.85rem; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 0.5rem; }
+.warmup-cooldown ol { margin: 0 0 0 1.25rem; color: var(--text-muted); font-size: 0.9rem; }
+.warmup-cooldown li { margin: 0.2rem 0; }
+.day-nav { display: flex; justify-content: space-between; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+.day-nav a { color: var(--accent); text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 0.5rem 1rem; border-radius: 6px; transition: background 0.2s; cursor: pointer; }
+.day-nav a:hover { background: var(--surface2); }
+.bar-chart { margin: 1.5rem 0; }
+.bar-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+.bar-label { width: 160px; font-size: 0.85rem; text-align: right; color: var(--text-muted); flex-shrink: 0; }
+.bar-track { flex: 1; height: 24px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 4px; transition: width 0.5s ease; }
+.bar-value { width: 45px; font-size: 0.85rem; font-weight: 600; color: var(--text); }
+.tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+.tag-primary { background: rgba(108,140,255,0.2); color: var(--accent); }
+.tag-secondary { background: rgba(78,205,196,0.2); color: var(--green); }
+.tag-tertiary { background: rgba(255,217,61,0.15); color: var(--yellow); }
+.tag-danger { background: rgba(255,107,107,0.2); color: var(--red); }
+details.muscle-detail { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0.5rem; }
+details.muscle-detail summary { padding: 0.75rem 1rem; cursor: pointer; font-weight: 600; font-size: 0.95rem; }
+details.muscle-detail summary:hover { color: var(--accent); }
+details.muscle-detail .detail-table { margin: 0; }
+details.muscle-detail .detail-table td, details.muscle-detail .detail-table th { padding: 0.5rem 0.75rem; font-size: 0.85rem; }
+.md-content h1 { font-size: 1.6rem; margin: 1.5rem 0 0.75rem; color: var(--accent); }
+.md-content h2 { font-size: 1.3rem; margin: 1.5rem 0 0.75rem; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+.md-content h3 { font-size: 1.1rem; margin: 1.25rem 0 0.5rem; color: var(--text); }
+.md-content h4 { font-size: 1rem; margin: 1rem 0 0.5rem; color: var(--accent2); }
+.md-content p { margin: 0.5rem 0; color: var(--text-muted); }
+.md-content ul { margin: 0.5rem 0 0.5rem 1.5rem; }
+.md-content li { margin: 0.25rem 0; color: var(--text-muted); }
+.md-content strong { color: var(--text); }
+.md-content code { background: var(--surface2); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.85em; color: var(--accent2); }
+.md-content hr { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+.md-content .table-wrap { margin: 1rem 0; }
+.md-content table { background: var(--surface); border-radius: 8px; overflow: hidden; }
+.subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+h2.page-title { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text); }
+.loading { color: var(--text-muted); padding: 2rem 0; }
+@media (min-width: 1400px) { .content { max-width: 1600px; } .cards { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 768px) {
+    nav { padding: 0 1rem; flex-direction: column; gap: 0; }
+    nav .logo { padding: 0.75rem 0 0; }
+    nav .nav-links { width: 100%; }
+    nav a.nav-item { padding: 0.75rem 0.75rem; font-size: 0.8rem; }
+    .content { padding: 1rem; }
+    .cards { grid-template-columns: repeat(2, 1fr); }
+    .card .value { font-size: 1.5rem; }
+    .bar-label { width: 110px; font-size: 0.78rem; }
+    table { font-size: 0.8rem; }
+    td, th { padding: 0.4rem 0.5rem; }
+}
+@media (max-width: 480px) {
+    nav { padding: 0 0.5rem; }
+    nav a.nav-item { padding: 0.6rem 0.5rem; font-size: 0.75rem; }
+    .content { padding: 0.75rem; }
+    .cards { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .card { padding: 1rem; }
+    .card .value { font-size: 1.25rem; }
+    h2.page-title { font-size: 1.2rem; margin-bottom: 1rem; }
+    .bar-label { width: 80px; font-size: 0.7rem; }
+    .sub-nav-item { padding: 0.6rem 0.75rem; font-size: 0.78rem; }
+}
+</style>
+</head>
+<body>
+<nav>
+    <a href="dashboard.html" class="logo">GYM</a>
+    <div class="nav-links">
+        <a href="dashboard.html" class="nav-item">Dashboard</a>
+        <a href="workout.html" class="nav-item">Scheda</a>
+        <a href="volume.html" class="nav-item">Volume</a>
+        <a href="diet.html" class="nav-item">Dieta</a>
+        <a href="plan.html" class="nav-item">Piano</a>
+        <a href="feedback.html" class="nav-item active">Feedback</a>
+    </div>
+</nav>
+<div class="content" id="main-content">
+    <p class="loading">Caricamento...</p>
+</div>
+
+<script>
+function esc(s) {
+    if (s == null) return '&mdash;';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function card(label, value, unit, sub, extraCls) {
+    var cls = 'card' + (extraCls ? ' ' + extraCls : '');
+    var unitHtml = unit ? ' <span class="unit">' + esc(unit) + '</span>' : '';
+    return '<div class="' + cls + '">'
+        + '<div class="label">' + esc(label) + '</div>'
+        + '<div class="value">' + esc(value) + unitHtml + '</div>'
+        + '<div class="sub">' + sub + '</div>'
+        + '</div>';
+}
+function showTab(navId, panelClass, tabId) {
+    document.querySelectorAll('.' + panelClass).forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('#' + navId + ' .sub-nav-item').forEach(function(a) { a.classList.remove('active'); });
+    var el = document.getElementById(tabId);
+    if (el) el.classList.add('active');
+}
+function activateNavItem(navId, idx) {
+    var items = document.querySelectorAll('#' + navId + ' .sub-nav-item');
+    if (items[idx]) items[idx].classList.add('active');
+}
+</script>
+
+<style>
+.fb-panel { display: none; }
+.fb-panel.active { display: block; }
+.fb-section {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; margin-bottom: 0.75rem; overflow: hidden;
+}
+.fb-section > summary {
+    padding: 1rem 1.25rem; cursor: pointer; font-size: 0.95rem; font-weight: 600;
+    color: var(--text); list-style: none; display: flex; align-items: center;
+    gap: 0.6rem; transition: background 0.15s; user-select: none;
+}
+.fb-section > summary::-webkit-details-marker { display: none; }
+.fb-section > summary::before {
+    content: '▶'; font-size: 0.6rem; color: var(--accent);
+    transition: transform 0.2s; flex-shrink: 0;
+}
+.fb-section[open] > summary::before { transform: rotate(90deg); }
+.fb-section > summary:hover { background: var(--surface2); }
+.fb-section-body { padding: 0.5rem 1.5rem 1.25rem; border-top: 1px solid var(--border); }
+.fb-sub-title {
+    font-size: 0.75rem; font-weight: 700; color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: 0.06em; margin: 1.75rem 0 0.75rem;
+}
+.fb-kv-list {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; overflow: hidden; margin-bottom: 0.5rem;
+}
+.fb-kv-row {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    padding: 0.65rem 1.25rem; border-bottom: 1px solid var(--border); gap: 1rem;
+}
+.fb-kv-row:last-child { border-bottom: none; }
+.fb-kv-key { color: var(--text-muted); font-size: 0.875rem; flex-shrink: 0; }
+.fb-kv-val { color: var(--text); font-weight: 600; font-size: 0.875rem; text-align: right; }
+.fb-note {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 10px;
+    padding: 0.9rem 1.25rem; margin-bottom: 0.6rem;
+    color: var(--text-muted); font-size: 0.875rem; line-height: 1.65;
+}
+.fb-note.injury {
+    background: rgba(255,107,107,0.05); border-color: rgba(255,107,107,0.3);
+}
+.fb-injury-label {
+    display: block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.06em; color: var(--red); margin-bottom: 0.35rem;
+}
+</style>
+<script>
+fetch('data/feedback.json').then(function(r){ return r.json(); }).then(renderFeedback)
+    .catch(function(){ document.getElementById('main-content').innerHTML = '<p>Dati non disponibili.</p>'; });
+
+var PLACEHOLDER_RE = /^\([^)]+\)\s*$/;
+function isPlaceholder(v) { return !v || PLACEHOLDER_RE.test(String(v).trim()); }
+
+function renderFeedback(data) {
+    var root = document.getElementById('main-content');
+    var atleta = data.atleta || {};
+    var coachSections = data.coach_sections || [];
+    var hasCoach  = coachSections.length > 0 || !!data.coach_html;
+    var hasAtleta = Object.keys(atleta).length > 0 || !!data.atleta_html;
+
+    if (!hasCoach && !hasAtleta) {
+        root.innerHTML = '<p class="loading">Nessun feedback disponibile.</p>';
+        return;
+    }
+
+    var html = '<h2 class="page-title">Feedback Mensile</h2>';
+
+    // ── KPI CARDS (peso + lifts sempre visibili) ─────────────────────────
+    var kpis = '';
+    if (atleta.corpo) {
+        var peso = atleta.corpo['Peso (kg)'];
+        if (peso != null) kpis += card('Peso', peso, 'kg', '', 'green');
+    }
+    if (atleta.massimali) {
+        atleta.massimali.forEach(function(l) {
+            if (l.orm_stimato) {
+                kpis += card(l.lift + ' 1RM est.', l.orm_stimato, 'kg',
+                    esc(l.peso) + ' kg &times; ' + esc(l.reps) + ' rep', 'accent');
+            }
+        });
+    }
+    if (kpis) html += '<div class="cards" style="margin-bottom:1.75rem">' + kpis + '</div>';
+
+    // ── TAB NAV ──────────────────────────────────────────────────────────
+    var tabs = '';
+    if (hasCoach)  tabs += '<span class="sub-nav-item active" onclick="switchFbTab(event,\'fb-coach\')">Risposta Coach</span>';
+    if (hasAtleta) tabs += '<span class="sub-nav-item' + (hasCoach ? '' : ' active') + '" onclick="switchFbTab(event,\'fb-atleta\')">Autovalutazione</span>';
+    html += '<div id="fb-nav" class="sub-nav" style="margin-bottom:1.5rem">' + tabs + '</div>';
+
+    // ── COACH PANEL ──────────────────────────────────────────────────────
+    if (hasCoach) {
+        html += '<div id="fb-coach" class="fb-panel active">';
+        if (coachSections.length > 0) {
+            coachSections.forEach(function(sec, i) {
+                html += '<details class="fb-section"' + (i === 0 ? ' open' : '') + '>'
+                    + '<summary>' + esc(sec.title) + '</summary>'
+                    + '<div class="fb-section-body md-content">' + sec.html + '</div>'
+                    + '</details>';
+            });
+        } else {
+            html += '<div class="md-content">' + (data.coach_html || '') + '</div>';
+        }
+        html += '</div>';
+    }
+
+    // ── ATLETA PANEL ─────────────────────────────────────────────────────
+    if (hasAtleta) {
+        html += '<div id="fb-atleta" class="fb-panel' + (hasCoach ? '' : ' active') + '">';
+
+        if (Object.keys(atleta).length > 0) {
+
+            // MASSIMALI
+            if (atleta.massimali && atleta.massimali.length > 0) {
+                html += '<p class="fb-sub-title">Massimali del mese</p><div class="cards">';
+                atleta.massimali.forEach(function(l) {
+                    var sub = l.orm_stimato
+                        ? '1RM stimato: <strong style="color:var(--accent)">' + l.orm_stimato + ' kg</strong>'
+                        : esc(l.raw || '—');
+                    html += card(l.lift, l.peso != null ? l.peso : '—',
+                        l.reps ? 'kg &times; ' + l.reps : '', sub, 'accent');
+                });
+                html += '</div>';
+            }
+
+            // COMPOSIZIONE CORPOREA
+            if (atleta.corpo) {
+                html += '<p class="fb-sub-title">Composizione Corporea</p><div class="cards">';
+                var p = atleta.corpo['Peso (kg)'];
+                if (p != null) html += card('Peso', p, 'kg', '', 'green');
+                var misure = atleta.corpo.misure || {};
+                var misLabel = {
+                    'Vita ombelico': 'Vita', 'Fianchi': 'Fianchi', 'Petto': 'Petto',
+                    'Braccio dx': 'Braccio', 'Coscia dx': 'Coscia', 'collo': 'Collo'
+                };
+                Object.keys(misure).forEach(function(k) {
+                    var v = misure[k];
+                    if (v != null) html += card(misLabel[k] || k, v, 'cm', '', '');
+                });
+                html += '</div>';
+            }
+
+            // SENSAZIONI / ALLENAMENTO / DIETA / PROGRESSI
+            [
+                { key: 'sensazioni',  title: 'Come ti sei sentito' },
+                { key: 'allenamento', title: 'Allenamento' },
+                { key: 'dieta',       title: 'Dieta' },
+                { key: 'progressi',   title: 'Progressi Percepiti' },
+            ].forEach(function(s) {
+                var sec = atleta[s.key];
+                if (!sec) return;
+                var rows = Object.keys(sec).filter(function(k) { return !isPlaceholder(sec[k]); });
+                if (!rows.length) return;
+                html += '<p class="fb-sub-title">' + esc(s.title) + '</p><div class="fb-kv-list">';
+                rows.forEach(function(k) {
+                    var v = sec[k];
+                    var display = Array.isArray(v) ? v.join(' — ') : v;
+                    html += '<div class="fb-kv-row">'
+                        + '<span class="fb-kv-key">' + esc(k) + '</span>'
+                        + '<span class="fb-kv-val">' + esc(display) + '</span>'
+                        + '</div>';
+                });
+                html += '</div>';
+            });
+
+            // INFORTUNI
+            var altro = atleta.altro || {};
+            var infortuni = altro['Infortuni o dolori'];
+            if (infortuni && !isPlaceholder(infortuni)) {
+                html += '<p class="fb-sub-title">Infortuni / Dolori</p>'
+                    + '<div class="fb-note injury">'
+                    + '<span class="fb-injury-label">&#9888; Segnalazione</span>'
+                    + esc(infortuni) + '</div>';
+            }
+
+            // COMMENTI LIBERI
+            var commenti = altro['Commenti liberi'];
+            if (commenti) {
+                var commList = Array.isArray(commenti) ? commenti : [commenti];
+                var filtered = commList.filter(function(c) { return c && !isPlaceholder(c); });
+                if (filtered.length) {
+                    html += '<p class="fb-sub-title">Commenti e richieste</p>';
+                    filtered.forEach(function(c) { html += '<div class="fb-note">' + esc(c) + '</div>'; });
+                }
+            }
+
+        } else {
+            html += '<div class="md-content">' + (data.atleta_html || '') + '</div>';
+        }
+
+        html += '</div>';
+    }
+
+    root.innerHTML = html;
+}
+
+function switchFbTab(e, id) {
+    document.querySelectorAll('#fb-nav .sub-nav-item').forEach(function(el){ el.classList.remove('active'); });
+    document.querySelectorAll('.fb-panel').forEach(function(el){ el.classList.remove('active'); });
+    e.currentTarget.classList.add('active');
+    var panel = document.getElementById(id);
+    if (panel) panel.classList.add('active');
+}
+</script>
+
+</body>
+</html>

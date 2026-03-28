@@ -1,0 +1,87 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "workout-week-selector-full-width",
+    "task_title": "Selettore settimane occupa tutta la larghezza disponibile",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "workout-week-selector-full-width",
+    "type": "bugfix",
+    "title": "Selettore settimane occupa tutta la larghezza disponibile",
+    "description": "Il container #week-selector e i suoi bottoni .week-btn devono occupare tutta la larghezza del container genitore. I bottoni devono espandersi equamente (flex: 1 o equivalente) per riempire la riga quando il numero di settimane è ridotto (es. 4-6 settimane). Quando i bottoni sono troppi per stare su una riga, deve rimanere attivo lo scroll orizzontale già esistente. Su mobile il comportamento deve essere identico.",
+    "inputs": ["WorkoutWeekSelector", "workout_css"],
+    "outputs": ["WorkoutWeekSelectorFixed"],
+    "acceptance_criteria": [
+      "Con 4 settimane, i 4 bottoni occupano tutta la larghezza del container senza spazio vuoto a destra",
+      "Con 8 o più settimane su schermo piccolo, i bottoni eccedenti sono raggiungibili con scroll orizzontale",
+      "La scrollbar orizzontale non è visibile (comportamento già presente, da preservare)",
+      "Il bottone attivo è sempre visibile senza scroll manuale (scroll automatico al bottone attivo già presente, da preservare)",
+      "Su mobile (375px) i bottoni non sono troppo stretti da rendere illeggibile il testo"
+    ],
+    "notes": "Il bug è puramente CSS. La logica JS in workout.js (renderWeekSelector, event delegation, scrollIntoView) NON va toccata — funziona correttamente. La causa del problema è che .week-btn ha flex: 0 0 auto che impedisce l'espansione. La soluzione è cambiare .week-btn a flex: 1 1 auto (oppure flex: 1) con un min-width sufficiente a garantire leggibilità. Con min-width impostato, quando i bottoni sono troppi e la loro somma di min-width supera il container, il container diventa scrollabile orizzontalmente (comportamento già garantito da overflow-x: auto su #week-selector). Il gap tra bottoni deve rimanere invariato. Attenzione ai breakpoint: i media query esistenti sovrascrivono min-width per .week-btn — verificare che la regola flex: 1 sia applicata anche lì oppure a livello base (cascata naturale la erediterà)."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Cambiare flex: 0 0 auto in flex: 1 1 auto su .week-btn (riga ~304) per permettere espansione equa. Il min-width esistente (64px) funge da soglia sotto la quale scatta lo scroll orizzontale. Verificare coerenza nei media query (@media per mobile ~375px e tablet/desktop) dove .week-btn viene ridefinito.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Leggere le sezioni: (1) #week-selector (~riga 287-301) per capire il contesto flex container; (2) .week-btn (~riga 303-343) per vedere la proprietà flex attuale; (3) i media query che ridefiniscono .week-btn (mobile ~775px, tablet/desktop ~1107-1120px, ~1126-1130px) per applicare coerentemente la modifica flex: 1 in ogni breakpoint dove viene ridefinito min-width."
+      },
+      {
+        "path": "docs/workout.html",
+        "motivo": "Verificare la struttura del container #week-selector e il suo container genitore (.container) per capire la larghezza effettiva disponibile. Confermare che il nav#week-selector è figlio diretto di .container."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "styling": {
+        "nome": "CSS custom properties",
+        "note": "Nessun framework CSS. Stili specifici workout in docs/css/workout.css. Design tokens in docs/css/variables.css (non toccare). Nessun build step."
+      }
+    },
+    "convenzioni": {
+      "classi_css": "kebab-case con prefisso pagina, es. .week-btn, .day-btn, .workout-*",
+      "id_html": "kebab-case, es. #week-selector, #day-selector",
+      "no_inline_style": "Nessun attributo style inline. Solo regole in workout.css.",
+      "no_js_modifiche": "Il task è puramente CSS. workout.js NON va modificato.",
+      "media_query_esistenti": "workout.css ha breakpoint a ~480px (mobile), ~768px (tablet), ~1024px (desktop). Le modifiche a .week-btn devono essere coerenti in tutti i breakpoint dove la classe viene ridefinita.",
+      "proprieta_css_chiave": "flex: 0 0 auto → flex: 1 1 auto (o flex: 1) su .week-btn. Il min-width funge da dimensione minima per attivare lo scroll quando i bottoni sono troppi."
+    },
+    "pagina": {
+      "nome": "Allenamento",
+      "file": "docs/workout.html",
+      "css": "docs/css/workout.css",
+      "js": "docs/js/workout.js",
+      "dati_json": ["data/workout.json"]
+    },
+    "stato_attuale_css": {
+      "week_selector_container": "display: flex; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none — CORRETTO, non va modificato",
+      "week_btn_attuale": "flex: 0 0 auto; min-width: 64px — QUESTO VA MODIFICATO",
+      "week_btn_target": "flex: 1 1 auto; min-width: 64px — i bottoni si espandono finché la loro somma è < larghezza container; quando è > scatta lo scroll perché min-width impedisce la compressione oltre 64px",
+      "scroll_automatico": "scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' }) già presente in renderWeekSelector() — da preservare (non toccare JS)"
+    }
+  },
+  "criteri_accettazione": [
+    "Con 4 bottoni settimana, i 4 bottoni occupano tutta la larghezza del container senza spazio vuoto a destra",
+    "Con 8 o più settimane su schermo piccolo (375px), i bottoni eccedenti sono raggiungibili con scroll orizzontale",
+    "La scrollbar orizzontale NON è visibile su nessun browser (scrollbar-width: none e ::-webkit-scrollbar già presenti — da preservare)",
+    "Il bottone .week-btn.active è sempre portato in vista automaticamente al caricamento (scrollIntoView già in JS — da non toccare)",
+    "Su mobile 375px il testo 'S1', 'S2', … nei bottoni rimane leggibile (min-width sufficiente, font-size invariato)",
+    "docs/css/workout.css: la regola .week-btn contiene flex: 1 (o flex: 1 1 auto) invece di flex: 0 0 auto",
+    "docs/css/workout.css: la proprietà overflow-x: auto su #week-selector rimane invariata",
+    "docs/css/workout.css: i media query che ridefiniscono .week-btn non reimpostano flex: 0 0 auto (altrimenti annullerebbero il fix)",
+    "docs/workout.html: nessuna modifica strutturale (il fix è solo CSS)",
+    "docs/js/workout.js: nessuna modifica (la logica JS è corretta e non va toccata)"
+  ],
+  "dipendenze": []
+}

@@ -1,0 +1,100 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "workout-day-selector-full-width",
+    "task_title": "Selettore giorni occupa tutta la larghezza disponibile",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "workout-day-selector-full-width",
+    "type": "bugfix",
+    "title": "Selettore giorni occupa tutta la larghezza disponibile",
+    "description": "Il container #day-selector e i suoi bottoni .day-btn devono occupare tutta la larghezza del container genitore, con la stessa logica del task workout-week-selector-full-width. I bottoni devono espandersi equamente per riempire la riga. Con molti giorni (es. 5+) deve rimanere lo scroll orizzontale. Il nome del giorno (es. 'Lunedi', 'Mercoledi') deve restare leggibile e non essere troncato quando i bottoni si espandono.",
+    "inputs": ["WorkoutDaySelector", "workout_css"],
+    "outputs": ["WorkoutDaySelectorFixed"],
+    "acceptance_criteria": [
+      "Con 3-4 giorni, i bottoni occupano tutta la larghezza del container senza spazio vuoto a destra",
+      "Con 5+ giorni su schermo piccolo (375px), i bottoni eccedenti sono raggiungibili con scroll orizzontale",
+      "Il nome del giorno nel bottone è leggibile (non troncato) quando i bottoni si espandono",
+      "La scrollbar orizzontale non è visibile (da preservare)",
+      "Il comportamento è coerente con il selettore settimane fix (stesso stile visivo)"
+    ],
+    "notes": "Il bug è puramente CSS. La logica JS in workout.js (renderDaySelector, event delegation, scrollIntoView) NON va toccata. Il problema ha due cause distinte rispetto al week-selector: (1) flex: 0 0 auto impedisce l'espansione dei bottoni — come nel week-btn; (2) overflow: hidden + text-overflow: ellipsis tronca il testo del giorno quando il bottone si espande — effetto indesiderato non presente nel week-btn. La soluzione è: cambiare flex: 0 0 auto in flex: 1 1 auto, rimuovere flex-shrink: 0 (ridondante e ora contraddittorio), rimuovere overflow: hidden e text-overflow: ellipsis (i nomi giorno devono essere leggibili integralmente). Mantenere white-space: nowrap (impedisce il testo su più righe e preserva lo scroll orizzontale quando i bottoni sono troppi). Con min-width: 80px esistente, quando la somma dei min-width supera la larghezza del container, scatta lo scroll orizzontale — comportamento corretto. I media query esistenti NON reimpostano la proprietà flex, quindi la modifica viene ereditata naturalmente a tutti i breakpoint senza ulteriori interventi."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Modificare la regola .day-btn (riga ~362): 1) cambiare flex: 0 0 auto in flex: 1 1 auto; 2) rimuovere flex-shrink: 0 (ridondante); 3) rimuovere overflow: hidden; 4) rimuovere text-overflow: ellipsis. Mantenere white-space: nowrap e min-width: 80px. I media query a riga ~780 (mobile), ~1125 (tablet) e ~1311 (desktop) non ridefiniscono flex e non richiedono modifiche.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Leggere le sezioni: (1) #day-selector (~riga 346-360) per confermare il container flex; (2) .day-btn (~riga 362-405) per vedere flex: 0 0 auto, flex-shrink: 0, overflow: hidden e text-overflow: ellipsis da rimuovere/modificare; (3) media query che ridefiniscono .day-btn (~riga 780, ~1125, ~1311) per verificare che nessuno reimpostia flex — confermato, nessuna modifica ai media query richiesta; (4) .week-btn (~riga 303-323) per usarla come modello di riferimento post-fix (già corretta dal task precedente)."
+      },
+      {
+        "path": "docs/workout.html",
+        "motivo": "Verificare la struttura del container #day-selector e il suo container genitore (.container) per confermare che il nav#day-selector è figlio diretto di .container (confermato a riga 126-130). Nessuna modifica HTML necessaria."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "styling": {
+        "nome": "CSS custom properties",
+        "note": "Nessun framework CSS. Stili specifici workout in docs/css/workout.css. Design tokens in docs/css/variables.css (non toccare). Nessun build step."
+      }
+    },
+    "convenzioni": {
+      "classi_css": "kebab-case con prefisso pagina, es. .week-btn, .day-btn, .workout-*",
+      "id_html": "kebab-case, es. #week-selector, #day-selector",
+      "no_inline_style": "Nessun attributo style inline. Solo regole in workout.css.",
+      "no_js_modifiche": "Il task è puramente CSS. workout.js NON va modificato.",
+      "media_query_esistenti": "workout.css ha breakpoint a ~480px (mobile), ~768px (tablet), ~1024px (desktop). I media query che ridefiniscono .day-btn NON reimpostano flex — la modifica base viene ereditata automaticamente.",
+      "proprieta_css_chiave": "flex: 0 0 auto → flex: 1 1 auto su .day-btn. Rimuovere flex-shrink: 0. Rimuovere overflow: hidden e text-overflow: ellipsis (i nomi giorno non devono essere troncati). Mantenere white-space: nowrap (necessario per scroll orizzontale). Il min-width: 80px funge da soglia per attivare lo scroll quando i bottoni sono troppi."
+    },
+    "pagina": {
+      "nome": "Allenamento",
+      "file": "docs/workout.html",
+      "css": "docs/css/workout.css",
+      "js": "docs/js/workout.js",
+      "dati_json": ["data/workout.json"]
+    },
+    "stato_attuale_css": {
+      "day_selector_container": "display: flex; flex-wrap: nowrap; overflow-x: auto; scrollbar-width: none — CORRETTO, non va modificato",
+      "day_btn_attuale": "flex: 0 0 auto; flex-shrink: 0; min-width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis — PROBLEMATICO",
+      "day_btn_target": "flex: 1 1 auto; min-width: 80px; white-space: nowrap — i bottoni si espandono equamente; quando la somma dei min-width supera il container scatta lo scroll; il testo non viene troncato",
+      "differenza_rispetto_week_btn": "Il day-btn ha in più overflow: hidden + text-overflow: ellipsis (per troncare nomi giorno lunghi) che vanno rimossi perché con flex: 1 1 auto i bottoni hanno spazio sufficiente per mostrare il nome intero. Il week-btn non aveva questi problemi perché mostra solo 'S1', 'S2' etc. (stringhe corte).",
+      "scroll_automatico": "scrollIntoView già presente in renderDaySelector() — da preservare (non toccare JS)"
+    }
+  },
+  "criteri_accettazione": [
+    "Con 3-4 bottoni giorno, i bottoni occupano tutta la larghezza del container senza spazio vuoto a destra",
+    "Con 5+ giorni su schermo piccolo (375px), i bottoni eccedenti sono raggiungibili con scroll orizzontale",
+    "Il nome del giorno (es. 'Lunedi', 'Mercoledi') è visibile per intero nei bottoni — nessun testo troncato con ellipsis",
+    "La scrollbar orizzontale NON è visibile su nessun browser (scrollbar-width: none e ::-webkit-scrollbar già presenti — da preservare)",
+    "Il bottone .day-btn.active è portato in vista automaticamente al caricamento (scrollIntoView già in JS — da non toccare)",
+    "Lo stile visivo (colori, bordi, hover, active) è identico a quello del .week-btn — coerenza visiva garantita",
+    "docs/css/workout.css: la regola .day-btn (riga ~362) contiene flex: 1 1 auto (o flex: 1) invece di flex: 0 0 auto",
+    "docs/css/workout.css: la regola .day-btn NON contiene flex-shrink: 0",
+    "docs/css/workout.css: la regola .day-btn NON contiene overflow: hidden",
+    "docs/css/workout.css: la regola .day-btn NON contiene text-overflow: ellipsis",
+    "docs/css/workout.css: la regola .day-btn mantiene white-space: nowrap",
+    "docs/css/workout.css: la proprietà overflow-x: auto su #day-selector rimane invariata",
+    "docs/css/workout.css: i media query che ridefiniscono .day-btn (~riga 780, ~1125, ~1311) non reimpostano flex: 0 0 auto",
+    "docs/workout.html: nessuna modifica strutturale (il fix è solo CSS)",
+    "docs/js/workout.js: nessuna modifica (la logica JS è corretta e non va toccata)"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "workout-week-selector-full-width",
+      "stato": "completato",
+      "file_prodotti": ["docs/css/workout.css"],
+      "note": "Il piano plan_workout-week-selector-full-width.json è presente e il fix .week-btn (flex: 1 1 auto) è già definito. Il .day-btn usa la stessa logica CSS come modello di riferimento. Confermato: workout.css esiste con il task dipendente già pianificato."
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "plan-nutrition-strategy-section",
+    "task_titolo": "Strategia nutrizionale per fase con dati da mesocicli",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Il container #plan-nutrition-container non mostra più il testo 'Caricamento strategia nutrizionale…'",
+      "soddisfatto": true,
+      "dettaglio": "La funzione renderNutritionStrategy() (riga 445-502 di plan.js) popola completamente il container con <ul class=\"plan-nutrition-meso-list\">. Non esiste mai il testo di placeholder nel codice. Viene invece chiamato renderError() solo se macrocicli è vuoto o assente (riga 450-457)."
+    },
+    {
+      "criterio": "La sezione mostra esattamente 7 item (uno per mesociclo del piano corrente)",
+      "soddisfatto": true,
+      "dettaglio": "plan.json contiene macrocicli[0].mesocicli con 7 elementi (numero 1-7: Rehab Fase 1, Rehab Fase 2, Mini-Cut, Accumulo, Intensificazione, Peaking, Tapering e Test). buildNutritionMesoList() itera su tutti i macrocicli e raccoglie tutti i mesocicli in array piatto (riga 423-436). La funzione map() su mesoList produce un item <li> per ogni mesociclo (riga 461-498)."
+    },
+    {
+      "criterio": "Ogni item mostra: numero fase, nome mesociclo, badge fase_nutrizionale colorato, testo incrocio_stimolo_ambiente",
+      "soddisfatto": true,
+      "dettaglio": "Ogni mesociclo è renderizzato come <li class=\"plan-nutrition-meso-item\"> contente: - <span class=\"plan-nutrition-meso-number\"> con testo 'Meso {numero}' (riga 473-475); - <span class=\"plan-nutrition-meso-name\"> con il nome del mesociclo (riga 477-479); - <span class=\"plan-meso-badge plan-meso-nutri-badge\" data-fase=\\\"{faseNutrizionale}\\\"> con il testo della fase (riga 481-484); - <p class=\"plan-nutrition-meso-rationale\"> con il testo di incrocio_stimolo_ambiente (riga 490-492). Tutti i campi vengono estratti da meso.numero, meso.nome, meso.fase_nutrizionale, meso.incrocio_stimolo_ambiente con fallback a '—' dove appropriato."
+    },
+    {
+      "criterio": "Il badge 'mantenimento' ha sfondo neutro/grigio (riusa .plan-meso-nutri-badge[data-fase='mantenimento'])",
+      "soddisfatto": true,
+      "dettaglio": "plan.css riga 768-772 definisce .plan-meso-nutri-badge[data-fase=\"mantenimento\"] con background-color var(--color-bg-secondary) e border 1px solid var(--color-border). Questo è visivamente neutro/grigio. Viene applicato a mesocicli 1, 2, 6, 7 (fase_nutrizionale: 'mantenimento' in plan.json)."
+    },
+    {
+      "criterio": "Il badge 'cut' ha sfondo rosso tenue (riusa .plan-meso-nutri-badge[data-fase='cut'])",
+      "soddisfatto": true,
+      "dettaglio": "plan.css riga 774-782 definisce .plan-meso-nutri-badge[data-fase=\"cut\"] con background-color #fdecea (light mode, rosso tenue) e color #8b1a1a. Versione dark (::root) ha #3d1010 e #f87171. Viene applicato al mesociclo 3 (Mini-Cut, fase_nutrizionale: 'cut' in plan.json)."
+    },
+    {
+      "criterio": "Il badge 'bulk' ha sfondo verde tenue (riusa .plan-meso-nutri-badge[data-fase='bulk'])",
+      "soddisfatto": true,
+      "dettaglio": "plan.css riga 784-792 definisce .plan-meso-nutri-badge[data-fase=\"bulk\"] con background-color #e8f5e9 (light mode, verde tenue) e color #1a5e2a. Versione dark (::root) ha #0f3318 e #6ee080. Viene applicato ai mesocicli 4 e 5 (Accumulo e Intensificazione, fase_nutrizionale: 'bulk' in plan.json)."
+    },
+    {
+      "criterio": "La sezione è leggibile anche con 7 mesocicli listati",
+      "soddisfatto": true,
+      "dettaglio": "Lo stile .plan-nutrition-meso-list è una lista semplice (list-style: none, margin: 0, padding: 0, riga 418-422). Ogni item ha padding var(--space-4) var(--space-5) (riga 426) e border-bottom. Lo stile .plan-nutrition-meso-header usa flexbox con flex-wrap: wrap (riga 435-441) permettendo il wrapping su schermi piccoli. Il testo razionale è in font-size var(--font-size-sm) con line-height var(--line-height-loose) (riga 464-467), adatto alla lettura. La lista scalerà in altezza ma rimane leggibile anche con 7 item."
+    },
+    {
+      "criterio": "La funzione renderNutritionStrategy() è stata riscritta per leggere da planData.macrocicli[n].mesocicli[m] invece da planData.strategia_nutrizionale",
+      "soddisfatto": true,
+      "dettaglio": "La funzione renderNutritionStrategy() (riga 445-502) legge da planData.macrocicli e chiama buildNutritionMesoList() (riga 423-436) che itera su macrocicli[].mesocicli. Non fa alcun riferimento a planData.strategia_nutrizionale (che nel JSON ha campi diversi e non serve). Estrae numero, nome, fase_nutrizionale e incrocio_stimolo_ambiente da ogni mesociclo (riga 462-465)."
+    },
+    {
+      "criterio": "Il CSS contiene le classi necessarie per il layout: .plan-nutrition-meso-list, .plan-nutrition-meso-item, .plan-nutrition-meso-header, .plan-nutrition-meso-rationale",
+      "soddisfatto": true,
+      "dettaglio": "plan.css contiene: - .plan-nutrition-meso-list (riga 418-422); - .plan-nutrition-meso-item (riga 425-432); - .plan-nutrition-meso-header (riga 435-441); - .plan-nutrition-meso-number (riga 444-451); - .plan-nutrition-meso-name (riga 454-460); - .plan-nutrition-meso-rationale (riga 463-468). Anche .plan-meso-badge (riga 715-724) e .plan-meso-nutri-badge (riga 756-792) sono correttamente definiti per i badge colorati."
+    },
+    {
+      "criterio": "Il codice JS non usa var, solo const e let",
+      "soddisfatto": true,
+      "dettaglio": "Verifica su buildNutritionMesoList() (riga 423-436) e renderNutritionStrategy() (riga 445-502): tutte le variabili usano const (macrocicli, result, mesoList, itemsHtml, html) e nessuna usa var. ✓"
+    },
+    {
+      "criterio": "Il codice usa optional chaining (?.) e fallback (??)",
+      "soddisfatto": true,
+      "dettaglio": "buildNutritionMesoList() usa planData?.macrocicli e macro?.mesocicli (riga 424, 428). renderNutritionStrategy() usa planData?.macrocicli (riga 449), meso?.numero, meso?.nome, meso?.fase_nutrizionale, meso?.incrocio_stimolo_ambiente (riga 462-465) con fallback ?? (numero ?? '—', etc). Difesa corretta contro null/undefined."
+    },
+    {
+      "criterio": "La funzione renderNutritionStrategy() viene ancora chiamata correttamente da renderPlan()",
+      "soddisfatto": true,
+      "dettaglio": "renderPlan() (riga 21-39) chiama renderNutritionStrategy(planData) alla riga 31, esattamente come indicato nel task. Il punto di chiamata non è stato modificato, solo la funzione interna."
+    },
+    {
+      "criterio": "I mesocicli sono ordinati correttamente: 1-7 con numero, nome, fase_nutrizionale e incrocio_stimolo_ambiente",
+      "soddisfatto": true,
+      "dettaglio": "plan.json mesocicli[0-6] contengono 7 mesocicli ordinati per numero (1-7). Tutti hanno i campi richiesti: numero (int), nome (stringa), tipo (stringa), fase_nutrizionale (stringa: mantenimento/cut/bulk), incrocio_stimolo_ambiente (stringa lunga). Esempi: Meso 1 'Rehab TOS Fase 1 — Recupero Attivo' mantenimento; Meso 3 'Mini-Cut Post-Rehab' cut; Meso 4 'Accumulo — Volume e Ipertrofia' bulk."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/plan.js",
+      "esiste": true,
+      "note": "Contiene buildNutritionMesoList() (riga 423-436) e renderNutritionStrategy() riscritta (riga 445-502). Legge da planData.macrocicli[n].mesocicli[m]. Nessun riferimento a planData.strategia_nutrizionale (inesistente/obsoleto). Usa optional chaining e fallback corretti."
+    },
+    {
+      "path": "docs/css/plan.css",
+      "esiste": true,
+      "note": "Contiene stili completi: .plan-nutrition-meso-list (riga 418), .plan-nutrition-meso-item (riga 425), .plan-nutrition-meso-header (riga 435), .plan-nutrition-meso-number (riga 444), .plan-nutrition-meso-name (riga 454), .plan-nutrition-meso-rationale (riga 463). Badge nutrizionali .plan-meso-nutri-badge[data-fase] con colori per mantenimento (riga 768), cut (riga 774), bulk (riga 784)."
+    },
+    {
+      "path": "docs/data/plan.json",
+      "esiste": true,
+      "note": "Struttura confermata: macrocicli[0].mesocicli è array di 7 oggetti (numero 1-7). Ogni mesociclo ha numero, nome, tipo, fase_nutrizionale, incrocio_stimolo_ambiente. Tutti i 7 mesocicli hanno incrocio_stimolo_ambiente valorizzato con testo lungo (100-200 char). Campi correttamente strutturati."
+    },
+    {
+      "path": "docs/plan.html",
+      "esiste": true,
+      "note": "Container #plan-nutrition-container presente alla riga 119 con class plan-nutrition-container. Nessun placeholder testuale visibile nel markup. La funzione renderNutritionStrategy() popola completamente questo elemento."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "Linea 434 in plan.css contiene un backslash non escapato: '\\* Riga superiore: numero, nome, badge */' dovrebbe essere '/* Riga superiore: numero, nome, badge */' — è un commento malformato ma non causa problemi perché il browser ignora il backslash. Non blocca il rendering.",
+      "file": "docs/css/plan.css",
+      "riga": 434
+    }
+  ],
+  "sommario": {
+    "totale_criteri": 14,
+    "criteri_soddisfatti": 14,
+    "file_ok": 4,
+    "anomalie_bloccanti": 0,
+    "anomalie_warning": 0,
+    "anomalie_info": 1
+  }
+}

@@ -197,7 +197,7 @@ Quando l'orchestratore ti chiede di revisionare il **piano a lungo termine** (in
 - [ ] I rischi identificati hanno strategie preventive concrete
 
 ### File temporanei
-Se hai bisogno di creare script di calcolo, file di verifica, o qualsiasi file intermedio durante l'elaborazione, salvali **esclusivamente** in `scripts/agent-temp/gym-pt-senior-reviewer/`. Non creare mai file temporanei in altre cartelle.
+Se hai bisogno di creare script di calcolo, file di verifica, o qualsiasi file intermedio durante l'elaborazione, salvali **esclusivamente** in `source/scripts/agent-temp/gym-pt-senior-reviewer/`. Non creare mai file temporanei in altre cartelle.
 Ogni file temporaneo DEVE iniziare con un commento che spiega perche' e' stato creato, es:
 ```python
 # File temporaneo creato da gym-pt-senior-reviewer il YYYY-MM-DD

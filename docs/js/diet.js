@@ -6,9 +6,30 @@
 // ── Costanti ──────────────────────────────────────────────
 const DATA_PATH = 'data/diet.json';
 
+/** Mappa id → abbreviazione breve per i bottoni del selettore */
+const DAY_TYPE_LABELS = {
+  riposo:         'Riposo',
+  palestra:       'Palestra',
+  attivita_extra: 'Beach V.'
+};
+
 // ── Stato interno ─────────────────────────────────────────
 let dietData = null;
-let currentDayIndex = 0; // default: primo giorno dell'array
+let currentDayTypeId = 'riposo'; // default: primo tipo (riposo)
+
+/**
+ * Mappa slotId → indice opzione correntemente visualizzata (default 0).
+ * Lo stato persiste attraverso i cambi di tipo giorno.
+ * @type {Object.<string, number>}
+ */
+let slotOptionIndices = {};
+
+/**
+ * Totali calcolati dei pasti correntemente selezionati.
+ * Popolato dopo il primo fetch e aggiornato ad ogni interazione utente.
+ * @type {{ kcal: number, proteineG: number, carboG: number, grassiG: number }|null}
+ */
+let selectedTotals = null;
 
 // ── Utility ───────────────────────────────────────────────
 
@@ -25,6 +46,47 @@ function showError(container, error) {
   console.error('[diet.js]', error);
 }
 
+/**
+ * Calcola i totali (kcal, macros) sommando le varianti delle opzioni
+ * correntemente selezionate per ogni slot, nel tipo giorno indicato.
+ * Funzione pura: nessun side effect, non modifica lo stato globale.
+ * Le varianti null o assenti contribuiscono 0 (non generano eccezioni).
+ *
+ * @param {Object}              data    — dati da diet.json
+ * @param {string}              dayTypeId — id del tipo giorno corrente
+ * @param {Object.<string,number>} indices — mappa slotId → indice opzione selezionata
+ * @returns {{ kcal: number, proteineG: number, carboG: number, grassiG: number }}
+ */
+function calculateSelectedTotals(data, dayTypeId, indices) {
+  let totKcal     = 0;
+  let totProteine = 0;
+  let totCarbo    = 0;
+  let totGrassi   = 0;
+
+  const slots = data?.slot_pasto ?? [];
+  for (const slot of slots) {
+    const opzioni  = slot?.opzioni ?? [];
+    const maxIndex = opzioni.length - 1;
+    const rawIdx   = indices[slot.id] ?? 0;
+    const idx      = Math.max(0, Math.min(rawIdx, maxIndex));
+    const opzione  = opzioni[idx];
+    const variante = opzione?.varianti?.[dayTypeId];
+    const totale   = variante?.totale;
+
+    totKcal     += totale?.kcal      ?? 0;
+    totProteine += totale?.proteine  ?? 0;
+    totCarbo    += totale?.carbo     ?? 0;
+    totGrassi   += totale?.grassi    ?? 0;
+  }
+
+  return {
+    kcal:      Math.round(totKcal),
+    proteineG: Math.round(totProteine),
+    carboG:    Math.round(totCarbo),
+    grassiG:   Math.round(totGrassi)
+  };
+}
+
 // ── Render header fase ────────────────────────────────────
 
 /**
@@ -38,42 +100,47 @@ function renderDietHeader(data) {
   }
 }
 
-// ── Render selettore giorni ───────────────────────────────
+// ── Render selettore tipo giorno ─────────────────────────
 
 /**
- * Genera dinamicamente un bottone per ogni elemento di giorni[].
+ * Genera dinamicamente un bottone per ogni elemento di meta.tipi_giorno[].
  * Usa event delegation sul container #day-toggle.
- * Se giorni[] è vuoto mostra messaggio empty state.
- * @param {Array} giorni — array giorni dal diet.json
+ * Le abbreviazioni brevi vengono da DAY_TYPE_LABELS; il label completo
+ * viene da tipoGiorno.label (usato come aria-label per accessibilità).
+ * Se tipiGiorno[] è vuoto mostra messaggio empty state.
+ * @param {Array} tipiGiorno — array da meta.tipi_giorno[] in diet.json
  */
-function renderDaySelector(giorni) {
+function renderDaySelector(tipiGiorno) {
   const container = document.getElementById('day-toggle');
   if (!container) return;
 
-  if (!giorni || giorni.length === 0) {
-    container.innerHTML = '<p class="diet-empty">Nessun giorno pianificato</p>';
+  if (!tipiGiorno || tipiGiorno.length === 0) {
+    container.innerHTML = '<p class="diet-empty">Nessun tipo di giorno pianificato</p>';
     return;
   }
 
-  container.innerHTML = giorni.map((giorno, index) => {
-    const isActive = index === currentDayIndex;
-    const nome = giorno.nome ?? `Giorno ${index + 1}`;
+  container.innerHTML = tipiGiorno.map(tipo => {
+    const isActive = tipo.id === currentDayTypeId;
+    const labelBreve = DAY_TYPE_LABELS[tipo.id] ?? tipo.label ?? tipo.id;
+    const labelCompleto = tipo.label ?? labelBreve;
     return `<button
       type="button"
       class="diet-toggle-btn${isActive ? ' active' : ''}"
-      data-day-index="${index}"
-      aria-pressed="${isActive ? 'true' : 'false'}">${nome}</button>`;
+      data-day-type-id="${tipo.id}"
+      aria-label="${labelCompleto}"
+      aria-pressed="${isActive ? 'true' : 'false'}">${labelBreve}</button>`;
   }).join('');
 }
 
 /**
- * Aggiorna lo stato visivo active/aria-pressed dei bottoni selettore.
- * @param {number} dayIndex — indice del giorno corrente
+ * Aggiorna lo stato visivo active/aria-pressed dei bottoni selettore
+ * in base a currentDayTypeId (stringa id, non indice numerico).
+ * @param {string} dayTypeId — id del tipo giorno corrente
  */
-function renderToggle(dayIndex) {
+function renderDayTypeToggle(dayTypeId) {
   const btns = document.querySelectorAll('.diet-toggle-btn');
   btns.forEach(btn => {
-    const isActive = parseInt(btn.dataset.dayIndex, 10) === dayIndex;
+    const isActive = btn.dataset.dayTypeId === dayTypeId;
     btn.classList.toggle('active', isActive);
     btn.setAttribute('aria-pressed', isActive ? 'true' : 'false');
   });
@@ -129,23 +196,23 @@ function buildProportionBar(proteineG, carboG, grassiG) {
 /**
  * Popola #macros-summary con la griglia kcal/proteine/carbo/grassi,
  * la barra a segmenti proporzionali e la strategia nutrizionale sintetica.
- * @param {Object}      dayData       — elemento di giorni[] filtrato per tipo
+ * @param {Object}      tipoGiorno    — elemento di meta.tipi_giorno[] selezionato
  * @param {string|null} notaStrategia — valore di meta.note_strategia (stringa multiriga)
  */
-function renderMacrosSummary(dayData, notaStrategia) {
+function renderMacrosSummary(tipoGiorno, notaStrategia) {
   const container = document.getElementById('macros-summary');
   if (!container) return;
 
-  if (!dayData) {
+  if (!tipoGiorno) {
     container.innerHTML = '<p class="diet-empty">Dati macros non disponibili.</p>';
     return;
   }
 
-  const kcal      = dayData.kcal               ?? '—';
-  const proteine  = dayData.macros?.proteine    ?? '—';
-  const carbo     = dayData.macros?.carboidrati ?? '—';
-  const grassi    = dayData.macros?.grassi      ?? '—';
-  const nome      = dayData.nome                ?? '—';
+  const kcal      = tipoGiorno.kcal_target                    ?? '—';
+  const proteine  = tipoGiorno.macros_target?.proteine         ?? '—';
+  const carbo     = tipoGiorno.macros_target?.carboidrati       ?? '—';
+  const grassi    = tipoGiorno.macros_target?.grassi            ?? '—';
+  const nome      = tipoGiorno.label                           ?? '—';
 
   // Strategia sintetica: prima riga di note_strategia
   const strategiaSintetica = (typeof notaStrategia === 'string' && notaStrategia.trim().length > 0)
@@ -180,6 +247,116 @@ function renderMacrosSummary(dayData, notaStrategia) {
       </div>
     </div>
     ${proportionBarHTML}
+  `;
+}
+
+// ── Render pannello totali vs target ─────────────────────
+
+/**
+ * Popola #diet-totals-panel con tre righe: Selezionati / Target / Delta.
+ * Per ogni macros (kcal, proteine, carboidrati, grassi) mostra il valore
+ * selezionato, il target del tipo giorno attivo e il delta con classe
+ * modificatrice --positive / --negative / --neutral.
+ * Il delta è neutro quando è compreso tra -5 e +5 (soglia inclusiva).
+ *
+ * @param {{ kcal: number, proteineG: number, carboG: number, grassiG: number }|null} totals
+ * @param {Object|null} tipoGiorno — elemento di meta.tipi_giorno[] selezionato
+ */
+function renderDietTotalsPanel(totals, tipoGiorno) {
+  const container = document.getElementById('diet-totals-panel');
+  if (!container) return;
+
+  // Se non ci sono dati mostra placeholder
+  if (!totals || !tipoGiorno) {
+    container.innerHTML = '<p class="diet-empty">Totali non disponibili.</p>';
+    return;
+  }
+
+  // Valori selezionati (già arrotondati da calculateSelectedTotals)
+  const selKcal     = totals.kcal     != null ? totals.kcal     : null;
+  const selProteine = totals.proteineG != null ? totals.proteineG : null;
+  const selCarbo    = totals.carboG   != null ? totals.carboG   : null;
+  const selGrassi   = totals.grassiG  != null ? totals.grassiG  : null;
+
+  // Valori target
+  const tgtKcal     = tipoGiorno.kcal_target                   != null ? Math.round(tipoGiorno.kcal_target)                  : null;
+  const tgtProteine = tipoGiorno.macros_target?.proteine        != null ? Math.round(tipoGiorno.macros_target.proteine)        : null;
+  const tgtCarbo    = tipoGiorno.macros_target?.carboidrati      != null ? Math.round(tipoGiorno.macros_target.carboidrati)     : null;
+  const tgtGrassi   = tipoGiorno.macros_target?.grassi          != null ? Math.round(tipoGiorno.macros_target.grassi)          : null;
+
+  /**
+   * Calcola il delta e restituisce la classe modificatrice BEM.
+   * Neutro: |delta| <= 5
+   * @param {number|null} sel
+   * @param {number|null} tgt
+   * @returns {string} classe modificatrice CSS
+   */
+  function deltaClass(sel, tgt) {
+    if (sel == null || tgt == null) return 'diet-totals-panel__delta--neutral';
+    const d = sel - tgt;
+    if (Math.abs(d) <= 5) return 'diet-totals-panel__delta--neutral';
+    return d > 0 ? 'diet-totals-panel__delta--positive' : 'diet-totals-panel__delta--negative';
+  }
+
+  /**
+   * Formatta il delta con segno (es. +12, -8, 0).
+   * @param {number|null} sel
+   * @param {number|null} tgt
+   * @returns {string}
+   */
+  function fmtDelta(sel, tgt) {
+    if (sel == null || tgt == null) return '—';
+    const d = sel - tgt;
+    if (d === 0) return '0';
+    return d > 0 ? `+${d}` : `${d}`;
+  }
+
+  /** Formatta un valore intero o mostra — */
+  function fmtVal(v) {
+    return v != null ? String(v) : '—';
+  }
+
+  const dKcalClass     = deltaClass(selKcal, tgtKcal);
+  const dProteineClass = deltaClass(selProteine, tgtProteine);
+  const dCarboClass    = deltaClass(selCarbo, tgtCarbo);
+  const dGrassiClass   = deltaClass(selGrassi, tgtGrassi);
+
+  container.innerHTML = `
+    <h2 class="diet-totals-panel__title">Confronto con il target</h2>
+    <div class="diet-totals-panel__table" role="table" aria-label="Confronto totali selezionati vs target">
+      <!-- intestazione colonne -->
+      <div class="diet-totals-panel__row diet-totals-panel__row--header" role="row">
+        <div class="diet-totals-panel__cell diet-totals-panel__cell--label" role="columnheader"></div>
+        <div class="diet-totals-panel__cell diet-totals-panel__cell--col" role="columnheader" aria-label="Kilocalorie">kcal</div>
+        <div class="diet-totals-panel__cell diet-totals-panel__cell--col" role="columnheader" aria-label="Proteine in grammi">Prot</div>
+        <div class="diet-totals-panel__cell diet-totals-panel__cell--col" role="columnheader" aria-label="Carboidrati in grammi">Carb</div>
+        <div class="diet-totals-panel__cell diet-totals-panel__cell--col" role="columnheader" aria-label="Grassi in grammi">Gras</div>
+      </div>
+      <!-- riga selezionati -->
+      <div class="diet-totals-panel__row diet-totals-panel__row--selected" role="row" aria-label="Totali pasti selezionati">
+        <div class="diet-totals-panel__cell diet-totals-panel__cell--label" role="rowheader">Selezionati</div>
+        <div class="diet-totals-panel__cell diet-totals-panel__cell--val" role="cell">${fmtVal(selKcal)}</div>
+        <div class="diet-totals-panel__cell diet-totals-panel__cell--val" role="cell">${fmtVal(selProteine)}g</div>
+        <div class="diet-totals-panel__cell diet-totals-panel__cell--val" role="cell">${fmtVal(selCarbo)}g</div>
+        <div class="diet-totals-panel__cell diet-totals-panel__cell--val" role="cell">${fmtVal(selGrassi)}g</div>
+      </div>
+      <!-- riga target -->
+      <div class="diet-totals-panel__row diet-totals-panel__row--target" role="row" aria-label="Valori target giornalieri">
+        <div class="diet-totals-panel__cell diet-totals-panel__cell--label" role="rowheader">Target</div>
+        <div class="diet-totals-panel__cell diet-totals-panel__cell--val" role="cell">${fmtVal(tgtKcal)}</div>
+        <div class="diet-totals-panel__cell diet-totals-panel__cell--val" role="cell">${fmtVal(tgtProteine)}g</div>
+        <div class="diet-totals-panel__cell diet-totals-panel__cell--val" role="cell">${fmtVal(tgtCarbo)}g</div>
+        <div class="diet-totals-panel__cell diet-totals-panel__cell--val" role="cell">${fmtVal(tgtGrassi)}g</div>
+      </div>
+      <!-- riga delta -->
+      <div class="diet-totals-panel__row diet-totals-panel__row--delta" role="row" aria-label="Delta selezionati meno target">
+        <div class="diet-totals-panel__cell diet-totals-panel__cell--label" role="rowheader">Delta</div>
+        <div class="diet-totals-panel__cell diet-totals-panel__cell--delta ${dKcalClass}" role="cell" aria-label="delta kcal">${fmtDelta(selKcal, tgtKcal)}</div>
+        <div class="diet-totals-panel__cell diet-totals-panel__cell--delta ${dProteineClass}" role="cell" aria-label="delta proteine">${fmtDelta(selProteine, tgtProteine)}</div>
+        <div class="diet-totals-panel__cell diet-totals-panel__cell--delta ${dCarboClass}" role="cell" aria-label="delta carboidrati">${fmtDelta(selCarbo, tgtCarbo)}</div>
+        <div class="diet-totals-panel__cell diet-totals-panel__cell--delta ${dGrassiClass}" role="cell" aria-label="delta grassi">${fmtDelta(selGrassi, tgtGrassi)}</div>
+      </div>
+    </div>
   `;
 }
 
@@ -263,29 +440,165 @@ function renderMealCard(pasto) {
 // ── Render lista pasti ────────────────────────────────────
 
 /**
- * Popola #meals-list con le card pasti del giorno selezionato.
- * @param {Object} dayData — elemento di giorni[] filtrato per tipo
+ * Costruisce l'HTML di una singola opzione con gli alimenti della variante
+ * corretta per il tipo di giorno selezionato.
+ * @param {Object} opzione    — elemento di slot.opzioni[]
+ * @param {string} dayTypeId  — id tipo giorno corrente
+ * @param {number} index      — indice 0-based dell'opzione nello slot
+ * @returns {string} HTML
  */
-function renderMealsList(dayData) {
+function renderOpzioneCard(opzione, dayTypeId, index) {
+  const nomeOpzione = opzione?.nome ?? `Opzione ${index + 1}`;
+  const variante = opzione?.varianti?.[dayTypeId] ?? null;
+
+  if (!variante) {
+    return `
+      <article class="diet-opzione-card" aria-label="Opzione: ${nomeOpzione}">
+        <h4 class="diet-opzione-card__nome">${nomeOpzione}</h4>
+        <p class="diet-empty diet-opzione-card__unavailable">Variante non disponibile per questo tipo di giorno.</p>
+      </article>
+    `;
+  }
+
+  const alimenti = variante.alimenti ?? [];
+  const totale   = variante.totale   ?? {};
+
+  const kcalTot     = totale.kcal      != null ? Math.round(totale.kcal)      : '—';
+  const proteineTot = totale.proteine  != null ? Math.round(totale.proteine)  : '—';
+  const carboTot    = totale.carbo     != null ? Math.round(totale.carbo)     : '—';
+  const grassiTot   = totale.grassi    != null ? Math.round(totale.grassi)    : '—';
+
+  return `
+    <article class="diet-opzione-card" aria-label="Opzione: ${nomeOpzione}">
+      <h4 class="diet-opzione-card__nome">${nomeOpzione}</h4>
+      <div class="diet-meal-table-wrapper">
+        <table class="diet-meal-table" aria-label="Alimenti opzione ${nomeOpzione}">
+          <thead>
+            <tr class="diet-meal-table__head">
+              <th scope="col" class="diet-meal-table__th diet-meal-table__th--nome">Alimento</th>
+              <th scope="col" class="diet-meal-table__th diet-meal-table__th--num">Grammi</th>
+              <th scope="col" class="diet-meal-table__th diet-meal-table__th--num">Kcal</th>
+              <th scope="col" class="diet-meal-table__th diet-meal-table__th--num">Prot</th>
+              <th scope="col" class="diet-meal-table__th diet-meal-table__th--num">Carbo</th>
+              <th scope="col" class="diet-meal-table__th diet-meal-table__th--num">Grassi</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${renderAlimentiRows(alimenti)}
+          </tbody>
+        </table>
+      </div>
+      <footer class="diet-opzione-card__totale" aria-label="Totale opzione">
+        <span class="diet-opzione-card__totale-item diet-opzione-card__totale-item--kcal">${kcalTot} kcal</span>
+        <span class="diet-opzione-card__totale-sep" aria-hidden="true">·</span>
+        <span class="diet-opzione-card__totale-item">${proteineTot}g P</span>
+        <span class="diet-opzione-card__totale-sep" aria-hidden="true">·</span>
+        <span class="diet-opzione-card__totale-item">${carboTot}g C</span>
+        <span class="diet-opzione-card__totale-sep" aria-hidden="true">·</span>
+        <span class="diet-opzione-card__totale-item">${grassiTot}g G</span>
+      </footer>
+    </article>
+  `;
+}
+
+/**
+ * Costruisce l'HTML di un intero slot con orario, kcal target e l'opzione corrente.
+ * Mostra UN'UNICA opzione alla volta (indice da slotOptionIndices[slot.id]).
+ * Se lo slot ha più di una opzione, genera i controlli di navigazione (.diet-slot-nav).
+ * @param {Object} slot       — elemento di slot_pasto[]
+ * @param {string} dayTypeId  — id tipo giorno corrente
+ * @returns {string} HTML
+ */
+function renderSlotCard(slot, dayTypeId) {
+  const slotId  = slot?.id               ?? '';
+  const label   = slot?.label              ?? '—';
+  const orario  = slot?.orario_indicativo  ?? '—';
+  const kcal    = slot?.kcal_per_tipo?.[dayTypeId] != null ? Math.round(slot.kcal_per_tipo[dayTypeId]) : '—';
+  const opzioni = slot?.opzioni ?? [];
+
+  // Inizializza l'indice a 0 se non ancora presente
+  if (slotId && !(slotId in slotOptionIndices)) {
+    slotOptionIndices[slotId] = 0;
+  }
+
+  const currentIndex = slotOptionIndices[slotId] ?? 0;
+  const clampedIndex = Math.min(Math.max(currentIndex, 0), Math.max(opzioni.length - 1, 0));
+
+  let opzioneHtml;
+  let navHtml = '';
+
+  if (opzioni.length === 0) {
+    opzioneHtml = '<p class="diet-empty">Nessuna opzione disponibile per questo slot.</p>';
+  } else {
+    // Mostra solo l'opzione all'indice corrente
+    opzioneHtml = renderOpzioneCard(opzioni[clampedIndex], dayTypeId, clampedIndex);
+
+    // Genera i controlli di navigazione solo se ci sono più opzioni
+    if (opzioni.length > 1) {
+      const isPrevDisabled = clampedIndex === 0;
+      const isNextDisabled = clampedIndex === opzioni.length - 1;
+      navHtml = `
+        <div class="diet-slot-nav" aria-label="Navigazione opzioni ${label}">
+          <button
+            type="button"
+            class="diet-slot-nav__btn diet-slot-nav__btn--prev"
+            data-slot-id="${slotId}"
+            data-direction="prev"
+            aria-label="Opzione precedente"
+            ${isPrevDisabled ? 'disabled' : ''}
+          >&#8249;</button>
+          <span class="diet-slot-nav__indicator" aria-live="polite" aria-atomic="true">${clampedIndex + 1} / ${opzioni.length}</span>
+          <button
+            type="button"
+            class="diet-slot-nav__btn diet-slot-nav__btn--next"
+            data-slot-id="${slotId}"
+            data-direction="next"
+            aria-label="Opzione successiva"
+            ${isNextDisabled ? 'disabled' : ''}
+          >&#8250;</button>
+        </div>
+      `;
+    }
+  }
+
+  return `
+    <section class="diet-slot-card" aria-label="Slot: ${label}">
+      <header class="diet-slot-card__header">
+        <h3 class="diet-slot-card__label">${label}</h3>
+        <span class="diet-slot-card__orario" aria-label="Orario indicativo">${orario}</span>
+        <span class="diet-slot-card__kcal" aria-label="Kcal target">${kcal} kcal</span>
+      </header>
+      ${navHtml}
+      <div class="diet-slot-card__opzioni">
+        ${opzioneHtml}
+      </div>
+    </section>
+  `;
+}
+
+/**
+ * Popola #meals-list con le card slot-pasto per il tipo di giorno selezionato.
+ * Per ogni slot mostra TUTTE le opzioni con la variante corretta per dayTypeId.
+ * @param {Object} data          — dati completi da diet.json
+ * @param {string} dayTypeId     — id tipo giorno corrente (es. 'riposo')
+ */
+function renderMealsList(data, dayTypeId) {
   const container = document.getElementById('meals-list');
   if (!container) return;
 
-  if (!dayData) {
-    container.innerHTML = '<p class="diet-empty">Pasti non disponibili.</p>';
+  const slotPasto = data?.slot_pasto ?? [];
+
+  if (slotPasto.length === 0) {
+    container.innerHTML = '<p class="diet-empty">Nessun pasto definito per questo tipo di giorno.</p>';
     return;
   }
 
-  const pasti = dayData.pasti ?? [];
-
-  if (pasti.length === 0) {
-    container.innerHTML = '<p class="diet-empty">Nessun pasto definito per questo giorno.</p>';
-    return;
-  }
+  const slotsHtml = slotPasto.map(slot => renderSlotCard(slot, dayTypeId)).join('');
 
   container.innerHTML = `
     <h2 class="diet-section-title">Pasti del giorno</h2>
-    <div class="diet-meals-stack">
-      ${pasti.map(p => renderMealCard(p)).join('')}
+    <div class="diet-slots-stack">
+      ${slotsHtml}
     </div>
   `;
 }
@@ -334,11 +647,155 @@ function renderSupplements(integratori) {
   container.innerHTML = integratori.map(i => renderSupplementCard(i)).join('');
 }
 
+// ── Render strategia nutrizionale ────────────────────────
+
+/**
+ * Popola #strategy-note con il testo completo di note_strategia formattato in paragrafi.
+ * Usa un elemento <details>/<summary> nativo per il pannello collassabile.
+ * Se notaStrategia è null, undefined o stringa vuota, nasconde la sezione.
+ * @param {string|null} notaStrategia — valore di meta.note_strategia (stringa multiriga)
+ */
+function renderStrategyNote(notaStrategia) {
+  const container = document.getElementById('strategy-note');
+  if (!container) return;
+
+  if (!notaStrategia || typeof notaStrategia !== 'string' || notaStrategia.trim().length === 0) {
+    container.hidden = true;
+    return;
+  }
+
+  const paragraphs = notaStrategia
+    .split('\n')
+    .map(line => line.trim())
+    .filter(line => line.length > 0);
+
+  if (paragraphs.length === 0) {
+    container.hidden = true;
+    return;
+  }
+
+  const paragraphsHtml = paragraphs
+    .map(p => `<p class="diet-strategy-note__paragraph">${p}</p>`)
+    .join('');
+
+  container.innerHTML = `
+    <details class="diet-strategy-note__details">
+      <summary class="diet-strategy-note__toggle">
+        <span class="diet-strategy-note__toggle-label">Strategia nutrizionale completa</span>
+        <span class="diet-strategy-note__toggle-icon" aria-hidden="true">▸</span>
+      </summary>
+      <div class="diet-strategy-note__body">
+        ${paragraphsHtml}
+      </div>
+    </details>
+  `;
+
+  container.hidden = false;
+}
+
+// ── Export CSV ───────────────────────────────────────────
+
+/**
+ * Racchiude un valore stringa in doppi apici se contiene ; o doppi apici.
+ * Esegue l'escaping dei doppi apici interni raddoppiandoli.
+ * @param {string} val
+ * @returns {string}
+ */
+function csvEscapeField(val) {
+  const str = String(val);
+  if (str.includes(';') || str.includes('"') || str.includes('\n')) {
+    return '"' + str.replace(/"/g, '""') + '"';
+  }
+  return str;
+}
+
+/**
+ * Genera il CSV della dieta completa (tutti i tipi di giorno × tutti gli slot
+ * × tutte le opzioni × tutti gli alimenti) e avvia il download via Blob URL.
+ * Usa BOM UTF-8 per compatibilità Excel italiano.
+ * Separatore di campo: punto e virgola (;).
+ */
+function exportDietCSV() {
+  if (!dietData) return;
+
+  const tipiGiorno = dietData?.meta?.tipi_giorno ?? [];
+  const slotPasto  = dietData?.slot_pasto ?? [];
+
+  const intestazione = 'tipo_giorno;slot;opzione;alimento;grammi;kcal;proteine_g;carbo_g;grassi_g';
+  const righe = [intestazione];
+
+  for (const tipoGiorno of tipiGiorno) {
+    const tipoId    = tipoGiorno.id    ?? '';
+    const tipoLabel = tipoGiorno.label ?? tipoId;
+
+    for (const slot of slotPasto) {
+      const slotLabel = slot?.label ?? '';
+      const opzioni   = slot?.opzioni ?? [];
+
+      for (const opzione of opzioni) {
+        const opzioneNome = opzione?.nome ?? '';
+        const variante    = opzione?.varianti?.[tipoId];
+
+        // Salta varianti non disponibili per questo tipo giorno
+        if (!variante) continue;
+
+        const alimenti = variante?.alimenti ?? [];
+
+        for (const alimento of alimenti) {
+          const nome    = alimento?.nome    ?? '';
+          const grammi  = alimento?.grammi  ?? 0;
+          const kcal    = alimento?.kcal    != null ? Math.round(alimento.kcal) : 0;
+          const prot    = alimento?.proteine != null ? parseFloat(alimento.proteine.toFixed(1)) : 0;
+          const carbo   = alimento?.carbo   != null ? parseFloat(alimento.carbo.toFixed(1))    : 0;
+          const grassi  = alimento?.grassi  != null ? parseFloat(alimento.grassi.toFixed(1))   : 0;
+
+          const riga = [
+            csvEscapeField(tipoLabel),
+            csvEscapeField(slotLabel),
+            csvEscapeField(opzioneNome),
+            csvEscapeField(nome),
+            grammi,
+            kcal,
+            prot,
+            carbo,
+            grassi
+          ].join(';');
+
+          righe.push(riga);
+        }
+      }
+    }
+  }
+
+  const csvContent = righe.join('\r\n');
+
+  // BOM UTF-8 per compatibilità Excel italiano
+  const blob = new Blob(['\uFEFF' + csvContent], { type: 'text/csv;charset=utf-8;' });
+
+  // Nome file: dieta-daniele-YYYY-MM.csv
+  let nomeFile = 'dieta-daniele.csv';
+  const dataStr = dietData?.meta?.data;
+  if (dataStr && typeof dataStr === 'string' && dataStr.length >= 7) {
+    const anno = dataStr.slice(0, 4);
+    const mese = dataStr.slice(5, 7);
+    nomeFile = `dieta-daniele-${anno}-${mese}.csv`;
+  }
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement('a');
+  link.href = url;
+  link.setAttribute('download', nomeFile);
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+  URL.revokeObjectURL(url);
+}
+
 // ── Render principale ─────────────────────────────────────
 
 /**
  * Funzione principale di rendering della pagina dieta.
- * Riceve l'intero diet.json, usa currentDayIndex per selezionare il giorno,
+ * Riceve l'intero diet.json, usa currentDayTypeId per selezionare il tipo giorno,
  * aggiorna tutti i blocchi della pagina.
  * @param {Object} data — dati da diet.json
  */
@@ -346,21 +803,24 @@ function renderDiet(data) {
   // Header fase
   renderDietHeader(data);
 
-  // Seleziona il giorno per indice (non per tipo)
-  const giorni = data?.giorni ?? [];
-  const dayData = giorni[currentDayIndex] ?? null;
+  // Seleziona il tipo giorno per id stringa (non per indice numerico)
+  const tipiGiorno = data?.meta?.tipi_giorno ?? [];
+  const tipoSelezionato = tipiGiorno.find(t => t.id === currentDayTypeId) ?? tipiGiorno[0] ?? null;
 
-  // Aggiorna toggle visivo
-  renderToggle(currentDayIndex);
+  // Aggiorna toggle visivo in base all'id corrente
+  renderDayTypeToggle(currentDayTypeId);
 
-  // Aggiorna macros summary
-  renderMacrosSummary(dayData, data?.meta?.note_strategia ?? null);
+  // Aggiorna macros summary usando tipoSelezionato
+  renderMacrosSummary(tipoSelezionato, data?.meta?.note_strategia ?? null);
 
-  // Aggiorna lista pasti
-  renderMealsList(dayData);
+  // Aggiorna lista pasti con il tipo giorno corrente
+  renderMealsList(data, currentDayTypeId);
 
   // Aggiorna integratori (sempre visibili, indipendenti dal selettore)
   renderSupplements(data?.integratori ?? []);
+
+  // Mostra la strategia nutrizionale completa (nota multiriga, pannello collassabile)
+  renderStrategyNote(data?.meta?.note_strategia ?? null);
 }
 
 // ── Entry point ───────────────────────────────────────────
@@ -368,18 +828,75 @@ function renderDiet(data) {
 document.addEventListener('DOMContentLoaded', async () => {
   // Event delegation sul container #day-toggle
   // Intercetta i click sui bottoni generati dinamicamente da renderDaySelector()
+  // Usa data-day-type-id (stringa id) invece di data-day-index (numero)
   const dayToggleContainer = document.getElementById('day-toggle');
   if (dayToggleContainer) {
     dayToggleContainer.addEventListener('click', (event) => {
       const btn = event.target.closest('.diet-toggle-btn');
       if (!btn) return;
-      const index = parseInt(btn.dataset.dayIndex, 10);
-      if (isNaN(index)) return;
-      currentDayIndex = index;
+      const typeId = btn.dataset.dayTypeId;
+      if (!typeId) return;
+      currentDayTypeId = typeId;
       if (dietData) {
+        selectedTotals = calculateSelectedTotals(dietData, currentDayTypeId, slotOptionIndices);
         renderDiet(dietData);
+        const tipiGiorno = dietData?.meta?.tipi_giorno ?? [];
+        const tipoSelezionato = tipiGiorno.find(t => t.id === currentDayTypeId) ?? tipiGiorno[0] ?? null;
+        renderDietTotalsPanel(selectedTotals, tipoSelezionato);
       }
     });
+  }
+
+  // Event delegation su #meals-list per i bottoni di navigazione opzioni slot.
+  // I bottoni .diet-slot-nav__btn sono generati dinamicamente da renderSlotCard(),
+  // quindi il listener va attaccato al container statico #meals-list.
+  const mealsListContainer = document.getElementById('meals-list');
+  if (mealsListContainer) {
+    mealsListContainer.addEventListener('click', (event) => {
+      const btn = event.target.closest('[data-direction]');
+      if (!btn) return;
+      const slotId    = btn.dataset.slotId;
+      const direction = btn.dataset.direction;
+      if (!slotId || !direction) return;
+      if (!dietData) return;
+
+      const slotPasto = dietData?.slot_pasto ?? [];
+      const slot = slotPasto.find(s => s.id === slotId);
+      if (!slot) return;
+
+      const opzioni    = slot?.opzioni ?? [];
+      const maxIndex   = opzioni.length - 1;
+      const currentIdx = slotOptionIndices[slotId] ?? 0;
+
+      if (direction === 'next') {
+        slotOptionIndices[slotId] = Math.min(currentIdx + 1, maxIndex);
+      } else if (direction === 'prev') {
+        slotOptionIndices[slotId] = Math.max(currentIdx - 1, 0);
+      }
+
+      renderMealsList(dietData, currentDayTypeId);
+
+      // Restaura il focus sul bottone ricreato dopo il re-render del DOM.
+      // renderMealsList() sostituisce l'innerHTML di #meals-list, distruggendo
+      // il bottone che aveva ricevuto il click: slotId e direction sono stati
+      // salvati prima del render e ora vengono usati per ritrovare il bottone
+      // ricreato tramite data-attribute, evitando la perdita di focus.
+      const focusTarget = mealsListContainer.querySelector(
+        `[data-slot-id="${slotId}"][data-direction="${direction}"]`
+      );
+      if (focusTarget) focusTarget.focus();
+
+      selectedTotals = calculateSelectedTotals(dietData, currentDayTypeId, slotOptionIndices);
+      const tipiGiornoMeals = dietData?.meta?.tipi_giorno ?? [];
+      const tipoSelezionatoMeals = tipiGiornoMeals.find(t => t.id === currentDayTypeId) ?? tipiGiornoMeals[0] ?? null;
+      renderDietTotalsPanel(selectedTotals, tipoSelezionatoMeals);
+    });
+  }
+
+  // Listener pulsante esporta CSV
+  const exportBtn = document.getElementById('export-csv-btn');
+  if (exportBtn) {
+    exportBtn.addEventListener('click', exportDietCSV);
   }
 
   try {
@@ -391,9 +908,26 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     dietData = await res.json();
 
-    // Genera il selettore giorni dinamico prima del rendering principale
-    renderDaySelector(dietData?.giorni ?? []);
+    // Inizializza currentDayTypeId con il primo tipo giorno disponibile
+    const tipiGiorno = dietData?.meta?.tipi_giorno ?? [];
+    if (tipiGiorno.length > 0) {
+      currentDayTypeId = tipiGiorno[0].id ?? 'riposo';
+    }
+
+    // Abilita il pulsante export CSV dopo il caricamento
+    if (exportBtn) {
+      exportBtn.removeAttribute('disabled');
+    }
+
+    // Genera il selettore tipi giorno dinamico prima del rendering principale
+    renderDaySelector(tipiGiorno);
     renderDiet(dietData);
+
+    // Inizializza selectedTotals con i valori di default dopo il primo rendering
+    selectedTotals = calculateSelectedTotals(dietData, currentDayTypeId, slotOptionIndices);
+    const tipiGiornoInit = dietData?.meta?.tipi_giorno ?? [];
+    const tipoSelezionatoInit = tipiGiornoInit.find(t => t.id === currentDayTypeId) ?? tipiGiornoInit[0] ?? null;
+    renderDietTotalsPanel(selectedTotals, tipoSelezionatoInit);
 
   } catch (e) {
     showError(null, e);

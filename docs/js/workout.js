@@ -164,6 +164,121 @@ function renderSchemaSelector(schede, indiceAttivo) {
   }
 }
 
+// ── Utility: auto-selezione settimana e giorno ───────────
+
+/**
+ * Mostra il banner informativo #workout-autoselect-info con il messaggio passato.
+ * @param {string} messaggio
+ */
+function showAutoSelectInfo(messaggio) {
+  const banner = document.getElementById('workout-autoselect-info');
+  if (!banner) return;
+  banner.textContent = messaggio;
+  banner.hidden = false;
+}
+
+/**
+ * Nasconde il banner informativo #workout-autoselect-info.
+ */
+function hideAutoSelectInfo() {
+  const banner = document.getElementById('workout-autoselect-info');
+  if (!banner) return;
+  banner.hidden = true;
+  banner.textContent = '';
+}
+
+/**
+ * Calcola settimanaAttiva e giornoAttivoIndex in base alla data odierna.
+ * Funzione pura: riceve la scheda, restituisce il risultato senza modificare stato globale.
+ *
+ * Algoritmo settimana:
+ *   1. Parsa meta.data come dataInizio (YYYY-MM-DD con T00:00:00 per evitare sfasamenti fuso)
+ *   2. Se oggi < dataInizio → fuoriPeriodo (scheda non ancora iniziata), usa settimana 1
+ *   3. Calcola diffGiorni e settimanaCalcolata = floor(diffGiorni / 7) + 1
+ *   4. Se settimanaCalcolata > numero settimane → fuoriPeriodo (mesociclo terminato), usa settimana 1
+ *
+ * Algoritmo giorno:
+ *   1. Mappa getDay() → nome giorno italiano (es. 6 → 'Sabato')
+ *   2. Cerca corrispondenza case-insensitive in palestra[].giorno
+ *   3. Se non trovato, cerca il prossimo giorno di allenamento (dayOffset 1..6)
+ *   4. Fallback: indice 0
+ *
+ * @param {Object} scheda — scheda workout attiva (elemento di schedeData)
+ * @returns {{ settimana: number, giornoIndex: number, fuoriPeriodo: boolean, messaggio: string }}
+ */
+function detectSettimanaEGiornoOggi(scheda) {
+  const settimane = scheda?.settimane ?? [];
+  const fallback  = { settimana: settimane.length > 0 ? settimane[0].numero : 1, giornoIndex: 0, fuoriPeriodo: false, messaggio: '' };
+
+  if (settimane.length === 0) return fallback;
+
+  // ── Calcolo settimana ────────────────────────────────────
+  const dataStr = scheda?.meta?.data ?? '';
+  if (!dataStr) return fallback;
+
+  const dataInizio = new Date(dataStr + 'T00:00:00');
+  if (isNaN(dataInizio.getTime())) return fallback;
+
+  const oggi   = new Date();
+  const diffMs = oggi.setHours(0, 0, 0, 0) - dataInizio.getTime();
+
+  if (diffMs < 0) {
+    // Oggi è prima dell'inizio del mesociclo
+    return {
+      settimana:    settimane[0].numero,
+      giornoIndex:  0,
+      fuoriPeriodo: true,
+      messaggio:    'La scheda non è ancora iniziata — mostrata la settimana 1'
+    };
+  }
+
+  const diffGiorni       = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+  const settimanaCalcolata = Math.floor(diffGiorni / 7) + 1;
+  const settimanaObj     = settimane.find(s => s.numero === settimanaCalcolata) ?? null;
+
+  let settimanaTarget;
+  let fuoriPeriodo = false;
+  let messaggio    = '';
+
+  if (!settimanaObj) {
+    // Data oltre la fine del mesociclo
+    settimanaTarget = settimane[0];
+    fuoriPeriodo    = true;
+    messaggio       = 'Data fuori dal periodo del mesociclo — mostrata la settimana 1';
+  } else {
+    settimanaTarget = settimanaObj;
+  }
+
+  // ── Calcolo giorno ───────────────────────────────────────
+  const GIORNI_IT = ['Domenica', 'Lunedi', 'Martedi', 'Mercoledi', 'Giovedi', 'Venerdi', 'Sabato'];
+  const palestra  = settimanaTarget?.palestra ?? [];
+
+  const oggiReale    = new Date();
+  const dayOfWeekOggi = oggiReale.getDay(); // 0=dom..6=sab
+  const nomeOggi      = GIORNI_IT[dayOfWeekOggi];
+
+  // Cerca se oggi è un giorno di allenamento
+  let giornoIndex = palestra.findIndex(g => (g.giorno ?? '').toLowerCase() === nomeOggi.toLowerCase());
+
+  if (giornoIndex === -1) {
+    // Oggi non è un giorno di allenamento — cerca il prossimo
+    for (let offset = 1; offset <= 6; offset++) {
+      const futureDay  = (dayOfWeekOggi + offset) % 7;
+      const nomeGiorno = GIORNI_IT[futureDay];
+      const idx        = palestra.findIndex(g => (g.giorno ?? '').toLowerCase() === nomeGiorno.toLowerCase());
+      if (idx !== -1) {
+        giornoIndex = idx;
+        break;
+      }
+    }
+  }
+
+  // Fallback finale
+  if (giornoIndex === -1) giornoIndex = 0;
+
+  return { settimana: settimanaTarget.numero, giornoIndex, fuoriPeriodo, messaggio };
+}
+
 /**
  * Seleziona una scheda per indice e aggiorna tutta la UI:
  * header della pagina, selettore bottoni scheda, selettore settimane, dettaglio.
@@ -192,9 +307,18 @@ function selectSchema(schede, indice) {
   // Re-render header scheda (aggiorna anche #header-workout-period)
   renderWorkoutHeader(workoutData);
 
-  // Reset settimana al numero iniziale della nuova scheda
+  // Auto-selezione settimana e giorno in base alla data odierna
   const settimane = workoutData?.settimane ?? [];
-  settimanaAttiva = settimane.length > 0 ? settimane[0].numero : 1;
+  const autoSel   = detectSettimanaEGiornoOggi(workoutData);
+  settimanaAttiva  = autoSel.settimana;
+  giornoAttivoIndex = autoSel.giornoIndex;
+
+  // Mostra o nascondi il banner informativo fuori-periodo
+  if (autoSel.fuoriPeriodo) {
+    showAutoSelectInfo(autoSel.messaggio);
+  } else {
+    hideAutoSelectInfo();
+  }
 
   // Ri-collega i bottoni settimana alla nuova scheda
   aggiornaSelezioneSettimane(workoutData);
@@ -211,8 +335,9 @@ function selectSchema(schede, indice) {
 function aggiornaSelezioneSettimane(data) {
   const settimane = data?.settimane ?? [];
 
-  // Reset giorno al primo della settimana
-  giornoAttivoIndex = 0;
+  // Nota: giornoAttivoIndex NON viene resettato qui.
+  // Viene impostato da selectSchema() tramite detectSettimanaEGiornoOggi()
+  // prima di questa chiamata, oppure dal click su una settimana nel week-selector.
 
   // Genera i bottoni settimana dinamicamente (N bottoni = N settimane nel JSON)
   renderWeekSelector(settimane, settimanaAttiva);
@@ -613,6 +738,7 @@ function renderEsercizioRow(esercizio) {
   const recupero  = esercizio?.recupero  ?? '—';
   const gruppo    = esercizio?.gruppo    ?? '';
   const isPrincipale = esercizio?.principale === true;
+  const noteEsercizio = esercizio?.note ?? '';
 
   return `
     <tr class="workout-esercizio-row${isPrincipale ? ' workout-esercizio-row--principale' : ''}">
@@ -620,6 +746,7 @@ function renderEsercizioRow(esercizio) {
         <span class="workout-esercizio-row__nome-testo">${nome}</span>
         ${isPrincipale ? '<span class="workout-esercizio-principale" aria-label="Esercizio principale">★</span>' : ''}
         ${gruppo ? `<span class="workout-esercizio-row__gruppo">${gruppo}</span>` : ''}
+        ${noteEsercizio ? `<span class="workout-esercizio-row__note">${noteEsercizio}</span>` : ''}
       </td>
       <td class="workout-esercizio-row__serie">${serie}</td>
       <td class="workout-esercizio-row__reps">${reps}</td>
@@ -737,6 +864,30 @@ function renderTestDaySection(giorno) {
 }
 
 /**
+ * Costruisce l'HTML della sezione riscaldamento o defaticamento.
+ * La sezione è un <details>/<summary> HTML nativo collassabile, senza JS aggiuntivo.
+ * Legge i dati dalla variabile globale workoutData (stessa per tutti i giorni della scheda).
+ * @param {Array}  items  — array di stringhe (workoutData.riscaldamento o .defaticamento)
+ * @param {string} titolo — titolo della sezione (es. 'Riscaldamento')
+ * @param {string} cssClass — classe BEM della sezione (es. 'workout-warmup-section')
+ * @returns {string} HTML della sezione oppure '' se items assente/vuoto
+ */
+function renderWarmupCooldownSection(items, titolo, cssClass) {
+  if (!items || items.length === 0) return '';
+  const liItems = items.map(item => `<li class="${cssClass}__item">${item}</li>`).join('');
+  return `
+    <details class="${cssClass}" open>
+      <summary class="${cssClass}__summary">
+        <span class="${cssClass}__title">${titolo}</span>
+      </summary>
+      <ul class="${cssClass}__list">
+        ${liItems}
+      </ul>
+    </details>
+  `;
+}
+
+/**
  * Costruisce l'HTML di una card sessione giornaliera completa.
  * Mostra header (giorno + badge tipo), note sessione opzionali e
  * tabella esercizi con colonne Nome | Serie | Reps | Peso | Recupero.
@@ -790,6 +941,17 @@ function renderGiornoCard(giorno) {
     tabellaHtml = '<p class="workout-empty">Nessun esercizio per questa sessione.</p>';
   }
 
+  const warmupHtml   = renderWarmupCooldownSection(
+    workoutData?.riscaldamento,
+    'Riscaldamento',
+    'workout-warmup-section'
+  );
+  const cooldownHtml = renderWarmupCooldownSection(
+    workoutData?.defaticamento,
+    'Defaticamento',
+    'workout-cooldown-section'
+  );
+
   return `
     <article class="workout-giorno-card" aria-label="Sessione ${nomeGiorno}">
       <header class="workout-giorno-card__header">
@@ -797,7 +959,9 @@ function renderGiornoCard(giorno) {
         <span class="workout-giorno-card__tipo">${tipo}</span>
       </header>
       ${noteSessione ? `<p class="workout-giorno-card__note">${noteSessione}</p>` : ''}
+      ${warmupHtml}
       ${tabellaHtml}
+      ${cooldownHtml}
     </article>
   `;
 }

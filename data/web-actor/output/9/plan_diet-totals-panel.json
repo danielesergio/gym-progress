@@ -1,0 +1,159 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "diet-totals-panel",
+    "task_title": "Pannello confronto totali selezionati vs target",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "diet-totals-panel",
+    "type": "component",
+    "title": "Pannello confronto totali selezionati vs target",
+    "description": "Sezione visibile nella pagina Dieta che mostra su tre righe: (1) i totali sommati delle opzioni correntemente selezionate (kcal, proteine, carboidrati, grassi), (2) i target giornalieri del tipo-giorno attivo, (3) i delta (selezionato − target) con segnalazione visiva positiva/negativa/neutrale. Il pannello non sostituisce il blocco macros-summary esistente (che rimane immutato), ma si posiziona tra la lista pasti (#meals-list) e gli integratori (#supplements-section) in diet.html. Lo stato selectedTotals esiste già in diet.js (variabile let), calcolato da calculateSelectedTotals() che è già implementata e funzionante. Il task deve solo: (a) aggiungere il blocco HTML statico #diet-totals-panel in diet.html, (b) implementare renderDietTotalsPanel() in diet.js che popola quel blocco usando selectedTotals e i target del tipoGiorno attivo, (c) richiamare renderDietTotalsPanel() nei punti giusti del flusso (post-fetch iniziale, cambio tipo giorno, cambio opzione slot), (d) aggiungere gli stili in diet.css.",
+    "inputs": [
+      "selected_meals_totals",
+      "diet_day_type_targets"
+    ],
+    "outputs": [
+      "DietTotalsPanel"
+    ],
+    "acceptance_criteria": [
+      "Il pannello mostra kcal, proteine, carboidrati e grassi sia per i pasti selezionati che per il target",
+      "Il delta tra selezionato e target è visibile per ogni voce",
+      "Il delta negativo (selezionato < target) è distinguibile visivamente da delta positivo e da delta zero/neutro",
+      "Il pannello si aggiorna senza ricaricare la pagina quando cambia la selezione",
+      "Il pannello è leggibile su mobile (non tronca valori)",
+      "I valori numerici sono arrotondati all'intero (nessun decimale visibile all'utente)"
+    ],
+    "notes": "ATTENZIONE — la logica di calcolo (diet-totals-logic) è GIÀ PRESENTE in diet.js: la variabile selectedTotals (let, scope globale di pagina) e la funzione calculateSelectedTotals() sono entrambe implementate e vengono già chiamate dopo il fetch e dopo ogni evento. Il task deve SOLO aggiungere il rendering visuale (renderDietTotalsPanel) e richiamarla nei punti dove selectedTotals viene già aggiornato. NON riscrivere calculateSelectedTotals né la gestione degli eventi esistenti — solo aggiungere la chiamata a renderDietTotalsPanel() subito dopo ogni aggiornamento di selectedTotals."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/diet.html",
+        "motivo": "Aggiungere il blocco <section id='diet-totals-panel'> tra #meals-list e #supplements-section",
+        "esiste": true
+      },
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "Implementare renderDietTotalsPanel(totals, tipoGiorno) e richiamarla in 3 punti: (1) fine fetch iniziale dopo selectedTotals = calculateSelectedTotals(...), (2) nel handler click di #day-toggle dopo selectedTotals = calculateSelectedTotals(...), (3) nel handler click di #meals-list dopo selectedTotals = calculateSelectedTotals(...)",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Aggiungere stili per .diet-totals-panel e gli elementi interni: righe selezionati/target/delta, classi modificatori --positive / --negative / --neutral per il delta",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/diet.html",
+        "motivo": "Verificare la struttura HTML esistente e il punto esatto di inserimento del nuovo <section> (tra #meals-list e #supplements-section, righe 89–95)"
+      },
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "Leggere l'intero file per: (a) capire dove sono le 3 chiamate esistenti a selectedTotals = calculateSelectedTotals(...) (righe 731, 765, 800), (b) capire il pattern renderXxx() già usato, (c) capire dove inserire la chiamata a renderDietTotalsPanel() in renderDiet()"
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Verificare le variabili CSS già usate (var(--color-success), var(--color-danger), var(--color-text-muted), var(--space-*), var(--radius-*)) per coerenza degli stili del pannello delta"
+      },
+      {
+        "path": "docs/data/diet.json",
+        "motivo": "Struttura dati confermata: meta.tipi_giorno[].kcal_target (number), meta.tipi_giorno[].macros_target.proteine (number), .carboidrati (number), .grassi (number). slot_pasto[].opzioni[].varianti[dayTypeId].totale.{kcal, proteine, carbo, grassi} (number). I valori totale sono già calcolati da Python — il developer li legge via calculateSelectedTotals() già esistente."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS vanilla ES2022 — nessun build step",
+      "styling": "CSS custom properties — variabili in css/variables.css, stili pagina in css/diet.css",
+      "grafici": "Non necessario — nessun grafico in questo task"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase — es. selectedTotals, currentDayTypeId, tipoGiorno",
+      "costanti_js": "SCREAMING_SNAKE_CASE — es. DATA_PATH",
+      "classi_css": "kebab-case con prefisso diet-* — es. .diet-totals-panel, .diet-totals-panel__row, .diet-totals-panel__delta--negative",
+      "id_html": "kebab-case con prefisso diet- o page-neutral — es. #diet-totals-panel",
+      "gestione_null": "Usare value != null ? Math.round(value) : '—'; mai mostrare 'null' o 'undefined'",
+      "arrotondamento": "Math.round() per kcal e grammi macros — nessun decimale visibile",
+      "pattern_js": "Funzione renderDietTotalsPanel(totals, tipoGiorno) che aggiorna innerHTML di #diet-totals-panel. Chiamata ogni volta che selectedTotals viene ricalcolato.",
+      "reattivita": "Nessun framework. Re-render diretto via innerHTML. Il pannello si aggiorna chiamando renderDietTotalsPanel() subito dopo ogni selectedTotals = calculateSelectedTotals(...)",
+      "no_es_modules": "Non usare import/export. Tutto in scope globale di pagina.",
+      "no_inline_style": "Usare classi CSS modificatrici per il delta (--positive, --negative, --neutral) — NO style='color:...'",
+      "accessibilita": "aria-live='polite' sull'elemento <section id='diet-totals-panel'>, aria-label descrittivi sulle righe, aria-label='delta [nome macros]' sugli elementi delta"
+    },
+    "struttura_html_pagina": "theme.js (no defer) nel head → variables.css → layout.css → diet.css → body: header → nav.tab-list → main#page-content → footer → nav.js (defer) → diet.js (defer)",
+    "pagina": {
+      "nome": "Dieta",
+      "file": "docs/diet.html",
+      "js": "docs/js/diet.js",
+      "css": "docs/css/diet.css",
+      "dati_json": ["data/diet.json"]
+    }
+  },
+  "stato_esistente_rilevante": {
+    "variabili_gia_presenti_in_diet_js": [
+      "let selectedTotals — dichiarata a riga 32, inizializzata a null, aggiornata in 3 punti",
+      "let dietData — contiene l'intero diet.json dopo il fetch",
+      "let currentDayTypeId — id del tipo giorno attivo",
+      "let slotOptionIndices — mappa slotId→indice opzione corrente"
+    ],
+    "funzioni_gia_presenti_in_diet_js": [
+      "calculateSelectedTotals(data, dayTypeId, indices) — righe 60-88, già completa e funzionante",
+      "renderDiet(data) — righe 692-714, funzione principale che chiama le sotto-funzioni render; renderDietTotalsPanel() va aggiunta qui",
+      "renderMacrosSummary(tipoGiorno, notaStrategia) — righe 202-251, gestisce il blocco macros-summary ESISTENTE (non toccare)"
+    ],
+    "punti_di_chiamata_selectedTotals_in_diet_js": [
+      "riga 731 (handler click day-toggle): selectedTotals = calculateSelectedTotals(dietData, currentDayTypeId, slotOptionIndices); — AGGIUNGERE renderDietTotalsPanel() SUBITO DOPO",
+      "riga 765 (handler click meals-list): selectedTotals = calculateSelectedTotals(dietData, currentDayTypeId, slotOptionIndices); — AGGIUNGERE renderDietTotalsPanel() SUBITO DOPO",
+      "riga 800 (fine fetch iniziale): selectedTotals = calculateSelectedTotals(dietData, currentDayTypeId, slotOptionIndices); — AGGIUNGERE renderDietTotalsPanel() SUBITO DOPO"
+    ],
+    "struttura_diet_html_rilevante": {
+      "sezione_meals_list": "<section id='meals-list' class='diet-meals-list' ... > — riga 90",
+      "sezione_supplements": "<section id='supplements-section' class='diet-supplements' ... > — riga 95",
+      "posizione_nuovo_pannello": "Inserire <section id='diet-totals-panel'> TRA #meals-list E #supplements-section (tra le righe 92 e 94 del diet.html attuale)"
+    },
+    "struttura_dati_selectedTotals": {
+      "tipo": "{ kcal: number, proteineG: number, carboG: number, grassiG: number }",
+      "nota": "Campi già arrotondati a Math.round() dentro calculateSelectedTotals()"
+    },
+    "struttura_dati_tipoGiorno": {
+      "id": "string — es. 'riposo', 'palestra', 'beach_volley'",
+      "label": "string — es. 'Giorno di Riposo'",
+      "kcal_target": "number — es. 2650",
+      "macros_target": {
+        "proteine": "number — es. 180",
+        "carboidrati": "number — es. 295",
+        "grassi": "number — es. 75"
+      }
+    }
+  },
+  "criteri_accettazione": [
+    "Il pannello #diet-totals-panel è visibile nella pagina Dieta tra la lista pasti e gli integratori",
+    "Il pannello mostra tre righe: 'Selezionati', 'Target', 'Delta' per kcal, proteine, carboidrati e grassi",
+    "Il delta negativo ha una classe CSS modificatrice visualmente distinta (es. colore rosso/arancio via --negative)",
+    "Il delta positivo ha una classe CSS modificatrice visualmente distinta (es. colore verde via --positive)",
+    "Il delta zero o ±5 ha una classe CSS neutra (es. colore muted via --neutral)",
+    "Il pannello si aggiorna senza reload dopo cambio tipo giorno (test: cliccare Palestra → controllare che kcal target diventi 2850)",
+    "Il pannello si aggiorna senza reload dopo cambio opzione slot (test: premere freccia › su un pasto → verificare cambio kcal selezionati)",
+    "Tutti i valori sono interi (nessun decimale visibile — Math.round già applicato da calculateSelectedTotals)",
+    "Il pannello è leggibile su mobile (nessun troncamento, testo wrappato correttamente con min-width: 0 e overflow: hidden: visible)",
+    "docs/diet.html contiene <section id='diet-totals-panel'>",
+    "docs/js/diet.js contiene la funzione renderDietTotalsPanel(totals, tipoGiorno)",
+    "renderDietTotalsPanel() è chiamata in 3 punti: dopo fetch iniziale, dopo cambio day-type, dopo cambio opzione slot",
+    "renderDietTotalsPanel() non genera eccezioni se totals è null o tipoGiorno è null (empty state graceful)",
+    "Il blocco macros-summary esistente (id='macros-summary') rimane INVARIATO",
+    "La funzione calculateSelectedTotals() NON è modificata"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "diet-totals-logic",
+      "stato": "completato",
+      "file_prodotti": ["docs/js/diet.js"],
+      "note": "La logica calculateSelectedTotals() e la variabile selectedTotals sono già presenti e funzionanti in docs/js/diet.js (righe 32 e 60-88). Il calcolo viene già eseguito nei 3 punti del flusso (riga 731, 765, 800). Confermato dalla lettura del file il 2026-03-28."
+    }
+  ]
+}

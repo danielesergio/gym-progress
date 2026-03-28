@@ -254,6 +254,7 @@ class BodyCalc:
 
         vals = [entry.get(k) for k in ("squat_1rm", "panca_1rm", "stacco_1rm")]
         entry["totale_1rm"] = round(sum(vals), 1) if all(v is not None for v in vals) else None
+        entry["generate_by"] = "new_iteration"
 
         return entry
 
@@ -290,6 +291,10 @@ class BodyCalc:
             try:
                 bf          = self._body_fat_navy(sesso, vita, collo, altezza, fianchi or 0)
                 massa_magra = round(peso * (1 - bf / 100), 1)
+                s = entry["squat_1rm"]
+                p = entry["panca_1rm"]
+                st = entry["stacco_1rm"]
+                entry["totale_1rm"] = round(s + p + st, 1) if (s is not None and p is not None and st is not None) else None
                 entry["body_fat_pct"]   = bf
                 entry["massa_magra_kg"] = massa_magra
                 entry["ffmi_adj"]       = self._ffmi_adjusted(massa_magra, altezza)

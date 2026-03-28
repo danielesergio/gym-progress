@@ -1,0 +1,123 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "plan-nutrition-strategy-section",
+    "task_title": "Strategia nutrizionale per fase con dati da mesocicli",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "plan-nutrition-strategy-section",
+    "type": "component",
+    "title": "Strategia nutrizionale per fase con dati da mesocicli",
+    "description": "La sezione 'Strategia Nutrizionale' nella pagina Piano deve mostrare, per ogni mesociclo del piano, la fase nutrizionale associata (mantenimento/cut/bulk) e il razionale (campo 'incrocio_stimolo_ambiente'). La visualizzazione può essere una tabella o una lista di card compatte: una riga/card per mesociclo con nome, tipo nutrizionale e spiegazione. I dati provengono da plan.json → macrocicli[n].mesocicli[m].fase_nutrizionale e incrocio_stimolo_ambiente.",
+    "inputs": ["plan_mesocicli_data"],
+    "outputs": ["NutritionStrategyByPhase"],
+    "acceptance_criteria": [
+      "La sezione 'Strategia Nutrizionale' non mostra più il placeholder di caricamento",
+      "Sono elencati tutti i mesocicli del piano con la relativa fase nutrizionale",
+      "Per ogni mesociclo è visibile il razionale nutrizionale (testo da incrocio_stimolo_ambiente)",
+      "Il tipo nutrizionale (mantenimento/bulk/cut) è visivamente distinguibile (es. colore diverso o badge)",
+      "La sezione è leggibile anche con 7 mesocicli listati"
+    ],
+    "notes": "La funzione renderNutritionStrategy() esiste già in plan.js (riga 426) ma legge da planData.strategia_nutrizionale con campi (ora, fase_mini_cut, macronutrienti, trigger_cut, trigger_bulk) che NON esistono nel piano JSON reale. Il task richiede di riscrivere completamente la funzione per leggere da planData.macrocicli[n].mesocicli[m] invece. Il CSS ha già badge nutrizionali colorati (.plan-meso-nutri-badge con data-fase) pronti per riuso. Aggiungere nuove classi CSS per la lista compatta dei mesocicli nella sezione nutrizione."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/plan.js",
+        "motivo": "Riscrivere la funzione renderNutritionStrategy() per iterare su planData.macrocicli[n].mesocicli[m] e costruire una lista/tabella con numero, nome, fase_nutrizionale (badge colorato) e incrocio_stimolo_ambiente per ciascun mesociclo. Rimuovere la logica che legge da planData.strategia_nutrizionale (campi inesistenti). La funzione è già chiamata correttamente da renderPlan().",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/plan.css",
+        "motivo": "Aggiungere stili per il layout lista mesocicli-nutrizione: .plan-nutrition-meso-list (contenitore lista), .plan-nutrition-meso-item (singola riga/card con numero + nome + badge + testo razionale), .plan-nutrition-meso-header (riga con numero, nome, badge), .plan-nutrition-meso-rationale (testo incrocio_stimolo_ambiente). I badge nutrizionali .plan-meso-nutri-badge sono già definiti e possono essere riusati.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/plan.json",
+        "motivo": "Struttura dati target: macrocicli[0].mesocicli è un array di 7 oggetti. Ogni mesociclo ha: numero (int 1-7), nome (stringa), tipo (Recupero/Mini-Cut/Ipertrofia/Forza), fase_nutrizionale (stringa: 'mantenimento'|'cut'|'bulk'), incrocio_stimolo_ambiente (stringa lunga con il razionale nutrizionale). Tutti i 7 mesocicli hanno incrocio_stimolo_ambiente popolato."
+      },
+      {
+        "path": "docs/js/plan.js",
+        "motivo": "File da modificare: contiene renderNutritionStrategy() da riscrivere (righe 426-536), buildMesoMap() riutilizzabile per estrarre mesocicli, e il pattern renderError() già usato. La funzione renderPlan() chiama già renderNutritionStrategy(planData) — il punto di chiamata non va modificato."
+      },
+      {
+        "path": "docs/css/plan.css",
+        "motivo": "File da modificare: contiene .plan-meso-nutri-badge con varianti data-fase già definite (mantenimento/cut/bulk) — riusarle nella lista nutrizione. Contiene .plan-nutrition-container già stilizzato. La sezione STRATEGIA NUTRIZIONALE attuale (righe 286-411) mostra stili per card/grid/triggers/macros che diventano obsoleti — possono essere mantenuti (non rompe nulla) o sostituiti con i nuovi stili lista mesocicli."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "Plain HTML/JS ES2022",
+      "styling": "CSS custom properties — nessun framework CSS",
+      "grafici": "Chart.js NON necessario per questo task (nessun grafico)"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase — es. mesoList, faseNutrizionale, incrocioPossibile",
+      "classi_css": "kebab-case con prefisso plan- — es. .plan-nutrition-meso-list, .plan-nutrition-meso-item",
+      "id_html": "kebab-case — il container #plan-nutrition-container è già nell'HTML, non va modificato",
+      "gestione_null": "Usare optional chaining (?.) e fallback: valore ?? '—'. Il campo incrocio_stimolo_ambiente è sempre presente per tutti i 7 mesocicli, ma difendersi comunque con fallback.",
+      "pattern_js": "La funzione renderNutritionStrategy(planData) viene chiamata da renderPlan(). Deve restare una funzione standalone che riceve planData. Iterare con for...of su un array piatto di mesocicli estratti da tutti i macrocicli (pattern buildMesoMap già esistente usabile come riferimento).",
+      "struttura_js_per_pagina": "Modificare solo renderNutritionStrategy() — non toccare le altre funzioni. Aggiungere buildNutritionMesoList() come helper interno se necessario per chiarezza.",
+      "no": ["no innerHTML diretto con valori non sanitizzati — usare textContent dove possibile", "no ES module import/export", "no var — solo const e let"]
+    },
+    "pagina": {
+      "nome": "Piano",
+      "file": "docs/plan.html",
+      "js": "docs/js/plan.js",
+      "css": "docs/css/plan.css",
+      "dati_json": ["data/plan.json"]
+    },
+    "struttura_dati_rilevante": {
+      "percorso": "planData.macrocicli[n].mesocicli[m]",
+      "campi_usati": {
+        "numero": "int — numero progressivo mesociclo (1-7)",
+        "nome": "stringa — nome del mesociclo (es. 'Rehab TOS Fase 1 — Recupero Attivo')",
+        "tipo": "stringa — tipo allenamento (Recupero/Mini-Cut/Ipertrofia/Forza)",
+        "fase_nutrizionale": "stringa — 'mantenimento' | 'cut' | 'bulk'",
+        "incrocio_stimolo_ambiente": "stringa — razionale nutrizionale per la fase (sempre presente, testo lungo ~100-200 char)"
+      },
+      "esempio_mesociclo": {
+        "numero": 3,
+        "nome": "Mini-Cut Post-Rehab",
+        "tipo": "Mini-Cut",
+        "fase_nutrizionale": "cut",
+        "incrocio_stimolo_ambiente": "Mini-Cut + deficit moderato: con deficit moderato (-300/-400 kcal) si mantiene intensità elevata che preserva i massimali..."
+      },
+      "note_iterazione": "planData.macrocicli è un array con 1 elemento (macrociclo 1). Ogni macrociclo ha mesocicli[]. Iterare su tutti i macrocicli e raccogliere tutti i mesocicli in array piatto (come buildMesoMap ma come array ordinato). Totale atteso: 7 mesocicli."
+    },
+    "badge_css_riusabili": {
+      "classe": ".plan-meso-nutri-badge",
+      "attributo": "data-fase",
+      "valori": ["mantenimento", "cut", "bulk"],
+      "gia_definiti_in": "docs/css/plan.css righe 699-723"
+    }
+  },
+  "criteri_accettazione": [
+    "Il container #plan-nutrition-container non mostra più il testo 'Caricamento strategia nutrizionale…'",
+    "La sezione mostra esattamente 7 item (uno per mesociclo del piano corrente)",
+    "Ogni item mostra: numero fase, nome mesociclo, badge fase_nutrizionale colorato, testo incrocio_stimolo_ambiente",
+    "Il badge 'mantenimento' ha sfondo neutro/grigio (riusa .plan-meso-nutri-badge[data-fase='mantenimento'])",
+    "Il badge 'cut' ha sfondo rosso tenue (riusa .plan-meso-nutri-badge[data-fase='cut'])",
+    "Il badge 'bulk' ha sfondo verde tenue (riusa .plan-meso-nutri-badge[data-fase='bulk'])",
+    "La sezione è leggibile con 7 mesocicli elencati (nessun overflow o troncamento non intenzionale)",
+    "Se incrocio_stimolo_ambiente è null o assente, il testo mostra '—' senza errori JS",
+    "docs/js/plan.js contiene una funzione renderNutritionStrategy() che itera su planData.macrocicli[n].mesocicli[m]",
+    "docs/js/plan.js NON fa più riferimento a planData.strategia_nutrizionale.ora / .fase_mini_cut / .trigger_cut / .trigger_bulk / .macronutrienti (campi non esistenti nel JSON)",
+    "docs/css/plan.css contiene la classe .plan-nutrition-meso-list o equivalente per il layout della lista",
+    "La funzione renderNutritionStrategy() gestisce il caso planData.macrocicli assente/vuoto con messaggio di errore tramite renderError()"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "plan-mesociclo-detail",
+      "stato": "completato",
+      "file_prodotti": ["docs/js/plan.js", "docs/css/plan.css"],
+      "note": "Il task plan-mesociclo-detail è completamente implementato: buildMesoMap(), renderMesocicloDetail(), toggleMesocicloDetail(), attachTimelineClickListener() sono presenti in docs/js/plan.js. Gli stili .plan-meso-detail, .plan-meso-badge, .plan-meso-nutri-badge sono in docs/css/plan.css. Tutti i file necessari esistono in docs/."
+    }
+  ]
+}

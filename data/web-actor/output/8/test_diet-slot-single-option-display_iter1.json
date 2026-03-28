@@ -1,0 +1,120 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "diet-slot-single-option-display",
+    "task_titolo": "Mostra un'opzione per slot con navigazione tra alternative",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Aprendo la pagina Dieta, ogni slot mostra una sola opzione alla volta",
+      "soddisfatto": true,
+      "dettaglio": "In renderSlotCard (riga 354), viene letto slotOptionIndices[slotId] per ottenere l'indice corrente (riga 366), e viene passato solo renderOpzioneCard(opzioni[clampedIndex], ...) senza iterare tutte le opzioni (riga 376). Ogni render mostra una singola opzione."
+    },
+    {
+      "criterio": "Se uno slot ha più opzioni, sono visibili frecce o indicatori di navigazione (es. '< 1/3 >')",
+      "soddisfatto": true,
+      "dettaglio": "Se opzioni.length > 1, renderSlotCard genera navHtml (riga 382-402) con: bottone prev (&#8249;), indicatore '${clampedIndex + 1} / ${opzioni.length}' (riga 392), bottone next (&#8250;). Il div.diet-slot-nav ha classe correttamente definita in diet.css (riga 387-443)."
+    },
+    {
+      "criterio": "Cliccando la freccia successiva, l'opzione cambia e quella precedente scompare",
+      "soddisfatto": true,
+      "dettaglio": "Nel DOMContentLoaded (riga 693-716), il listener su #meals-list intercetta click su [data-direction]. Se direction === 'next', incrementa slotOptionIndices[slotId] (riga 710). Poi chiama renderMealsList() che re-renderizza (riga 715), mostrando la nuova opzione."
+    },
+    {
+      "criterio": "Se uno slot ha una sola opzione, non compaiono controlli di navigazione",
+      "soddisfatto": true,
+      "dettaglio": "Riga 379: 'if (opzioni.length > 1) { ... navHtml = ... }' — se length === 1, navHtml rimane vuota (riga 370) e non viene generato nessun div.diet-slot-nav."
+    },
+    {
+      "criterio": "Cambiare tipo di giorno (Riposo / Palestra / Beach V.) non resetta la navigazione delle opzioni in modo anomalo",
+      "soddisfatto": true,
+      "dettaglio": "slotOptionIndices è una variabile di modulo (riga 25) che non viene resettata nel cambio di giorno. Quando l'utente clicca su un bottone tipo-giorno (riga 676-685), viene chiamato renderDiet() che chiama renderMealsList() (riga 659), ma slotOptionIndices conserva i suoi valori. Lo stato persiste correttamente."
+    },
+    {
+      "criterio": "Il comportamento funziona su mobile (touch) e desktop",
+      "soddisfatto": true,
+      "dettaglio": "I bottoni .diet-slot-nav__btn hanno min-width: 44px e min-height: 44px (diet.css riga 401-402), sono flex box e hanno padding (riga 403), cursor: pointer (riga 412), -webkit-tap-highlight-color: transparent (riga 416) per mobile. Non dipendono da hover."
+    },
+    {
+      "criterio": "docs/js/diet.js contiene la variabile slotOptionIndices (plain object o Map) a livello di modulo",
+      "soddisfatto": true,
+      "dettaglio": "Riga 25: 'let slotOptionIndices = {};' — dichiarata a livello di modulo come plain object."
+    },
+    {
+      "criterio": "docs/js/diet.js: renderSlotCard chiama renderOpzioneCard solo per l'indice slotOptionIndices[slot.id] ?? 0, non itera su tutte le opzioni",
+      "soddisfatto": true,
+      "dettaglio": "Riga 366: 'const currentIndex = slotOptionIndices[slotId] ?? 0;' legge l'indice. Riga 376: renderOpzioneCard è chiamato UNA SOLA VOLTA con opzioni[clampedIndex], non dentro un map/forEach."
+    },
+    {
+      "criterio": "docs/js/diet.js: è presente event delegation su #meals-list che intercetta click su bottoni con data-direction ('prev' o 'next') e aggiorna slotOptionIndices",
+      "soddisfatto": true,
+      "dettaglio": "DOMContentLoaded riga 691-716: mealsListContainer.addEventListener('click', ...) con event.target.closest('[data-direction]'). Se data-direction === 'next' o 'prev', aggiorna slotOptionIndices[slotId] (riga 710, 712)."
+    },
+    {
+      "criterio": "docs/js/diet.js: i bottoni nav hanno data-slot-id e data-direction come attributi data-*",
+      "soddisfatto": true,
+      "dettaglio": "Riga 387: data-slot-id=\"${slotId}\", riga 388: data-direction=\"prev\", riga 396: data-direction=\"next\". Gli attributi sono presenti e corretti."
+    },
+    {
+      "criterio": "docs/css/diet.css contiene le classi .diet-slot-nav, .diet-slot-nav__btn, .diet-slot-nav__indicator",
+      "soddisfatto": true,
+      "dettaglio": "diet.css riga 387: .diet-slot-nav { display: flex; ... }, riga 397: .diet-slot-nav__btn { ... }, riga 435: .diet-slot-nav__indicator { ... }. Tutte le classi sono definite correttamente."
+    },
+    {
+      "criterio": "Il bottone 'prev' è disabilitato quando l'opzione corrente è la prima (indice 0)",
+      "soddisfatto": true,
+      "dettaglio": "Riga 380: 'const isPrevDisabled = clampedIndex === 0;', riga 390: '${isPrevDisabled ? 'disabled' : ''}' — il bottone prev ha disabled quando indice è 0."
+    },
+    {
+      "criterio": "Il bottone 'next' è disabilitato quando l'opzione corrente è l'ultima",
+      "soddisfatto": true,
+      "dettaglio": "Riga 381: 'const isNextDisabled = clampedIndex === opzioni.length - 1;', riga 399: '${isNextDisabled ? 'disabled' : ''}' — il bottone next ha disabled quando indice è length-1."
+    },
+    {
+      "criterio": "I bottoni .diet-slot-nav__btn hanno area cliccabile minima 44x44px (padding + min-height/min-width nel CSS)",
+      "soddisfatto": true,
+      "dettaglio": "diet.css riga 401: min-width: 44px, riga 402: min-height: 44px. I bottoni soddisfano il requisito WCAG di area minima 44x44px per i controlli touch."
+    },
+    {
+      "criterio": "Nessun file in docs/data/ è stato modificato",
+      "soddisfatto": true,
+      "dettaglio": "Non ho trovato evidenza di modifiche ai file in docs/data/ (diet.json non è stato modificato). Le uniche modifiche sono in docs/js/diet.js e docs/css/diet.css."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/diet.js",
+      "esiste": true,
+      "note": "Contiene la variabile slotOptionIndices (riga 25), la funzione renderSlotCard riscritta (riga 354-419) con logica di navigazione, e event delegation nel DOMContentLoaded (riga 691-716) per gestire i click sui bottoni di navigazione."
+    },
+    {
+      "path": "docs/css/diet.css",
+      "esiste": true,
+      "note": "Contiene le classi .diet-slot-nav (riga 387-443) con stili per il container di navigazione, bottoni, indicatore, e theme-pro overrides (riga 445-454). Bottoni con min-width/min-height 44px per accessibilità touch."
+    },
+    {
+      "path": "docs/diet.html",
+      "esiste": true,
+      "note": "Container #meals-list esiste (riga 90) con aria-label e aria-live='polite'. Il file HTML non è stato modificato, come previsto dal task."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "La logica di clamping (Math.min/Math.max riga 367) è corretta ma potrebbe essere semplificata. Tuttavia, il clamping protegge da bug di index out-of-bounds ed è una best practice.",
+      "file": "docs/js/diet.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "I bottoni nav hanno aria-label 'Opzione precedente' e 'Opzione successiva' (riga 389, 398), più aria-live='polite' sull'indicatore (riga 392). Accessibilità ben implementata.",
+      "file": "docs/js/diet.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "La gestione di opzioni[length] non esiste (guard opzioni.length === 0 riga 372) e il clamping garantisce che renderOpzioneCard non riceverà un indice fuori range. Nessun rischio di crash.",
+      "file": "docs/js/diet.js"
+    }
+  ]
+}

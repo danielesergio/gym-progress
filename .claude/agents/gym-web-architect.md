@@ -95,7 +95,7 @@ Scrivi il file JSON nel percorso indicato dal prompt usando il tool Write.
     "dati": {
       "formato": "JSON statici in docs/data/",
       "fonte": "fetch() da ogni pagina HTML",
-      "aggiornamento": "scripts/generate_data.py (solo i dati, non l'HTML)"
+      "aggiornamento": "source/scripts/generate_data.py (solo i dati, non l'HTML)"
     },
     "build": {
       "tool": "nessuno",
@@ -140,7 +140,7 @@ Scrivi il file JSON nel percorso indicato dal prompt usando il tool Write.
         "path": "data/",
         "tipo": "directory",
         "descrizione": "JSON letti via fetch() dalle pagine HTML",
-        "scritto_da": "scripts/generate_data.py",
+        "scritto_da": "source/scripts/generate_data.py",
         "obbligatorio": true
       }
     ]
@@ -188,7 +188,7 @@ Scrivi il file JSON nel percorso indicato dal prompt usando il tool Write.
 - Al termine stampa un sommario testuale: stack scelto, numero pagine definite, vincoli applicati
 
 ## File temporanei
-Se hai bisogno di creare file intermedi durante l'elaborazione, salvali **esclusivamente** in `scripts/agent-temp/gym-web-architect/`. Non creare mai file temporanei in altre cartelle.
+Se hai bisogno di creare file intermedi durante l'elaborazione, salvali **esclusivamente** in `source/scripts/agent-temp/gym-web-architect/`. Non creare mai file temporanei in altre cartelle.
 Ogni file temporaneo DEVE iniziare con un commento che spiega perche' e' stato creato, es:
 ```json
 // File temporaneo creato da gym-web-architect il YYYY-MM-DD

@@ -1,0 +1,107 @@
+// File temporaneo creato da gym-web-task-tester il 2026-03-27
+// Scopo: appunti verifica criteri task volume-weekly-label-fix iterazione 1
+// Puo' essere eliminato al termine del test
+
+{
+  "criteri_da_verificare": [
+    {
+      "id": 1,
+      "criterio": "Nessun testo nella pagina Volume usa la parola 'mesociclo' per descrivere il totale delle serie",
+      "verificato": true,
+      "note": "Ricerca in volume.html e volume.js per 'mesociclo': NON TROVATO. Criterio soddisfatto."
+    },
+    {
+      "id": 2,
+      "criterio": "L'header della pagina mostra 'Volume settimanale' con il valore corretto",
+      "verificato": false,
+      "note": "PARZIALE: volume.html riga 24 ha aria-label='Volume settimanale corrente' ✓ (proposto: 'Volume settimanale corrente' → confermato). Ma riga 25 label dice 'Volume totale:' (generico, OK). Header meta-value id='header-total-volume' viene poppolato a riga 89 di volume.js con '${totalSerie} serie' (NON dice 'settimanale'). PROBLEMA: il header meta-value NON specifica 'settimanale'."
+    },
+    {
+      "id": 3,
+      "criterio": "La sezione riepilogo recita chiaramente 'serie settimanali' o equivalente",
+      "verificato": true,
+      "note": "volume.html riga 86: 'Riepilogo Volume Settimanale' ✓. volume.js riga 95: label 'Serie settimanali totali' ✓. Criterio soddisfatto."
+    },
+    {
+      "id": 4,
+      "criterio": "Il sottotitolo della sezione grafico specifica che si tratta di serie per settimana",
+      "verificato": true,
+      "note": "volume.html riga 100: 'Serie settimanali pesate per settimana, ordinate dal più alto al più basso' ✓. Criterio soddisfatto."
+    }
+  ],
+  "modifiche_specifiche_da_controllare": [
+    {
+      "file": "volume.html",
+      "elemento": "aria-label su div.header-meta (riga 24)",
+      "attuale": "Volume settimana corrente",
+      "proposto": "Volume settimanale corrente",
+      "trovato": "Volume settimanale corrente",
+      "ok": true
+    },
+    {
+      "file": "volume.html",
+      "elemento": "p.volume-section-subtitle sotto #volume-chart-title (riga 100)",
+      "attuale": "Serie pesate ordinate dal più alto al più basso",
+      "proposto": "Serie settimanali pesate per settimana, ordinate dal più alto al più basso",
+      "trovato": "Serie settimanali pesate per settimana, ordinate dal più alto al più basso",
+      "ok": true
+    },
+    {
+      "file": "volume.js",
+      "elemento": "renderVolumeMetaCard — label 'Serie pesate totali' (riga 95)",
+      "attuale": "Serie pesate totali",
+      "proposto": "Serie settimanali totali",
+      "trovato": "Serie settimanali totali",
+      "ok": true
+    },
+    {
+      "file": "volume.js",
+      "elemento": "renderVolumeMetaCard — label 'Serie Pull' (riga 98)",
+      "attuale": "Serie Pull",
+      "proposto": "Serie Pull (sett.)",
+      "trovato": "Serie Pull (sett.)",
+      "ok": true
+    },
+    {
+      "file": "volume.js",
+      "elemento": "renderVolumeMetaCard — label 'Serie Push' (riga 102)",
+      "attuale": "Serie Push",
+      "proposto": "Serie Push (sett.)",
+      "trovato": "Serie Push (sett.)",
+      "ok": true
+    },
+    {
+      "file": "volume.js",
+      "elemento": "renderVolumeChart — tooltip callback label (riga 181)",
+      "attuale": "` ${val != null ? val.toFixed(1) : '—'} serie pesate`",
+      "proposto": "` ${val != null ? val.toFixed(1) : '—'} serie/sett.`",
+      "trovato": "` ${val != null ? val.toFixed(1) : '—'} serie/sett.`",
+      "ok": true
+    },
+    {
+      "file": "volume.js",
+      "elemento": "renderVolumeChart — asse X title text (riga 199)",
+      "attuale": "Serie pesate",
+      "proposto": "Serie pesate / settimana",
+      "trovato": "Serie pesate / settimana",
+      "ok": true
+    },
+    {
+      "file": "volume.js",
+      "elemento": "renderVolumeTable — volume-muscle-total (riga 272)",
+      "attuale": "`${serieTot} serie pesate`",
+      "proposto": "`${serieTot} serie/sett.`",
+      "trovato": "`${serieTot} serie/sett.`",
+      "ok": true
+    }
+  ],
+  "anomalie_rilevate": [
+    {
+      "gravita": "warning",
+      "descrizione": "Header meta-value (#header-total-volume) è valorizzato a riga 89 di volume.js con solo '${totalSerie} serie', senza specificare 'settimanale'. Il criterio 'L'header della pagina mostra Volume settimanale' parla del valore mostrato nell'header — il testo attuale è ambiguo (potrebbe intendersi come totale del mesociclo). Consiglio: aggiornare riga 89 in 'headerTotalVolume.textContent = `${totalSerie} serie/sett.`;' oppure leggere il requisito come 'aria-label mostra settimanale' (che è già corretto).",
+      "file": "docs/js/volume.js",
+      "riga": 89
+    }
+  ],
+  "esito_provvisorio": "PARZIALE — Criterio 2 non completamente chiaro. Tutte le altre modifiche OK."
+}

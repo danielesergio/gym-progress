@@ -299,7 +299,7 @@ I campi `metodologia_scelta`, `focus_mentale`, `riscaldamento`, `defaticamento`,
 
 8. **Frequenza fondamentali**: ogni fondamentale (Squat, Panca, Stacco) deve comparire almeno 2 volte nelle settimane di Peaking per mantenere la specificita'.
 
-9. **Dizionario esercizi**: ogni nuovo esercizio inserito deve essere aggiunto anche al dizionario `EXERCISE_MUSCLES` in `scripts/volume_calc.py`.
+9. **Dizionario esercizi**: ogni nuovo esercizio inserito deve essere aggiunto anche al dizionario `EXERCISE_MUSCLES` in `source/scripts/volume_calc.py`.
 
 ### Criteri di qualita'
 
@@ -318,7 +318,7 @@ Nel campo `mesociclo.logica` e in `metodologia_scelta.logica_antiburn` spiega co
 
 ### File temporanei
 
-Se hai bisogno di creare script di calcolo o file di verifica, salvali in `scripts/agent-temp/gym-pt-micro-peaking/`. Ogni file deve iniziare con un commento che spiega perche' e' stato creato e puo' essere eliminato al termine dell'iterazione.
+Se hai bisogno di creare script di calcolo o file di verifica, salvali in `source/scripts/agent-temp/gym-pt-micro-peaking/`. Ogni file deve iniziare con un commento che spiega perche' e' stato creato e puo' essere eliminato al termine dell'iterazione.
 
 ### Formato testo
 

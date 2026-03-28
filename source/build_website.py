@@ -104,12 +104,12 @@ def separator(title: str = "") -> None:
 
 
 def run_generate_data(web_dir: Path, dry_run: bool = False) -> bool:
-    """Esegue scripts/generate_data.py per aggiornare i JSON in docs/data/."""
+    """Esegue source/scripts/generate_data.py per aggiornare i JSON in docs/data/."""
     if dry_run:
         log("SKIP", "dry-run: generate_data.py non eseguito")
         return True
     out_dir = web_dir / "data"
-    cmd = [sys.executable, "scripts/generate_data.py", "--outdir", str(out_dir.relative_to(PROJECT_ROOT))]
+    cmd = [sys.executable, "source/scripts/generate_data.py", "--outdir", str(out_dir.relative_to(PROJECT_ROOT))]
     log("ACTION", f"Eseguo: {' '.join(cmd)}")
     result = subprocess.run(cmd, cwd=PROJECT_ROOT, capture_output=True, text=True, encoding="utf-8")
     if result.stdout:

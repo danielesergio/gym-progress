@@ -411,6 +411,63 @@
 }
 
 /* ══════════════════════════════════════════
+   STRATEGIA NUTRIZIONALE — lista mesocicli
+   ══════════════════════════════════════════ */
+
+/* Contenitore lista mesocicli */
+.plan-nutrition-meso-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Singola riga/card mesociclo */
+.plan-nutrition-meso-item {
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.plan-nutrition-meso-item:last-child {
+  border-bottom: none;
+}
+
+/* Riga superiore: numero, nome, badge */
+.plan-nutrition-meso-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-bottom: var(--space-2);
+}
+
+/* Numero mesociclo — etichetta compatta */
+.plan-nutrition-meso-number {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-faint);
+  font-family: var(--font-mono);
+  flex: 0 0 auto;
+  min-width: 56px;
+}
+
+/* Nome mesociclo */
+.plan-nutrition-meso-name {
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text);
+  flex: 1;
+  min-width: 0;
+}
+
+/* Testo razionale nutrizionale */
+.plan-nutrition-meso-rationale {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-loose);
+  margin: 0;
+}
+
+/* ══════════════════════════════════════════
    RESPONSIVE — Mobile (max-width: 768px)
    ══════════════════════════════════════════ */
 @media (max-width: 768px) {
@@ -499,6 +556,263 @@
 
   .plan-section-title {
     font-size: var(--font-size-md);
+  }
+}
+
+/* ══════════════════════════════════════════
+   CARD CLICCABILE — cursore e hover interattivi
+   ══════════════════════════════════════════ */
+.plan-phase-card--clickable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.plan-phase-card--clickable:hover {
+  border-color: var(--color-accent);
+  box-shadow: var(--shadow-md);
+}
+
+.plan-phase-card--clickable:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-color: var(--color-accent);
+}
+
+.plan-phase-card--clickable[aria-expanded="true"] {
+  border-color: var(--color-accent);
+  background-color: var(--color-bg-elevated);
+  box-shadow: 0 0 0 2px var(--color-accent), var(--shadow-md);
+}
+
+/* ══════════════════════════════════════════
+   PANNELLO DETTAGLIO MESOCICLO
+   ══════════════════════════════════════════ */
+.plan-meso-detail {
+  margin-top: var(--space-4);
+  background-color: var(--color-bg-card);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  /* Animazione apertura */
+  max-height: 0;
+  opacity: 0;
+  transition: max-height 0.35s ease, opacity 0.25s ease, border-color var(--transition-fast);
+}
+
+.plan-meso-detail--open {
+  max-height: 1200px;
+  opacity: 1;
+}
+
+/* Header pannello dettaglio */
+.plan-meso-detail-header {
+  padding: var(--space-4) var(--space-5);
+  background-color: var(--color-bg-elevated);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.plan-meso-detail-title-row {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-bottom: var(--space-2);
+}
+
+.plan-meso-detail-title {
+  font-size: var(--font-size-md);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  line-height: var(--line-height-tight);
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.plan-meso-detail-duration {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-faint);
+  font-family: var(--font-mono);
+  margin: 0;
+}
+
+/* Pulsante chiudi × */
+.plan-meso-detail-close {
+  flex: 0 0 auto;
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-size: var(--font-size-md);
+  line-height: 1;
+  padding: 2px var(--space-2);
+  cursor: pointer;
+  transition: background-color var(--transition-fast), color var(--transition-fast);
+  margin-left: auto;
+}
+
+.plan-meso-detail-close:hover {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text);
+}
+
+.plan-meso-detail-close:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* Body pannello dettaglio */
+.plan-meso-detail-body {
+  padding: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* Singolo campo dettaglio (label + testo) */
+.plan-meso-detail-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.plan-meso-detail-label {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-faint);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.plan-meso-detail-text {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-loose);
+  margin: 0;
+}
+
+.plan-meso-detail-text--note {
+  color: var(--color-text-faint);
+  font-style: italic;
+}
+
+/* Lista criteri di avanzamento */
+.plan-meso-criteria-list {
+  margin: 0;
+  padding-left: var(--space-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.plan-meso-criteria-list li {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  line-height: var(--line-height-normal);
+}
+
+/* Badge tipo mesociclo */
+.plan-meso-badge {
+  display: inline-block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-sm);
+  padding: 2px var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  flex: 0 0 auto;
+}
+
+/* Colori badge tipo */
+.plan-meso-badge--tipo[data-tipo="recupero"] {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+.plan-meso-badge--tipo[data-tipo="mini-cut"] {
+  background-color: #fff3cd;
+  color: #7d5a00;
+}
+
+html.theme-dark .plan-meso-badge--tipo[data-tipo="mini-cut"],
+:root .plan-meso-badge--tipo[data-tipo="mini-cut"] {
+  background-color: #3d2e00;
+  color: #f5cc60;
+}
+
+.plan-meso-badge--tipo[data-tipo="ipertrofia"] {
+  background-color: var(--color-accent);
+  color: var(--color-bg);
+}
+
+.plan-meso-badge--tipo[data-tipo="forza"] {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent);
+}
+
+/* Badge fase nutrizionale — base */
+.plan-meso-nutri-badge {
+  display: inline-block;
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  border-radius: var(--radius-sm);
+  padding: 2px var(--space-2);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  flex: 0 0 auto;
+}
+
+/* Badge fase nutrizionale — varianti colore */
+.plan-meso-nutri-badge[data-fase="mantenimento"] {
+  background-color: var(--color-bg-secondary);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+}
+
+.plan-meso-nutri-badge[data-fase="cut"] {
+  background-color: #fdecea;
+  color: #8b1a1a;
+}
+
+:root .plan-meso-nutri-badge[data-fase="cut"] {
+  background-color: #3d1010;
+  color: #f87171;
+}
+
+.plan-meso-nutri-badge[data-fase="bulk"] {
+  background-color: #e8f5e9;
+  color: #1a5e2a;
+}
+
+:root .plan-meso-nutri-badge[data-fase="bulk"] {
+  background-color: #0f3318;
+  color: #6ee080;
+}
+
+/* ══════════════════════════════════════════
+   RESPONSIVE dettaglio mesociclo
+   ══════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .plan-meso-detail-title-row {
+    flex-wrap: wrap;
+  }
+
+  .plan-meso-detail-title {
+    font-size: var(--font-size-base);
+    flex-basis: 100%;
+    order: 3;
+  }
+
+  .plan-meso-detail-close {
+    margin-left: auto;
+    order: 2;
+  }
+
+  .plan-meso-detail-body {
+    padding: var(--space-4);
+    gap: var(--space-4);
   }
 }
 

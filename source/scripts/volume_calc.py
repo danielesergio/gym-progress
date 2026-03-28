@@ -9,8 +9,8 @@ pesandole in base al coinvolgimento muscolare:
   - Muscolo terziario:   0.3 per serie
 
 Uso:
-    python scripts/volume_calc.py data/output/workout_2026-03-18.md
-    python scripts/volume_calc.py data/output/workout_2026-03-18.md --json
+    python source/scripts/volume_calc.py data/output/workout_2026-03-18.md
+    python source/scripts/volume_calc.py data/output/workout_2026-03-18.md --json
 """
 
 import argparse

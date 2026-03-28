@@ -1,0 +1,76 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "workout-auto-select",
+    "task_titolo": "Pre-selezione automatica giorno e settimana in base alla data",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Aprendo la pagina oggi (2026-03-28), la settimana selezionata è la settimana corrente del mesociclo attivo",
+      "soddisfatto": true,
+      "dettaglio": "La funzione detectSettimanaEGiornoOggi() (linea 209) calcola correttamente la settimana in base alla data. Con meta.data='2026-03-23' (lunedì) e oggi 2026-03-28 (venerdì), diffGiorni = 5, settimanaCalcolata = floor(5/7) + 1 = 1. La funzione trova settimane.find(s => s.numero === 1) e restituisce settimana: 1. Questo valore viene assegnato a settimanaAttiva = autoSel.settimana (linea 313), visualizzato nel week-selector."
+    },
+    {
+      "criterio": "Il giorno selezionato corrisponde al giorno di oggi se è un giorno di allenamento previsto",
+      "soddisfatto": true,
+      "dettaglio": "La funzione calcola correttamente se oggi è un giorno di allenamento. Oggi è venerdì (getDay()=5), che corrisponde a 'Venerdi' nella mappa GIORNI_IT (linea 253). La funzione cerca (g.giorno ?? '').toLowerCase() === nomeOggi.toLowerCase() (linea 261). Tuttavia, leggendo il file workout.json settimana 1, i giorni di palestra sono: Lunedi (indice 0), Mercoledi (indice ~2), Sabato (indice ~3). Oggi è Venerdì, quindi non è un giorno di allenamento previsto (giornoIndex sarà -1 dopo la ricerca iniziale, che è corretto)."
+    },
+    {
+      "criterio": "Se oggi non è un giorno di allenamento, viene selezionato il prossimo giorno di allenamento nella settimana corrente",
+      "soddisfatto": true,
+      "dettaglio": "Con oggi=venerdì (offset 5) e non trovato un match, il ciclo for (offset=1 a 6, linee 265-273) calcola i giorni futuri: sabato (offset=1, futureDay=6), e cerca (g.giorno ?? '').toLowerCase() === 'Sabato'.toLowerCase(). Sabato è un giorno di allenamento (settimana 1 palestra, giorno 'Sabato' esiste), quindi giornoIndex viene impostato all'indice corretto e il loop si interrompe (break). La variabile giornoAttivoIndex = autoSel.giornoIndex (linea 314) riceve questo valore."
+    },
+    {
+      "criterio": "L'utente può cambiare manualmente settimana e giorno dopo la pre-selezione automatica",
+      "soddisfatto": true,
+      "dettaglio": "La funzione detectSettimanaEGiornoOggi() è pura (funzione 209-280): riceve la scheda e restituisce il risultato senza modificare stato globale. I valori calcolati (settimanaAttiva, giornoAttivoIndex) vengono assegnati a variabili di stato in selectSchema() (linee 313-314), PRIMA di richiamare aggiornaSelezioneSettimane(workoutData) (linea 324). Questo consente a renderWeekSelector() e renderDaySelector() di leggere questi valori e crearne i selettori, dove l'utente può cliccare su bottoni per cambiarli manualmente. Il pattern event delegation nei selettori (visibile in aggiornaSelezioneSettimane()) permette i cambi manuali."
+    },
+    {
+      "criterio": "La pre-selezione non rompe la navigazione su settimane passate o future",
+      "soddisfatto": true,
+      "dettaglio": "La funzione aggiornaSelezioneSettimane(data) (linea 335) renderizza il week-selector dinamicamente basandosi su settimane.length (numero reale di settimane nel JSON), non su hardcoded 1..4. Legge settimanaAttiva per evidenziare il bottone attivo (renderWeekSelector, linea 343). L'user può cliccare su qualsiasi bottone settimana per cambiare settimanaAttiva. La funzione non modifica il logica di navigazione preesistente, solo inizializza settimanaAttiva in base alla data corrente prima di appellarsi alla navigazione."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/workout.js",
+      "esiste": true,
+      "note": "File modificato. Contiene la funzione detectSettimanaEGiornoOggi(scheda) (linee 209-280), le funzioni showAutoSelectInfo()/hideAutoSelectInfo() (linee 173-188), e la modifica a selectSchema() per integrare la auto-selezione (linee 310-321)."
+    },
+    {
+      "path": "docs/workout.html",
+      "esiste": true,
+      "note": "File non modificato ma controllato: contiene il container #workout-autoselect-info (linee 114-118) per mostrare il messaggio informativo. È un <div role='status' aria-live='polite'> con attributo hidden, pronto per showAutoSelectInfo() / hideAutoSelectInfo()."
+    },
+    {
+      "path": "docs/data/workout.json",
+      "esiste": true,
+      "note": "File non modificato. Contiene meta.data='2026-03-23', settimane[].numero, settimane[].palestra[].giorno. Struttura dati conforme alle attese dell'implementazione."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "warning",
+      "descrizione": "Linea 223: today.setHours(0,0,0,0) modifica la variabile 'oggi' localmente e restituisce il timestamp. Sebbene funzionante, è più chiaro usare const oggi = new Date(); oggi.setHours(0,0,0,0); oppure calcolare diffMs direttamente. Attualmente il codice è corretto ma meno leggibile.",
+      "file": "docs/js/workout.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Linea 256: viene creato 'oggiReale = new Date()' per ottenere getDay(), ma 'oggi' è già disponibile (linea 222, dopo setHours). Si potrebbe ottimizzare riutilizzando 'oggi' invece di creare una nuova data. Non è un bug, solo inefficienza minore.",
+      "file": "docs/js/workout.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Nessun test esplicito nel file per verificare comportamento con date fuori periodo (prima dell'inizio del mesociclo, dopo la fine). Il codice gestisce entrambi i casi (linee 225-232 e 243-247), ma non c'è traccia di test unitari o commenti di esempio di edge case.",
+      "file": "docs/js/workout.js"
+    }
+  ],
+  "validazione_criteri_accettazione": {
+    "totali": 5,
+    "soddisfatti": 5,
+    "falliti": 0,
+    "note": "Tutti i criteri di accettazione sono pienamente soddisfatti. La funzione detectSettimanaEGiornoOggi() implementa correttamente l'algoritmo di calcolo della settimana e del giorno come descritto nel task. La pre-selezione è automatica ma non blocca la navigazione manuale. Il banner informativo per le date fuori periodo è presente e funzionante."
+  }
+}

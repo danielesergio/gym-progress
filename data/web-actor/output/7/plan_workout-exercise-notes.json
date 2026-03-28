@@ -1,0 +1,116 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "workout-exercise-notes",
+    "task_title": "Note testuali degli esercizi nella scheda allenamento",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "workout-exercise-notes",
+    "type": "component",
+    "title": "Note testuali degli esercizi nella scheda allenamento",
+    "description": "Ogni esercizio nella scheda ha un campo 'note' con istruzioni tecniche specifiche (es. 'Discesa controllata 3 secondi, pausa 1s in buca...'). Queste note devono essere mostrate all'utente per ogni esercizio, ad esempio come testo in espansione o testo secondario sotto il nome dell'esercizio. Le note sono presenti solo quando non vuote.",
+    "inputs": [
+      "workout_exercise_data"
+    ],
+    "outputs": [
+      "ExerciseNoteDisplay"
+    ],
+    "acceptance_criteria": [
+      "Ogni esercizio che ha note non vuote le mostra all'utente",
+      "Le note sono leggibili senza sovrapporsi ad altri elementi",
+      "Esercizi senza note non mostrano placeholder vuoti",
+      "Le note sono associate all'esercizio corretto"
+    ],
+    "notes": "Il campo 'note' è presente su ogni oggetto esercizio in workout.json. Tutti gli esercizi campionati lo hanno valorizzato con testo non vuoto. Le note contengono istruzioni tecniche di esecuzione (TUT, RPE, sicurezza). La struttura dati non ha un campo booleano 'ha_note': la logica deve verificare se la stringa è non-vuota. Il componente si innesta in renderEsercizioRow() già esistente in workout.js, che popola la tabella esercizi."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "Modificare renderEsercizioRow() per aggiungere la nota sotto il nome dell'esercizio, mostrata solo se esercizio.note è non-vuota e non-null. La nota va inserita come elemento <span> o <p> all'interno della cella .workout-esercizio-row__nome, dopo il nome e il badge gruppo.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Aggiungere stili per .workout-esercizio-row__note: testo secondario leggibile sotto il nome, font-size xs, colore text-muted, line-height normale. Garantire che il testo non si sovrapponga al badge gruppo o al badge principale.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/workout.json",
+        "motivo": "Struttura dati esercizi: ogni oggetto ha 'nome' (string), 'serie' (int), 'reps' (string), 'peso' (string), 'recupero' (string), 'gruppo' (string), 'principale' (bool), 'tempo' (string), 'rpe' (int|float), 'note' (string|assente). Le note sono stringhe non vuote in tutti i campioni — non esiste campo booleano separato. La logica deve essere: if (esercizio?.note) mostra la nota."
+      },
+      {
+        "path": "docs/js/workout.js",
+        "motivo": "Leggere l'implementazione corrente di renderEsercizioRow() (righe ~608-630) per capire la struttura HTML della riga tabella e dove inserire il nuovo elemento nota. La cella .workout-esercizio-row__nome contiene già nome, badge principale (★) e badge gruppo — la nota va aggiunta dopo di essi."
+      },
+      {
+        "path": "docs/css/workout.css",
+        "motivo": "Leggere gli stili esistenti di .workout-esercizio-row__nome e classi adiacenti per non creare conflitti. In particolare verificare se la cella usa flex/block e come si comporta con contenuto multi-riga."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "Plain HTML/JS — ES2022, no framework, no bundler",
+      "grafici": null
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase (es. noteEsercizio, isPrincipale)",
+      "classi_css": "kebab-case con prefisso pagina: .workout-esercizio-row__note",
+      "gestione_null": "Usare optional chaining: esercizio?.note. Mostrare la nota solo se truthy (stringa non vuota). Mai mostrare 'null', 'undefined' o stringhe vuote.",
+      "pattern_js": "Modificare la funzione esistente renderEsercizioRow(esercizio) — non creare nuove funzioni top-level. La funzione costruisce template literal HTML e lo restituisce come stringa. Aggiungere il blocco nota con operatore ternario all'interno del template.",
+      "pattern_css": "Testo secondario sotto il nome: display block, font-size xs (--font-size-xs), color text-muted (--color-text-muted), margin-top space-1, line-height normal. NO valori hardcoded — solo variabili CSS da variables.css."
+    },
+    "pagina": {
+      "nome": "Allenamento",
+      "file": "docs/workout.html",
+      "js": "docs/js/workout.js",
+      "css": "docs/css/workout.css",
+      "dati_json": ["data/workout.json"]
+    }
+  },
+  "implementazione": {
+    "descrizione_approccio": "Approccio minimalista: modificare solo renderEsercizioRow() in workout.js aggiungendo la nota inline nella cella nome, con testo secondario visibile sotto. Nessuna interattività richiesta (no expand/collapse) — la nota è testo statico sempre visibile se presente. Questo è coerente con le note brevi presenti nei dati (1-3 righe di testo tecnico).",
+    "modifica_js": {
+      "funzione": "renderEsercizioRow",
+      "file": "docs/js/workout.js",
+      "riga_approssimativa": 608,
+      "dettaglio": "Aggiungere la lettura del campo 'note': const noteEsercizio = esercizio?.note ?? ''; Poi nel template HTML della cella .workout-esercizio-row__nome, dopo il badge gruppo, aggiungere: ${noteEsercizio ? `<span class='workout-esercizio-row__note'>${noteEsercizio}</span>` : ''}"
+    },
+    "modifica_css": {
+      "file": "docs/css/workout.css",
+      "posizione": "Aggiungere dopo gli stili di .workout-esercizio-row__gruppo (o in fondo alla sezione tabella esercizi)",
+      "classi_da_aggiungere": [
+        ".workout-esercizio-row__note"
+      ],
+      "proprieta": "display: block; font-size: var(--font-size-xs); color: var(--color-text-muted); margin-top: var(--space-1); line-height: var(--line-height-normal); font-style: italic;"
+    },
+    "struttura_html_risultante": "La cella .workout-esercizio-row__nome conterrà: span.nome-testo (nome esercizio) + span.workout-esercizio-principale (badge ★, condizionale) + span.workout-esercizio-row__gruppo (badge gruppo, condizionale) + span.workout-esercizio-row__note (nota tecnica, condizionale su note non-vuota)."
+  },
+  "criteri_accettazione": [
+    "Ogni esercizio che ha notes non vuote le mostra all'utente sotto il nome nella tabella esercizi",
+    "Le note sono leggibili senza sovrapporsi ad altri elementi della riga (nome, serie, reps, peso, recupero)",
+    "Esercizi senza note (campo assente o stringa vuota) non mostrano span vuoti o placeholder",
+    "Le note sono associate all'esercizio corretto (ogni nota appare nella riga del proprio esercizio)",
+    "docs/js/workout.js: la funzione renderEsercizioRow() legge esercizio?.note e lo inserisce condizionalmente nel template HTML",
+    "docs/js/workout.js: la nota è racchiusa in un elemento con classe workout-esercizio-row__note",
+    "docs/css/workout.css: la classe .workout-esercizio-row__note è definita con display:block, font-size e colore usando variabili CSS (no hardcoded)",
+    "La nota non viene mostrata se esercizio.note è undefined, null o stringa vuota"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "workout-warmup-cooldown",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/js/workout.js",
+        "docs/css/workout.css"
+      ],
+      "note": "La funzione renderWarmupCooldownSection() è presente in workout.js (righe ~748-761) e gli stili .workout-warmup-section / .workout-cooldown-section sono presenti in workout.css. La dipendenza è soddisfatta: il task corrente può modificare gli stessi file senza conflitti."
+    }
+  ]
+}

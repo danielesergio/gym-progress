@@ -1,0 +1,105 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "diet-day-type-selector",
+    "task_titolo": "Selettore tipo giorno (riposo / palestra / beach volley)",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Sono presenti esattamente 3 bottoni nel selettore (#day-toggle), uno per tipo: 'Riposo', 'Palestra', 'Beach V.'",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in diet.js linee 58-78: renderDaySelector() genera dinamicamente bottoni dalle tipi_giorno di diet.json. I 3 tipi sono presenti in diet.json (righe 5-36): riposo, palestra, attivita_extra. DAY_TYPE_LABELS (righe 10-14) mappa correttamente gli id alle abbreviazioni brevi: 'Riposo', 'Palestra', 'Beach V.'. Ogni bottone ha data-day-type-id con l'id stringa."
+    },
+    {
+      "criterio": "Le etichette brevi non vengono troncate su mobile (white-space: nowrap confermato in CSS)",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in diet.css linea 66: .diet-toggle-btn ha white-space: nowrap, impedendo a testo a capo. min-width: 100px (linea 51) è sufficiente per le abbreviazioni brevi ('Riposo'=6 char, 'Palestra'=8 char, 'Beach V.'=8 char). Test mobile verificato: container .diet-day-toggle (linee 32-46 diet.css) usa flex con overflow-x: auto e scroll-snap-type: x mandatory, permettendo scroll orizzontale se necessario senza troncamento. Layout mobile-first confermato."
+    },
+    {
+      "criterio": "Il nome completo del tipo selezionato è accessibile via aria-label sul bottone (es. aria-label='Giorno Riposo')",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in diet.js linee 67-77: renderDaySelector() genera bottoni con aria-label=\"${labelCompleto}\" dove labelCompleto = tipo.label (es. 'Giorno Riposo') da diet.json. Esempio diet.json riga 8: 'label': 'Giorno Riposo'. L'attributo aria-label è correttamente impostato per ogni bottone, fornendo accessibilità semantica."
+    },
+    {
+      "criterio": "Cliccando un bottone: il bottone acquisisce la classe .active e aria-pressed='true'; gli altri perdono .active e hanno aria-pressed='false'",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in diet.js linee 400-416 (DOMContentLoaded event listener). Event delegation sul container #day-toggle intercetta click, legge dataset.dayTypeId dal bottone, aggiorna currentDayTypeId (linea 411). Funzione renderDayTypeToggle() (linee 85-92) aggiorna lo stato visivo: .forEach dei bottoni, toggle classe .active su base isActive (linea 89), setAttribute aria-pressed (linea 90). renderDiet() (linea 413) ri-chiama renderDayTypeToggle() a ogni cambio selezione."
+    },
+    {
+      "criterio": "La selezione aggiorna visivamente i macros nel blocco #macros-summary (kcal, proteine, carboidrati, grassi cambiano in base al tipo selezionato)",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in diet.js linee 377-396 (renderDiet). Legge tipi_giorno array, cerca il tipo per id=currentDayTypeId (linea 383), passa tipoSelezionato a renderMacrosSummary() (linea 389). renderMacrosSummary() (linee 147-196) estrae kcal_target, macros_target.proteine/carboidrati/grassi da tipoSelezionato e popola HTML nel container #macros-summary. Al cambio selezione, renderDiet() è ri-chiamato (linea 413), provocando aggiornamento dinamico dei valori mostrati."
+    },
+    {
+      "criterio": "Il tipo attivo è visivamente distinto: bordo e colore accent (già definito in .diet-toggle-btn.active in diet.css)",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in diet.css linee 81-90: .diet-toggle-btn.active ha background-color: var(--color-accent-dim), border-color: var(--color-accent), color: var(--color-accent), font-weight: var(--font-weight-semibold). Stile visivamente distinto dal bottone inattivo. Hover aggiuntivo (linee 88-90) migliora feedback interattivo. CSS variables garantiscono coerenza tema (variabili definite in variables.css)."
+    },
+    {
+      "criterio": "docs/js/diet.js usa currentDayTypeId (stringa id) come variabile di stato, non currentDayIndex (intero)",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in diet.js riga 18: let currentDayTypeId = 'riposo' (stringa, non intero). Usato coerentemente: linea 68 (renderDaySelector), linea 88 (renderDayTypeToggle), linea 383 (renderDiet per find), linea 389 (renderMacrosSummary), linea 392 (renderMealsList). Non esiste riferimento a 'currentDayIndex' nell'intero file."
+    },
+    {
+      "criterio": "docs/js/diet.js contiene la funzione renderDaySelector() che itera su meta.tipi_giorno[]",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in diet.js linee 58-78: funzione renderDaySelector(tipiGiorno). Riceve array tipiGiorno (= meta.tipi_giorno[] da renderDiet), usa .map() (linea 67) per generare HTML per ogni elemento, legge tipi_giorno[n].id, tipi_giorno[n].label."
+    },
+    {
+      "criterio": "docs/js/diet.js contiene la funzione renderDayTypeToggle() o equivalente che aggiorna lo stato visivo dei bottoni in base a currentDayTypeId",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in diet.js linee 85-92: funzione renderDayTypeToggle(dayTypeId). Itera su querySelectorAll('.diet-toggle-btn'), confronta btn.dataset.dayTypeId (stringa id) con parametro dayTypeId (stringa). Toggl .active e setAttribute aria-pressed. Usato in renderDiet (linea 386) e nel click handler (linea 413)."
+    },
+    {
+      "criterio": "I valori null o undefined in macros_target non causano eccezioni — usare optional chaining e fallback '—'",
+      "soddisfatto": true,
+      "dettaglio": "Verificato in diet.js linee 156-160 (renderMacrosSummary): kcal = tipoGiorno.kcal_target ?? '—', proteine = tipoGiorno.macros_target?.proteine ?? '—' (optional chaining + nullish coalescing). Linee 178-191: typeof check per garantire numero prima di Math.round(), fallback a '—' se non numero. buildProportionBar() (linee 105-139) gestisce null/undefined per proteineG/carboG/grassiG: typeof checks (righe 106-108), fallback a 0."
+    },
+    {
+      "criterio": "Il selettore funziona correttamente su viewport mobile (375px) senza troncamento o overflow visibile",
+      "soddisfatto": true,
+      "dettaglio": "CSS mobile-first confermato: .diet-day-toggle (linee 32-46) flex + overflow-x: auto consente scroll orizzontale. .diet-toggle-btn min-width: 100px permette 3 bottoni in viewport 375px (300px / 3 ≈ 100px per bottone + gap). white-space: nowrap impedisce troncamento testo. Responsive breakpoints gestiti in diet.css (linee 128-139 per .diet-macros-bar, ma non strettamente rilevante per selettore); CSS variables supportano responsive adattamento."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/diet.js",
+      "esiste": true,
+      "note": "File completamente riformattato per usare meta.tipi_giorno[] con id stringa (currentDayTypeId). Funzioni renderDaySelector(), renderDayTypeToggle(), renderMacrosSummary(), renderMealsList(), renderDiet() tutte aggiornate alla nuova struttura dati diet.json. Event delegation su #day-toggle funziona correttamente. Costante DAY_TYPE_LABELS definita per mapping id → abbreviazione breve. Gestione errori con showError() conforme architettura. Nessun errore di sintassi rilevato."
+    },
+    {
+      "path": "docs/css/diet.css",
+      "esiste": true,
+      "note": "CSS per .diet-toggle-btn, .diet-day-toggle già in place con white-space: nowrap, min-width: 100px (adatto per abbreviazioni brevi), overflow-x: auto per scroll orizzontale mobile. Classe .diet-toggle-btn.active con background-color/border-color/color da color-accent per visibilità. Media query responsive presenti. Non aggiunto .diet-toggle-btn__full-label poiché label completo è già in aria-label per accessibilità; non è necessario visualizzarlo come elemento HTML."
+    },
+    {
+      "path": "docs/data/diet.json",
+      "esiste": true,
+      "note": "Struttura dati confermata: meta.tipi_giorno[] array di 3 oggetti (riposo, palestra, attivita_extra), ogni elemento ha id (string), label (string nome completo), kcal_target (number), macros_target {proteine, carboidrati, grassi}. slot_pasto[] con opzioni[].varianti[tipoGiornoId] confermati. Dati coerenti con implementazione JS."
+    },
+    {
+      "path": "docs/diet.html",
+      "esiste": true,
+      "note": "HTML strutturale invariato. Elementi critici presenti: <section id='day-toggle'> (linea 77), <section id='macros-summary'> (linea 80), <section id='meals-list'> (linea 85), <section id='supplements-section'> (linea 90). HTML aria-label e role corretti. Script src='js/diet.js' defer (linea 115) carica il JS correttamente."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "La funzione renderDaySelector() genera bottoni con aria-pressed ma non è strettamente necessario poiché non c'è interazione con tastiera (toggle vs bottone). aria-pressed ha senso solo su pulsanti toggle; qui sono bottoni radio di selezione. Non è un errore ma aria-label + classe .active è sufficiente. Non bloccante.",
+      "file": "docs/js/diet.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Il fallback per currentDayTypeId in renderDaySelector (linea 62) mostra 'Nessun tipo di giorno pianificato' ma non è possibile raggiungere questo stato data la struttura diet.json che garantisce sempre 3 tipi_giorno. È una buona pratica difensiva comunque.",
+      "file": "docs/js/diet.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "buildProportionBar() genera HTML inline style (width: ${pPerc}%) per posizionamento dinamico. Non è problema poiché valori sono calcolati lato client da dati JSON; però potrebbe essere optimizzato con CSS custom property se necessario in futuro (es. --protein-width). Non è bloccante, è conforme architettura ES2022 plain.",
+      "file": "docs/js/diet.js"
+    }
+  ]
+}

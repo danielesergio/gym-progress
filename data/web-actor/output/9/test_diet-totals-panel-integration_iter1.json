@@ -1,0 +1,105 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "diet-totals-panel-integration",
+    "task_titolo": "Integrazione del pannello nella pagina e aggiornamento reattivo",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Dopo aver cliccato ‹ o › in uno slot, i valori nel pannello #diet-totals-panel cambiano entro 100ms senza reload",
+      "soddisfatto": true,
+      "dettaglio": "Il click handler su #meals-list (righe 855-893 in diet.js) chiama renderMealsList(), poi calculateSelectedTotals(), poi renderDietTotalsPanel() in modo sincrono nello stesso event loop, senza setTimeout né requestAnimationFrame. Non c'è reload della pagina. L'aggiornamento è istantaneo."
+    },
+    {
+      "criterio": "Dopo aver cliccato un bottone tipo-giorno diverso, la riga 'Target' e la riga 'Selezionati' del pannello si aggiornano entrambe",
+      "soddisfatto": true,
+      "dettaglio": "Il click handler su #day-toggle (righe 834-848) aggiorna currentDayTypeId, chiama calculateSelectedTotals() (che ricalcola i totali selezionati in base ai nuovi target), e poi renderDietTotalsPanel() che riceve sia selectedTotals che tipoSelezionato. La funzione renderDietTotalsPanel() renderizza entrambe le righe 'Selezionati' (riga 336-342) e 'Target' (riga 344-350) con i nuovi valori."
+    },
+    {
+      "criterio": "Il pannello non mostra mai per un instante visibile i valori del tipo-giorno precedente (l'aggiornamento è sincrono nel click handler, prima del repaint)",
+      "soddisfatto": true,
+      "dettaglio": "Le sequenze di aggiornamento (sia per day-toggle che per slot-nav) sono sincrone, senza setTimeout, requestAnimationFrame né Promise. L'intera sequenza [calcolo → render] avviene prima del prossimo repaint del browser. Non c'è transizione CSS sul pannello (#diet-totals-panel non ha proprietà 'transition' nel CSS, righe 683-800). Nessun valore obsoleto è visibile."
+    },
+    {
+      "criterio": "Cliccare ‹ o › su uno slot non causa scroll della pagina verso il pannello",
+      "soddisfatto": true,
+      "dettaglio": "I bottoni hanno data-direction (non href, quindi non causano scroll nativo). Il codice non chiama scrollIntoView() o scrollTo() dopo la navigazione. Il pannello ha scroll-margin-top: 80px (riga 692) per proteggere da eventuali scroll-into-view futuri, ma non è usato in questo handler. Non c'è scroll causato dal click."
+    },
+    {
+      "criterio": "Il focus non va perso dopo aver navigato le opzioni di uno slot — il focus rimane sul bottone di navigazione corrispondente (stesso data-slot-id e data-direction)",
+      "soddisfatto": true,
+      "dettaglio": "Il click handler su #meals-list (righe 879-887) salva slotId e direction prima di chiamare renderMealsList(), poi restaura il focus sul bottone ricreato tramite querySelector('[data-slot-id=\"<id>\"][data-direction=\"<dir>\"]').focus(). Il bottone ricreato è identificato dai suoi data-attribute, garantendo che il focus rimanga nello stesso bottone logico anche dopo la ri-renderizzazione del DOM."
+    },
+    {
+      "criterio": "docs/js/diet.js: il click handler su #meals-list chiama renderDietTotalsPanel() dopo calculateSelectedTotals()",
+      "soddisfatto": true,
+      "dettaglio": "Riga 889: selectedTotals = calculateSelectedTotals(...). Righe 890-892: estrae tipoSelezionatoMeals. Riga 892: renderDietTotalsPanel(selectedTotals, tipoSelezionatoMeals). L'ordine è corretto: calcolo → render."
+    },
+    {
+      "criterio": "docs/js/diet.js: il click handler su #day-toggle chiama renderDietTotalsPanel() dopo renderDiet()",
+      "soddisfatto": true,
+      "dettaglio": "Riga 841: selectedTotals = calculateSelectedTotals(...). Riga 842: renderDiet(dietData). Righe 843-845: estrae tipoSelezionato. Riga 845: renderDietTotalsPanel(selectedTotals, tipoSelezionato). L'ordine è corretto: renderDiet() → renderDietTotalsPanel()."
+    },
+    {
+      "criterio": "docs/diet.html: il container #diet-totals-panel ha l'attributo aria-live='polite'",
+      "soddisfatto": true,
+      "dettaglio": "Riga 95 in diet.html: <section id=\"diet-totals-panel\" class=\"diet-totals-panel\" aria-label=\"Confronto totali selezionati vs target\" aria-live=\"polite\">. L'attributo aria-live='polite' è presente."
+    },
+    {
+      "criterio": "docs/diet.html: il container #diet-totals-panel è posizionato dopo #meals-list e prima di #supplements-section",
+      "soddisfatto": true,
+      "dettaglio": "Nel DOM di diet.html: #meals-list (riga 90), #diet-totals-panel (riga 95), #supplements-section (riga 100). L'ordine è corretto."
+    },
+    {
+      "criterio": "docs/css/diet.css: la classe .diet-totals-panel__delta--negative usa un colore distinguibile (variabile CSS --color-danger o equivalente)",
+      "soddisfatto": true,
+      "dettaglio": "Riga 797-800 in diet.css: .diet-totals-panel__delta--negative { color: var(--color-danger); background-color: rgba(244, 67, 54, 0.08); }. La variabile --color-danger è definita in variables.css come #f44336 (light) e #f85149 (dark), entrambi colori rossi chiari e distinguibili."
+    },
+    {
+      "criterio": "docs/css/diet.css: la classe .diet-totals-panel__delta--positive usa un colore distinguibile (variabile CSS --color-success o equivalente)",
+      "soddisfatto": true,
+      "dettaglio": "Riga 791-794 in diet.css: .diet-totals-panel__delta--positive { color: var(--color-success); background-color: rgba(76, 175, 80, 0.08); }. La variabile --color-success è definita in variables.css come #4caf50 (light) e #3fb950 (dark), entrambi colori verdi chiari e distinguibili."
+    },
+    {
+      "criterio": "docs/css/diet.css: nessuna transizione CSS (transition:) applicata al container #diet-totals-panel che possa mostrare valori obsoleti",
+      "soddisfatto": true,
+      "dettaglio": "La regola .diet-totals-panel (righe 683-693) e tutte le regole correlate (.diet-totals-panel__*, righe 695-827) non contengono alcuna proprietà 'transition'. Nessuna animazione CSS potrebbe mostrare valori obsoleti durante l'aggiornamento."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/diet.js",
+      "esiste": true,
+      "note": "Contiene l'intera logica di integrazione: click handler #day-toggle (righe 834-848) e click handler #meals-list (righe 855-893). Entrambi chiamano renderDietTotalsPanel() in modo sincrono. Focus management implementato correttamente."
+    },
+    {
+      "path": "docs/css/diet.css",
+      "esiste": true,
+      "note": "Contiene le regole CSS per .diet-totals-panel* (righe 683-827) con le classi delta per --positive, --neutral, --negative. Nessuna transizione CSS che possa causare problemi."
+    },
+    {
+      "path": "docs/diet.html",
+      "esiste": true,
+      "note": "Container #diet-totals-panel (riga 95) presente con aria-live='polite', correttamente posizionato nel DOM dopo #meals-list e prima di #supplements-section."
+    },
+    {
+      "path": "docs/css/variables.css",
+      "esiste": true,
+      "note": "Contiene --color-success (#4caf50 light, #3fb950 dark) e --color-danger (#f44336 light, #f85149 dark). Colori usati nel pannello."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "La funzione renderDietTotalsPanel() riceve sia selectedTotals che tipoGiorno come parametri separati. Questo è corretto dal punto di vista della separazione responsabilità, ma significa che se il caller dimentica di passare uno dei due parametri, il pannello mostrerà il placeholder 'Totali non disponibili'. Le verifiche di tipo (riga 270) sono corrette e defensive.",
+      "file": "docs/js/diet.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Nel click handler #meals-list, la funzione renderMealsList() viene chiamata prima di calcolareSelectedTotals(). Se renderMealsList() lanciasse un'eccezione (cosa improbabile, ma non proteggibile), il pannello mostrerebbe dati obsoleti poiché calculateSelectedTotals() non verrebbe mai raggiunto. La sequenza è logicamente corretta (renderizza prima, calcola dopo, poi aggiorna pannello), ma non è difensiva.",
+      "file": "docs/js/diet.js"
+    }
+  ]
+}

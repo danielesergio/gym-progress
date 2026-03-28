@@ -1,0 +1,129 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "diet-totals-panel-integration",
+    "task_title": "Integrazione del pannello nella pagina e aggiornamento reattivo",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "diet-totals-panel-integration",
+    "type": "ux",
+    "title": "Integrazione del pannello nella pagina e aggiornamento reattivo",
+    "description": "Il pannello DietTotalsPanel deve essere integrato nel flusso della pagina Dieta in modo che si aggiorni automaticamente ad ogni interazione utente. In particolare: (1) quando l'utente preme i bottoni di navigazione opzione (frecce ‹ ›) in uno slot, il pannello ricalcola e si ri-renderizza; (2) quando l'utente seleziona un tipo di giorno diverso, il pannello ricalcola usando i nuovi target e le nuove varianti. L'aggiornamento non deve causare scroll o perdita di focus sul bottone appena premuto.",
+    "inputs": [
+      "DietTotalsPanel",
+      "diet_day_toggle_events",
+      "diet_slot_nav_events"
+    ],
+    "outputs": [
+      "DietTotalsPanel aggiornato in tempo reale"
+    ],
+    "acceptance_criteria": [
+      "Dopo aver cambiato opzione in uno slot, i valori nel pannello sono aggiornati entro 100ms senza ricaricare la pagina",
+      "Dopo aver cambiato tipo di giorno, sia i target che i totali selezionati si aggiornano nel pannello",
+      "Il cambio di opzione in uno slot non causa scroll indesiderato della pagina",
+      "Il pannello non mostra valori obsoleti (es. del tipo-giorno precedente) nemmeno per un istante visibile"
+    ],
+    "notes": "ATTENZIONE — stato implementazione: l'analisi del codice mostra che diet.js (righe 828-934) contiene GIA' l'intera logica di integrazione richiesta da questo task. Entrambi gli event handler (day-toggle e slot-nav) chiamano calculateSelectedTotals() e renderDietTotalsPanel() in modo sincrono, senza setTimeout né requestAnimationFrame — l'aggiornamento avviene nell'event loop stesso prima del prossimo repaint. Il pannello #diet-totals-panel è già presente nel DOM (diet.html, riga 95). Il CSS delle classi .diet-totals-panel* è già presente in diet.css. Il task del developer consiste principalmente nel VERIFICARE la correttezza dell'implementazione esistente rispetto ai criteri di accettazione e nell'eventuale aggiustamento fine (es. focus management, scroll prevention se mancante)."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "Verificare e completare l'integrazione reattiva: (1) nel click handler del #day-toggle (righe 834-848), assicurarsi che renderDietTotalsPanel() sia chiamato PRIMA del prossimo repaint e che non causi scroll; (2) nel click handler del #meals-list (righe 855-883), verificare che event.preventDefault() NON sia chiamato (i bottoni nav non hanno href, quindi non causano scroll nativamente) e che il focus non venga perso dopo la ri-renderizzazione di renderMealsList(). PROBLEMA NOTO: renderMealsList() sostituisce tutto l'innerHTML di #meals-list, distruggendo e ricreando i bottoni nav — il bottone che ha ricevuto il click non esiste più dopo la re-render. Il developer deve salvare slotId e direction PRIMA di chiamare renderMealsList(), e restaurare il focus sul bottone ricreato tramite document.querySelector('[data-slot-id=\"<id>\"][data-direction=\"<dir>\"]').focus() dopo il render.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Verificare che le classi .diet-totals-panel__delta--positive, --negative, --neutral siano definite con colori distinguibili (verde/rosso/neutro). Aggiungere eventualmente scroll-margin-top sul pannello se la pagina ha un header sticky, per evitare che un futuro scroll-into-view tagli il pannello. NON aggiungere animazioni CSS di transizione sul pannello che potrebbero mostrare valori obsoleti per una frazione di secondo.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "Il file contiene già l'implementazione degli handler — leggere righe 828-934 (DOMContentLoaded entry point) per capire l'esatta sequenza di chiamate: renderMealsList() → calculateSelectedTotals() → renderDietTotalsPanel() nel click handler slot-nav, e renderDiet() → renderDietTotalsPanel() nel click handler day-toggle."
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Verificare l'esistenza e il contenuto delle regole CSS per .diet-totals-panel__delta--positive, --negative, --neutral (blocco a partire da riga ~683) e assicurarsi che i colori siano conformi alle custom properties di variables.css."
+      },
+      {
+        "path": "docs/diet.html",
+        "motivo": "Verificare che il container #diet-totals-panel (riga 95) sia presente, abbia aria-live='polite' e sia posizionato correttamente nell'ordine del DOM: dopo #meals-list e prima di #supplements-section."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS vanilla ES2022",
+      "build": "nessuno — file scritti direttamente in docs/",
+      "deploy": "GitHub Pages da docs/"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase (selectedTotals, slotOptionIndices, currentDayTypeId)",
+      "classi_css": "BEM kebab-case con prefisso pagina: .diet-totals-panel__*, .diet-slot-nav__*",
+      "reattivita": "Nessun framework reattivo. Stato mutabile con let. Re-render chiamando le funzioni render() che aggiornano innerHTML. Event delegation sul container padre per eventi su elementi generati dinamicamente.",
+      "no_scroll": "I bottoni <button type='button'> non causano scroll nativo. Non usare <a href='#'> nei controlli nav. Non chiamare scrollIntoView() sull'elemento aggiornato.",
+      "focus_management": "Dopo ri-render di un container che distrugge i bottoni, restaurare il focus con querySelector usando i data-attribute del bottone originale (data-slot-id + data-direction).",
+      "no_inline_style": "No inline style. No !important. Usare classi modificatrici BEM.",
+      "accessibilita": "aria-live='polite' sul container #diet-totals-panel già presente. I bottoni nav hanno aria-label. Il selettore giorno ha aria-pressed."
+    },
+    "pagina": {
+      "nome": "Dieta",
+      "file": "docs/diet.html",
+      "js": "docs/js/diet.js",
+      "css": "docs/css/diet.css",
+      "dati_json": ["data/diet.json"],
+      "stato_interno": ["dietData", "currentDayTypeId", "slotOptionIndices", "selectedTotals"]
+    },
+    "pattern_eventi": {
+      "day_toggle": "Event delegation su #day-toggle. Click su .diet-toggle-btn → aggiorna currentDayTypeId → renderDiet(dietData) → renderDietTotalsPanel(selectedTotals, tipoSelezionato). La sequenza è sincrona nel click handler.",
+      "slot_nav": "Event delegation su #meals-list. Click su [data-direction] → aggiorna slotOptionIndices[slotId] → renderMealsList(dietData, currentDayTypeId) → calculateSelectedTotals() → renderDietTotalsPanel(). CRITICO: renderMealsList() distrugge il DOM del bottone che ha ricevuto il click — il focus va restaurato dopo la re-render."
+    }
+  },
+  "criteri_accettazione": [
+    "Dopo aver cliccato ‹ o › in uno slot, i valori nel pannello #diet-totals-panel cambiano entro 100ms senza reload",
+    "Dopo aver cliccato un bottone tipo-giorno diverso, la riga 'Target' e la riga 'Selezionati' del pannello si aggiornano entrambe",
+    "Il pannello non mostra mai per un instante visibile i valori del tipo-giorno precedente (l'aggiornamento è sincrono nel click handler, prima del repaint)",
+    "Cliccare ‹ o › su uno slot non causa scroll della pagina verso il pannello",
+    "Il focus non va perso dopo aver navigato le opzioni di uno slot — il focus rimane sul bottone di navigazione corrispondente (stesso data-slot-id e data-direction)",
+    "docs/js/diet.js: il click handler su #meals-list chiama renderDietTotalsPanel() dopo calculateSelectedTotals()",
+    "docs/js/diet.js: il click handler su #day-toggle chiama renderDietTotalsPanel() dopo renderDiet()",
+    "docs/diet.html: il container #diet-totals-panel ha l'attributo aria-live='polite'",
+    "docs/diet.html: il container #diet-totals-panel è posizionato dopo #meals-list e prima di #supplements-section",
+    "docs/css/diet.css: la classe .diet-totals-panel__delta--negative usa un colore distinguibile (variabile CSS --color-danger o equivalente)",
+    "docs/css/diet.css: la classe .diet-totals-panel__delta--positive usa un colore distinguibile (variabile CSS --color-success o equivalente)",
+    "docs/css/diet.css: nessuna transizione CSS (transition:) applicata al container #diet-totals-panel che possa mostrare valori obsoleti"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "diet-totals-panel",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/js/diet.js (funzione renderDietTotalsPanel() presente, righe 265-361)",
+        "docs/js/diet.js (funzione calculateSelectedTotals() presente, righe 60-88)",
+        "docs/css/diet.css (classi .diet-totals-panel* presenti da riga 683)",
+        "docs/diet.html (container #diet-totals-panel presente, riga 95)"
+      ],
+      "note": "La dipendenza è completamente soddisfatta. Il pannello esiste, la funzione di calcolo esiste, gli stili esistono. Questo task (integration) si sovrappone parzialmente al task precedente: l'implementazione di diet-totals-panel ha già incluso la logica di integrazione negli event handler DOMContentLoaded."
+    }
+  ],
+  "analisi_stato_attuale": {
+    "sommario": "Il task diet-totals-panel-integration è SOSTANZIALMENTE GIA' IMPLEMENTATO in diet.js. L'analisi del codice mostra che entrambi i click handler (day-toggle e slot-nav) già chiamano calculateSelectedTotals() e renderDietTotalsPanel() in modo sincrono.",
+    "gia_presente": [
+      "Handler click su #day-toggle che aggiorna selectedTotals e chiama renderDietTotalsPanel() (righe 834-848)",
+      "Handler click su #meals-list[data-direction] che aggiorna slotOptionIndices, renderizza la lista e poi chiama renderDietTotalsPanel() (righe 855-883)",
+      "Inizializzazione selectedTotals e primo render del pannello dopo il fetch (righe 916-919)",
+      "Container #diet-totals-panel in diet.html con aria-live='polite'",
+      "Stili .diet-totals-panel* in diet.css"
+    ],
+    "da_verificare_o_correggere": [
+      "FOCUS MANAGEMENT: renderMealsList() usa innerHTML = ... che distrugge e ricrea i bottoni nav. Dopo la chiamata, il bottone premuto non esiste più nel DOM. Il developer deve aggiungere .focus() sul bottone ricreato per non perdere il focus.",
+      "SCROLL: verificare che nessun codice chiami scrollIntoView() o scrollTo() dopo la navigazione slot. I bottoni <button type='button'> non causano scroll nativo.",
+      "DELTA CSS: verificare che --positive sia verde e --negative sia rosso (o varianti percepibili) usando le variabili di variables.css."
+    ]
+  }
+}

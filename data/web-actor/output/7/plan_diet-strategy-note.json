@@ -1,0 +1,117 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "diet-strategy-note",
+    "task_title": "Sezione strategia nutrizionale con note_strategia",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "diet-strategy-note",
+    "type": "component",
+    "title": "Sezione strategia nutrizionale con note_strategia",
+    "description": "Il JSON della dieta contiene un campo 'note_strategia' in meta con una descrizione dettagliata della logica nutrizionale per fase (mantenimento durante rehab TOS, calcolo surplus/deficit, distribuzione kcal per slot). Questa informazione deve essere mostrata in una sezione dedicata della pagina dieta, ad esempio come pannello espandibile o sezione a fine pagina, per permettere all'utente di capire il razionale della dieta. NOTA: note_strategia è già utilizzato parzialmente in renderMacrosSummary() dove viene estratta solo la prima riga come strategia sintetica. La nuova sezione deve mostrare il testo completo formattato in paragrafi.",
+    "inputs": [
+      "diet_meta_strategy"
+    ],
+    "outputs": [
+      "NutritionalStrategyNote"
+    ],
+    "acceptance_criteria": [
+      "La sezione mostra il testo di note_strategia in modo leggibile",
+      "Il testo è formattato in paragrafi (non come blocco unico)",
+      "La sezione è accessibile ma non occupa spazio primario (es. collassabile o a fine pagina)"
+    ],
+    "notes": "Il campo note_strategia è una stringa multiriga con blocchi separati da '\\n'. Ogni riga inizia con un'etichetta in maiuscolo (es. 'FASE MANTENIMENTO', 'GIORNO PALESTRA', 'DISTRIBUZIONE SLOT', 'NOTA IDRATAZIONE', 'PASTI SGARRO'). La sezione va inserita in diet.html dopo #supplements-section, prima del footer. Il pannello deve essere collassabile (summary/details o toggle JS) per non occupare spazio primario."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/diet.html",
+        "motivo": "Aggiungere <section id='strategy-note'> con struttura HTML per il pannello collassabile della strategia nutrizionale, posizionata dopo #supplements-section e prima del footer",
+        "esiste": true
+      },
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "Aggiungere funzione renderStrategyNote(notaStrategia) che popola #strategy-note formattando il testo in paragrafi. La funzione deve splittare la stringa per '\\n', filtrare righe vuote, e wrappare ogni blocco in <p>. Chiamare renderStrategyNote() in initDiet() dopo gli altri render.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Aggiungere stili per .diet-strategy-note (section container), .diet-strategy-note__toggle (header collassabile con icona chevron), .diet-strategy-note__body (contenuto espandibile), .diet-strategy-note__paragraph (singolo paragrafo), stato aperto/chiuso con attributo open o classe CSS",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/diet.json",
+        "motivo": "Struttura del campo meta.note_strategia: stringa multiriga con blocchi separati da '\\n'. Ogni blocco inizia con un'etichetta MAIUSCOLA seguita da testo descrittivo. I blocchi sono: FASE MANTENIMENTO, GIORNO PALESTRA, GIORNO RIPOSO, GIORNO BEACH VOLLEY, DISTRIBUZIONE SLOT, NOTA IDRATAZIONE, PASTI SGARRO."
+      },
+      {
+        "path": "docs/diet.html",
+        "motivo": "Modello strutturale HTML — capire dove inserire la nuova <section id='strategy-note'> (dopo #supplements-section, prima del </div> che chiude .container in <main>)"
+      },
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "Verificare come note_strategia viene già usata in renderMacrosSummary() (prima riga sintetica) e dove chiamare renderStrategyNote() in initDiet(). Rispettare la struttura: costanti → utility → render* → initDiet → DOMContentLoaded."
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Verificare classi CSS esistenti, prefissi usati (.diet-*), variabili CSS disponibili e pattern di stile per aggiungere .diet-strategy-note coerentemente"
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "Plain HTML/JS ES2022 — nessun bundler",
+      "grafici": "Chart.js NON necessario per questo task",
+      "dati": {
+        "file": "data/diet.json",
+        "accesso": "fetch('data/diet.json') già presente in initDiet()",
+        "campo_rilevante": "meta.note_strategia — stringa multiriga, già disponibile nella chiamata fetch esistente"
+      }
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase — es. notaStrategia, strategyContainer, paragraphs",
+      "costanti_js": "DATA_PATH_DIET già definita in cima al file",
+      "classi_css": "kebab-case con prefisso .diet-* — es. .diet-strategy-note, .diet-strategy-note__toggle, .diet-strategy-note__body, .diet-strategy-note__paragraph",
+      "id_html": "kebab-case — #strategy-note per il container section",
+      "gestione_null": "Se meta.note_strategia è null/undefined/stringa vuota, nascondere la sezione con hidden o non renderizzarla",
+      "pattern_js": "Aggiungere renderStrategyNote(notaStrategia) come funzione render* autonoma. Chiamarla in initDiet() dopo renderSupplements(). Nessuna dipendenza da dayTypeId — la nota è globale.",
+      "struttura_js": "1. Costanti DATA_PATH_* → 2. Utility pure → 3. Funzioni render* → 4. initDiet() → 5. DOMContentLoaded",
+      "interattivita_collassabile": "Usare elemento HTML nativo <details>/<summary> per il pannello collassabile — zero JS aggiuntivo, accessibilità nativa, compatibile con tutti i browser target (Chrome/Edge/Firefox ultimi 2 major). Alternativa: toggle a click con classe .is-open e CSS transition su max-height, ma <details> è preferibile per semplicità."
+    },
+    "pagina": {
+      "nome": "Dieta",
+      "file": "docs/diet.html",
+      "js": "docs/js/diet.js",
+      "css": "docs/css/diet.css",
+      "dati_json": ["data/diet.json"]
+    }
+  },
+  "criteri_accettazione": [
+    "La sezione strategia nutrizionale è visibile nella pagina Dieta",
+    "Il testo di note_strategia è formattato in paragrafi distinti (non un unico blocco di testo)",
+    "La sezione è collassabile (usa <details>/<summary> o toggle JS) e non occupa spazio primario quando chiusa",
+    "Se meta.note_strategia è null, vuoto o assente, la sezione non viene renderizzata (nessun elemento vuoto visibile)",
+    "docs/diet.html contiene <section id='strategy-note'> posizionata dopo #supplements-section",
+    "docs/js/diet.js contiene la funzione renderStrategyNote(notaStrategia)",
+    "renderStrategyNote() splita il testo per '\\n', filtra righe vuote, e produce un <p> per ogni blocco non vuoto",
+    "docs/css/diet.css contiene le classi .diet-strategy-note e .diet-strategy-note__paragraph",
+    "La nota sintetica in renderMacrosSummary() (prima riga) NON viene rimossa — le due visualizzazioni coesistono",
+    "Nessun errore JS in console quando note_strategia è presente o assente"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "diet-meals-by-type",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/diet.html",
+        "docs/js/diet.js",
+        "docs/css/diet.css"
+      ],
+      "note": "Funzione renderMealsList() presente in docs/js/diet.js (riga 375). Sezione #meals-list presente in docs/diet.html. File docs/css/diet.css esistente con stili pagina dieta."
+    }
+  ]
+}

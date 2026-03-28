@@ -8,7 +8,7 @@
       "Bash(node:*)",
       "Bash(where node:*)",
       "Bash(cmd //c \"where node\")",
-      "Bash(cmd //c \"python scripts/body_calc.py --peso 87.2 --altezza 188 --eta 38 --vita 89 --collo 39 --fianchi 100 --sesso M --attivita 1.55 --surplus 330\")",
+      "Bash(cmd //c \"python source/scripts/body_calc.py --peso 87.2 --altezza 188 --eta 38 --vita 89 --collo 39 --fianchi 100 --sesso M --attivita 1.55 --surplus 330\")",
       "Bash(start:*)",
       "Bash(for page:*)",
       "Bash(do echo:*)",
@@ -17,7 +17,12 @@
       "Bash(mkdir:*)",
       "Bash(grep:*)",
       "Bash(/tmp/corrections_summary.txt:*)",
-      "Read(//tmp/**)"
+      "Read(//tmp/**)",
+      "Bash(mkdir -p source/scripts)",
+      "Bash(cp -r source/scripts/agent-temp source/scripts/templates source/scripts/body_calc.py source/scripts/diet_postprocess.py source/scripts/generate_data.py source/scripts/kcal_adjust.py source/scripts/volume_calc.py source/source/scripts/)",
+      "Bash(cd:*)",
+      "Bash(for f:*)",
+      "Bash(do sed:*)"
     ]
   }
 }

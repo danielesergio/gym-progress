@@ -1,0 +1,115 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "diet-export-csv",
+    "task_titolo": "Esportazione dieta in CSV",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Un pulsante 'Esporta CSV' è visibile nella pagina dieta",
+      "soddisfatto": true,
+      "dettaglio": "Elemento HTML <button id='export-csv-btn' class='diet-export-btn'> presente in docs/diet.html linea 81, con label 'Esporta CSV' e aria-label descrittivo."
+    },
+    {
+      "criterio": "Cliccando il pulsante il browser avvia il download di un file .csv",
+      "soddisfatto": true,
+      "dettaglio": "Funzione exportDietCSV() in docs/js/diet.js (linee 508-582) crea un Blob CSV, genere un Object URL con URL.createObjectURL(), crea un elemento <a> temporaneo con attributo download impostato al nome file, esegue click() programmatico e revoca l'URL. Listener click agganciato al pulsante nel DOMContentLoaded (linea 639)."
+    },
+    {
+      "criterio": "Il CSV contiene righe con: tipo_giorno, slot, opzione, alimento, grammi, kcal, proteine, carbo, grassi",
+      "soddisfatto": true,
+      "dettaglio": "Intestazione CSV (linea 514): 'tipo_giorno;slot;opzione;alimento;grammi;kcal;proteine_g;carbo_g;grassi_g'. Logica di iterazione (linee 517-558): per ogni tipoGiorno → slot → opzione → alimento, costruisce riga con csvEscapeField() per i campi stringa e valori numerici formattati correttamente."
+    },
+    {
+      "criterio": "Il file è apribile correttamente in Excel o LibreOffice Calc",
+      "soddisfatto": true,
+      "dettaglio": "Blob generato con type 'text/csv;charset=utf-8;' (linea 563), include BOM UTF-8 (\\uFEFF) per compatibilità Excel italiano (linea 563), usa punto e virgola (;) come separatore (linea 552), valori stringa con ';' o '\"' sono racchiusi in doppi apici e i doppi apici interni raddoppiati (funzione csvEscapeField linee 494-500)."
+    },
+    {
+      "criterio": "Il nome del file è significativo e include la data o il periodo della dieta",
+      "soddisfatto": true,
+      "dettaglio": "Logica nome file (linee 566-572): estrae anno e mese da dietData.meta.data ('2026-03-27' → '2026-03'), genera nome 'dieta-daniele-2026-03.csv' (con fallback a 'dieta-daniele.csv' se data assente). Pattern coerente con specifica."
+    },
+    {
+      "criterio": "docs/diet.html contiene un elemento con id='export-csv-btn' e class='diet-export-btn'",
+      "soddisfatto": true,
+      "dettaglio": "Elemento <button type='button' id='export-csv-btn' class='diet-export-btn'> presente linee 80-82, racchiuso in <div class='diet-export-bar'> per il layout."
+    },
+    {
+      "criterio": "docs/js/diet.js contiene la funzione exportDietCSV()",
+      "soddisfatto": true,
+      "dettaglio": "Funzione exportDietCSV() definita linee 508-582, segue le convenzioni del file (camelCase, const per costanti, nessun import/export ES module), include il guard iniziale (!dietData) e la logica di escape CSV."
+    },
+    {
+      "criterio": "La funzione exportDietCSV() usa BOM UTF-8 (\\uFEFF) per compatibilità Excel",
+      "soddisfatto": true,
+      "dettaglio": "Linea 563: new Blob(['\\uFEFF' + csvContent], ...) include il BOM UTF-8 all'inizio del contenuto CSV."
+    },
+    {
+      "criterio": "Il separatore di campo nel CSV è il punto e virgola (;)",
+      "soddisfatto": true,
+      "dettaglio": "Tutti i join() usano ';' come separatore: linea 514 (intestazione), linea 552 (righe dati). Rispetta le convenzioni europee/italiane."
+    },
+    {
+      "criterio": "Il pulsante è inizialmente disabled e viene abilitato dopo il caricamento di dietData",
+      "soddisfatto": true,
+      "dettaglio": "HTML (linea 81): pulsante con disabled iniziale. Nel DOMContentLoaded (linea 659): dopo il fetch riuscito di dietData, removeAttribute('disabled') abilita il pulsante. In caso di errore (linea 667), il pulsante rimane disabilitato."
+    },
+    {
+      "criterio": "Il CSV copre tutti e 3 i tipi di giorno (riposo, palestra, attivita_extra), non solo quello selezionato",
+      "soddisfatto": true,
+      "dettaglio": "Funzione exportDietCSV() itera su dietData.meta.tipi_giorno (non su currentDayTypeId). A righe 517-558, il loop principale scorre tutti i tipi di giorno, indipendentemente da quale è selezionato nella UI."
+    },
+    {
+      "criterio": "Le varianti non disponibili per un tipo giorno vengono silenziosamente saltate senza righe vuote",
+      "soddisfatto": true,
+      "dettaglio": "Linea 530: if (!variante) continue; salta l'opzione se la variante non esiste per quel tipo di giorno, senza emettere righe vuote. Il loop continua al prossimo elemento."
+    },
+    {
+      "criterio": "docs/css/diet.css contiene la classe .diet-export-btn",
+      "soddisfatto": true,
+      "dettaglio": "Classe .diet-export-btn definita linee 112-138, con stili completi: padding, border, background trasparente, hover con accent-dim, disabled con opacity ridotta, focus-visible con outline. Classe .diet-export-bar (linee 106-110) gestisce il layout (flex, justify-content flex-end, margin)."
+    },
+    {
+      "criterio": "Il nome del file scaricato include anno e mese (es. dieta-daniele-2026-03.csv)",
+      "soddisfatto": true,
+      "dettaglio": "Linee 568-571: estrae anno (primi 4 char) e mese (char 5-7) da dataStr ('2026-03-27'), costruisce 'dieta-daniele-2026-03.csv'. Con dietData.meta.data = '2026-03-27', il file scaricato sarà 'dieta-daniele-2026-03.csv'."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/diet.html",
+      "esiste": true,
+      "note": "Contiene il pulsante export con id e class corretti, posizionato dopo #day-toggle e prima di #macros-summary come specificato. Markup semantico e aria-label presente."
+    },
+    {
+      "path": "docs/js/diet.js",
+      "esiste": true,
+      "note": "Contiene la funzione exportDietCSV() ben strutturata, il listener click nel DOMContentLoaded, la funzione csvEscapeField() per l'escape, la logica di nome file con fallback. File segue le convenzioni del progetto (costanti DATA_PATH, camelCase, no ES modules)."
+    },
+    {
+      "path": "docs/css/diet.css",
+      "esiste": true,
+      "note": "Contiene stili completi per .diet-export-btn (.diet-export-bar, :hover, :disabled, :focus-visible) coerenti con il pattern di naming del progetto e le variabili CSS già definite (--color-accent, --transition-fast, ecc.)."
+    },
+    {
+      "path": "docs/data/diet.json",
+      "esiste": true,
+      "note": "Contiene meta.data, meta.tipi_giorno[], slot_pasto[] con opzioni e varianti per ogni tipo giorno, alimenti con grammi/kcal/macro. Struttura corretta per alimentare la logica di export."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "La funzione csvEscapeField() racchiude in doppi apici anche se il campo contiene newline (\\n), ma le righe CSV non dovrebbero contenere newline a causa della logica di join con \\r\\n. Non è un problema pratico, ma il check è conservativo e corretto.",
+      "file": "docs/js/diet.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Il pulsante export rimane disabilitato se il fetch fallisce, senza feedback visivo che comunichi il motivo (errore HTTP, rete, ecc.). L'errore viene loggato in console (linea 667) e il container #diet-error mostra messaggio generico, ma l'utente non ha un'indicazione diretta legata al pulsante.",
+      "file": "docs/js/diet.js"
+    }
+  ]
+}

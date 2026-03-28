@@ -1,0 +1,85 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "workout-week-selector-full-width",
+    "task_titolo": "Selettore settimane occupa tutta la larghezza disponibile",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Con 4 settimane, i 4 bottoni occupano tutta la larghezza del container senza spazio vuoto a destra",
+      "soddisfatto": true,
+      "dettaglio": "La regola CSS .week-btn contiene 'flex: 1 1 auto' (riga 304 in workout.css). Con 4 bottoni e flex: 1, ogni bottone riceve (100% - gap * 3) / 4 della larghezza disponibile, occupando l'intera riga senza spazio vuoto."
+    },
+    {
+      "criterio": "Con 8 o più settimane su schermo piccolo (375px), i bottoni eccedenti sono raggiungibili con scroll orizzontale",
+      "soddisfatto": true,
+      "dettaglio": "Il container #week-selector ha 'overflow-x: auto' (riga 292) e scroll-snap-type. I bottoni .week-btn hanno min-width: 64px (riga 305). Con 8 settimane su 375px, la somma degli elementi eccede la larghezza disponibile, attivando lo scroll orizzontale mentre i bottoni rimangono a min-width >= 64px grazie a flex: 1 che consente l'espansione fino alla saturazione."
+    },
+    {
+      "criterio": "La scrollbar orizzontale NON è visibile su nessun browser (scrollbar-width: none e ::-webkit-scrollbar già presenti — da preservare)",
+      "soddisfatto": true,
+      "dettaglio": "Il CSS contiene 'scrollbar-width: none' (riga 296 in #week-selector) per Firefox e '#week-selector::-webkit-scrollbar { display: none; }' (righe 299-301) per Chrome/Safari. Le proprietà sono intatte."
+    },
+    {
+      "criterio": "Il bottone .week-btn.active è sempre portato in vista automaticamente al caricamento (scrollIntoView già in JS — da non toccare)",
+      "soddisfatto": true,
+      "dettaglio": "In workout.js, la funzione renderWeekSelector() (riga 533) esegue 'btnAttivo.scrollIntoView({ behavior: \"smooth\", block: \"nearest\", inline: \"center\" })' (riga 558). Il codice JS NON è stato modificato e funziona correttamente."
+    },
+    {
+      "criterio": "Su mobile 375px il testo 'S1', 'S2', … nei bottoni rimane leggibile (min-width sufficiente, font-size invariato)",
+      "soddisfatto": true,
+      "dettaglio": "Nel media query @media (max-width: 375px) (riga 765), .week-btn ha min-width: 64px (riga 777) e font-size: var(--font-size-md) (riga 775 = 18px). Il testo 'S1', 'S2' rimane facilmente leggibile. La proprietà flex non è ridefinita nel media query, quindi eredita 'flex: 1 1 auto' dalla regola base (cascata naturale)."
+    },
+    {
+      "criterio": "docs/css/workout.css: la regola .week-btn contiene flex: 1 (o flex: 1 1 auto) invece di flex: 0 0 auto",
+      "soddisfatto": true,
+      "dettaglio": "Riga 304 in workout.css: '.week-btn { flex: 1 1 auto; …' — la proprietà è presente e corretta."
+    },
+    {
+      "criterio": "docs/css/workout.css: la proprietà overflow-x: auto su #week-selector rimane invariata",
+      "soddisfatto": true,
+      "dettaglio": "Riga 292 in workout.css: '#week-selector { … overflow-x: auto; …' — proprietà preservata."
+    },
+    {
+      "criterio": "docs/css/workout.css: i media query che ridefiniscono .week-btn non reimpostano flex: 0 0 auto (altrimenti annullerebbero il fix)",
+      "soddisfatto": true,
+      "dettaglio": "Verificati due media query che ridefiniscono .week-btn: (1) @media (max-width: 375px) righe 774-778: solo font-size, padding-block, min-width — nessun 'flex' ridefinto, eredita 'flex: 1 1 auto'. (2) @media (min-width: 768px) righe 1114-1119: solo min-width, padding-block, padding-inline, font-size — nessun 'flex' ridefinito, eredita 'flex: 1 1 auto'. Nessun media query reimposta flex: 0 0 auto."
+    },
+    {
+      "criterio": "docs/workout.html: nessuna modifica strutturale (il fix è solo CSS)",
+      "soddisfatto": true,
+      "dettaglio": "Verificato workout.html: riga 121 contiene '<nav id=\"week-selector\" class=\"week-selector\" aria-label=\"Seleziona settimana di allenamento\">'. La struttura HTML rimane invariata e corretta (div.container > nav#week-selector con aria-label). Nessuna modifica strutturale."
+    },
+    {
+      "criterio": "docs/js/workout.js: nessuna modifica (la logica JS è corretta e non va toccata)",
+      "soddisfatto": true,
+      "dettaglio": "Verificata la funzione renderWeekSelector() in workout.js (righe 533-560). Il codice rimane intatto: genera i bottoni con innerHTML, applica classe 'active' al bottone della settimana attiva, esegue scrollIntoView() sul bottone attivo. Nessuna modifica."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/css/workout.css",
+      "esiste": true,
+      "note": "File CSS principale. Contiene la regola base .week-btn con 'flex: 1 1 auto' (riga 304), il container #week-selector con 'overflow-x: auto' (riga 292), e due media query (375px e 768px) che ridefiniscono .week-btn senza annullare la proprietà flex. Tutte le modifiche CSS sono corrette e coerenti."
+    },
+    {
+      "path": "docs/workout.html",
+      "esiste": true,
+      "note": "File HTML strutturale. Contiene nav#week-selector al corretto posto gerarchico (dentro .container dentro main). Nessuna modifica strutturale applicata — corretto."
+    },
+    {
+      "path": "docs/js/workout.js",
+      "esiste": true,
+      "note": "File JS logica. La funzione renderWeekSelector() (righe 533-560) è intatta e funziona correttamente con scrollIntoView(). Nessuna modifica applicata — corretto."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "La media query @media (max-width: 768px) non ridefinisce #week-selector né .week-btn — le regole base rimangono valide. Non è un problema, perché la proprietà flex: 1 1 auto e overflow-x: auto sono già ottimali per mobile; tuttavia, una media query esplicita potrebbe migliorare la leggibilità e la manutenzione futura (evitare assumere l'ereditarietà).",
+      "file": "docs/css/workout.css"
+    }
+  ]
+}

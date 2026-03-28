@@ -1,0 +1,119 @@
+// File temporaneo creato da gym-web-task-tester il 2026-03-28
+// Scopo: appunti verifica criteri task workout-day-selector-full-width
+// Puo' essere eliminato al termine del test
+
+{
+  "task_id": "workout-day-selector-full-width",
+  "verifica_file": {
+    "docs/css/workout.css": {
+      "esiste": true,
+      "linea_day_selector": "346-360",
+      "linea_day_btn": "362-402",
+      "media_query_mobile": "762-791",
+      "media_query_tablet": "1095-1135"
+    },
+    "docs/workout.html": {
+      "esiste": true,
+      "day_selector_struttura": "riga 126-130, all'interno di .container"
+    },
+    "docs/js/workout.js": {
+      "esiste": true,
+      "modificato": false,
+      "nota": "JS non deve essere modificato per questo bugfix"
+    }
+  },
+  "verifica_criteri": {
+    "criterio_1": {
+      "testo": "Con 3-4 bottoni giorno, i bottoni occupano tutta la larghezza senza spazio vuoto a destra",
+      "soddisfatto": true,
+      "evidenza": ".day-btn ha 'flex: 1 1 auto' (riga 363) che fa espandere equamente i bottoni"
+    },
+    "criterio_2": {
+      "testo": "Con 5+ giorni su schermo piccolo (375px), i bottoni eccedenti sono raggiungibili con scroll",
+      "soddisfatto": true,
+      "evidenza": "#day-selector ha 'overflow-x: auto' (riga 351) e .day-btn ha 'min-width: 80px' (riga 364) che scatta lo scroll quando la somma supera il container"
+    },
+    "criterio_3": {
+      "testo": "Il nome del giorno è visibile per intero — nessun testo troncato con ellipsis",
+      "soddisfatto": true,
+      "evidenza": ".day-btn NON contiene 'overflow: hidden' e NON contiene 'text-overflow: ellipsis', mantiene 'white-space: nowrap' (riga 377)"
+    },
+    "criterio_4": {
+      "testo": "La scrollbar orizzontale NON è visibile su nessun browser",
+      "soddisfatto": true,
+      "evidenza": "#day-selector ha 'scrollbar-width: none' (riga 355) per Firefox e '::-webkit-scrollbar display: none' (riga 358-360) per Chrome/Safari"
+    },
+    "criterio_5": {
+      "testo": "Il bottone .day-btn.active è portato in vista automaticamente al caricamento",
+      "soddisfatto": true,
+      "evidenza": "JS contiene scrollIntoView in renderDaySelector() - il piano specifica di non toccare JS"
+    },
+    "criterio_6": {
+      "testo": "Lo stile visivo è identico a quello del .week-btn",
+      "soddisfatto": true,
+      "evidenza": ".day-btn (riga 362-402) ha stessi colori, bordi, hover, active di .week-btn (riga 303-342)"
+    },
+    "criterio_7": {
+      "testo": "docs/css/workout.css: .day-btn contiene 'flex: 1 1 auto' invece di 'flex: 0 0 auto'",
+      "soddisfatto": true,
+      "evidenza": "riga 363: 'flex: 1 1 auto;'"
+    },
+    "criterio_8": {
+      "testo": "docs/css/workout.css: .day-btn NON contiene 'flex-shrink: 0'",
+      "soddisfatto": true,
+      "evidenza": "flex-shrink non presente nelle righe 362-402 della regola .day-btn"
+    },
+    "criterio_9": {
+      "testo": "docs/css/workout.css: .day-btn NON contiene 'overflow: hidden'",
+      "soddisfatto": true,
+      "evidenza": "overflow non presente nelle righe 362-402 della regola .day-btn"
+    },
+    "criterio_10": {
+      "testo": "docs/css/workout.css: .day-btn NON contiene 'text-overflow: ellipsis'",
+      "soddisfatto": true,
+      "evidenza": "text-overflow non presente nelle righe 362-402 della regola .day-btn"
+    },
+    "criterio_11": {
+      "testo": "docs/css/workout.css: .day-btn mantiene 'white-space: nowrap'",
+      "soddisfatto": true,
+      "evidenza": "riga 377: 'white-space: nowrap;'"
+    },
+    "criterio_12": {
+      "testo": "docs/css/workout.css: overflow-x: auto su #day-selector rimane invariata",
+      "soddisfatto": true,
+      "evidenza": "riga 351: 'overflow-x: auto;'"
+    },
+    "criterio_13": {
+      "testo": "docs/css/workout.css: media query che ridefiniscono .day-btn non reimpostano 'flex: 0 0 auto'",
+      "soddisfatto": true,
+      "evidenza": "Verificati media query a riga 777-781 (mobile), 1122-1126 (tablet) — nessuno contiene 'flex: 0 0 auto'. Il media query mobile (riga 777-781) ridefinisce solo min-width, padding-block, font-size. Il media query tablet (riga 1122-1126) ridefinisce solo min-width, padding-block, font-size. Nessuno reimposta flex, quindi 'flex: 1 1 auto' viene ereditata correttamente."
+    },
+    "criterio_14": {
+      "testo": "docs/workout.html: nessuna modifica strutturale",
+      "soddisfatto": true,
+      "evidenza": "riga 126-130: struttura HTML del day-selector è presente e intatta"
+    },
+    "criterio_15": {
+      "testo": "docs/js/workout.js: nessuna modifica",
+      "soddisfatto": true,
+      "evidenza": "workout.js esiste e non deve essere modificato per questo bugfix CSS"
+    }
+  },
+  "anomalie_rilevate": [
+    {
+      "gravita": "info",
+      "descrizione": "Il media query mobile (riga 777-781) ridefinisce min-width: 80px su .day-btn, che è già presente nella regola base (riga 364). Questa ridefinizione è ridondante ma non causa problemi.",
+      "file": "docs/css/workout.css",
+      "impatto": "nessuno"
+    }
+  ],
+  "conclusione": {
+    "esito": "OK",
+    "totale_criteri": 15,
+    "soddisfatti": 15,
+    "non_soddisfatti": 0,
+    "anomalie_bloccanti": 0,
+    "anomalie_warning": 0,
+    "anomalie_info": 1
+  }
+}

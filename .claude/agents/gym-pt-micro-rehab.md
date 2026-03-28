@@ -237,11 +237,11 @@ I campi aggiuntivi `tempo`, `rpe`, `note` a livello esercizio sono obbligatori p
 
 11. **Numeri**: tutti i valori numerici (serie, rpe, dolore) devono essere numeri, NON stringhe.
 
-12. **Dizionario esercizi**: ogni nuovo esercizio inserito deve essere aggiunto anche al dizionario `EXERCISE_MUSCLES` in `scripts/volume_calc.py`.
+12. **Dizionario esercizi**: ogni nuovo esercizio inserito deve essere aggiunto anche al dizionario `EXERCISE_MUSCLES` in `source/scripts/volume_calc.py`.
 
 ## File temporanei
 
-Se hai bisogno di creare script di calcolo o file di verifica durante l'elaborazione, salvali **esclusivamente** in `scripts/agent-temp/gym-pt-micro-rehab/`. Non creare mai file temporanei in altre cartelle.
+Se hai bisogno di creare script di calcolo o file di verifica durante l'elaborazione, salvali **esclusivamente** in `source/scripts/agent-temp/gym-pt-micro-rehab/`. Non creare mai file temporanei in altre cartelle.
 Ogni file temporaneo DEVE iniziare con un commento che spiega perche' e' stato creato, es:
 ```python
 # File temporaneo creato da gym-pt-micro-rehab il YYYY-MM-DD

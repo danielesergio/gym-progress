@@ -1,0 +1,130 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "plan-mesociclo-detail",
+    "task_titolo": "Dettaglio mesociclo espandibile al click",
+    "iterazione": 1,
+    "tester": "gym-web-task-tester"
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Ogni card mesociclo ha cursor:pointer e feedback visivo all'hover (es. box-shadow o border-color cambia)",
+      "soddisfatto": true,
+      "dettaglio": "CSS: classe .plan-phase-card--clickable (linea 508) definisce cursor:pointer. Hover (linea 513) cambia border-color a var(--color-accent) e applica box-shadow var(--shadow-md)"
+    },
+    {
+      "criterio": "Click su una card apre un pannello #plan-meso-detail-panel con i dati del mesociclo selezionato",
+      "soddisfatto": true,
+      "dettaglio": "HTML: pannello con id='plan-meso-detail-panel' definito a linea 88-94 di plan.html con role='region' e aria-live='polite'. JS: attachTimelineClickListener() (linea 381) gestisce click delegato e chiama toggleMesocicloDetail() (linea 328) che popola innerHTML con renderMesocicloDetail()"
+    },
+    {
+      "criterio": "Il pannello mostra: nome, tipo, fase nutrizionale, durata settimane, obiettivo, metodologia, note",
+      "soddisfatto": true,
+      "dettaglio": "Funzione renderMesocicloDetail() (linea 256) estrae tutti i campi: linea 258 (numero), linea 259 (nome), linea 260 (tipo), linea 261 (fase_nutrizionale), linea 262 (durata), linea 263 (obiettivo), linea 264 (metodologia), linea 265 (note). HTML generato include header (linea 289-297) e body (linea 298-316) con tutti i campi"
+    },
+    {
+      "criterio": "I criteri di avanzamento sono mostrati come lista <ul> con un <li> per criterio (split su '. ')",
+      "soddisfatto": true,
+      "dettaglio": "Linea 269-275: criteriRaw viene splittato su '. ' con filter su stringhe vuote e aggiunta punto finale. Linea 277-279: genera HTML <ul class='plan-meso-criteria-list'> con <li> per ogni criterio, oppure fallback a '—' se lista vuota"
+    },
+    {
+      "criterio": "Click sulla stessa card (già aperta) chiude il pannello",
+      "soddisfatto": true,
+      "dettaglio": "Linea 338-343: if (currentOpenMesoNumber === mesoNumber) verifica se card è già aperta. Se sì, svuota innerHTML, rimuove classe 'plan-meso-detail--open', setta hidden=true, azzera currentOpenMesoNumber"
+    },
+    {
+      "criterio": "Click su una card diversa aggiorna il pannello con i dati del nuovo mesociclo (un solo aperto)",
+      "soddisfatto": true,
+      "dettaglio": "Linea 346-356: ramo else della verifica. Popola innerHTML con renderMesocicloDetail(meso), aggiunge classe 'plan-meso-detail--open', setta hidden=false, aggiorna currentOpenMesoNumber, aggiorna aria-expanded su tutte le card con forEach"
+    },
+    {
+      "criterio": "È presente un pulsante esplicito 'Chiudi' (o ×) che chiude il pannello",
+      "soddisfatto": true,
+      "dettaglio": "Linea 294 in renderMesocicloDetail(): button con class='plan-meso-detail-close' aria-label='Chiudi dettaglio mesociclo' type='button' contiene '×'. Linea 359-368: listener click attaccato al pulsante che esegue close (svuota panel, rimuove classe, setta hidden=true)"
+    },
+    {
+      "criterio": "docs/js/plan.js contiene la funzione renderMesocicloDetail(meso)",
+      "soddisfatto": true,
+      "dettaglio": "Funzione definita a linea 256 di plan.js. Prende oggetto meso, estrae campi con optional chaining (??), gestisce null con fallback '—', splitta criteri_avanzamento su '. ', genera HTML completo con header, body e campi"
+    },
+    {
+      "criterio": "docs/js/plan.js contiene la funzione buildMesoMap(planData) che indicizza i mesocicli per numero",
+      "soddisfatto": true,
+      "dettaglio": "Funzione definita a linea 232 di plan.js. Itera su planData.macrocicli[n].mesocicli[m], crea Map<number, Object> con chiave meso.numero, gestisce casi di dati mancanti con check su Array.isArray() e optional chaining"
+    },
+    {
+      "criterio": "docs/css/plan.css contiene la classe .plan-meso-detail con transizione visibile apertura/chiusura",
+      "soddisfatto": true,
+      "dettaglio": "Classe definita a linea 533. Stato chiuso: max-height 0, opacity 0. Transizione: max-height 0.35s ease, opacity 0.25s ease (linea 542). Stato aperto: .plan-meso-detail--open (linea 545) con max-height 1200px, opacity 1"
+    },
+    {
+      "criterio": "docs/css/plan.css contiene la classe .plan-meso-detail--open",
+      "soddisfatto": true,
+      "dettaglio": "Classe definita a linea 545-548. Togglata da JS via classList.add/remove(). Imposta max-height: 1200px e opacity: 1 per visualizzare pannello aperto con transizione fluida"
+    },
+    {
+      "criterio": "Le card hanno role='button' e aria-expanded='true/false' aggiornato al toggle",
+      "soddisfatto": true,
+      "dettaglio": "HTML generato in buildPhaseCard() (linea 122-128): role='button', tabindex='0', aria-expanded='false' (stato iniziale), aria-controls='plan-meso-detail-panel'. JS: linea 335-356 aggiorna aria-expanded con setAttribute('aria-expanded', ...) per card aperta e chiuse"
+    },
+    {
+      "criterio": "I valori null in metodologia/note/criteri_avanzamento non producono 'null' o 'undefined' nel DOM",
+      "soddisfatto": true,
+      "dettaglio": "Linea 257-266 in renderMesocicloDetail(): tutti i campi estratti con fallback ?? '—'. Esempio: metodologia = meso?.metodologia ?? '—'. Se null/undefined nel dato, viene renderizzato il dash unicode '—', non la stringa 'null'"
+    },
+    {
+      "criterio": "Il pannello è accessibile da tastiera (Enter/Space apre/chiude la card focalizzata)",
+      "soddisfatto": true,
+      "dettaglio": "Listener keydown attaccato a linea 396. Se e.key === 'Enter' || e.key === ' ', previene default (e.preventDefault()) e chiama handleActivation(e.target) che esegue lo stesso toggle del click"
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/plan.js",
+      "esiste": true,
+      "note": "File presente. Contiene: buildMesoMap() (linea 232-247), renderMesocicloDetail() (linea 256-318), toggleMesocicloDetail() (linea 328-373), attachTimelineClickListener() (linea 381-402). Modifiche state corrette al codice esistente: buildPhaseCard() ha data-meso-id e aria-expanded (linea 122-128), stato globale currentOpenMesoNumber (linea 7)"
+    },
+    {
+      "path": "docs/css/plan.css",
+      "esiste": true,
+      "note": "File presente. Contiene: .plan-phase-card--clickable (linea 508-522) con cursor:pointer e hover feedback. Pannello dettaglio: .plan-meso-detail (linea 533-548) con transizione, .plan-meso-detail--open (linea 545-548), .plan-meso-detail-header (linea 551-580), .plan-meso-detail-body (linea 608-613), .plan-meso-detail-close (linea 583-605), .plan-meso-criteria-list (linea 643-655), badge .plan-meso-badge (linea 658-696), .plan-meso-nutri-badge (linea 699-723). Responsive: @media mobile (linea 728-748)"
+    },
+    {
+      "path": "docs/plan.html",
+      "esiste": true,
+      "note": "File presente. Contiene pannello dettaglio inline a linea 87-94: <div id='plan-meso-detail-panel' role='region' aria-label='Dettaglio mesociclo selezionato' aria-live='polite' hidden>. Nessuna modifica strutturale necessaria: card generate dinamicamente, pannello togglato da JS"
+    },
+    {
+      "path": "docs/data/plan.json",
+      "esiste": true,
+      "note": "File presente. Contiene 7 mesocicli in macrocicli[0].mesocicli[]. Ogni mesociclo ha campi completi: numero, nome, tipo, fase_nutrizionale, data_inizio, durata_settimane, obiettivo, metodologia, note, criteri_avanzamento, incrocio_stimolo_ambiente. I criteri_avanzamento sono stringhe singole separabili su '. '"
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "La strategia di indicizzazione dei mesocicli usa planData.macrocicli[n].mesocicli[m] come fonte canonica (buildMesoMap), mentre le card sono costruite da planData.fasi[] (buildPhaseCard). Il mapping avviene tramite il campo 'numero' univoco tra le due strutture. Non è una anomalia funzionale, ma la duplicazione dei dati (fasi vs macrocicli.mesocicli) è una caratteristica del data model JSON",
+      "file": "plan.js linea 81 (buildMesoMap) e linea 77 (buildPhaseCard)",
+      "impatto": "nessuno - il sistema funziona correttamente, entrambe le fonti contengono i dati coerenti"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Il valore max-height: 1200px nel CSS per .plan-meso-detail--open (linea 546) è fisso. Per dataset molto esteso con criteri lunghissimi, potrebbe causare troncamento. I 7 mesocicli attuali sono ben al di sotto di questo limite (~300-400px di contenuto)",
+      "file": "plan.css linea 546",
+      "impatto": "nessuno - il dataset attuale rientra ampiamente nel limite. Considerazione per future estensioni"
+    }
+  ],
+  "dettagli_implementazione": {
+    "pattern_js": "Listener delegato su #plan-phase-cards con handleActivation() che estrae data-meso-id e chiama toggleMesocicloDetail(). Stato globale currentOpenMesoNumber per tracciare il pannello aperto",
+    "pattern_css": "Classe .plan-meso-detail--open togglata da JS per animazione max-height/opacity. Transizione smooth 0.35s per apertura/chiusura. Responsive: title wrap su mobile (linea 729-737)",
+    "accessibilita": "role='button' su card, aria-expanded dinamico, aria-controls='plan-meso-detail-panel' su card, aria-label su pulsante close. Supporto tastiera: Enter/Space attiva toggle come click. aria-live='polite' su pannello per screen reader",
+    "gestione_dati": "buildMesoMap() crea Map<number, Object> da planData.macrocicli[n].mesocicli[m]. Optional chaining (?.) e fallback ?? '—' su tutti i campi per gestire null/undefined. Split criteri_avanzamento su '. ' e aggiunta punto finale automatica"
+  },
+  "conclusioni": {
+    "implementazione_completa": true,
+    "aderenza_spec": "Tutti i 14 criteri di accettazione sono soddisfatti",
+    "qualita_codice": "Buona. Convenzioni seguite (kebab-case CSS, camelCase JS, no inline style, solo const/let). Accessibilità implementata correttamente. Gestione errori e null presente",
+    "note_aggiuntive": "Implementazione solida e coerente con il task plan. Il developer ha correttamente interpretato la necessità di usare planData.macrocicli[n].mesocicli per i dati dettagliati e ha aggiunto tutte le funzioni richieste"
+  }
+}

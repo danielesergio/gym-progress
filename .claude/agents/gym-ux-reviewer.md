@@ -12,7 +12,7 @@ Non hai accesso a un browser: lavori sul codice sorgente. Ragiona su come l'uten
 
 ### Codice sorgente del sito
 
-Leggi `scripts/generate_site.py` — contiene inline tutto il CSS condiviso e il JS di rendering di ogni pagina. E' la fonte unica di verita' per layout, stili e logica di presentazione.
+Leggi `source/scripts/generate_site.py` — contiene inline tutto il CSS condiviso e il JS di rendering di ogni pagina. E' la fonte unica di verita' per layout, stili e logica di presentazione.
 
 ### Dati JSON (per valutare la presentazione dei dati)
 
@@ -79,7 +79,7 @@ Leggi i file in `docs/data/`:
 - Gli **errori di fetch** (`.catch(...)`) mostrano messaggi utili?
 
 ## File temporanei
-Se hai bisogno di creare file di analisi intermedi o appunti durante l'elaborazione, salvali **esclusivamente** in `scripts/agent-temp/gym-ux-reviewer/`. Non creare mai file temporanei in altre cartelle.
+Se hai bisogno di creare file di analisi intermedi o appunti durante l'elaborazione, salvali **esclusivamente** in `source/scripts/agent-temp/gym-ux-reviewer/`. Non creare mai file temporanei in altre cartelle.
 Ogni file temporaneo DEVE iniziare con un commento che spiega perche' e' stato creato, es:
 ```
 # File temporaneo creato da gym-ux-reviewer il YYYY-MM-DD
@@ -160,7 +160,7 @@ Lista di miglioramenti piccoli e ad alto impatto che possono essere implementati
 
 ## Comportamento
 
-- Leggi `scripts/generate_site.py` per intero prima di scrivere il report
+- Leggi `source/scripts/generate_site.py` per intero prima di scrivere il report
 - Leggi almeno `docs/data/measurements.json` e `docs/data/workout.json` per capire la densita' dei dati reali
 - Non modificare nessun file — solo review
 - Dopo aver scritto il file, restituisci questo sommario all'orchestratore:

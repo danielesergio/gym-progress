@@ -1,0 +1,167 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "diet-export-csv",
+    "task_title": "Esportazione dieta in CSV",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "diet-export-csv",
+    "type": "component",
+    "title": "Esportazione dieta in CSV",
+    "description": "L'utente deve poter esportare la dieta in formato CSV. Il CSV deve contenere: per ogni slot di ogni tipo di giorno, le opzioni con gli alimenti, le grammature e i macros (kcal, proteine, carbo, grassi). Il file scaricato deve avere un nome descrittivo (es. 'dieta-daniele-2026-03.csv'). Il pulsante di esportazione deve essere visibile nella pagina dieta.",
+    "inputs": [
+      "diet_slots_data",
+      "diet_day_types"
+    ],
+    "outputs": [
+      "DietCSVExport"
+    ],
+    "acceptance_criteria": [
+      "Un pulsante 'Esporta CSV' è visibile nella pagina dieta",
+      "Cliccando il pulsante il browser avvia il download di un file .csv",
+      "Il CSV contiene righe con: tipo_giorno, slot, opzione, alimento, grammi, kcal, proteine, carbo, grassi",
+      "Il file è apribile correttamente in Excel o LibreOffice Calc",
+      "Il nome del file è significativo e include la data o il periodo della dieta"
+    ],
+    "notes": "La dipendenza diet-meals-by-type è già implementata in docs/js/diet.js (funzioni renderMealsList, renderSlotCard, renderOpzioneCard). La variabile globale dietData contiene i dati completi da diet.json ed è disponibile per la funzione di export. Il CSV deve coprire TUTTI i tipi di giorno (non solo quello selezionato), iterando meta.tipi_giorno[] e slot_pasto[].opzioni[].varianti[tipoId]. Il pulsante va inserito nell'HTML prima della sezione pasti; la funzione JS opera su dietData senza fetch aggiuntive."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/diet.html",
+        "motivo": "Aggiungere il pulsante 'Esporta CSV' con id='export-csv-btn' nella sezione main, prima o dopo il selettore giorno (#day-toggle). Deve avere class='diet-export-btn' e aria-label='Esporta la dieta in formato CSV'.",
+        "esiste": true
+      },
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "Aggiungere la funzione exportDietCSV() che genera il CSV da dietData (tutti i tipi di giorno × tutti gli slot × tutte le opzioni × tutti gli alimenti) e avvia il download via <a> con href Blob URL. Aggiungere il listener click su #export-csv-btn nel DOMContentLoaded.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Aggiungere stili per .diet-export-btn: pulsante secondario (border accent, background trasparente), hover con background accent-dim, stato :disabled con opacity ridotta.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/data/diet.json",
+        "motivo": "Struttura dati: oggetto con meta.tipi_giorno[] (id, label), meta.data, slot_pasto[] (id, label, opzioni[]). Ogni opzione ha varianti[tipoId].alimenti[] con campi nome, grammi, kcal, proteine, carbo, grassi. Necessario per costruire la logica di iterazione del CSV."
+      },
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "File esistente da modificare — capire struttura variabile dietData (già popolata al DOMContentLoaded), pattern naming funzioni, entry point DOMContentLoaded da cui agganciare il listener del pulsante."
+      },
+      {
+        "path": "docs/diet.html",
+        "motivo": "File esistente da modificare — identificare il punto corretto dove inserire il markup del pulsante export (dopo #day-toggle, prima di #macros-summary)."
+      },
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "File esistente da modificare — verificare classi già presenti per non duplicare stili, e capire pattern di naming (.diet-toggle-btn, .diet-section-title, ecc.) per coerenza del nuovo .diet-export-btn."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "Plain HTML/JS ES2022 — nessun build step",
+      "grafici": null,
+      "dati": {
+        "formato": "JSON statici in docs/data/",
+        "fonte": "fetch() già eseguita in initDiet() — dietData disponibile come variabile modulo",
+        "file_usato": "data/diet.json"
+      }
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase — es. dietData, exportDietCSV",
+      "costanti_js": "UPPER_SNAKE_CASE per path — es. DATA_PATH già definita",
+      "classi_css": "kebab-case con prefisso diet- — es. .diet-export-btn",
+      "id_html": "kebab-case descrittivo — es. #export-csv-btn",
+      "gestione_null": "Usare ?? '' per i campi stringa, ?? 0 per i numerici nel CSV; non produrre mai 'null' o 'undefined' nel file CSV",
+      "no": [
+        "no jQuery",
+        "no var — solo const e let",
+        "no inline style nell'HTML",
+        "no alert()",
+        "no ES module import/export"
+      ],
+      "pattern_csv_download": "Creare Blob con type 'text/csv;charset=utf-8;', usare BOM UTF-8 (\\uFEFF) per compatibilità Excel, creare <a> temporaneo con href=URL.createObjectURL(blob) e attributo download, fare click() programmatico, poi URL.revokeObjectURL()",
+      "separatore_csv": "Punto e virgola (;) come separatore di campo per compatibilità con Excel italiano/europeo (che usa ; come separatore di default). I valori stringa vanno racchiusi in doppi apici se contengono ; o virgolette.",
+      "struttura_js_per_pagina": "1. Costanti DATA_PATH_* in cima. 2. Funzioni utility pure. 3. Funzioni render* specifiche. 4. Funzione initDiet() con fetch e render. 5. DOMContentLoaded. La funzione exportDietCSV() va inserita nella sezione utility/render, il listener nel DOMContentLoaded."
+    },
+    "pagina": {
+      "nome": "Dieta",
+      "file": "docs/diet.html",
+      "js": "docs/js/diet.js",
+      "css": "docs/css/diet.css",
+      "dati_json": ["data/diet.json"],
+      "chart_js": false
+    }
+  },
+  "dettaglio_implementazione": {
+    "struttura_csv": {
+      "intestazione": "tipo_giorno;slot;opzione;alimento;grammi;kcal;proteine_g;carbo_g;grassi_g",
+      "logica_iterazione": "Per ogni tipoGiorno in dietData.meta.tipi_giorno → per ogni slot in dietData.slot_pasto → per ogni opzione in slot.opzioni → per ogni alimento in opzione.varianti[tipoGiorno.id]?.alimenti → una riga CSV",
+      "valori_riga": [
+        "tipoGiorno.label (es. 'Giorno Riposo')",
+        "slot.label (es. 'Colazione')",
+        "opzione.nome (es. 'Yogurt greco e muesli proteico con pane e frutta')",
+        "alimento.nome (es. 'Yogurt greco 0%')",
+        "alimento.grammi (numero intero, es. 150)",
+        "Math.round(alimento.kcal) (intero)",
+        "alimento.proteine ?? 0 (1 decimale)",
+        "alimento.carbo ?? 0 (1 decimale)",
+        "alimento.grassi ?? 0 (1 decimale)"
+      ],
+      "nota_opzione_non_disponibile": "Se opzione.varianti[tipoId] è null/undefined per un tipo giorno, saltare la riga senza emettere dati vuoti"
+    },
+    "nome_file": {
+      "pattern": "dieta-daniele-{YYYY}-{MM}.csv",
+      "fonte_data": "dietData.meta.data (es. '2026-03-27') → estrarre anno e mese",
+      "fallback": "dieta-daniele.csv se meta.data non disponibile"
+    },
+    "pulsante_html": {
+      "posizione": "Subito dopo </section> del #day-toggle e prima di <section id='macros-summary'>",
+      "markup_suggerito": "<div class='diet-export-bar'><button type='button' id='export-csv-btn' class='diet-export-btn' aria-label='Esporta la dieta completa in formato CSV' disabled>Esporta CSV</button></div>",
+      "note": "Il pulsante parte con disabled=true; viene abilitato (removeAttribute('disabled')) dopo che dietData è caricata con successo nel DOMContentLoaded"
+    },
+    "stili_css": {
+      "diet-export-bar": "display flex, justify-content flex-end, margin-block var(--space-4) var(--space-6)",
+      "diet-export-btn": "padding var(--space-3) var(--space-5), border 2px solid var(--color-accent), border-radius var(--radius-full), background transparent, color var(--color-accent), font-size var(--font-size-sm), font-weight semibold, cursor pointer, transition fast",
+      "diet-export-btn:hover": "background-color var(--color-accent-dim)",
+      "diet-export-btn:disabled": "opacity 0.4, cursor not-allowed",
+      "diet-export-btn:focus-visible": "outline 2px solid var(--color-accent), outline-offset 2px"
+    }
+  },
+  "criteri_accettazione": [
+    "Un pulsante 'Esporta CSV' è visibile nella pagina dieta",
+    "Cliccando il pulsante il browser avvia il download di un file .csv",
+    "Il CSV contiene righe con: tipo_giorno, slot, opzione, alimento, grammi, kcal, proteine, carbo, grassi",
+    "Il file è apribile correttamente in Excel o LibreOffice Calc",
+    "Il nome del file è significativo e include la data o il periodo della dieta",
+    "docs/diet.html contiene un elemento con id='export-csv-btn' e class='diet-export-btn'",
+    "docs/js/diet.js contiene la funzione exportDietCSV()",
+    "La funzione exportDietCSV() usa BOM UTF-8 (\\uFEFF) per compatibilità Excel",
+    "Il separatore di campo nel CSV è il punto e virgola (;)",
+    "Il pulsante è inizialmente disabled e viene abilitato dopo il caricamento di dietData",
+    "Il CSV copre tutti e 3 i tipi di giorno (riposo, palestra, attivita_extra), non solo quello selezionato",
+    "Le varianti non disponibili per un tipo giorno vengono silenziosamente saltate senza righe vuote",
+    "docs/css/diet.css contiene la classe .diet-export-btn",
+    "Il nome del file scaricato include anno e mese (es. dieta-daniele-2026-03.csv)"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "diet-meals-by-type",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/js/diet.js",
+        "docs/diet.html",
+        "docs/css/diet.css"
+      ],
+      "note": "Funzioni renderMealsList(), renderSlotCard(), renderOpzioneCard() già presenti in docs/js/diet.js. La variabile dietData è già popolata e accessibile nel modulo. Il selettore giorno, i macros e la lista pasti sono già operativi."
+    }
+  ]
+}

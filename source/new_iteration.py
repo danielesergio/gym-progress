@@ -8,7 +8,7 @@ Filosofia:
     feedback coach, revisioni PT senior.
   - I report di review sono JSON con schema fisso -Python decide approve/reject.
   - I calcoli (body fat, BMR, TDEE, 1RM, rate progressione) sono Python puro
-    usando le funzioni di scripts/body_calc.py.
+    usando le funzioni di source/scripts/body_calc.py.
   - L'archiviazione (copia, spostamento file) e' Python puro via shutil.
   - Gli agenti LLM vengono invocati tramite CLI: claude --print --agent <nome>
 

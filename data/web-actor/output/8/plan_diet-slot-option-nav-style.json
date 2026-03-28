@@ -1,0 +1,110 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "diet-slot-option-nav-style",
+    "task_title": "Stile visivo dei controlli di navigazione opzioni slot",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "diet-slot-option-nav-style",
+    "type": "ux",
+    "title": "Stile visivo dei controlli di navigazione opzioni slot",
+    "description": "I controlli di navigazione tra opzioni (frecce, indicatore posizione) del task diet-slot-single-option-display devono essere visivamente coerenti con il design system esistente. I bottoni freccia devono avere dimensione touch-friendly (min 44px), colore coerente con i bottoni dieta esistenti (diet-toggle-btn), e l'indicatore '1/3' deve essere leggibile su mobile.",
+    "inputs": [
+      "DietSlotCardFixed",
+      "branding"
+    ],
+    "outputs": [
+      "DietSlotNavStyle"
+    ],
+    "acceptance_criteria": [
+      "I bottoni freccia sono visibili e cliccabili su schermo 375px",
+      "L'indicatore di posizione (es. '1 / 2') è leggibile",
+      "Il colore e font dei controlli di navigazione sono coerenti con il resto della pagina Dieta",
+      "I bottoni freccia hanno area cliccabile di almeno 44x44px"
+    ],
+    "notes": "ATTENZIONE: l'analisi del codice esistente mostra che le classi .diet-slot-nav, .diet-slot-nav__btn e .diet-slot-nav__indicator sono GIA' presenti in docs/css/diet.css (righe 386–454). I bottoni hanno già min-width: 44px e min-height: 44px. Il colore hover usa var(--color-accent) coerente con .diet-toggle-btn. Il task richiede dunque una VERIFICA + eventuale COMPLETAMENTO degli stili, non una creazione da zero. In particolare: (1) verificare comportamento a 375px width, (2) assicurare che le frecce (&#8249; &#8250;) siano leggibili su mobile — eventuale media query, (3) verificare la leggibilità dell'indicatore '1 / 2' su sfondo --color-bg-secondary. Nessuna modifica a diet.html o diet.js è necessaria: il markup è già generato correttamente da renderSlotCard() in diet.js."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Le classi .diet-slot-nav, .diet-slot-nav__btn e .diet-slot-nav__indicator esistono già (righe 386–454). Il developer deve: (1) verificare che min-width/min-height 44px siano effettivamente rispettati su 375px (nessun overflow nascosto che riduca l'area cliccabile); (2) aggiungere eventuale media query @media (max-width: 375px) se l'indicatore o i bottoni risultano troppo piccoli; (3) confermare o aumentare font-size dell'indicatore per garantire leggibilità; (4) verificare che il gap tra i tre elementi sia sufficiente su mobile.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/css/diet.css",
+        "motivo": "Le classi target sono già presenti. Il developer deve leggere le righe 386–454 per capire gli stili esistenti di .diet-slot-nav, .diet-slot-nav__btn e .diet-slot-nav__indicator prima di decidere se serve un intervento."
+      },
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "Verifica del markup generato da renderSlotCard(): struttura HTML .diet-slot-nav con data-slot-id, data-direction, aria-label. Utile per capire quali classi BEM sono già in uso e assicurare coerenza CSS/JS."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "contesto_codice_esistente": {
+    "css_classi_presenti": {
+      "diet-slot-nav": "Container flex centrato con gap var(--space-3), padding var(--space-2) var(--space-5), background-color var(--color-bg-secondary), border-bottom 1px solid var(--color-border).",
+      "diet-slot-nav__btn": "display inline-flex, align-items center, justify-content center, min-width 44px, min-height 44px, padding var(--space-2) var(--space-3), border 2px solid var(--color-border), border-radius var(--radius-full), background-color var(--color-bg-elevated), color var(--color-text), font-size var(--font-size-lg). Hover: border-color/color/bg var(--color-accent)/dim. Disabled: opacity 0.35.",
+      "diet-slot-nav__indicator": "font-size var(--font-size-sm), font-weight var(--font-weight-medium), color var(--color-text-muted), min-width 3rem, text-align center, white-space nowrap, user-select none.",
+      "theme-pro-overrides": "html.theme-pro .diet-slot-nav__btn:hover aggiunge box-shadow accent. html.theme-pro .diet-slot-nav__indicator usa font-weight semibold e color var(--color-text)."
+    },
+    "markup_html_generato": {
+      "fonte": "docs/js/diet.js — funzione renderSlotCard(), righe 379–403",
+      "struttura": "<div class='diet-slot-nav' aria-label='Navigazione opzioni {label}'><button type='button' class='diet-slot-nav__btn diet-slot-nav__btn--prev' data-slot-id='{slotId}' data-direction='prev' aria-label='Opzione precedente' [disabled]>&#8249;</button><span class='diet-slot-nav__indicator' aria-live='polite' aria-atomic='true'>{n} / {tot}</span><button type='button' class='diet-slot-nav__btn diet-slot-nav__btn--next' data-slot-id='{slotId}' data-direction='next' aria-label='Opzione successiva' [disabled]>&#8250;</button></div>"
+    },
+    "classe_riferimento_stile": {
+      "nome": "diet-toggle-btn",
+      "descrizione": "Bottone selettore tipo giorno. border 2px solid var(--color-border), border-radius var(--radius-full), background-color var(--color-bg-secondary), color var(--color-text-muted). Stato active: border-color var(--color-accent), color var(--color-accent), background-color var(--color-accent-dim).",
+      "nota": "Il bottone di navigazione slot usa già lo stesso schema visivo (border pill, accent su hover) — coerenza già rispettata."
+    }
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "styling": {
+        "nome": "CSS custom properties",
+        "note": "Design tokens in docs/css/variables.css. Ogni modifica di stile va in docs/css/diet.css con classi prefissate diet-*."
+      }
+    },
+    "convenzioni": {
+      "classi_css": "kebab-case con prefisso pagina: .diet-slot-nav, .diet-slot-nav__btn, .diet-slot-nav__indicator",
+      "no_inline_style": "Nessun style inline salvo eccezioni dinamiche. Tutto in diet.css.",
+      "touch_target": "Area cliccabile minima 44x44px — già implementata su .diet-slot-nav__btn (min-width: 44px, min-height: 44px)",
+      "accessibilita": "I bottoni hanno già aria-label='Opzione precedente/successiva'. L'indicatore ha aria-live='polite' aria-atomic='true' — nessuna modifica necessaria all'HTML.",
+      "media_query": "Mobile-first. Se servono override a 375px usare @media (max-width: 400px) in fondo alla sezione navigazione opzioni slot in diet.css."
+    },
+    "pagina": {
+      "nome": "Dieta",
+      "file": "docs/diet.html",
+      "js": "docs/js/diet.js",
+      "css": "docs/css/diet.css",
+      "css_condiviso": ["docs/css/variables.css", "docs/css/layout.css"],
+      "dati_json": ["data/diet.json"]
+    }
+  },
+  "criteri_accettazione": [
+    "I bottoni freccia (&#8249; &#8250;) sono visibili su schermo 375px senza essere compressi da overflow hidden o padding eccessivo del container genitore",
+    "L'area cliccabile dei bottoni freccia è confermata >= 44x44px: verificare che min-width: 44px e min-height: 44px non vengano sovrascritti da regole più specifiche",
+    "L'indicatore '1 / 2' è leggibile su mobile: font-size var(--font-size-sm) su sfondo var(--color-bg-secondary) con color var(--color-text-muted) deve garantire contrasto WCAG AA",
+    "Il colore e lo schema visivo di .diet-slot-nav__btn (border pill, accent su hover) sono coerenti con .diet-toggle-btn — già verificato nel codice esistente",
+    "docs/css/diet.css contiene la classe .diet-slot-nav con stili completi",
+    "docs/css/diet.css contiene .diet-slot-nav__btn con min-width: 44px e min-height: 44px",
+    "docs/css/diet.css contiene .diet-slot-nav__indicator con text-align: center e white-space: nowrap",
+    "Nessun bottone freccia viene nascosto o compresso su viewport 375px (nessun overflow: hidden sul container che riduca l'area touch)"
+  ],
+  "dipendenze": [
+    {
+      "task_id": "diet-slot-single-option-display",
+      "stato": "completato",
+      "file_prodotti": [
+        "docs/js/diet.js",
+        "docs/css/diet.css"
+      ],
+      "note": "Il task è completato: docs/js/diet.js contiene renderSlotCard() che genera il markup .diet-slot-nav con i bottoni freccia e l'indicatore posizione. docs/css/diet.css contiene già le classi di stile .diet-slot-nav, .diet-slot-nav__btn e .diet-slot-nav__indicator (righe 386–454). La dipendenza è pienamente soddisfatta."
+    }
+  ]
+}

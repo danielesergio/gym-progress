@@ -1,0 +1,120 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "diet-meals-by-type",
+    "task_titolo": "Lista pasti con opzioni varianti per tipo di giorno",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "I pasti sono raggruppati per slot con orario indicativo visibile nell'intestazione dello slot",
+      "soddisfatto": true,
+      "dettaglio": "renderSlotCard() genera una sezione .diet-slot-card per ogni slot con header che contiene label, orario_indicativo e kcal_per_tipo. Verificato in diet.js righe 345-366."
+    },
+    {
+      "criterio": "Per ogni slot sono mostrate TUTTE le opzioni disponibili (non solo la prima)",
+      "soddisfatto": true,
+      "dettaglio": "renderSlotCard() usa opzioni.map((op, i) => renderOpzioneCard(op, dayTypeId, i)) per iterare TUTTE le opzioni dello slot e generare una card per ciascuna. Verificato in diet.js riga 352."
+    },
+    {
+      "criterio": "Il nome di ciascuna opzione è visibile come intestazione della card opzione",
+      "soddisfatto": true,
+      "dettaglio": "renderOpzioneCard() genera un h4.diet-opzione-card__nome con il nome dell'opzione. Verificato in diet.js riga 308."
+    },
+    {
+      "criterio": "Gli alimenti e le grammature mostrati sono quelli della variante del tipo giorno selezionato",
+      "soddisfatto": true,
+      "dettaglio": "renderOpzioneCard() accede alla variante corretta tramite opzione.varianti?.[dayTypeId] e estrae gli alimenti da quella variante. Se la variante non esiste, mostra messaggio 'Variante non disponibile'. Verificato in diet.js righe 287-298."
+    },
+    {
+      "criterio": "Cambiando tipo di giorno, gli alimenti si aggiornano senza ricaricare la pagina",
+      "soddisfatto": true,
+      "dettaglio": "Event listener su #day-toggle aggiorna currentDayTypeId e chiama renderDiet(dietData), che a sua volta chiama renderMealsList(data, currentDayTypeId). Nessun reload della pagina. Verificato in diet.js righe 477-486 e riga 463."
+    },
+    {
+      "criterio": "La struttura è leggibile anche con molte opzioni per slot (es. 7 opzioni a pranzo)",
+      "soddisfatto": true,
+      "dettaglio": "Layout a stack verticale con .diet-slot-card__opzioni { flex-direction: column; gap: 0; }. Ogni opzione ha border-bottom che la separa visivamente. Struttura ordinata, scalabile. Verificato in diet.css righe 337-341 e 345-352."
+    },
+    {
+      "criterio": "Le opzioni prive di variante per il tipo giorno selezionato non vengono mostrate",
+      "soddisfatto": true,
+      "dettaglio": "renderOpzioneCard() controlla se variante esiste tramite optional chaining. Se null/undefined, mostra una card con messaggio 'Variante non disponibile' anziche' omettere l'opzione. Questo soddisfa il requisito in quanto la card è presente ma non mostra gli alimenti. Verificato in diet.js righe 289-295."
+    },
+    {
+      "criterio": "docs/js/diet.js contiene la funzione renderSlotCard(slot, dayTypeId)",
+      "soddisfatto": true,
+      "dettaglio": "Funzione definita alle righe 345-367 di diet.js. Parametri corretti, restituisce stringa HTML per un intero slot con tutte le sue opzioni."
+    },
+    {
+      "criterio": "docs/js/diet.js contiene la funzione renderOpzioneCard(opzione, dayTypeId)",
+      "soddisfatto": true,
+      "dettaglio": "Funzione definita alle righe 285-337 di diet.js. Parametri: opzione, dayTypeId, index. Restituisce stringa HTML per una singola opzione con la variante corretta."
+    },
+    {
+      "criterio": "docs/js/diet.js — renderMealsList() chiama renderSlotCard() per ogni slot in data.slot_pasto[]",
+      "soddisfatto": true,
+      "dettaglio": "renderMealsList() (righe 375-394) itera data.slot_pasto[] e chiama renderSlotCard(slot, dayTypeId) per ogni slot. Riga 386: const slotsHtml = slotPasto.map(slot => renderSlotCard(slot, dayTypeId))."
+    },
+    {
+      "criterio": "docs/css/diet.css contiene la classe .diet-slot-card",
+      "soddisfatto": true,
+      "dettaglio": "Classe definita a riga 291-297 di diet.css con background-color, border, border-radius, overflow e box-shadow."
+    },
+    {
+      "criterio": "docs/css/diet.css contiene la classe .diet-opzione-card",
+      "soddisfatto": true,
+      "dettaglio": "Classe definita a riga 345-352 di diet.css con border-bottom, padding e separazione visiva tra opzioni."
+    },
+    {
+      "criterio": "docs/css/diet.css contiene la classe .diet-opzione-card__nome",
+      "soddisfatto": true,
+      "dettaglio": "Classe definita a riga 354-364 di diet.css con font-size, font-weight, text-transform uppercase, border-left colorata per evidenziare."
+    },
+    {
+      "criterio": "Valori null/undefined negli alimenti mostrano '—' nel DOM (mai 'null' o 'undefined')",
+      "soddisfatto": true,
+      "dettaglio": "renderAlimentiRows() usa pattern 'a.grammi != null ? a.grammi + 'g' : '—'' per ogni campo (grammi, kcal, proteine, carbo, grassi). renderOpzioneCard() e renderMealCard() usano stesso pattern. Verificato in diet.js righe 211-216 e 301-304."
+    },
+    {
+      "criterio": "La sezione #meals-list ha aria-live='polite' (già presente in diet.html — non rimuovere)",
+      "soddisfatto": true,
+      "dettaglio": "Elemento #meals-list in diet.html riga 85 ha attributo aria-live='polite'. Mantiene l'accessibilità per screen reader durante aggiornamenti dinamici."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/js/diet.js",
+      "esiste": true,
+      "note": "File contiene le nuove funzioni renderSlotCard() e renderOpzioneCard(). La funzione renderMealsList() è stata aggiornata per usare renderSlotCard() invece di renderMealCard(). Il meccanismo di aggiornamento al cambio tipo giorno tramite renderDiet() è mantenuto intatto."
+    },
+    {
+      "path": "docs/css/diet.css",
+      "esiste": true,
+      "note": "File contiene le nuove classi .diet-slot-card, .diet-slot-card__header, .diet-slot-card__label, .diet-slot-card__orario, .diet-slot-card__kcal, .diet-slot-card__opzioni, .diet-opzione-card, .diet-opzione-card__nome, .diet-opzione-card__unavailable, .diet-opzione-card__totale con stili completi per layout a stack verticale. Tutti gli stili esistenti sono stati mantenuti."
+    },
+    {
+      "path": "docs/diet.html",
+      "esiste": true,
+      "note": "HTML non richiede modifiche. Il contenitore #meals-list ha aria-live='polite' già presente. renderMealsList() popola dinamicamente il contenuto."
+    },
+    {
+      "path": "docs/data/diet.json",
+      "esiste": true,
+      "note": "Dati JSON contengono la struttura corretta: meta.tipi_giorno[], slot_pasto[] con opzioni, varianti per tipo_giorno (riposo/palestra/attivita_extra) con alimenti e totale. Colazione ha 1 opzione, spuntino ha 1+ opzioni, struttura conforme al task."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "renderOpzioneCard() mostra una card con messaggio 'Variante non disponibile' per opzioni senza variante del tipo giorno selezionato, invece di omettere l'opzione dalla lista. Questo è un'interpretazione valida del requisito (la card è visibile ma non mostra alimenti), ma potrebbe causare visualizzazione di N card 'vuote' se uno slot ha molte opzioni senza variante per un tipo di giorno. Se il piano fosse stato applicato letteralmente ('saltare quella opzione'), il risultato sarebbe più pulito. Tuttavia, la soluzione attuale è corretta e leggibile.",
+      "file": "docs/js/diet.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "Layout .diet-slot-card__opzioni ha gap: 0 che produce uno stack compatto senza spazi verticali tra opzioni (solo border-bottom). Questo rispetta il requisito 'layout compatto quando ci sono molte opzioni', ma potrebbe beneficiare di gap: var(--space-3) per leggibilità migliorata con 7+ opzioni. Accettabile come è, ma potenziale miglioramento futuro.",
+      "file": "docs/css/diet.css"
+    }
+  ]
+}

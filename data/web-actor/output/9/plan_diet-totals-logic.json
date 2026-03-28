@@ -1,0 +1,128 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "diet-totals-logic",
+    "task_title": "Calcolo dinamico dei totali dei pasti selezionati",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "diet-totals-logic",
+    "type": "data",
+    "title": "Calcolo dinamico dei totali dei pasti selezionati",
+    "description": "Logica che, dato il tipo-giorno attivo (riposo / palestra / beach_volley) e gli indici di opzione correntemente selezionati per ogni slot, somma kcal, proteine, carboidrati e grassi di tutte le opzioni visibili. Il risultato è un oggetto con i totali calcolati (kcal, proteine_g, carbo_g, grassi_g). Deve essere ricalcolato ogni volta che: (1) l'utente cambia il tipo di giorno, (2) l'utente cambia l'opzione attiva in uno slot qualsiasi. Il calcolo deve basarsi sui valori numerici presenti nel campo 'totale' di ogni variante (già presenti in diet.json), non ricalcolare dai singoli alimenti.",
+    "inputs": ["diet_data", "current_day_type_id", "slot_option_indices"],
+    "outputs": ["selected_meals_totals"],
+    "acceptance_criteria": [
+      "I totali cambiano immediatamente quando l'utente preme i tasti freccia di navigazione opzione in uno slot",
+      "I totali cambiano immediatamente quando l'utente cambia tipo di giorno (Riposo / Palestra / Beach Volley)",
+      "Se una variante di uno slot non è disponibile per il tipo di giorno, il suo contributo viene escluso dal totale",
+      "I valori calcolati corrispondono alla somma manuale dei totali delle opzioni visibili"
+    ],
+    "notes": "Task di tipo 'data': non crea un nuovo componente visuale autonomo, ma aggiunge una funzione pura calculateSelectedTotals() in diet.js e la chiama nei punti di re-render già esistenti. La funzione restituisce un oggetto { kcal, proteineG, carboG, grassiG } calcolato esclusivamente dai campi 'totale' delle varianti (non dai singoli alimenti). Le varianti null (non disponibili per il tipo giorno corrente) vengono saltate silenziosamente. Il risultato viene salvato nello stato globale (selectedTotals) e reso disponibile ai task successivi (diet-totals-panel) che lo leggeranno da lì. Lo sblocca il task diet-totals-panel (ordine 2 nella task list)."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "Aggiungere la funzione pura calculateSelectedTotals(data, dayTypeId, slotOptionIndices) nella sezione Utility/Funzioni render, la variabile di stato 'let selectedTotals = null', e le chiamate a calculateSelectedTotals() nei due punti di re-render: (1) handler click day-toggle, (2) handler click meals-list (navigazione opzioni). La funzione deve iterare su data.slot_pasto[], per ogni slot leggere l'indice da slotOptionIndices[slot.id], accedere a slot.opzioni[idx].varianti[dayTypeId].totale e sommare kcal, proteine, carbo, grassi. Se la variante è null o assente, contribuisce 0. Arrotondare il risultato finale a intero per kcal e grammi macros.",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/js/diet.js",
+        "motivo": "File da modificare: leggere l'intero file per capire struttura esistente, stato (dietData, currentDayTypeId, slotOptionIndices), funzioni render e punti di re-render dove inserire il calcolo. In particolare: (1) sezione Stato interno (righe ~17-25) per sapere dove aggiungere 'let selectedTotals', (2) renderDiet() (riga ~644) per capire l'ordine di rendering, (3) handler click day-toggle nel DOMContentLoaded (riga ~676-686) per sapere dove aggiungere la chiamata al calcolo, (4) handler click meals-list (riga ~692-717) per sapere dove aggiungere la chiamata al calcolo dopo il cambio indice."
+      },
+      {
+        "path": "docs/data/diet.json",
+        "motivo": "Struttura dati: verificare la forma esatta del campo 'totale' nelle varianti. Confermato: slot_pasto[].opzioni[].varianti[dayTypeId].totale ha i campi { kcal: float, proteine: float, carbo: float, grassi: float }. ATTENZIONE: i nomi dei campi nel campo 'totale' sono 'proteine' e 'carbo' (NON 'proteine_g' e 'carbo_g'). Il developer deve usare questi nomi esatti per accedere ai valori. Verificare anche che alcuni slot potrebbero non avere varianti per tutti i tipi giorno (variante null → contributo 0)."
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "plain HTML/JS vanilla ES2022",
+      "build": "nessuno — il developer scrive direttamente in docs/",
+      "deploy": "GitHub Pages, cartella docs/"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase — es. selectedTotals, calculateSelectedTotals",
+      "costanti_js": "SCREAMING_SNAKE_CASE per path e config (non applicabile qui)",
+      "struttura_js_per_pagina": "Pattern fisso: (1) Costanti, (2) Stato interno, (3) Funzioni utility, (4) Funzioni render, (5) initPagina() → DOMContentLoaded. La funzione calculateSelectedTotals() va nella sezione (3) Funzioni utility perché è una funzione pura senza side effect. La variabile 'let selectedTotals' va nella sezione (2) Stato interno, dopo slotOptionIndices.",
+      "reattivita": "Nessun framework. Stato mutabile con let. Re-render chiamando direttamente le funzioni render(). Il calcolo viene triggerato nei due handler già esistenti (day-toggle click e meals-list click), chiamando calculateSelectedTotals() e salvando il risultato in selectedTotals prima o dopo il re-render della lista pasti.",
+      "no_moduli_es": "NON usare import/export — tutto in scope globale di pagina",
+      "gestione_null": "Se variante[dayTypeId] è null/assente: contribuisce 0 a tutti i totali (non lanciare eccezione). Usare: variante?.totale?.kcal ?? 0"
+    },
+    "pagina": {
+      "nome": "Dieta",
+      "file": "docs/diet.html",
+      "js": "docs/js/diet.js",
+      "css": "docs/css/diet.css",
+      "dati_json": ["data/diet.json"],
+      "stato_interno_esistente": ["dietData", "currentDayTypeId", "slotOptionIndices"]
+    },
+    "struttura_diet_json_rilevante": {
+      "tipi_giorno_ids": ["riposo", "palestra", "beach_volley"],
+      "slot_pasto_path": "slot_pasto[]",
+      "accesso_variante": "slot_pasto[i].opzioni[j].varianti[dayTypeId]",
+      "campi_totale": {
+        "path": "slot_pasto[i].opzioni[j].varianti[dayTypeId].totale",
+        "campi": {
+          "kcal": "float (es. 549.1)",
+          "proteine": "float (NON proteine_g)",
+          "carbo": "float (NON carbo_g)",
+          "grassi": "float"
+        },
+        "nota": "I nomi nel campo totale sono 'proteine' e 'carbo', NON con suffisso _g. Questo è fondamentale per l'accesso corretto ai dati."
+      }
+    }
+  },
+  "implementazione_suggerita": {
+    "funzione_da_aggiungere": {
+      "nome": "calculateSelectedTotals",
+      "signature": "function calculateSelectedTotals(data, dayTypeId, indices)",
+      "dove": "Sezione '// ── Utility ──' di diet.js, dopo la funzione showError()",
+      "logica": "Itera su data.slot_pasto[]. Per ogni slot: legge indices[slot.id] (default 0), clampato tra 0 e opzioni.length-1. Accede a slot.opzioni[idx].varianti[dayTypeId].totale. Se variante o totale sono null/undefined, contribuisce 0. Somma kcal, proteine, carbo, grassi. Restituisce { kcal: Math.round(totKcal), proteineG: Math.round(totProteine), carboG: Math.round(totCarbo), grassiG: Math.round(totGrassi) }.",
+      "nota_naming_output": "L'output usa proteineG, carboG, grassiG (con suffisso G) per distinguerli dai nomi interni del JSON ('proteine', 'carbo'). I task successivi (diet-totals-panel) si aspettano questo oggetto con questa interfaccia."
+    },
+    "variabile_stato_da_aggiungere": {
+      "nome": "selectedTotals",
+      "dichiarazione": "let selectedTotals = null;",
+      "dove": "Sezione '// ── Stato interno ──' di diet.js, dopo la riga 'let slotOptionIndices = {};'",
+      "valore_iniziale": "null — viene popolato dopo il primo fetch e dopo ogni interazione utente"
+    },
+    "chiamate_da_aggiungere": [
+      {
+        "dove": "Handler click day-toggle (DOMContentLoaded, riga ~681)",
+        "quando": "Dopo aver aggiornato currentDayTypeId, prima o dopo renderDiet(dietData)",
+        "codice": "selectedTotals = calculateSelectedTotals(dietData, currentDayTypeId, slotOptionIndices);"
+      },
+      {
+        "dove": "Handler click meals-list (DOMContentLoaded, riga ~710-715)",
+        "quando": "Dopo aver aggiornato slotOptionIndices[slotId] e chiamato renderMealsList()",
+        "codice": "selectedTotals = calculateSelectedTotals(dietData, currentDayTypeId, slotOptionIndices);"
+      },
+      {
+        "dove": "Fine del blocco try in DOMContentLoaded (dopo renderDiet, riga ~747)",
+        "quando": "Dopo il primo rendering completo, per inizializzare selectedTotals con i valori di default",
+        "codice": "selectedTotals = calculateSelectedTotals(dietData, currentDayTypeId, slotOptionIndices);"
+      }
+    ]
+  },
+  "criteri_accettazione": [
+    "I totali cambiano immediatamente quando l'utente preme i tasti freccia di navigazione opzione in uno slot",
+    "I totali cambiano immediatamente quando l'utente cambia tipo di giorno (Riposo / Palestra / Beach Volley)",
+    "Se una variante di uno slot non è disponibile per il tipo di giorno, il suo contributo viene escluso dal totale (contribuisce 0, non NaN né errore)",
+    "I valori calcolati corrispondono alla somma manuale dei totali delle opzioni visibili",
+    "docs/js/diet.js contiene la funzione calculateSelectedTotals(data, dayTypeId, indices)",
+    "docs/js/diet.js contiene la variabile 'let selectedTotals = null' nella sezione stato interno",
+    "La funzione calculateSelectedTotals() legge il campo 'totale.proteine' (NON 'totale.proteine_g') e 'totale.carbo' (NON 'totale.carbo_g') dalle varianti di diet.json",
+    "La funzione restituisce un oggetto { kcal, proteineG, carboG, grassiG } con valori interi (Math.round)",
+    "La funzione non lancia eccezioni se una variante è null (usa optional chaining e coalescenza ?? 0)",
+    "selectedTotals viene aggiornato nei 3 punti: (1) cambio tipo giorno, (2) navigazione opzione slot, (3) caricamento iniziale",
+    "Il valore di selectedTotals dopo il caricamento iniziale corrisponde alla somma delle opzioni indice 0 di tutti gli slot per il tipo giorno 'riposo' (primo tipo)"
+  ],
+  "dipendenze": []
+}

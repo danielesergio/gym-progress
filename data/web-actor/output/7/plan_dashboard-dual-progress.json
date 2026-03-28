@@ -1,0 +1,149 @@
+{
+  "meta": {
+    "data": "2026-03-27",
+    "task_id": "dashboard-dual-progress",
+    "task_title": "Doppia progress bar: fase corrente e macrociclo",
+    "bloccato": false,
+    "motivo_blocco": null
+  },
+  "task": {
+    "id": "dashboard-dual-progress",
+    "type": "component",
+    "title": "Doppia progress bar: fase corrente e macrociclo",
+    "description": "Nella card 'Fase Corrente' (#card-fase) della Dashboard, sostituire la singola progress bar con due barre CSS distinte: (1) avanzamento della fase corrente — settimana X di Y della fase attiva (es. 'Settimana 2 di 5'); (2) avanzamento del macrociclo intero — settimana corrente su totale settimane del macrociclo 1 (40 settimane). La barra del macrociclo deve mostrare segni visivi (tacche/divisori SVG o pseudo-elementi CSS) che indicano i confini tra mesocicli. Ogni barra ha una label inequivoca che specifica a cosa si riferisce.",
+    "inputs": ["plan_data", "current_phase_info"],
+    "outputs": ["DualProgressBar"],
+    "acceptance_criteria": [
+      "Sono presenti due progress bar distinte nella card, con label diverse",
+      "La prima barra indica settimana corrente / durata totale della fase attuale",
+      "La seconda barra indica settimana corrente / durata totale del macrociclo",
+      "La barra del macrociclo mostra separatori visivi tra i mesocicli",
+      "Le label non sono ambigue: si capisce immediatamente quale barra si riferisce alla fase e quale al macrociclo"
+    ],
+    "notes": "Il codice esistente in renderProgramPhaseCard() calcola già settimana corrente nella fase e settimana corrente nel macrociclo (variabili settCorrenteFase e settCorrente). Bisogna scomporre la logica per esporre entrambi i valori in modo separato e aggiungere la barra macrociclo con tacche mesocicli. Il calcolo corrente usa meta.data_aggiornamento come data di inizio del programma: verificare se questo sia corretto (la data 2026-03-23 è la data di aggiornamento del JSON, non necessariamente l'inizio effettivo della Fase 1). I dati mesocicli in plan.macrocicli[0].mesocicli contengono durata_settimane per ogni mesociclo (5+5+6+10+6+6+2 = 40 settimane), usarli per calcolare le posizioni percentuali delle tacche."
+  },
+  "file": {
+    "da_modificare": [
+      {
+        "path": "docs/js/dashboard.js",
+        "motivo": "Refactoring di renderProgramPhaseCard(): aggiungere calcolo separato settimana-nella-fase e settimana-nel-macrociclo; aggiungere funzione renderDualProgressBar() che genera HTML delle due barre con tacche mesocicli; aggiornare l'HTML iniettato nella card.",
+        "esiste": true
+      },
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "Aggiungere stili per il sistema doppia progress bar: .phase-card__progress-section (wrapper per ogni barra), .phase-card__progress-label-row (label + valore numerico sulla stessa riga), .phase-card__progress-bar--macro (variante barra macrociclo con sfondo diverso), .phase-card__macro-tick (tacche divisori mesocicli posizionate in assoluto), .phase-card__progress-fill--phase e .phase-card__progress-fill--macro (fill differenziati per colore).",
+        "esiste": true
+      }
+    ],
+    "da_leggere": [
+      {
+        "path": "docs/js/dashboard.js",
+        "motivo": "Capire la logica corrente di renderProgramPhaseCard(): calcolo settimana corrente, struttura HTML iniettata, variabili usate. Da modificare, quindi lettura obbligatoria prima di scrivere."
+      },
+      {
+        "path": "docs/css/dashboard.css",
+        "motivo": "Capire classi esistenti della phase-card (.phase-card__progress-bar, .phase-card__progress-fill, .phase-card__progress-label) prima di aggiungere varianti. Verificare design token disponibili."
+      },
+      {
+        "path": "docs/data/plan.json",
+        "motivo": "Struttura dati necessaria per calcolare le tacche: plan.macrocicli[0].mesocicli è un array con durata_settimane per ogni mesociclo (5, 5, 6, 10, 6, 6, 2). Serve per calcolare le posizioni percentuali dei separatori sulla barra macrociclo. plan.macrocicli[0].durata_settimane = 40 è il totale."
+      },
+      {
+        "path": "docs/css/css/variables.css",
+        "motivo": "Verificare le variabili CSS disponibili per colori e spacing da usare negli stili delle nuove barre.",
+        "note": "Percorso alternativo: docs/css/variables.css"
+      }
+    ],
+    "architettura": "data/web-actor/output/web_architecture.json"
+  },
+  "dati_json": {
+    "plan_json": {
+      "path": "docs/data/plan.json",
+      "campi_rilevanti": {
+        "macrocicli[0].durata_settimane": 40,
+        "macrocicli[0].mesocicli": [
+          { "numero": 1, "nome": "Rehab TOS Fase 1", "durata_settimane": 5 },
+          { "numero": 2, "nome": "Rehab TOS Fase 2", "durata_settimane": 5 },
+          { "numero": 3, "nome": "Mini-Cut Post-Rehab", "durata_settimane": 6 },
+          { "numero": 4, "nome": "Accumulo", "durata_settimane": 10 },
+          { "numero": 5, "nome": "Intensificazione", "durata_settimane": 6 },
+          { "numero": 6, "nome": "Peaking", "durata_settimane": 6 },
+          { "numero": 7, "nome": "Tapering e Test Day", "durata_settimane": 2 }
+        ],
+        "fasi[*].stato": "Stringa: 'corrente' | 'futura' | 'completata'. Usata per trovare la fase attiva.",
+        "fasi[*].durata_settimane": "Intero: durata della fase in settimane.",
+        "fasi[*].numero": "Intero: numero progressivo della fase.",
+        "meta.data_aggiornamento": "YYYY-MM-DD (es. '2026-03-23'). Usato come proxy della data di inizio programma nel codice corrente.",
+        "nota_calcolo_tacche": "Le posizioni percentuali delle tacche sulla barra macrociclo si calcolano come somma cumulativa delle durate mesocicli / durata_totale * 100. Es: tacca 1 a 5/40=12.5%, tacca 2 a 10/40=25%, tacca 3 a 16/40=40%, tacca 4 a 26/40=65%, tacca 5 a 32/40=80%, tacca 6 a 38/40=95%. L'ultima tacca (fine ultimo mesociclo=fine macrociclo) non va disegnata."
+      }
+    }
+  },
+  "architettura_applicabile": {
+    "stack": {
+      "framework": "Plain HTML/JS ES2022 — no build step",
+      "styling": "CSS custom properties (variables.css), no framework",
+      "grafici": "Non richiesto per questo task — le barre sono CSS pure (no Canvas, no Chart.js)"
+    },
+    "convenzioni": {
+      "variabili_js": "camelCase (es. settCorrenteFase, settCorrentiMacro, mesocicliTacche)",
+      "costanti_js": "UPPER_SNAKE_CASE per path dati (già presenti in dashboard.js)",
+      "classi_css": "kebab-case con prefisso pagina: .phase-card__... (già in uso per la card fase)",
+      "id_html": "kebab-case: non servono nuovi id — il contenuto è iniettato via innerHTML",
+      "gestione_null": "Optional chaining (?.) e fallback: valore ?? '—'. Mai stringhe 'null' o 'undefined' nel DOM.",
+      "no_inline_style_eccetto": "La width delle progress-fill è l'unico stile inline ammesso (come già in uso nel codice corrente: style='width: ${percentuale}%')",
+      "struttura_js": "Modificare renderProgramPhaseCard() per estrarre due valori separati (fase e macro) e generare HTML con due sezioni barra distinte. In alternativa introdurre funzione helper renderDualProgressBar(settFase, durFase, settMacro, durMacro, mesocicli).",
+      "pattern_fetch": "Già implementato con Promise.all — il plan è già disponibile come parametro di renderProgramPhaseCard(plan)"
+    },
+    "pagina": {
+      "nome": "Dashboard",
+      "file": "docs/dashboard.html",
+      "js": "docs/js/dashboard.js",
+      "css": "docs/css/dashboard.css",
+      "dati_json": ["data/measurements.json", "data/plan.json", "data/workout.json"],
+      "chart_js": false
+    }
+  },
+  "istruzioni_implementazione": {
+    "logica_js": {
+      "passo_1": "In renderProgramPhaseCard(plan), mantenere il calcolo esistente della settimana corrente nella fase (settCorrenteFase = settimana 1..duratafase). Questo serve per la PRIMA barra.",
+      "passo_2": "Aggiungere calcolo settimana corrente nel macrociclo: settCorrentiMacro = settimanePreFase + settCorrenteFase (clampato a [1, durataTotaleMacrociclo]). Il totale macrociclo è plan.macrocicli[0].durata_settimane (= 40). Questo serve per la SECONDA barra.",
+      "passo_3": "Calcolare le posizioni percentuali delle tacche: iterare plan.macrocicli[0].mesocicli, accumulare somma parziale durata_settimane, calcolare percentuale = (sommaParziale / durataTotale * 100). Escludere l'ultima tacca (100%). Risultato: array di numeri es. [12.5, 25.0, 40.0, 65.0, 80.0, 95.0].",
+      "passo_4": "Generare HTML barra 1 (fase corrente): label 'Fase corrente', fill con percentuale = settCorrenteFase / duratafase * 100, label numerica 'Settimana X di Y della fase'.",
+      "passo_5": "Generare HTML barra 2 (macrociclo): label 'Macrociclo 1', container relativo con tacche posizionate in assoluto (left: X%), fill con percentuale = settCorrentiMacro / durataTotaleMacrociclo * 100, label numerica 'Settimana X di 40 del macrociclo'.",
+      "gestione_macrociclo_assente": "Se plan.macrocicli è assente o vuoto, omettere la barra macrociclo senza errori. Mostrare solo la barra fase.",
+      "nota_data_inizio": "Il codice corrente usa meta.data_aggiornamento (2026-03-23) come data di inizio programma. Questo è un'approssimazione: il piano inizia a marzo 2026 e la data di aggiornamento è il 23 marzo. Mantenere questo comportamento senza cambiare la logica di calcolo della data."
+    },
+    "struttura_html_iniettata": {
+      "schema": "La card #card-fase conterrà, nell'ordine: titolo card, header fase (numero + nome), periodo, obiettivo, sezione barra fase, sezione barra macrociclo.",
+      "barra_fase": "<div class='phase-card__progress-section'><div class='phase-card__progress-label-row'><span class='phase-card__progress-section-title'>Fase corrente</span><span class='phase-card__progress-count'>Sett. X / Y</span></div><div class='phase-card__progress-bar' aria-label='...'><div class='phase-card__progress-fill phase-card__progress-fill--phase' style='width: Z%'></div></div></div>",
+      "barra_macro": "<div class='phase-card__progress-section'><div class='phase-card__progress-label-row'><span class='phase-card__progress-section-title'>Macrociclo 1</span><span class='phase-card__progress-count'>Sett. X / 40</span></div><div class='phase-card__progress-bar phase-card__progress-bar--macro' aria-label='...'>[tacche con span.phase-card__macro-tick]<div class='phase-card__progress-fill phase-card__progress-fill--macro' style='width: Z%'></div></div></div>",
+      "tacche": "Ogni tacca è un <span class='phase-card__macro-tick' style='left: X%' aria-hidden='true'></span> dentro il container barra, posizionato in assoluto."
+    },
+    "stili_css_da_aggiungere": {
+      "phase-card__progress-section": "Wrapper verticale per label-row + barra. margin-bottom: var(--space-4) tra le due sezioni.",
+      "phase-card__progress-label-row": "display: flex; justify-content: space-between; align-items: baseline; margin-bottom: var(--space-2). Contiene titolo sezione a sinistra e contatore numerico a destra.",
+      "phase-card__progress-section-title": "font-size: var(--font-size-xs); font-weight: 600; color: var(--color-text-secondary); text-transform: uppercase; letter-spacing: 0.06em.",
+      "phase-card__progress-count": "font-size: var(--font-size-xs); color: var(--color-text-faint); font-variant-numeric: tabular-nums.",
+      "phase-card__progress-bar--macro": "Variante della barra macrociclo: position: relative (necessario per le tacche in assoluto). Altezza leggermente maggiore per ospitare le tacche: height: 10px.",
+      "phase-card__progress-fill--phase": "background-color: var(--color-accent) (blu/azzurro — default già in uso).",
+      "phase-card__progress-fill--macro": "background-color: var(--color-success, #4caf50) o colore distinto dall'accent per differenziare visivamente le due barre. In alternativa usare un accent più caldo (es. --color-warning per il macrociclo).",
+      "phase-card__macro-tick": "position: absolute; top: 0; width: 2px; height: 100%; background-color: var(--color-bg-card); opacity: 0.7; z-index: 1. Le tacche si sovrappongono alla barra, visibili sia sul fill che sul track.",
+      "nota_z-index": "Il fill deve avere z-index: 0, le tacche z-index: 1, così le tacche sono sempre visibili indipendentemente dallo stato di avanzamento."
+    }
+  },
+  "criteri_accettazione": [
+    "Sono presenti due progress bar distinte nella card #card-fase, con label diverse",
+    "La prima barra indica settimana corrente nella fase / durata totale della fase attuale",
+    "La seconda barra indica settimana corrente nel macrociclo / 40 (durata totale macrociclo 1)",
+    "La barra del macrociclo contiene span.phase-card__macro-tick per ogni confine tra mesocicli (6 tacche, posizionate a 12.5%, 25%, 40%, 65%, 80%, 95%)",
+    "Le label sono inequivoche: 'Fase corrente' e 'Macrociclo 1' come titoli di sezione con contatore 'Sett. X / Y'",
+    "docs/js/dashboard.js contiene la funzione renderProgramPhaseCard() aggiornata con due sezioni barra distinte",
+    "docs/css/dashboard.css contiene le classi .phase-card__progress-section, .phase-card__progress-label-row, .phase-card__progress-section-title, .phase-card__progress-count, .phase-card__progress-bar--macro, .phase-card__macro-tick, .phase-card__progress-fill--phase, .phase-card__progress-fill--macro",
+    "Il fill della barra fase ha colore distinto dal fill della barra macrociclo",
+    "Se plan.macrocicli è assente, la barra macrociclo non viene renderizzata e non si generano errori JS",
+    "I valori null o assenti in durata_settimane sono gestiti con fallback a 0 senza lanciare eccezioni",
+    "La card è responsive: le due barre sono impilate verticalmente e leggibili su mobile (< 480px) e desktop"
+  ],
+  "dipendenze": [],
+  "note_finali": "Questo è il task #1 nella sequenza ordinata (web_tasks_ordered.json), con priorità massima (feature_priority: 1) e nessuna dipendenza da risolvere. Il codice JS corrente ha già tutta la logica di calcolo necessaria: la settimana corrente nel macrociclo è già implicitamente calcolata nella variabile settCorrente (= settimanePreFase + settCorrenteFase). Il refactoring principale consiste nel: (1) separare la barra in due sezioni con label esplicite, (2) aggiungere le tacche mesocicli sulla barra macrociclo, (3) differenziare visivamente le due barre. Non serve modificare dashboard.html (il contenuto è iniettato via innerHTML in JS)."
+}

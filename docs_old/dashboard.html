@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — GYM</title>
+<style>
+:root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #232734;
+    --border: #2d3142;
+    --text: #e4e6ed;
+    --text-muted: #8b8fa3;
+    --accent: #6c8cff;
+    --accent2: #4ecdc4;
+    --green: #4ecdc4;
+    --yellow: #ffd93d;
+    --red: #ff6b6b;
+    --orange: #ffa94d;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+}
+nav {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+nav .logo {
+    font-weight: 700; font-size: 1.25rem; color: var(--accent);
+    padding: 1rem 0; white-space: nowrap; text-decoration: none;
+}
+nav .nav-links { display: flex; gap: 0; overflow-x: auto; }
+nav a.nav-item {
+    color: var(--text-muted); text-decoration: none;
+    padding: 1rem 1.25rem; font-size: 0.9rem; font-weight: 500;
+    border-bottom: 2px solid transparent; transition: all 0.2s; white-space: nowrap;
+}
+nav a.nav-item:hover { color: var(--text); }
+nav a.nav-item.active { color: var(--accent); border-bottom-color: var(--accent); }
+.content { padding: 2rem; max-width: 1400px; margin: 0 auto; width: 100%; }
+.cards {
+    display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1rem; margin-bottom: 2rem;
+}
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 1.5rem; }
+.card .label { font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem; }
+.card .value { font-size: 2rem; font-weight: 700; color: var(--text); }
+.card .value .unit { font-size: 0.9rem; color: var(--text-muted); font-weight: 400; }
+.card .sub { font-size: 0.8rem; color: var(--text-muted); margin-top: 0.25rem; }
+.card.accent { border-color: var(--accent); }
+.card.green { border-color: var(--green); }
+.table-wrap { width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 1rem 0; }
+table { width: 100%; border-collapse: collapse; margin: 1rem 0; font-size: 0.9rem; min-width: 480px; }
+th { background: var(--surface2); color: var(--text-muted); text-align: left; padding: 0.75rem 1rem; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.03em; border-bottom: 1px solid var(--border); }
+td { padding: 0.6rem 1rem; border-bottom: 1px solid var(--border); }
+tr:hover { background: var(--surface); }
+tr.total-row { font-weight: 700; background: var(--surface2); }
+.sub-nav { display: flex; gap: 0; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow-x: auto; margin-bottom: 1.5rem; }
+.sub-nav-item { color: var(--text-muted); text-decoration: none; padding: 0.75rem 1.25rem; font-size: 0.85rem; font-weight: 500; white-space: nowrap; border-bottom: 2px solid transparent; transition: all 0.2s; cursor: pointer; }
+.sub-nav-item:hover { color: var(--text); background: var(--surface2); }
+.sub-nav-item.active { color: var(--accent); background: var(--surface2); border-bottom-color: var(--accent); }
+.panel { display: none; }
+.panel.active { display: block; }
+.sub-nav-days { margin-top: -0.5rem; margin-bottom: 1.5rem; background: var(--surface2); border-color: var(--border); }
+.sub-nav-days .sub-nav-item.active { background: var(--surface); }
+.warmup-cooldown { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 1rem 1.25rem; margin: 1rem 0; }
+.warmup-cooldown h4 { font-size: 0.85rem; color: var(--accent2); text-transform: uppercase; letter-spacing: 0.03em; margin-bottom: 0.5rem; }
+.warmup-cooldown ol { margin: 0 0 0 1.25rem; color: var(--text-muted); font-size: 0.9rem; }
+.warmup-cooldown li { margin: 0.2rem 0; }
+.day-nav { display: flex; justify-content: space-between; margin-top: 1.5rem; padding-top: 1rem; border-top: 1px solid var(--border); }
+.day-nav a { color: var(--accent); text-decoration: none; font-weight: 500; font-size: 0.9rem; padding: 0.5rem 1rem; border-radius: 6px; transition: background 0.2s; cursor: pointer; }
+.day-nav a:hover { background: var(--surface2); }
+.bar-chart { margin: 1.5rem 0; }
+.bar-row { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.5rem; }
+.bar-label { width: 160px; font-size: 0.85rem; text-align: right; color: var(--text-muted); flex-shrink: 0; }
+.bar-track { flex: 1; height: 24px; background: var(--surface2); border-radius: 4px; overflow: hidden; }
+.bar-fill { height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent2)); border-radius: 4px; transition: width 0.5s ease; }
+.bar-value { width: 45px; font-size: 0.85rem; font-weight: 600; color: var(--text); }
+.tag { display: inline-block; padding: 0.15rem 0.5rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; }
+.tag-primary { background: rgba(108,140,255,0.2); color: var(--accent); }
+.tag-secondary { background: rgba(78,205,196,0.2); color: var(--green); }
+.tag-tertiary { background: rgba(255,217,61,0.15); color: var(--yellow); }
+.tag-danger { background: rgba(255,107,107,0.2); color: var(--red); }
+details.muscle-detail { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; margin-bottom: 0.5rem; }
+details.muscle-detail summary { padding: 0.75rem 1rem; cursor: pointer; font-weight: 600; font-size: 0.95rem; }
+details.muscle-detail summary:hover { color: var(--accent); }
+details.muscle-detail .detail-table { margin: 0; }
+details.muscle-detail .detail-table td, details.muscle-detail .detail-table th { padding: 0.5rem 0.75rem; font-size: 0.85rem; }
+.md-content h1 { font-size: 1.6rem; margin: 1.5rem 0 0.75rem; color: var(--accent); }
+.md-content h2 { font-size: 1.3rem; margin: 1.5rem 0 0.75rem; color: var(--text); border-bottom: 1px solid var(--border); padding-bottom: 0.5rem; }
+.md-content h3 { font-size: 1.1rem; margin: 1.25rem 0 0.5rem; color: var(--text); }
+.md-content h4 { font-size: 1rem; margin: 1rem 0 0.5rem; color: var(--accent2); }
+.md-content p { margin: 0.5rem 0; color: var(--text-muted); }
+.md-content ul { margin: 0.5rem 0 0.5rem 1.5rem; }
+.md-content li { margin: 0.25rem 0; color: var(--text-muted); }
+.md-content strong { color: var(--text); }
+.md-content code { background: var(--surface2); padding: 0.15rem 0.4rem; border-radius: 4px; font-size: 0.85em; color: var(--accent2); }
+.md-content hr { border: none; border-top: 1px solid var(--border); margin: 1.5rem 0; }
+.md-content .table-wrap { margin: 1rem 0; }
+.md-content table { background: var(--surface); border-radius: 8px; overflow: hidden; }
+.subtitle { color: var(--text-muted); font-size: 0.9rem; margin-bottom: 1rem; }
+h2.page-title { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text); }
+.loading { color: var(--text-muted); padding: 2rem 0; }
+@media (min-width: 1400px) { .content { max-width: 1600px; } .cards { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 768px) {
+    nav { padding: 0 1rem; flex-direction: column; gap: 0; }
+    nav .logo { padding: 0.75rem 0 0; }
+    nav .nav-links { width: 100%; }
+    nav a.nav-item { padding: 0.75rem 0.75rem; font-size: 0.8rem; }
+    .content { padding: 1rem; }
+    .cards { grid-template-columns: repeat(2, 1fr); }
+    .card .value { font-size: 1.5rem; }
+    .bar-label { width: 110px; font-size: 0.78rem; }
+    table { font-size: 0.8rem; }
+    td, th { padding: 0.4rem 0.5rem; }
+}
+@media (max-width: 480px) {
+    nav { padding: 0 0.5rem; }
+    nav a.nav-item { padding: 0.6rem 0.5rem; font-size: 0.75rem; }
+    .content { padding: 0.75rem; }
+    .cards { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .card { padding: 1rem; }
+    .card .value { font-size: 1.25rem; }
+    h2.page-title { font-size: 1.2rem; margin-bottom: 1rem; }
+    .bar-label { width: 80px; font-size: 0.7rem; }
+    .sub-nav-item { padding: 0.6rem 0.75rem; font-size: 0.78rem; }
+}
+</style>
+</head>
+<body>
+<nav>
+    <a href="dashboard.html" class="logo">GYM</a>
+    <div class="nav-links">
+        <a href="dashboard.html" class="nav-item active">Dashboard</a>
+        <a href="workout.html" class="nav-item">Scheda</a>
+        <a href="volume.html" class="nav-item">Volume</a>
+        <a href="diet.html" class="nav-item">Dieta</a>
+        <a href="plan.html" class="nav-item">Piano</a>
+        <a href="feedback.html" class="nav-item">Feedback</a>
+    </div>
+</nav>
+<div class="content" id="main-content">
+    <p class="loading">Caricamento...</p>
+</div>
+
+<script>
+function esc(s) {
+    if (s == null) return '&mdash;';
+    return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function card(label, value, unit, sub, extraCls) {
+    var cls = 'card' + (extraCls ? ' ' + extraCls : '');
+    var unitHtml = unit ? ' <span class="unit">' + esc(unit) + '</span>' : '';
+    return '<div class="' + cls + '">'
+        + '<div class="label">' + esc(label) + '</div>'
+        + '<div class="value">' + esc(value) + unitHtml + '</div>'
+        + '<div class="sub">' + sub + '</div>'
+        + '</div>';
+}
+function showTab(navId, panelClass, tabId) {
+    document.querySelectorAll('.' + panelClass).forEach(function(p) { p.classList.remove('active'); });
+    document.querySelectorAll('#' + navId + ' .sub-nav-item').forEach(function(a) { a.classList.remove('active'); });
+    var el = document.getElementById(tabId);
+    if (el) el.classList.add('active');
+}
+function activateNavItem(navId, idx) {
+    var items = document.querySelectorAll('#' + navId + ' .sub-nav-item');
+    if (items[idx]) items[idx].classList.add('active');
+}
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4/dist/chart.umd.min.js"></script>
+<script>
+Promise.all([
+    fetch('data/measurements.json').then(function(r){ return r.json(); }),
+    fetch('data/plan.json').then(function(r){ return r.json(); })
+]).then(function(results){ renderDashboard(results[0], results[1]); })
+    .catch(function(){ document.getElementById('main-content').innerHTML = '<p>Dati non disponibili.</p>'; });
+
+function renderDashboard(measurements, planData) {
+    var root = document.getElementById('main-content');
+    if (!measurements || !measurements.length) {
+        root.innerHTML = '<p>Nessun dato disponibile.</p>'; return;
+    }
+    var last = measurements[measurements.length - 1];
+    var peso = last.peso_kg || '-';
+    var bf = last.body_fat_pct ? last.body_fat_pct + '%' : '-';
+    var sq = last.squat_1rm || 0;
+    var pa = last.panca_1rm || 0;
+    var st = last.stacco_1rm || 0;
+    var total = (sq && pa && st) ? sq + pa + st : 0;
+    var ffmi = last.ffmi_adj || '-';
+    var tdee = last.tdee_kcal || 2871;
+    var tdee_is_fallback = !last.tdee_kcal;
+
+    var targets = {};
+    if (planData && planData.target && planData.target.length > 0) {
+        var target12 = planData.target[planData.target.length - 1];
+        var corpTarget = planData.target_corporeo || { peso_kg: 95, bf_pct_max: 13 };
+        targets = {
+            peso: corpTarget.peso_kg || 95,
+            bf: corpTarget.bf_pct_max || 13,
+            squat: target12.squat || 200,
+            panca: target12.panca || 150,
+            stacco: target12.stacco || 250,
+            totale: (target12.squat || 200) + (target12.panca || 150) + (target12.stacco || 250)
+        };
+    } else {
+        targets = { peso: 95, bf: 13, squat: 200, panca: 150, stacco: 250, totale: 600 };
+    }
+
+    function progressBar(current, target) {
+        var pct = Math.min(100, Math.max(0, (current / target * 100).toFixed(0)));
+        return '<div style="background:var(--surface2);border-radius:4px;height:4px;margin-top:6px"><div style="background:var(--accent);height:100%;border-radius:4px;width:' + pct + '%"></div></div><div style="font-size:0.75rem;color:var(--text-muted);margin-top:3px">' + pct + '% del target</div>';
+    }
+
+    function progressBarBF(currentBF, targetBF, measurements) {
+        // Per BF% la logica e' inversa: partiamo da alto e scendersi verso il target.
+        // Caso generale: troviamo il BF massimo storico, da cui parti.
+        if (!currentBF || !measurements || measurements.length === 0) return '';
+        var maxBF = Math.max.apply(null, measurements.map(function(m) { return m.body_fat_pct || 0; }));
+        if (maxBF < targetBF) maxBF = targetBF + 5; // fallback se tutte le misurazioni sono gia' sotto target
+        // Calcolo: (max - current) / (max - target) * 100
+        var pct = maxBF <= targetBF ? 100 : Math.min(100, Math.max(0, ((maxBF - currentBF) / (maxBF - targetBF) * 100).toFixed(0)));
+        return '<div style="background:var(--surface2);border-radius:4px;height:4px;margin-top:6px"><div style="background:var(--accent);height:100%;border-radius:4px;width:' + pct + '%"></div></div><div style="font-size:0.75rem;color:var(--text-muted);margin-top:3px">' + pct + '% del target</div>';
+    }
+
+    var html = '<h2 class="page-title">Dashboard</h2>';
+    html += '<div class="cards">';
+    html += card('Peso', peso, 'kg', 'Target: ' + targets.peso + ' kg' + progressBar(last.peso_kg || 0, targets.peso), 'accent');
+    html += card('Body Fat', bf, '', 'Target: &le;' + targets.bf + '%' + (last.body_fat_pct ? progressBarBF(last.body_fat_pct, targets.bf, measurements) : ''));
+    html += card('Totale PL', total || '-', 'kg', 'Target: ' + targets.totale + ' kg' + progressBar(total || 0, targets.totale), 'green');
+    html += card('FFMI adj', ffmi, '', 'Limite naturale ~25');
+    html += '</div><div class="cards">';
+    html += card('Squat', sq || '-', 'kg', 'Target: ' + targets.squat + ' kg' + progressBar(sq || 0, targets.squat));
+    html += card('Panca', pa || '-', 'kg', 'Target: ' + targets.panca + ' kg' + progressBar(pa || 0, targets.panca));
+    html += card('Stacco', st || '-', 'kg', 'Target: ' + targets.stacco + ' kg' + progressBar(st || 0, targets.stacco));
+    var tdee_sub = (tdee_is_fallback ? '⚠️ STIMA AUTOMATICA: ' : 'TDEE ') + tdee + ' + surplus 300';
+    html += card('Calorie target', tdee + 300, 'kcal', tdee_sub, tdee_is_fallback ? 'orange' : '');
+    html += '</div>';
+    if (tdee_is_fallback) {
+        html += '<div style="background:rgba(255,169,77,0.15); border:2px solid var(--orange); border-radius:8px; padding:1rem; margin-bottom:1.5rem;"><strong style="color:var(--orange)">⚠️ Avviso TDEE</strong><p style="margin:0.5rem 0 0;color:var(--text-muted);font-size:0.95rem">Il fabbisogno calorico è stato stimato automaticamente. Per precisione, è consigliato un test di settimana per verificare la reale manutenzione. Consulta il coach se hai dubbi.</p></div>';
+    }
+
+    // Chart
+    html += '<h3 style="margin:1.5rem 0 .75rem">Andamento Massimali</h3>';
+    html += '<div style="background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem;">';
+    html += '<canvas id="chart-massimali" height="110"></canvas></div>';
+
+    // History table with delta info
+    html += '<h3 style="margin:1.5rem 0 .75rem">Storico misurazioni</h3>';
+    html += '<p class="subtitle"><span style="display:inline-block;margin-right:1rem;"><strong style="color:var(--text);">R</strong> = Reale | <strong style="color:var(--orange);">S</strong> = Stimato</span></p>';
+    html += '<div class="table-wrap"><table><thead><tr>';
+    ['Data','Peso','Δ Peso','BF%','Δ BF','Trend','Massa magra','FFMI adj','Squat','Panca','Stacco','Vita','Petto','Fianchi','Note'].forEach(function(h){
+        html += '<th>' + h + '</th>';
+    });
+    html += '</tr></thead><tbody>';
+    measurements.forEach(function(m) {
+        var trendIcon = m.bf_trend === 'migliorante' ? '✅' : m.bf_trend === 'peggiorante' ? '⚠️' : '➡️';
+        var sqTypeSpan = m.squat_1rm ? '<span style="color:' + (m.squat_1rm_tipo==='S'?'var(--orange)':'var(--text)') + ';font-size:0.75rem;font-weight:600;margin-left:0.25rem">' + (m.squat_1rm_tipo || 'R') + '</span>' : '';
+        var paTypeSpan = m.panca_1rm ? '<span style="color:' + (m.panca_1rm_tipo==='S'?'var(--orange)':'var(--text)') + ';font-size:0.75rem;font-weight:600;margin-left:0.25rem">' + (m.panca_1rm_tipo || 'R') + '</span>' : '';
+        var stTypeSpan = m.stacco_1rm ? '<span style="color:' + (m.stacco_1rm_tipo==='S'?'var(--orange)':'var(--text)') + ';font-size:0.75rem;font-weight:600;margin-left:0.25rem">' + (m.stacco_1rm_tipo || 'R') + '</span>' : '';
+        html += '<tr>'
+            + '<td>' + esc(m.data) + '</td>'
+            + '<td>' + esc(m.peso_kg) + '</td>'
+            + '<td>' + (m.delta_peso_kg ? (m.delta_peso_kg > 0 ? '+' : '') + m.delta_peso_kg : '&mdash;') + '</td>'
+            + '<td>' + (m.body_fat_pct ? m.body_fat_pct + '%' : '&mdash;') + '</td>'
+            + '<td>' + (m.delta_bf_pct !== undefined && m.delta_bf_pct !== 0 ? (m.delta_bf_pct > 0 ? '+' : '') + m.delta_bf_pct + '%' : '&mdash;') + '</td>'
+            + '<td>' + trendIcon + '</td>'
+            + '<td>' + esc(m.massa_magra_kg) + '</td>'
+            + '<td>' + esc(m.ffmi_adj) + '</td>'
+            + '<td>' + esc(m.squat_1rm) + sqTypeSpan + '</td>'
+            + '<td>' + esc(m.panca_1rm) + paTypeSpan + '</td>'
+            + '<td>' + esc(m.stacco_1rm) + stTypeSpan + '</td>'
+            + '<td>' + (m.vita_cm ? esc(m.vita_cm) + ' cm' : '&mdash;') + '</td>'
+            + '<td>' + (m.petto_cm ? esc(m.petto_cm) + ' cm' : '&mdash;') + '</td>'
+            + '<td>' + (m.fianchi_cm ? esc(m.fianchi_cm) + ' cm' : '&mdash;') + '</td>'
+            + '<td>' + esc(m.note) + '</td>'
+            + '</tr>';
+    });
+    html += '</tbody></table></div>';
+    root.innerHTML = html;
+
+    // Init chart
+    var labels = measurements.map(function(m) {
+        var l = [m.data || ''];
+        if (m.eta && m.peso_kg) l.push(m.eta + 'a / ' + m.peso_kg + 'kg');
+        return l;
+    });
+    var sqData = measurements.map(function(m){ return m.squat_1rm || 0; });
+    var paData = measurements.map(function(m){ return m.panca_1rm || 0; });
+    var stData = measurements.map(function(m){ return m.stacco_1rm || 0; });
+    var totData = measurements.map(function(m){ return (m.squat_1rm||0)+(m.panca_1rm||0)+(m.stacco_1rm||0); });
+    var yMax = Math.max.apply(null, sqData.concat(paData, stData)) + 100;
+    var y1Max = Math.max.apply(null, totData) + 100;
+
+    new Chart(document.getElementById('chart-massimali').getContext('2d'), {
+        type: 'bar',
+        data: {
+            labels: labels,
+            datasets: [
+                { label: 'Squat', data: sqData, backgroundColor: 'rgba(108,140,255,0.7)', borderColor: 'rgba(108,140,255,1)', borderWidth: 1, borderRadius: 4, order: 2 },
+                { label: 'Panca', data: paData, backgroundColor: 'rgba(78,205,196,0.7)', borderColor: 'rgba(78,205,196,1)', borderWidth: 1, borderRadius: 4, order: 2 },
+                { label: 'Stacco', data: stData, backgroundColor: 'rgba(255,169,77,0.7)', borderColor: 'rgba(255,169,77,1)', borderWidth: 1, borderRadius: 4, order: 2 },
+                { label: 'Totale', data: totData, type: 'line', borderColor: 'rgba(255,217,61,0.8)', backgroundColor: 'rgba(255,217,61,0.1)', borderWidth: 2, pointRadius: 4, fill: false, yAxisID: 'y1', order: 1 }
+            ]
+        },
+        options: {
+            responsive: true,
+            interaction: { mode: 'index', intersect: false },
+            plugins: {
+                legend: { labels: { color: '#8b8fa3', font: { size: 12 } } },
+                tooltip: { callbacks: { label: function(c){ return c.dataset.label + ': ' + c.parsed.y + ' kg'; } } }
+            },
+            datasets: { bar: { barPercentage: 0.6, categoryPercentage: 0.5 } },
+            scales: {
+                x: { ticks: { color: '#8b8fa3', font: { size: 11 }, maxRotation: 0 }, grid: { color: 'rgba(45,49,66,0.5)' } },
+                y: { position: 'left', title: { display: true, text: 'Massimale (kg)', color: '#8b8fa3' }, ticks: { color: '#8b8fa3' }, grid: { color: 'rgba(45,49,66,0.5)' }, beginAtZero: true, max: yMax },
+                y1: { position: 'right', title: { display: true, text: 'Totale (kg)', color: '#8b8fa3' }, ticks: { color: 'rgba(255,217,61,0.8)' }, grid: { drawOnChartArea: false }, beginAtZero: true, max: y1Max }
+            }
+        }
+    });
+}
+</script>
+
+</body>
+</html>

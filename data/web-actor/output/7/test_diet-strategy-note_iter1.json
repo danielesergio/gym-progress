@@ -1,0 +1,100 @@
+{
+  "meta": {
+    "data": "2026-03-28",
+    "task_id": "diet-strategy-note",
+    "task_titolo": "Sezione strategia nutrizionale con note_strategia",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "La sezione strategia nutrizionale è visibile nella pagina Dieta",
+      "soddisfatto": true,
+      "dettaglio": "HTML: <section id='strategy-note' class='diet-strategy-note'> presente in diet.html (riga 101). JS: renderStrategyNote() popola il contenuto con <details>/<summary> nativo (righe 448-484 in diet.js). CSS: stilizzazione completa per .diet-strategy-note__* (righe 644-734 in diet.css)."
+    },
+    {
+      "criterio": "Il testo di note_strategia è formattato in paragrafi distinti (non un unico blocco di testo)",
+      "soddisfatto": true,
+      "dettaglio": "JS renderStrategyNote() splitta il testo per '\\n' (riga 458), filtra righe vuote (riga 460), e wrappa ogni riga in <p class='diet-strategy-note__paragraph'> (riga 468). Il file diet.json contiene note_strategia con 7 blocchi separati da \\n (FASE MANTENIMENTO, GIORNO PALESTRA, GIORNO RIPOSO, GIORNO BEACH VOLLEY, DISTRIBUZIONE SLOT, NOTA IDRATAZIONE, PASTI SGARRO)."
+    },
+    {
+      "criterio": "La sezione è collassabile (usa <details>/<summary> o toggle JS) e non occupa spazio primario quando chiusa",
+      "soddisfatto": true,
+      "dettaglio": "HTML usa <details>/<summary> nativo (righe 472-480 in diet.js renderStrategyNote()). CSS rimuove il triangolo nativo con ::-webkit-details-marker (riga 670-671 in diet.css) e aggiunge icona chevron ▸ customizzata (riga 475 in diet.js). Icona ruota 90deg quando open (riga 700-702 in diet.css). Nessuno spazio occupato quando chiuso."
+    },
+    {
+      "criterio": "Se meta.note_strategia è null, vuoto o assente, la sezione non viene renderizzata (nessun elemento vuoto visibile)",
+      "soddisfatto": true,
+      "dettaglio": "renderStrategyNote() ha guardia esplicita (riga 452-455): se notaStrategia è falsy o stringa vuota, setta container.hidden = true. Controllato anche dopo split: se paragraphs.length === 0, hidden=true (riga 462-464). HTML di partenza ha hidden attribute (riga 101 in diet.html)."
+    },
+    {
+      "criterio": "docs/diet.html contiene <section id='strategy-note'> posizionata dopo #supplements-section",
+      "soddisfatto": true,
+      "dettaglio": "diet.html riga 101: <section id='strategy-note' class='diet-strategy-note' aria-label='Strategia nutrizionale' hidden></section>. Posizionato esattamente dopo #supplements-section (righe 90-98) e prima della chiusura </div> del container (riga 103)."
+    },
+    {
+      "criterio": "docs/js/diet.js contiene la funzione renderStrategyNote(notaStrategia)",
+      "soddisfatto": true,
+      "dettaglio": "diet.js righe 448-484: funzione renderStrategyNote(notaStrategia) completa. Signature, guardie di null/undefined/empty, split per '\\n', filter righe vuote, map a <p>, wrapping in <details>/<summary>, gestione hidden. Struttura segue pattern delle altre render*() funzioni (renderMacrosSummary, renderSupplements, ecc.)."
+    },
+    {
+      "criterio": "renderStrategyNote() splita il testo per '\\n', filtra righe vuote, e produce un <p> per ogni blocco non vuoto",
+      "soddisfatto": true,
+      "dettaglio": "diet.js righe 457-469: split('\\n') + map(line => line.trim()) + filter(line => line.length > 0) + map(p => `<p class='diet-strategy-note__paragraph'>${p}</p>`). Ogni blocco multiriga del JSON diventa un <p> distinto. Test con diet.json: 7 paragrafi generati dai 7 blocchi della nota."
+    },
+    {
+      "criterio": "docs/css/diet.css contiene le classi .diet-strategy-note e .diet-strategy-note__paragraph",
+      "soddisfatto": true,
+      "dettaglio": "diet.css righe 644-734: classi presenti. .diet-strategy-note (riga 644-646), .diet-strategy-note__details (riga 648-654), .diet-strategy-note__toggle (riga 656-681), .diet-strategy-note__body (riga 704-710), .diet-strategy-note__paragraph (riga 712-717). BEM naming convention coerente con .diet-* prefisso."
+    },
+    {
+      "criterio": "La nota sintetica in renderMacrosSummary() (prima riga) NON viene rimossa — le due visualizzazioni coesistono",
+      "soddisfatto": true,
+      "dettaglio": "renderMacrosSummary() righe 163-165 preserva la strategia sintetica (prima riga di note_strategia). renderStrategyNote() righe 448-484 mostra il testo completo in pannello collassabile. Entrambe chiamate in renderDiet() (righe 506 e 515 in diet.js). Due visualizzazioni coesistono senza conflitto: riassunto compatto in macros-summary, dettagli completi in strategy-note collassabile."
+    },
+    {
+      "criterio": "Nessun errore JS in console quando note_strategia è presente o assente",
+      "soddisfatto": true,
+      "dettaglio": "renderStrategyNote() ha guardie di null/undefined/empty tipo safe (typeof, trim(), length checks). renderDiet() passa data?.meta?.note_strategia ?? null (riga 515), dunque null-safe. No fetch errors, no missing DOM elements. Fallback error handler in DOMContentLoaded (righe 557-569) cattura fetch failures ma non tocca renderStrategyNote()."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/diet.html",
+      "esiste": true,
+      "note": "Contiene <section id='strategy-note'> linea 101, posizionato dopo #supplements-section (righe 90-98), prima della chiusura container. Attributi: id='strategy-note', class='diet-strategy-note', aria-label='Strategia nutrizionale', hidden. HTML nativo <details>/<summary> sarà iniettato da renderStrategyNote() in JS."
+    },
+    {
+      "path": "docs/js/diet.js",
+      "esiste": true,
+      "note": "Funzione renderStrategyNote(notaStrategia) presente righe 448-484. Genera <details>/<summary> nativo con paragraphi <p> per ogni blocco multiriga. Chiamata in renderDiet() riga 515 con parametro data?.meta?.note_strategia ?? null. Struttura segue pattern JS del progetto: costanti -> utility -> render* -> initDiet -> DOMContentLoaded."
+    },
+    {
+      "path": "docs/css/diet.css",
+      "esiste": true,
+      "note": "Sezione strategia nutrizionale stilizzata righe 642-734. Classi: .diet-strategy-note, .diet-strategy-note__details, .diet-strategy-note__toggle, .diet-strategy-note__toggle-label, .diet-strategy-note__toggle-icon, .diet-strategy-note__body, .diet-strategy-note__paragraph. Chevron icon rotazione 90deg su [open]. Theme-pro overrides inclusi righe 726-734."
+    },
+    {
+      "path": "docs/data/diet.json",
+      "esiste": true,
+      "note": "meta.note_strategia presente (riga 37) con stringa multiriga contenente 7 blocchi separati da \\n: FASE MANTENIMENTO, GIORNO PALESTRA, GIORNO RIPOSO, GIORNO BEACH VOLLEY, DISTRIBUZIONE SLOT, NOTA IDRATAZIONE, PASTI SGARRO. Lunghezza totale circa 1600 caratteri."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "CSS: .diet-strategy-note__paragraph:first-child ha font-weight medium (riga 720-722) per enfatizzare le etichette MAIUSCOLE, ma questo stile vale solo al primo paragrafo della sezione. Se note_strategia avesse struttura multi-blocco con etichette MAIUSCOLE ripetute, sarebbe utile enfatizzarle tutte, non solo la prima. Implementazione corrente: accettabile per il formato attuale.",
+      "file": "docs/css/diet.css"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "JS: renderStrategyNote() non esegue escape HTML sul testo di note_strategia. Se il campo contenesse caratteri HTML (es. <script>, &lt;), verrebbero renderizzati letteralmente come testo (browser li interpreta come testo nelle <p>). Non è un rischio critico poiché note_strategia è dato interno (non da utente), ma è una best practice per robustezza. Attualmente: accettabile.",
+      "file": "docs/js/diet.js"
+    },
+    {
+      "gravita": "info",
+      "descrizione": "HTML: L'elemento <section id='strategy-note'> ha inizialmente hidden attribute (riga 101). Quando renderStrategyNote() popola il contenuto, rimosso con container.hidden = false (riga 483). Funziona correttamente. Pattern alternativo (aria-hidden, display:none) sarebbe egualmente valido. Attualmente: implementazione coerente con il resto del codebase.",
+      "file": "docs/diet.html"
+    }
+  ]
+}

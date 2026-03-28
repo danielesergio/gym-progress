@@ -113,7 +113,7 @@ ORDINE: layout-root → measurements-data → navbar → ...
 ```
 
 ## File temporanei
-Se hai bisogno di creare file intermedi durante l'elaborazione, salvali **esclusivamente** in `scripts/agent-temp/gym-web-prioritizer/`. Non creare mai file temporanei in altre cartelle.
+Se hai bisogno di creare file intermedi durante l'elaborazione, salvali **esclusivamente** in `source/scripts/agent-temp/gym-web-prioritizer/`. Non creare mai file temporanei in altre cartelle.
 Ogni file temporaneo DEVE iniziare con un commento che spiega perche' e' stato creato, es:
 ```json
 // File temporaneo creato da gym-web-prioritizer il YYYY-MM-DD

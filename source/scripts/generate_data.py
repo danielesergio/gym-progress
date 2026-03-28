@@ -13,8 +13,8 @@ JSON normalizzati in docs/data/:
   docs/data/feedback.json      — feedback coach + atleta { "coach_html": "...", "atleta_html": "..." }
 
 Uso:
-    python scripts/generate_data.py
-    python scripts/generate_data.py --outdir docs/data
+    python source/scripts/generate_data.py
+    python source/scripts/generate_data.py --outdir docs/data
 """
 
 import argparse
@@ -27,7 +27,7 @@ import sys
 sys.path.insert(0, os.path.dirname(__file__))
 from volume_calc import EXERCISE_MUSCLES
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 DATA_OUT = os.path.join(BASE_DIR, "data", "output")
 
 
@@ -73,6 +73,7 @@ def latest_file(prefix: str, exts: list) -> str | None:
         pattern_root = os.path.join(DATA_OUT, f"{prefix}_*{ext}")
         pattern_hist = os.path.join(DATA_OUT, "history", "**", f"{prefix}_*{ext}")
         all_files.extend(globmod.glob(pattern_root) + globmod.glob(pattern_hist, recursive=True))
+    all_files = [f for f in all_files if not os.path.basename(f).endswith("_raw" + os.path.splitext(f)[1])]
     return sorted(all_files)[-1] if all_files else None
 
 
@@ -314,7 +315,6 @@ def compute_volume(workout_data: dict) -> list:
     """Restituisce lista ordinata di {muscolo, serie_pesate, dettaglio[]}."""
     volume: dict = {}
     settimane = workout_data.get("settimane", [])
-    print(settimane)
 
     main_week = settimane[0] if settimane else {}
     unmatched = []
@@ -387,13 +387,7 @@ def enrich_measurements(measurements: list) -> list:
             m_copy["delta_mm_kg"] = 0
             m_copy["bf_trend"] = "baseline"
 
-        # Totale massimali
-        s = m_copy.get("squat_1rm")
-        p = m_copy.get("panca_1rm")
-        st = m_copy.get("stacco_1rm")
-        m_copy["totale_1rm"] = round(s + p + st, 1) if (s is not None and p is not None and st is not None) else None
-
-        # Aggiungi tipo massimale (R=Reale, S=Stimato) se non presente
+         # Aggiungi tipo massimale (R=Reale, S=Stimato) se non presente
         # Assume che se il campo massimali_tipo non esiste, tutti sono "R" (reali)
         default_massimale_tipo = m_copy.get("massimali_tipo", "R")
         print(f"default massimale = {default_massimale_tipo}")

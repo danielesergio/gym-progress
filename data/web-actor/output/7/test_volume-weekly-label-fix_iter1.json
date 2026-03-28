@@ -1,0 +1,50 @@
+{
+  "meta": {
+    "data": "2026-03-27",
+    "task_id": "volume-weekly-label-fix",
+    "task_titolo": "Correggi etichette volume da 'mesociclo' a 'settimanale'",
+    "iterazione": 1
+  },
+  "esito": "OK",
+  "criteri": [
+    {
+      "criterio": "Nessun testo nella pagina Volume usa la parola 'mesociclo' per descrivere il totale delle serie",
+      "soddisfatto": true,
+      "dettaglio": "Ricerca completa in volume.html e volume.js: la parola 'mesociclo' non appare in nessun file. I dati sono coerentemente etichettati come 'settimanali' o 'per settimana'."
+    },
+    {
+      "criterio": "L'header della pagina mostra 'Volume settimanale' con il valore corretto",
+      "soddisfatto": true,
+      "dettaglio": "volume.html riga 24: aria-label='Volume settimanale corrente' è presente e corretto. Il valore numeric è reso in headerTotalVolume come '${totalSerie} serie' (volume.js riga 89), che mostra il totale con unità corrette."
+    },
+    {
+      "criterio": "La sezione riepilogo recita chiaramente 'serie settimanali' o equivalente",
+      "soddisfatto": true,
+      "dettaglio": "volume.html riga 86: title 'Riepilogo Volume Settimanale' è presente. volume.js riga 95: label 'Serie settimanali totali' è presente nella renderVolumeMetaCard."
+    },
+    {
+      "criterio": "Il sottotitolo della sezione grafico specifica che si tratta di serie per settimana",
+      "soddisfatto": true,
+      "dettaglio": "volume.html riga 100: subtitle 'Serie settimanali pesate per settimana, ordinate dal più alto al più basso' è presente e chiaramente specifica il riferimento alla settimana."
+    }
+  ],
+  "file_verificati": [
+    {
+      "path": "docs/volume.html",
+      "esiste": true,
+      "note": "File modificato: aria-label header-meta aggiornato a 'Volume settimanale corrente' (riga 24). Subtitle della sezione grafico aggiornato a 'Serie settimanali pesate per settimana, ordinate dal più alto al più basso' (riga 100). Tutte le modifiche HTML verificate e corrette."
+    },
+    {
+      "path": "docs/js/volume.js",
+      "esiste": true,
+      "note": "File modificato: renderVolumeMetaCard aggiornato con label 'Serie settimanali totali' (riga 95), 'Serie Pull (sett.)' (riga 99), 'Serie Push (sett.)' (riga 103). renderVolumeChart tooltip aggiornato a 'serie/sett.' (riga 181). asse X title aggiornato a 'Serie pesate / settimana' (riga 198). renderVolumeTable volume-muscle-total aggiornato a 'serie/sett.' (riga 272). Tutte le modifiche JS verificate e corrette."
+    }
+  ],
+  "anomalie": [
+    {
+      "gravita": "info",
+      "descrizione": "Dataset label nel grafico Chart.js (riga 161) rimane 'Serie pesate' (generico). Non appare nelle tooltip (che show 'serie/sett.' correttamente), ma potrebbe essere aggiornato a 'Serie pesate/sett.' per coerenza interna. Non è bloccante poiché non visibile direttamente all'utente.",
+      "file": "docs/js/volume.js"
+    }
+  ]
+}

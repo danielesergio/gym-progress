@@ -1,0 +1,270 @@
+alimenti:
+  - nome: Acqua
+    kcal: 0
+    proteine: 0
+    carboidrati: 0
+    grassi: 0
+
+  - nome: Banana
+    kcal: 89
+    proteine: 1.1
+    carboidrati: 23.0
+    grassi: 0.3
+
+  - nome: Branzino
+    kcal: 97
+    proteine: 18.0
+    carboidrati: 0
+    grassi: 2.0
+
+  - nome: Broccoli
+    kcal: 34
+    proteine: 2.8
+    carboidrati: 7.0
+    grassi: 0.4
+
+  - nome: Carota
+    kcal: 41
+    proteine: 0.9
+    carboidrati: 9.6
+    grassi: 0.2
+
+  - nome: Cipolla
+    kcal: 40
+    proteine: 1.1
+    carboidrati: 9.3
+    grassi: 0.1
+
+  - nome: Datteri secchi
+    kcal: 282
+    proteine: 2.5
+    carboidrati: 75.0
+    grassi: 0.4
+
+  - nome: Fagioli borlotti secchi
+    kcal: 337
+    proteine: 21.0
+    carboidrati: 60.0
+    grassi: 1.5
+
+  - nome: Filetto di manzo
+    kcal: 143
+    proteine: 21.0
+    carboidrati: 0
+    grassi: 6.0
+
+  - nome: Guanciale
+    kcal: 655
+    proteine: 9.0
+    carboidrati: 0
+    grassi: 70.0
+
+  - nome: Insalata mista
+    kcal: 20
+    proteine: 1.5
+    carboidrati: 3.5
+    grassi: 0.2
+
+  - nome: Latte parzialmente scremato
+    kcal: 46
+    proteine: 3.3
+    carboidrati: 4.8
+    grassi: 1.5
+
+  - nome: Lenticchie secche
+    kcal: 353
+    proteine: 25.0
+    carboidrati: 60.0
+    grassi: 1.1
+
+  - nome: Mais dolce
+    kcal: 86
+    proteine: 3.2
+    carboidrati: 19.0
+    grassi: 1.2
+
+  - nome: Mandorle
+    kcal: 579
+    proteine: 21.0
+    carboidrati: 22.0
+    grassi: 50.0
+
+  - nome: Marmellata
+    kcal: 250
+    proteine: 0.3
+    carboidrati: 65.0
+    grassi: 0.1
+
+  - nome: Mela
+    kcal: 52
+    proteine: 0.3
+    carboidrati: 14.0
+    grassi: 0.2
+
+  - nome: Miele
+    kcal: 304
+    proteine: 0.3
+    carboidrati: 82.0
+    grassi: 0.0
+
+  - nome: Mozzarella fior di latte
+    kcal: 280
+    proteine: 18.0
+    carboidrati: 2.0
+    grassi: 22.0
+
+  - nome: Muesli proteico
+    kcal: 380
+    proteine: 20.0
+    carboidrati: 55.0
+    grassi: 8.0
+
+  - nome: Noci
+    kcal: 654
+    proteine: 15.0
+    carboidrati: 14.0
+    grassi: 65.0
+
+  - nome: Olio extravergine di oliva
+    kcal: 884
+    proteine: 0
+    carboidrati: 0
+    grassi: 100.0
+
+  - nome: Pane integrale
+    kcal: 247
+    proteine: 9.0
+    carboidrati: 41.0
+    grassi: 4.0
+
+  - nome: Parmigiano reggiano
+    kcal: 402
+    proteine: 33.0
+    carboidrati: 0
+    grassi: 29.0
+
+  - nome: Passata di pomodoro
+    kcal: 33
+    proteine: 1.6
+    carboidrati: 7.0
+    grassi: 0.2
+
+  - nome: Pasta di semola
+    kcal: 350
+    proteine: 12.0
+    carboidrati: 72.0
+    grassi: 1.5
+
+  - nome: Patate
+    kcal: 77
+    proteine: 2.0
+    carboidrati: 17.0
+    grassi: 0.1
+
+  - nome: Patate dolci
+    kcal: 86
+    proteine: 1.6
+    carboidrati: 20.0
+    grassi: 0.1
+
+  - nome: Pecorino romano
+    kcal: 387
+    proteine: 26.0
+    carboidrati: 0
+    grassi: 32.0
+
+  - nome: Pesto alla genovese
+    kcal: 480
+    proteine: 5.0
+    carboidrati: 4.0
+    grassi: 48.0
+
+  - nome: Petto di pollo alla piastra
+    kcal: 165
+    proteine: 31.0
+    carboidrati: 0
+    grassi: 3.6
+
+  - nome: Piselli secchi
+    kcal: 341
+    proteine: 24.0
+    carboidrati: 60.0
+    grassi: 1.2
+
+  - nome: Pizza margherita (pizzeria)
+    kcal: 266
+    proteine: 11.0
+    carboidrati: 33.0
+    grassi: 10.0
+
+  - nome: Pomodorini
+    kcal: 18
+    proteine: 0.9
+    carboidrati: 3.9
+    grassi: 0.2
+
+  - nome: Pomodoro
+    kcal: 18
+    proteine: 0.9
+    carboidrati: 3.9
+    grassi: 0.2
+
+  - nome: Proteine whey cioccolato
+    kcal: 400
+    proteine: 80.0
+    carboidrati: 8.0
+    grassi: 6.0
+
+  - nome: Riso basmati
+    kcal: 365
+    proteine: 7.5
+    carboidrati: 80.0
+    grassi: 1.0
+
+  - nome: Salmone fresco
+    kcal: 208
+    proteine: 20.0
+    carboidrati: 0
+    grassi: 13.0
+
+  - nome: Succo d'arancia
+    kcal: 45
+    proteine: 0.7
+    carboidrati: 10.0
+    grassi: 0.2
+
+  - nome: Tonno in scatola sgocciolato
+    kcal: 116
+    proteine: 26.0
+    carboidrati: 0
+    grassi: 1.0
+
+  - nome: Trota
+    kcal: 148
+    proteine: 20.0
+    carboidrati: 0
+    grassi: 7.0
+
+  - nome: Tuorlo d'uovo
+    kcal: 322
+    proteine: 16.0
+    carboidrati: 3.6
+    grassi: 27.0
+
+  - nome: Uova intere
+    kcal: 143
+    proteine: 13.0
+    carboidrati: 1.1
+    grassi: 10.0
+
+  - nome: Yogurt greco 0%
+    kcal: 59
+    proteine: 10.0
+    carboidrati: 3.6
+    grassi: 0.2
+
+  - nome: Zucchine
+    kcal: 17
+    proteine: 1.2
+    carboidrati: 3.1
+    grassi: 0.3
